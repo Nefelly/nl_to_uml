@@ -7,7 +7,10 @@ _envvars = [
     'SENTRY_DSN',
     'LL',
     'REDIS_SNS_TAG_LIKE',
-    'ELASTICSEARCH_SNS_POI'
+    'ELASTICSEARCH_SNS_POI',
+    'HENDRIX_IDL_MODULE',
+    'HENDRIX_THRIFT_HOST',
+    'HENDRIX_THRIFT_PORT'
 ]
 
 r = EnvvarReader(*_envvars)
