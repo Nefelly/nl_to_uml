@@ -4,6 +4,7 @@ from hendrix.util import EnvvarReader
 
 _envvars = [
     'HENDRIX_ENV',
+    'SENTRY_DSN',
 ]
 
 r = EnvvarReader(*_envvars)
