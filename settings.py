@@ -10,7 +10,7 @@ r = EnvvarReader(*_envvars)
 
 ENV = HENDRIX_ENV = r.get('HENDRIX_ENV', ENV_PROD)
 
-
+SENTRY_DSN = r.get('SENTRY_DSN', '')
 
 def _get_db_setting(envvar, db, alias=None):
     local_db_url = 'mongodb://localhost:27017'
