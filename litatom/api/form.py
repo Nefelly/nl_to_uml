@@ -58,7 +58,7 @@ class TimestampField(StringField):
                 self.data = self.default
 
 
-class SignatureForm(AsuraForm):
+class SignatureForm(LitatomForm):
     sign = StringField(validators=[DataRequired()])
     deviceId = StringField(validators=[DataRequired()])
     t = IntegerField(validators=[DataRequired()])

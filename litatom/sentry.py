@@ -44,7 +44,7 @@ def sentry_exception_handler(request, exc_info):
 def _prepare_sentry_context(req):
     """
     extract info from request for sentry report
-    :param req: AsuraRequest instance
+    :param req: LitatomRequest instance
     :return:
     """
     return {
