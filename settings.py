@@ -5,6 +5,9 @@ from hendrix.util import EnvvarReader
 _envvars = [
     'HENDRIX_ENV',
     'SENTRY_DSN',
+    'LL',
+    'REDIS_SNS_TAG_LIKE',
+    'ELASTICSEARCH_SNS_POI'
 ]
 
 r = EnvvarReader(*_envvars)
@@ -25,7 +28,7 @@ def _get_db_setting(envvar, db, alias=None):
 
 
 DB_SETTINGS = {
-    'db_prod': _get_db_setting('ll', '11'),
+    'db_prod': _get_db_setting('LL', 'LL'),
 }
 
 DEFAULT_REDIS_SETTING = {
@@ -44,9 +47,3 @@ ELASTICSEARCH_SETTINGS = {
         'host': 'localhost',
     }]),
 }
-
-CB_ENABLED = r.get_bool('CB_ENABLED', True)
-CB_WINDOW = r.get_int('CB_WINDOW', 20 * 1000)
-CB_INTERVAL = r.get_int('CB_INTERVAL', 1000)
-CB_MAX_FAIL = r.get_int('CB_MAX_FAIL', 3)
-
