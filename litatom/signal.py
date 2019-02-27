@@ -28,8 +28,8 @@ else:
 def before_first_request_handler():
     ctx = request.ctx = context.get_ctx()
     ctx.api_start()
-    from .bgtask.tasks import celery
-    logger.info('celery tasks imported: %r', celery.tasks.keys())
+    # from .bgtask.tasks import celery
+    # logger.info('celery tasks imported: %r', celery.tasks.keys())
 
 
 def request_started_handler(sender, **extra):
