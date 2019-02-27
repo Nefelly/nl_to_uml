@@ -32,9 +32,10 @@ def _get_db_setting(envvar, db, alias=None):
 CB_ENABLED = False
 
 DB_SETTINGS = {
-    'db_prod': _get_db_setting('LL', 'LL'),
+    'DB_LIT': _get_db_setting('DB_LIT', 'db_lit'),
 }
-METRICS_SCHEMAS = {'litatom':{'a': {'a':'a'}}}
+
+METRICS_SCHEMAS = {'litatom':{'a': {'a':'a'}}}   # no use
 DEFAULT_REDIS_SETTING = {
     'password': '',
     'host': '127.0.0.1',
