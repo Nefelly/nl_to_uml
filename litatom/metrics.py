@@ -6,4 +6,4 @@ class Metrics(object):
 
 
 
-metrics = Metrics(setting)
+metrics = Metrics(setting.METRICS_SCHEMAS)
