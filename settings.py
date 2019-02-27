@@ -29,6 +29,7 @@ def _get_db_setting(envvar, db, alias=None):
     url = r.get_json(envvar, default)
     return url
 
+CB_ENABLED = False
 
 DB_SETTINGS = {
     'db_prod': _get_db_setting('LL', 'LL'),
