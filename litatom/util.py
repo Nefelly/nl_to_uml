@@ -428,8 +428,9 @@ def on_staging():
 
 @memoize
 def in_container():
-    from hendrix.conf import setting
-    return setting.IN_CONTAINER
+    return False
+    # from hendrix.conf import setting
+    # return setting.IN_CONTAINER
 
 
 def filter_script_tag(s):

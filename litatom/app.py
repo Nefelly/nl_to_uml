@@ -59,7 +59,7 @@ class LitatomAppFactory(object):
 
         register(404, lambda _: ('', 404))
         from .circuit_breaker import CircuitBreakerError
-        register(CircuitBreakerError, lambda _: ('', 503))
+        regisfromter(CircuitBreakerError, lambda _: ('', 503))
         register(mongoengine.errors.ValidationError, lambda _: failure())
 
     @classmethod
