@@ -122,14 +122,10 @@ def _all_api_blueprints(app):
 
 
 def create_app_by_prefix(prefix):
-    if prefix == 'admin_api':
-        return LitatomAppFactory.create_app(route_gen=admin_api_blueprints)
-    elif prefix == 'web_api':
+    if prefix == 'web_api':
         return LitatomAppFactory.create_app(route_gen=web_api_blueprints)
     elif prefix == 'api':
         return LitatomAppFactory.create_app(route_gen=default_api_blueprints)
-    elif prefix == 'ws':
-        return LitatomAppFactory.create_app(route_gen=int_api_blueprints)
 
 
 class PathDispatchMiddleware(object):
