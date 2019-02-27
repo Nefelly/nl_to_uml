@@ -33,7 +33,7 @@ def _get_db_setting(envvar, db, alias=None):
 DB_SETTINGS = {
     'db_prod': _get_db_setting('LL', 'LL'),
 }
-METRICS_SCHEMAS = {'litatom':{'a': 'b'}}
+METRICS_SCHEMAS = {'litatom':{'a': {'a':'a'}}}
 DEFAULT_REDIS_SETTING = {
     'password': '',
     'host': '127.0.0.1',
