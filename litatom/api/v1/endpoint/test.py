@@ -41,4 +41,4 @@ logger = logging.getLogger(__name__)
 
 
 def test():
-    return Success()
+    return jsonify(Success)
