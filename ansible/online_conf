@@ -12,3 +12,8 @@ litatom_envvars_json:
     waitQueueTimeoutMS: 1100
     waitQueueMultiple: 5
     maxIdleTimeMS: 600000
+  REDIS_LIT:
+      password: 4567abc
+      db: 0
+      host: 127.0.0.1
+      port: 6379

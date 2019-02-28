@@ -11,6 +11,7 @@ _envvars = [
     'HENDRIX_IDL_MODULE',
     'HENDRIX_THRIFT_HOST',
     'HENDRIX_THRIFT_PORT'
+    'REDIS_LIT'
 ]
 
 r = EnvvarReader(*_envvars)
@@ -45,8 +46,9 @@ DEFAULT_REDIS_SETTING = {
     'port': 6379,
     'db': 0,
 }
+
 REDIS_SETTINGS = {
-    'sns_tag_like': r.get_json('REDIS_SNS_TAG_LIKE', DEFAULT_REDIS_SETTING),
+    'lit': r.get_json('REDIS_LIT', DEFAULT_REDIS_SETTING),
 
 }
 
