@@ -5,7 +5,7 @@ from hendrix.util import EnvvarReader
 _envvars = [
     'HENDRIX_ENV',
     'SENTRY_DSN',
-    'LL',
+    'DB_LIT',
     'REDIS_SNS_TAG_LIKE',
     'ELASTICSEARCH_SNS_POI',
     'HENDRIX_IDL_MODULE',
@@ -35,7 +35,7 @@ CB_ENABLED = False
 METRICS_SCHEMAS = {'litatom':{'a': {'a':'a'}}}   # no use
 
 DB_SETTINGS = {
-    'DB_LIT': _get_db_setting('DB_LIT', 'db_lit'),
+    'DB_LIT': _get_db_setting('DB_LIT', 'lit', 'lit'),
 }
 
 
