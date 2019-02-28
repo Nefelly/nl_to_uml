@@ -1,6 +1,6 @@
 # flake8: noqa
-from .User import (
-    user
+from .user import (
+    User
 )
 
 from ..db import DBManager
