@@ -2,6 +2,7 @@ import logging
 
 from hendrix.conf import setting
 from .util import BaseDBManager
+from .metrics import metrics
 
 import flask
 import mongoengine
