@@ -23,11 +23,11 @@ def _get_env():
 
 
 logger = logging.getLogger(__name__)
-sentry_client = SentryClient(dsn=setting.SENTRY_DSN,
-                             transport=GeventedHTTPTransport,
-                             auto_log_stacks=True,
-                             enable_breadcrumbs=False,
-                             environment=_get_env())
+# sentry_client = SentryClient(dsn=setting.SENTRY_DSN,
+#                              transport=GeventedHTTPTransport,
+#                              auto_log_stacks=True,
+#                              enable_breadcrumbs=False,
+#                              environment=_get_env())
 
 
 def sentry_exception_handler(request, exc_info):
