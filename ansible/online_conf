@@ -1,0 +1,14 @@
+litatom_envvars:
+  SENTRY_ENABLED: False
+  
+litatom_envvars_json:
+  DB_LIT:
+    host: "mongodb://ll:11@127.0.0.1/lit?authsource=lit"
+    port: 27017
+    maxPoolSize: 80
+    socketTimeoutMS: 5000
+    connectTimeoutMS: 3000
+    serverSelectionTimeoutMS: 3000
+    waitQueueTimeoutMS: 1100
+    waitQueueMultiple: 5
+    maxIdleTimeMS: 600000
