@@ -25,7 +25,7 @@ from ....service import (
 
 logger = logging.getLogger(__name__)
 
-def get_vfc_code():
+def get_sms_code():
     form = SmsCodeForm(data=request.json)
     if not form.validate():
         return failure(FailedLackOfField)
