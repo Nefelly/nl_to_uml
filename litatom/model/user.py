@@ -79,6 +79,7 @@ class UserSessionMixin(object):
     def generate_new_session(self):
         self.clear_session()
         self.session = self._build_session_string()
+        self.sessionCreateTime = datetime.datetime.now()
         self.save()
         return self.session
 
@@ -95,7 +96,8 @@ class User(Document, UserSessionMixin):
     avatar = StringField()
     gender = IntField()
     birthdate = StringField()
-    sessionid = StringField()
+    session = StringField()
+    sessionCreateTime = DateTimeField()
     isFirstLogin = BooleanField()
     bio = StringField()
     phone = StringField()
