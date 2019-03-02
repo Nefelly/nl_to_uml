@@ -26,7 +26,7 @@ from wtforms.validators import (
 
 from hendrix.util import AttributeDict
 
-from litatom.litatom.api.v1.form import (
+from ..form import (
     LitatomForm,
     PlatformField,
 )
