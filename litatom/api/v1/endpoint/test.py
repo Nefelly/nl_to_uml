@@ -1,6 +1,6 @@
 # coding: utf-8
 """
-小程序情人节活动
+测试
 """
 import logging
 

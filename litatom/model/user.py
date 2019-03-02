@@ -46,7 +46,14 @@ class User(Document):
 
 
     nickname = StringField()
+    avatar = StringField()
     gender = IntField()
+    birthdate = StringField()
+    sessionid = StringField()
+    isFirstLogin = BooleanField()
+    bio = StringField()
+    phone = StringField()
+    judge = ListField(default=[0, 0, 0])   # nasty, boring, like
 
     @classmethod
     def create(cls, nickname, gender):
@@ -57,3 +64,7 @@ class User(Document):
     @classmethod
     def get_by_nickname(cls, nickname):
         return cls.objects(nickname=nickname).first()
+
+    @property
+    def finishedJob(self):
+        return

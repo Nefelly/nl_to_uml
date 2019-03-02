@@ -33,30 +33,9 @@ from litatom.litatom.api.v1.form import (
 
 logger = logging.getLogger(__name__)
 
-
-
-class NoteGoodsInfoMixin(object):
-    @validates('name')
-    def validate_name(self, value):
-        if len(value) > 60:
-            raise ValidationError('invalid name: %r' % value)
-
-    @validates('price')
-    def validate_price(self, value):
-        if value <= 0 or value > 99999.99:
-            raise ValidationError('invalid price: %r' % value)
-
-    @validates('shipping_rate')
-    def validate_shipping_rate(self, value):
-        if value < 0 or value > 999.99:
-            raise ValidationError('invalid shipping rate: %r' % value)
-
-    @post_load
-    def make_object(self, data):
-        if not data:
-            return
-        return AttributeDict(data)
-
+class SmsCodeForm(LitatomForm):
+    zone = StringField(validators=[DataRequired()])
+    phone = StringField(validators=[DataRequired()])
 
 class PostBurnItemForm(LitatomForm):
     form_id = StringField(validators=[DataRequired()])
