@@ -31,4 +31,4 @@ class UserService(object):
         return {
             'session': user.session,
             'finished_info': user.finished_info
-        }
+        }, True
