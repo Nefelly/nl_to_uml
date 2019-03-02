@@ -29,6 +29,6 @@ class UserService(object):
         user.generate_new_session()
         user._set_session_cache(str(user.id))
         return {
-            'session': user.session,
+            'session': user.session_id,
             'finished_info': user.finished_info
         }, True
