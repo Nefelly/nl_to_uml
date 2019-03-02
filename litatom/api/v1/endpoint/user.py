@@ -22,7 +22,7 @@ from ....service import (
 )
 
 logger = logging.getLogger(__name__)
-handler = logging.FileHandler("/data/log/litatom/litatom.log")
+handler = logging.FileHandler("/data/log/litatom.log")
 logger.addHandler(handler)
 
 def phone_login():
