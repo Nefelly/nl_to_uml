@@ -108,6 +108,10 @@ class User(Document, UserSessionMixin):
         return user
 
     @classmethod
+    def get_by_phone(cls, zone_phone):
+        return cls.objects(phone=zone_phone).first()
+
+    @classmethod
     def get_by_nickname(cls, nickname):
         return cls.objects(nickname=nickname).first()
 
