@@ -31,7 +31,6 @@ def phone_login():
     phone = form.phone.data
     code = form.code.data
     data, status = UserService.phone_login(zone, phone, code)
-    logger.error('hhhhhhhhh')
     if not status:
         return jsonify({
             'success': False,
