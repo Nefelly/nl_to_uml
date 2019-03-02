@@ -81,8 +81,8 @@ class LitatomAppFactory(object):
             cls._logging_setup = True
         app.logger_name = name
         app._logger = logging.getLogger(name)
-        handler = logging.FileHandler("/data/log/litatom/litatom.log")
-        app._logger.addHandler(handler)
+        # handler = logging.FileHandler("/data/log/litatom/litatom.log")
+        # app._logger.addHandler(handler)
 
     @classmethod
     def create_app(cls,
