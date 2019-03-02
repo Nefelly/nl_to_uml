@@ -27,7 +27,11 @@ from mongoengine import (
     Q,
     ValidationError,
 )
-
+from ..key import (
+    REDIS_KEY_SESSION_USER
+)
+from ..const import TWO_WEEKS
+from ..redis import RedisClient
 from ..util import (
     format_standard_time,
     unix_ts_local,
@@ -36,9 +40,51 @@ from ..util import (
 
 logger = logging.getLogger(__name__)
 requests = None
+redis_client = RedisClient()['lit']
 
+class UserSessionMixin(object):
+    SESSION_ID_PATTERN = 'session.{id}'
 
-class User(Document):
+    @property
+    def session_id(self):
+        if not self.session:
+            return ''
+        return self.SESSION_ID_PATTERN.format(id=self.session)
+
+    sessionid = session_id  # compat
+
+    def _build_session_string(self):
+        td = datetime.datetime.now() - datetime.datetime(1980, 1, 1)
+        ss = (td.microseconds + (td.seconds + td.days * 24 * 3600) * 10 ** 6) / 10 ** 6
+        rs = sys_rng.randint(10 ** 8, 10 ** 8 * 9)
+        if self.finished_info:
+            return '%d%d' % (ss, rs)
+        return 'N%d%d' % (ss, rs)
+
+    def _purge_session_cache(self):
+        key = REDIS_KEY_SESSION_USER.format(session=self.session)
+        redis_client.delete(key)
+
+    def _set_session_cache(self, user_id):
+        key = REDIS_KEY_SESSION_USER.format(session=self.session)
+        redis_client.set(key, user_id, ex=TWO_WEEKS)
+
+    def clear_session(self):
+        if not self.session:
+            return
+        self._purge_cache()
+        self.session = None
+        self.save()
+
+    def generate_new_session(self):
+        self.clear_session()
+        self.session = self._build_session_string()
+        self.save()
+        return self.session
+
+    new_session = generate_new_session
+
+class User(Document, UserSessionMixin):
     meta = {
         'strict': False,
         'alias': 'db_alias'
@@ -66,5 +112,5 @@ class User(Document):
         return cls.objects(nickname=nickname).first()
 
     @property
-    def finishedJob(self):
-        return
+    def finished_info(self):
+        return True

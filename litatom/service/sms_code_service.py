@@ -17,6 +17,7 @@ class SmsCodeService(object):
     LIVE_TIME = TEN_MINS
     CODE_LEN = 4
     CODE_CHARS = [str(i) for i in range(10)]
+    ERR_WORONG_TELEPHONE = u'wrong telephone number'
 
     @classmethod
     def gen_code(cls):
@@ -31,7 +32,7 @@ class SmsCodeService(object):
         zone_phone = zone + phone
         zone_phone = validate_phone_number(zone_phone)
         if not zone_phone:
-            return u'wrong telephone number', False
+            return cls.ERR_WORONG_TELEPHONE, False
         code = cls.gen_code()
         # TODO: send code to user
 
@@ -44,7 +45,7 @@ class SmsCodeService(object):
         zone_phone = zone + phone
         zone_phone = validate_phone_number(zone_phone)
         if not zone_phone:
-            return u'wrong telephone number', False
+            return cls.ERR_WORONG_TELEPHONE, False
         key = REDIS_KEY_SMS_CODE.format(phone=zone_phone)
         cached_code = redis_client.get(key)
         if not cached_code or cached_code != code:

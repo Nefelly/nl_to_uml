@@ -37,6 +37,11 @@ class SmsCodeForm(LitatomForm):
     zone = StringField(validators=[DataRequired()])
     phone = StringField(validators=[DataRequired()])
 
+class PhoneLoginForm(LitatomForm):
+    zone = StringField(validators=[DataRequired()])
+    phone = StringField(validators=[DataRequired()])
+    code = StringField(validators=[DataRequired()])
+
 class PostBurnItemForm(LitatomForm):
     form_id = StringField(validators=[DataRequired()])
     item_key = StringField(validators=[DataRequired()])
