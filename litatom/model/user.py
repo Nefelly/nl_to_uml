@@ -72,7 +72,7 @@ class UserSessionMixin(object):
     def clear_session(self):
         if not self.session:
             return
-        self._purge_cache()
+        self._purge_session_cache()
         self.session = None
         self.save()
 
