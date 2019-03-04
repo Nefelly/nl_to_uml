@@ -71,7 +71,7 @@ class UserSessionMixin(object):
 
     @classmethod
     def get_user_id_by_session(cls, sid):
-        key = REDIS_KEY_SESSION_USER.format(session=sid.replace('session.'))
+        key = REDIS_KEY_SESSION_USER.format(session=sid.replace('session.', ''))
         user_id = redis_client.get(key)
         if user_id:
             redis_client.set(key, user_id, ex=TWO_WEEKS)
