@@ -7,7 +7,8 @@ import logging
 from flask import (
     jsonify,
     request,
-    send_file
+    #send_file,
+    Response
 )
 
 from ...decorator import (
@@ -51,4 +52,4 @@ def get_image(fileid):
     content = AliOssService.get_binary_from_bucket(fileid)
     if not content:
         return jsonify(Failed)
-    return send_file(content, mimetype='image/jpeg')
+    return Response(content, mimetype='image/jpeg')
