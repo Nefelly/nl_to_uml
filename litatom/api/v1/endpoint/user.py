@@ -44,3 +44,16 @@ def phone_login():
         'result': 0,
         'data': data
     })
+
+
+def verify_nickname():
+    nickname = request.values.get('nickname', '')
+    if not nickname:
+        return failure(FailedLackOfField)
+    exist = UserService.verify_nickname(nickname)
+    return {
+        'success': True,
+        'result': 0,
+        'data': exist
+    }
+

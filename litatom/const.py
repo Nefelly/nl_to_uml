@@ -11,6 +11,10 @@ SESSION_SESSION_ID_KEY = 'sessionid.1'
 PLATFORM_IOS = 'ios'
 PLATFORM_ANDROID = 'android'
 DEFAULT_QUERY_LIMIT = 100
+BOY = 'boy'
+GIRL = 'girl'
+INT_BOY = 1
+INT_GIRL = 0
 
 ONE_MIN = 60
 TEN_MINS = 60 * 10

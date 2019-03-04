@@ -49,6 +49,7 @@ def upload_image_from_file():
     })
 
 def get_image(fileid):
+
     content = AliOssService.get_binary_from_bucket(fileid)
     if not content:
         return jsonify(Failed)

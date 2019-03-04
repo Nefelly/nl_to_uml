@@ -30,7 +30,13 @@ from mongoengine import (
 from ..key import (
     REDIS_KEY_SESSION_USER
 )
-from ..const import TWO_WEEKS
+from ..const import (
+    TWO_WEEKS,
+    INT_GIRL,
+    INT_BOY,
+    BOY,
+    GIRL
+)
 from ..redis import RedisClient
 from ..util import (
     format_standard_time,
@@ -107,10 +113,12 @@ class User(Document, UserSessionMixin):
     birthdate = StringField()
     session = StringField()
     sessionCreateTime = DateTimeField()
-    isFirstLogin = BooleanField()
+    logined = BooleanField(default=False)
     bio = StringField()
     phone = StringField()
     judge = ListField(default=[0, 0, 0])   # nasty, boring, like
+    huanxin_id = StringField()
+    create_time = DateTimeField(required=True, default=datetime.datetime.now)
 
     @classmethod
     def create(cls, nickname, gender):
@@ -128,4 +136,41 @@ class User(Document, UserSessionMixin):
 
     @property
     def finished_info(self):
+        return self.nickname != None and self.gender != None and self.birthdate != None
         return True
+
+    def basic_info(self):
+        return {
+            'user_id': str(self.id),
+            'avatar': self.avatar,
+            'gender': BOY if self.gender == INT_BOY else GIRL,
+            'birthdate': self.birthdate
+
+        }
+
+    def get_login_info(self):
+        return {
+            'session': self.session_id,
+            'finished_info': self.finished_info,
+            'is_first_login': not self.logined,
+        }
+
+
+class UserSetting(Document):
+    meta = {
+        'strict': False,
+        'alias': 'db_alias'
+    }
+
+    user_id = StringField()
+    lang = StringField()
+
+
+class UserAction(Document):
+    meta = {
+        'strict': False,
+        'alias': 'db_alias'
+    }
+    user_id = StringField()
+    action = StringField()
+    create_time = DateTimeField(required=True, default=datetime.datetime.now)
