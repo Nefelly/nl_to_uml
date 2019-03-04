@@ -37,7 +37,7 @@ def upload_image_from_file():
     if not image:
         return jsonify(Failed)
 
-    fileid = AliOssService.upload_image_from_binary(image)
+    fileid = AliOssService.upload_from_binary(image)
     if not fileid:
         return jsonify(Failed)
 
