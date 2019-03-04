@@ -22,8 +22,8 @@ from ....service import (
 )
 
 logger = logging.getLogger(__name__)
-handler = logging.FileHandler("/data/log/litatom.log")
-logger.addHandler(handler)
+# handler = logging.FileHandler("/data/log/litatom.log")
+# logger.addHandler(handler)
 
 def phone_login():
     form = PhoneLoginForm(data=request.json)
@@ -33,7 +33,6 @@ def phone_login():
     phone = form.phone.data
     code = form.code.data
     data, status = UserService.phone_login(zone, phone, code)
-    logger.exception('hhhhhhhhh')
     if not status:
         return jsonify({
             'success': False,

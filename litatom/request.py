@@ -9,8 +9,7 @@ import flask
 
 from . import const
 from .util import cached_property
-from .const import SESSION_SESSION_ID_KEY
-
+from .model import User
 
 class LitatomRequest(flask.Request):
     """
@@ -45,17 +44,14 @@ class LitatomRequest(flask.Request):
         if not self.cost:
             self.cost = self._get_time_ms() - self.start_at
 
-    def _get_user_id_from_java_rus(self, sid):
+    def _get_user_id_from_redis(self, sid):
         pass
         # from .rpc import java_rus_client
         # from .rpc.serializers.base import context
-        # try:
-        #     with java_rus_client() as client:
-        #         res = client.v2GetUserIdBySid(context(), sid)
-        #         self.is_guest = res.temporary
-        #         return res.userId
-        # except:
-        #     return None
+        try:
+                return res.userId
+        except:
+            return None
 
     @cached_property
     def platform(self):
@@ -191,28 +187,9 @@ class LitatomRequest(flask.Request):
 
         # get_user_id_by_session这个方法不会抛exception，如果该方法返回None，说明在取Cache或数据库的时候出现了exception，
         # 如果返回空字符串，则说明真的session失效了
-        user_id = self._get_user_id_from_java_rus(sid)
+        user_id = User.get_user_id_by_session(sid)
         if user_id:
             self.has_user_session = True
-        return user_id
-
-    @cached_property
-    def user_id_by_cookie(self):
-        """
-        根据 cookie 获取 sid，然后根据 sid 获取 user_id
-        """
-        cookie = self.cookies.get(BEAKER_COOKIE_KEY)
-        if not cookie:
-            return None
-        cookie = cookie[40:]
-        try:
-            beaker_dict = cPickle.loads(b64decode(cookie))
-        except Exception:
-            return None
-        if not isinstance(beaker_dict, dict):
-            return None
-        sid = beaker_dict.get(SESSION_SESSION_ID_KEY, None)
-        user_id = self._get_user_id_from_java_rus(sid)
         return user_id
 
     @cached_property
