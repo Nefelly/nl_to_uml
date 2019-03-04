@@ -81,7 +81,7 @@ class AliOssService(object):
         try:
             return img_bucket.get_object(fileid).read()
         except Exception, e:
-            logger.error('upload_image_from_url failed, image_url: %s, %s', image_url, e)
+            logger.error('upload_image_from_url failed, fileid: %s, %s', fileid, e)
         return None
 
 
