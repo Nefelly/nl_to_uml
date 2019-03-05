@@ -19,3 +19,5 @@ REDIS_MATCHED = 'matched:{fake_id}'   # 双方匹配上, 匹配动作 需要同�
 REDIS_GENDER_FEED_LIST = 'feeds_list:{gender}'   # sorted set
 REDIS_USER_MESSAGES = 'user_messages:{user_id}'   #sortedset
 
+REDIS_HUANXIN_ACCESS_TOKEN = 'huanxin_access_token'
+
