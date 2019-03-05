@@ -82,7 +82,7 @@ class UserService(object):
         status = True
         if has_nickname:
             huanxin_id = user.huanxin.user_id
-            status = HuanxinService.update_nickname(huanxin_id)
+            status = HuanxinService.update_nickname(huanxin_id, data.get('nickname'))
         if status:
             user.save()
             return None, True
