@@ -12,7 +12,7 @@ class RedisLock(object):
     @classmethod
     def get_mutex(cls, key):
         redis_key = REDIS_LOCK.format(key=key)
-        succ = redis_client.setnx(redis_key, True)
+        succ = redis_client.setnx(redis_key, 1)
         redis_client.expire(redis_key, cls.EXPIRE_TIME)
         return succ
 
