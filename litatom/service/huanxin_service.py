@@ -23,7 +23,7 @@ class HuanxinService(object):
     APP_NAME = 'lit'
     APP_KEY = '%s#%s' % (ORG_NAME, APP_NAME)
     HOST = 'https://a1.easemob.com/'
-    APP_URL = '%(HOST)/%(ORG_NAME)/%(APP_NAME)/' % dict(HOST=HOST, ORG_NAME=ORG_NAME, APP_NAME=APP_NAME)
+    APP_URL = '%(HOST)s/%(ORG_NAME)s/%(APP_NAME)s/' % dict(HOST=HOST, ORG_NAME=ORG_NAME, APP_NAME=APP_NAME)
 
     CLIENT_ID = 'YXA6ALfHYDd7EemQqCO501ONvQ'
     CLIENT_SECRET = 'YXA6AH1kFGkcUc67KcpClt5rWA23zv4'
@@ -229,7 +229,7 @@ class HuanxinService(object):
 
     @classmethod
     def delete_user(cls, user_name):
-        url = '%(HOST)/%(ORG_NAME)/%(APP_NAME)/users/%(user_name)'
+        url = '%(HOST)s/%(ORG_NAME)s/%(APP_NAME)s/users/%(user_name)s'
         url = url % dict(HOST=HOST, ORG_NAME=ORG_NAME, APP_NAME=APP_NAME, user_name=user_name)
 
         access_token = get_access_token()
