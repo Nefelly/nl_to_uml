@@ -70,7 +70,8 @@ class UserService(object):
 
         basic_info = user.basic_info()
         login_info = user.get_login_info()
-        return basic_info.update(login_info), True
+        basic_info.update(login_info)
+        return basic_info, True
 
     @classmethod
     def get_bio(cls, user):
