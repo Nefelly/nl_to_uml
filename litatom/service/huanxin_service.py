@@ -35,19 +35,20 @@ class HuanxinService(object):
     def get_access_token(cls):
         lock_name = 'redis_mutex'
         time_now = time.time()
-        expire = int(redis_client.get(REDIS_HUANXIN_ACCESS_TOKEN_EXPIRE))
+        str_expire = redis_client.get(REDIS_HUANXIN_ACCESS_TOKEN_EXPIRE)
+        expire = int(str_expire) if str_expire else 0
         if expire - 10 > time_now:   # - 10 for subtle time diffrence
             access_token = redis_client.get(REDIS_HUANXIN_ACCESS_TOKEN)
             if access_token:
                 return access_token
 
-        url = APP_URL + 'token'
+        url = cls.APP_URL + 'token'
 
         try:
             data = {
                 'grant_type': 'client_credentials',
-                'client_id': CLIENT_ID,
-                'client_secret': CLIENT_SECRET
+                'client_id': cls.CLIENT_ID,
+                'client_secret': cls.CLIENT_SECRET
             }
             lock = RedisLock.get_mutex(lock_name)
             if not lock:
