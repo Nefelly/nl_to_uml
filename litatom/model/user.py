@@ -63,9 +63,10 @@ class UserSessionMixin(object):
         td = datetime.datetime.now() - datetime.datetime(1980, 1, 1)
         ss = (td.microseconds + (td.seconds + td.days * 24 * 3600) * 10 ** 6) / 10 ** 6
         rs = sys_rng.randint(10 ** 8, 10 ** 8 * 9)
-        if self.finished_info:
-            return '%d%d' % (ss, rs)
-        return 'N%d%d' % (ss, rs)
+        return '%d%d' % (ss, rs)
+        # if self.finished_info:
+        #     return '%d%d' % (ss, rs)
+        # return 'N%d%d' % (ss, rs)
 
     def _purge_session_cache(self):
         key = REDIS_KEY_SESSION_USER.format(session=self.session)

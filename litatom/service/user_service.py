@@ -5,9 +5,14 @@ from ..redis import RedisClient
 from ..util import validate_phone_number
 from ..const import (
     INT_BOY,
-    INT_GIRL
+    INT_GIRL,
+    TWO_WEEKS,
+    ONE_DAY
 )
 
+from ..key import (
+    REDIS_USER_INFO_FINISHED
+)
 from ..model import (
     User,
     HuanxinAccount
@@ -35,6 +40,28 @@ class UserService(object):
         if not user.logined:
             user.logined = True
             user.save()
+
+    @classmethod
+    def on_update_info(cls, user):
+        cls.update_info_finished_cache(user)
+
+    @classmethod
+    def query_user_info_finished(cls, user_id):
+        key = REDIS_USER_INFO_FINISHED.format(user_id=str(user.id))
+        res =  redis_client.get(key)
+        if not res:
+            user = User.get_by_id(user_id)
+            if not res:
+                return False
+            return  cls.update_info_finished_cache(user) == 1
+        return res == 1
+
+    @classmethod
+    def update_info_finished_cache(cls, user):
+        key = REDIS_USER_INFO_FINISHED.format(user_id=str(user.id))
+        res = 1 if user.finished_info else 0
+        redis_client.set(key, res, exp=TWO_WEEKS + ONE_DAY)
+        return res
 
     @classmethod
     def create_huanxin(cls):
@@ -66,12 +93,19 @@ class UserService(object):
             user.huanxin = cls.create_huanxin()
             user.phone = zone_phone
             user.save()
+            cls.update_info_finished_cache(user)
         cls.login_job(user)
 
-        basic_info = user.basic_info()
+        basic_info = cls.get_basic_info(user)
         login_info = user.get_login_info()
         basic_info.update(login_info)
         return basic_info, True
+
+    @classmethod
+    def get_basic_info(cls, user):
+        basic_info = user.basic_info()
+        basic_info.update({'bio': cls.get_bio(user)})
+        return basic_info
 
     @classmethod
     def get_bio(cls, user):

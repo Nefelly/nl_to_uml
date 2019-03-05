@@ -5,9 +5,10 @@ from flask import (
     request
 )
 
-# from ...decorator import (
-#     session_required
-# )
+from ...decorator import (
+    session_required,
+    session_finished_required
+)
 
 from ...error import (
     Success,
@@ -46,6 +47,7 @@ def phone_login():
     })
 
 
+@session_finished_required
 def verify_nickname():
     nickname = request.values.get('nickname', '')
     if not nickname:

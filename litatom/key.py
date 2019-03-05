@@ -8,6 +8,7 @@ REDIS_UID_GENDER = 'uid_gender:{user_id}'
 REDIS_AGE_UID = 'age_uid:{age}'  # set
 REDIS_USER_SEC_ACT = 'user_sec_act:{user_id}'
 REDIS_USER_MATCH_LEFT = 'user_match_left:{user_date}'   # 过期时间一天
+REDIS_USER_INFO_FINISHED = 'user_info_finished:{user_id}'  # 用户是否完成
 
 REDIS_FAKE_START = 'fake_start:{fake_id}'
 REDIS_FAKE_ID_UID = 'fakeid_uid:{fake_id}'
@@ -22,4 +23,5 @@ REDIS_USER_MESSAGES = 'user_messages:{user_id}'   #sortedset
 REDIS_HUANXIN_ACCESS_TOKEN = 'huanxin_access_token'
 REDIS_HUANXIN_ACCESS_TOKEN_EXPIRE = 'huanxin_access_token_expire'
 REDIS_LOCK = 'redis_lock:{key}'
+
 
