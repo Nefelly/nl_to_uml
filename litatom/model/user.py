@@ -102,7 +102,15 @@ class UserSessionMixin(object):
 
 
 class HuanxinAccount(EmbeddedDocument):
-    password = StringField()
+    user_id = StringField(required=True)
+    password = StringField(required=True)
+
+    @classmethod
+    def gen_id(cls):
+        td = datetime.datetime.now() - datetime.datetime(1980, 1, 1)
+        ss = (td.seconds + td.days * 24 * 3600) * 10 ** 6
+        rs = sys_rng.randint(10 ** 2, 10 ** 2 * 9)
+        return 'love%d%d' % (ss, rs)
 
     @classmethod
     def get_password(cls, raw):
