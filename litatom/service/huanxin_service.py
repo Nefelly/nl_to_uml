@@ -1,7 +1,7 @@
 # coding: utf-8
 import base64
 import hashlib
-import json
+import traceback
 import logging
 import requests
 import time
@@ -79,6 +79,7 @@ class HuanxinService(object):
             response = requests.get(url, verify=False, headers=headers).json()
             return response.get('data')
         except Exception, e:
+            traceback.print_exc()
             logger.error('Error create huanxin  add friend, user_id: %r, err: %r', source_user_name, e)
             return {}
 
@@ -97,6 +98,7 @@ class HuanxinService(object):
             response = requests.get(url, verify=False, headers=headers).json()
             return response.get('data')
         except Exception, e:
+            traceback.print_exc()
             logger.error('Error create huanxin  add friend, user_id: %r, err: %r', user_name, e)
             return {}
 
@@ -115,6 +117,7 @@ class HuanxinService(object):
             response = requests.get(url, verify=False, headers=headers).json()
             return response.get('data')['result']
         except Exception, e:
+            traceback.print_exc()
             logger.error('Error create huanxin  add friend, user_id: %r, err: %r', user_name, e)
             return {}
 
@@ -133,7 +136,8 @@ class HuanxinService(object):
             assert response.get('entities')[0]['username']
             return True
         except Exception, e:
-            logger.error('Error create huanxin  add friend, user_id: %r, err: %r', user_name, e)
+            traceback.print_exc()
+            logger.error('Error create huanxin  add friend, user_id: %r, err: %r', source_user_name, e)
             return {}
 
     @classmethod
@@ -151,6 +155,7 @@ class HuanxinService(object):
             assert response.get('entities')[0]['username']
             return True
         except Exception, e:
+            traceback.print_exc()
             logger.error('Error create huanxin  add friend, user_id: %r, err: %r', source_user_name, e)
             return {}
 
@@ -169,6 +174,7 @@ class HuanxinService(object):
             assert response.get('entities')[0]['username']
             return True
         except Exception, e:
+            traceback.print_exc()
             logger.error('Error create huanxin  add friend, user_id: %r, err: %r', source_user_name, e)
             return False
 
@@ -187,6 +193,7 @@ class HuanxinService(object):
             assert response.get('entities')[0]['nickname']
             return True
         except Exception, e:
+            traceback.print_exc()
             logger.error('Error create huanxin update_nickname user, user_id: %r, err: %r', user_name, e)
             return {}
 
@@ -204,6 +211,7 @@ class HuanxinService(object):
             response = requests.get(url, verify=False, headers=headers).json()
             return response.get('entities')[0]
         except Exception, e:
+            traceback.print_exc()
             logger.error('Error create huanxin get user, user_id: %r, err: %r', user_name, e)
             return {}
 
@@ -225,6 +233,7 @@ class HuanxinService(object):
             assert response.get('entities')[0]['username']
             return True
         except Exception, e:
+            traceback.print_exc()
             logger.error('Error create huanxin user, user_name: %r, err: %r', user_name, e)
             return False
 
@@ -244,5 +253,6 @@ class HuanxinService(object):
             assert response.get('entities')[0]['username']
             return True
         except Exception, e:
+            traceback.print_exc()
             logger.error('Error create huanxin get user, user_id: %r, err: %r', user_name, e)
             return False
