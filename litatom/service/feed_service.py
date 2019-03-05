@@ -1,5 +1,5 @@
 # coding: utf-8
-from ..model import RedisClient
+from ..redis import RedisClient
 
 class FeedService(object):
 
