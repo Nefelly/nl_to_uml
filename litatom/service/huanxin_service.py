@@ -1,6 +1,7 @@
 # coding: utf-8
 import base64
 import hashlib
+import json
 import traceback
 import logging
 import requests
@@ -85,7 +86,7 @@ class HuanxinService(object):
 
     @classmethod
     def offline_msg_desc(cls, user_name, msg_id):
-        url = cls.APP_URL + 'users/%s/offline_msg_status' % (user_name, msg_id)
+        url = cls.APP_URL + 'users/%s/offline_msg_status/%s' % (user_name, msg_id)
 
         access_token = cls.get_access_token()
         if not access_token:
@@ -132,8 +133,8 @@ class HuanxinService(object):
             'Authorization':'Bearer %s' % access_token
         }
         try:
-            response = requests.post(url, verify=False, headers=headers, data={'usernames': [dest_user_name]}).json()
-            assert response.get('entities')[0]['username']
+            response = requests.post(url, verify=False, headers=headers, data=json.dumps({'usernames': [dest_user_name]})).json()
+            assert response.get('data')[0]
             return True
         except Exception, e:
             traceback.print_exc()
@@ -189,7 +190,7 @@ class HuanxinService(object):
             'Authorization':'Bearer %s' % access_token
         }
         try:
-            response = requests.put(url, verify=False, headers=headers, data={'nickname': nickname}).json()
+            response = requests.put(url, verify=False, headers=headers, data=json.dumps({'nickname': nickname})).json()
             assert response.get('entities')[0]['nickname']
             return True
         except Exception, e:
@@ -199,7 +200,7 @@ class HuanxinService(object):
 
     @classmethod
     def get_user(cls, user_name):
-        url = cls.APP_URL + user_name
+        url = cls.APP_URL + 'users/%s' % user_name
 
         access_token = cls.get_access_token()
         if not access_token:
