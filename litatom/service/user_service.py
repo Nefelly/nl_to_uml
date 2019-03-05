@@ -37,7 +37,7 @@ class UserService(object):
             user.save()
 
     @classmethod
-    def on_create(cls):
+    def create_huanxin(cls):
         huanxin_id = None
         pwd = None
         for i in range(5):
@@ -50,7 +50,6 @@ class UserService(object):
         huanxin = HuanxinAccount()
         huanxin.user_id = huanxin_id
         huanxin.password = pwd
-        huanxin.save()
         return huanxin
 
     @classmethod
@@ -64,6 +63,7 @@ class UserService(object):
         user = User.get_by_phone(zone_phone)
         if not user:
             user = User()
+            user.huanxin = cls.create_huanxin()
             user.phone = zone_phone
             user.save()
         cls.login_job(user)

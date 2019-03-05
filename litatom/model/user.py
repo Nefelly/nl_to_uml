@@ -116,6 +116,16 @@ class HuanxinAccount(EmbeddedDocument):
     def get_password(cls, raw):
         return passwdhash(raw)
 
+    @classmethod
+    def get_info(cls, huanxin):
+        if not huanxin:
+            return {}
+        return {
+            'user_id': huanxin.user_id,
+            'password': huanxin.password
+        }
+
+
 
 class User(Document, UserSessionMixin):
     meta = {
@@ -170,6 +180,7 @@ class User(Document, UserSessionMixin):
             'session': self.session_id,
             'finished_info': self.finished_info,
             'is_first_login': not self.logined,
+            'huanxin': HuanxinAccount.get_info(self.huanxin)
         }
 
 
