@@ -155,6 +155,10 @@ class User(Document, UserSessionMixin):
         return user
 
     @classmethod
+    def get_by_id(cls, user_id):
+        return cls.objects(id=user_id).first()
+
+    @classmethod
     def get_by_phone(cls, zone_phone):
         return cls.objects(phone=zone_phone).first()
 
