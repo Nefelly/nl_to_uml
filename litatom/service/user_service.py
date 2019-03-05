@@ -7,7 +7,8 @@ from ..const import (
     INT_BOY,
     INT_GIRL,
     TWO_WEEKS,
-    ONE_DAY
+    ONE_DAY,
+    USER_NOT_EXISTS
 )
 
 from ..key import (
@@ -42,7 +43,7 @@ class UserService(object):
             user.save()
 
     @classmethod
-    def on_update_info(cls, user):
+    def _on_update_info(cls, user):
         cls.update_info_finished_cache(user)
 
     @classmethod
@@ -55,6 +56,38 @@ class UserService(object):
                 return False
             return  cls.update_info_finished_cache(user) == 1
         return res == 1
+
+    @classmethod
+    def update_info(cls, user_id, data):
+        els = ['nickname', 'birthdate', 'avatar', 'bio']
+        once = ['gender']
+        total_fields = els + once
+        field_info = u'field must be at least one of: [%s]' % ','.join(total_fields)
+        if not data:
+            return field_info, False
+        for el in data:
+            if el not in total_fields or (not data.get(el) and data.get(el) != False):
+                return field_info, False
+        has_nickname = 'nickname' in data
+        if has_nickname and cls.verify_nickname(data.get('nickname', '')):
+            return u'nickname already exists', False
+        user = User.get_by_id(user_id)
+        if not user:
+            return USER_NOT_EXISTS, False
+        for el in once:
+            if getattr(user, el):
+                return u'%s can\'t be reset' % el, False
+        for el in data:
+            setattr(user, data.get(el))
+        status = True
+        if has_nickname:
+            huanxin_id = user.huanxin.user_id
+            status = HuanxinService.update_nickname(huanxin_id)
+        if status:
+            user.save()
+            return None, True
+        else:
+            return u'update huanxin nickname failed', False
 
     @classmethod
     def update_info_finished_cache(cls, user):
@@ -118,10 +151,17 @@ class UserService(object):
         return u'%s loves to share' % he_or_she
 
     @classmethod
-    def verify_nickname(cls, nickname):
-        if User.get_by_nickname(nickname):
+    def verify_nickname(cls, nickname):   # judge if nickname exists
+        if not nickname or User.get_by_nickname(nickname):
             return True
         return False
+
+    @classmethod
+    def get_user_info(cls, user_id, target_user_id):
+        target_user = User.get_by_id(target_user_id)
+        if not target_user:
+            return USER_NOT_EXISTS, False
+        return cls.get_basic_info(target_user), True
 
     @classmethod
     def get_avatars(cls):

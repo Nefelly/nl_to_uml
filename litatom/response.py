@@ -61,6 +61,17 @@ def failure(err=None):
     return LitatomResponse(err)
 
 
+def fail(msg=None, **kwargs):
+    from .api.error import Failed
+    res = Failed
+    if msg:
+        res.update({'message':msg})
+    if kwargs:
+        for k, v in kwargs.items():
+            res[k] = v
+    return LitatomResponse(res)
+
+
 def no_content():
     return '', 204
 

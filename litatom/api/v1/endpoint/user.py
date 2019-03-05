@@ -14,7 +14,11 @@ from ...error import (
     Success,
     FailedLackOfField
 )
-from ....response import failure
+from ....response import (
+    failure,
+    fail,
+    success
+)
 from ..form import (
     PhoneLoginForm
 )
@@ -47,7 +51,7 @@ def phone_login():
     })
 
 
-@session_finished_required
+@session_required
 def verify_nickname():
     nickname = request.values.get('nickname', '')
     if not nickname:
@@ -59,5 +63,22 @@ def verify_nickname():
         'data': exist
     }
 
+
+@session_required
 def update_info():
-    pass
+    user_id = request.user_id
+    data = request.json
+    msg, status = UserService.update_info(user_id, data)
+    if not status:
+        return fail(msg)
+    return success()
+
+@session_required
+def get_user_info(target_user_id):
+    user_id = request.user_id
+    data, status = UserService.get_user_info(user_id, target_user_id)
+    if not status:
+        return fail(data)
+    return success(data)
+
+
