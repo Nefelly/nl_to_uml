@@ -38,11 +38,17 @@ class UserService(object):
 
     @classmethod
     def on_create(cls):
+        huanxin_id = None
+        pwd = None
+        for i in range(5):
+            huanxin_id = HuanxinAccount.gen_id()
+            print huanxin_id
+            pwd = HuanxinAccount.get_password(huanxin_id)
+            status = HuanxinService.create_user(huanxin_id, pwd)
+            if status:
+                break
         huanxin = HuanxinAccount()
-        huanxin_id = str(huanxin.id)
-        print huanxin_id
-        pwd = HuanxinAccount.get_password(huanxin_id)
-        HuanxinService.create_user(huanxin_id, pwd)
+        huanxin.user_id = huanxin_id
         huanxin.password = pwd
         huanxin.save()
         return huanxin
