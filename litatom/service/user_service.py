@@ -78,7 +78,7 @@ class UserService(object):
             if getattr(user, el):
                 return u'%s can\'t be reset' % el, False
         for el in data:
-            setattr(user, data.get(el))
+            setattr(user, el, data.get(el))
         status = True
         if has_nickname:
             huanxin_id = user.huanxin.user_id
