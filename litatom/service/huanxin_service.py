@@ -22,7 +22,7 @@ class HuanxinService(object):
     ORG_NAME = '1102190223222824'
     APP_NAME = 'lit'
     APP_KEY = '%s#%s' % (ORG_NAME, APP_NAME)
-    HOST = 'https://a1.easemob.com/'
+    HOST = 'https://a1.easemob.com'
     APP_URL = '%(HOST)s/%(ORG_NAME)s/%(APP_NAME)s/' % dict(HOST=HOST, ORG_NAME=ORG_NAME, APP_NAME=APP_NAME)
 
     CLIENT_ID = 'YXA6ALfHYDd7EemQqCO501ONvQ'
