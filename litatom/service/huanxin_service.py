@@ -34,7 +34,7 @@ class HuanxinService(object):
     @classmethod
     def get_access_token(cls):
         lock_name = 'redis_mutex'
-        time_now = time.time()
+        time_now = int(time.time())
         str_expire = redis_client.get(REDIS_HUANXIN_ACCESS_TOKEN_EXPIRE)
         expire = int(str_expire) if str_expire else 0
         if expire - 10 > time_now:   # - 10 for subtle time diffrence
