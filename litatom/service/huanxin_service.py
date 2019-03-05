@@ -23,7 +23,7 @@ class HuanxinService(object):
     APP_NAME = 'lit'
     APP_KEY = '%s#%s' % (ORG_NAME, APP_NAME)
     HOST = 'https://a1.easemob.com/'
-    APP_URL = '%(HOST)/%(ORG_NAME)/%(APP_NAME)/' % dict(HOST=cls.HOST, ORG_NAME=cls.ORG_NAME, APP_NAME=cls.APP_NAME)
+    APP_URL = '%(HOST)/%(ORG_NAME)/%(APP_NAME)/' % dict(HOST=HOST, ORG_NAME=ORG_NAME, APP_NAME=APP_NAME)
 
     CLIENT_ID = 'YXA6ALfHYDd7EemQqCO501ONvQ'
     CLIENT_SECRET = 'YXA6AH1kFGkcUc67KcpClt5rWA23zv4'
@@ -41,13 +41,13 @@ class HuanxinService(object):
             if access_token:
                 return access_token
 
-        url = cls.APP_URL + 'token'
+        url = APP_URL + 'token'
 
         try:
             data = {
                 'grant_type': 'client_credentials',
-                'client_id': cls.CLIENT_ID,
-                'client_secret': cls.CLIENT_SECRET
+                'client_id': CLIENT_ID,
+                'client_secret': CLIENT_SECRET
             }
             lock = RedisLock.get_mutex(lock_name)
             if not lock:
@@ -66,9 +66,9 @@ class HuanxinService(object):
 
     @classmethod
     def offline_msg_cnt(cls, user_name):
-        url = cls.APP_URL + 'users/%s/offline_msg_count' % user_name
+        url = APP_URL + 'users/%s/offline_msg_count' % user_name
 
-        access_token = cls.get_access_token()
+        access_token = get_access_token()
         if not access_token:
             return {}
         headers = {
@@ -83,9 +83,9 @@ class HuanxinService(object):
 
     @classmethod
     def offline_msg_desc(cls, user_name, msg_id):
-        url = cls.APP_URL + 'users/%s/offline_msg_status' % (user_name, msg_id)
+        url = APP_URL + 'users/%s/offline_msg_status' % (user_name, msg_id)
 
-        access_token = cls.get_access_token()
+        access_token = get_access_token()
         if not access_token:
             return {}
         headers = {
@@ -101,9 +101,9 @@ class HuanxinService(object):
 
     @classmethod
     def log_out(cls, user_name):
-        url = cls.APP_URL + 'users/%s/disconnect' % user_name
+        url = APP_URL + 'users/%s/disconnect' % user_name
 
-        access_token = cls.get_access_token()
+        access_token = get_access_token()
         if not access_token:
             return False
         headers = {
@@ -119,9 +119,9 @@ class HuanxinService(object):
 
     @classmethod
     def block_user(cls, source_user_name, dest_user_name):
-        url = cls.APP_URL + 'users/%s/blocks/users' % source_user_name
+        url = APP_URL + 'users/%s/blocks/users' % source_user_name
 
-        access_token = cls.get_access_token()
+        access_token = get_access_token()
         if not access_token:
             return False
         headers = {
@@ -137,9 +137,9 @@ class HuanxinService(object):
 
     @classmethod
     def unblock_user(cls, source_user_name, dest_user_name):
-        url = cls.APP_URL + 'users/%s/blocks/users/%s' % (source_user_name, dest_user_name)
+        url = APP_URL + 'users/%s/blocks/users/%s' % (source_user_name, dest_user_name)
 
-        access_token = cls.get_access_token()
+        access_token = get_access_token()
         if not access_token:
             return False
         headers = {
@@ -155,9 +155,9 @@ class HuanxinService(object):
 
     @classmethod
     def add_friend(cls, source_user_name, dest_user_name):
-        url = cls.APP_URL + 'users/%s/contacts/users/%s' % (source_user_name, dest_user_name)
+        url = APP_URL + 'users/%s/contacts/users/%s' % (source_user_name, dest_user_name)
 
-        access_token = cls.get_access_token()
+        access_token = get_access_token()
         if not access_token:
             return False
         headers = {
@@ -173,9 +173,9 @@ class HuanxinService(object):
 
     @classmethod
     def update_nickname(cls, user_name, nickname):
-        url = cls.APP_URL + 'users/%s' % user_name
+        url = APP_URL + 'users/%s' % user_name
 
-        access_token = cls.get_access_token()
+        access_token = get_access_token()
         if not access_token:
             return False
         headers = {
@@ -191,9 +191,9 @@ class HuanxinService(object):
 
     @classmethod
     def get_user(cls, user_name):
-        url = cls.APP_URL + user_name
+        url = APP_URL + user_name
 
-        access_token = cls.get_access_token()
+        access_token = get_access_token()
         if not access_token:
             return {}
         headers = {
@@ -209,9 +209,9 @@ class HuanxinService(object):
 
     @classmethod
     def create_user(cls, user_name, password):
-        url = cls.APP_URL + 'users'
+        url = APP_URL + 'users'
 
-        access_token = cls.get_access_token()
+        access_token = get_access_token()
         if not access_token:
             return False
         headers = {
@@ -230,9 +230,9 @@ class HuanxinService(object):
     @classmethod
     def delete_user(cls, user_name):
         url = '%(HOST)/%(ORG_NAME)/%(APP_NAME)/users/%(user_name)'
-        url = url % dict(HOST=cls.HOST, ORG_NAME=cls.ORG_NAME, APP_NAME=cls.APP_NAME, user_name=user_name)
+        url = url % dict(HOST=HOST, ORG_NAME=ORG_NAME, APP_NAME=APP_NAME, user_name=user_name)
 
-        access_token = cls.get_access_token()
+        access_token = get_access_token()
         if not access_token:
             return False
         headers = {
