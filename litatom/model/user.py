@@ -100,6 +100,15 @@ class UserSessionMixin(object):
 
     new_session = generate_new_session
 
+
+class HuanxinAccount(EmbeddedDocument):
+    password = StringField()
+
+    @classmethod
+    def get_password(cls, raw):
+        return passwdhash(raw)
+
+
 class User(Document, UserSessionMixin):
     meta = {
         'strict': False,
@@ -117,7 +126,7 @@ class User(Document, UserSessionMixin):
     bio = StringField()
     phone = StringField()
     judge = ListField(default=[0, 0, 0])   # nasty, boring, like
-    huanxin_id = StringField()
+    huanxin = EmbeddedDocumentField(HuanxinAccount)
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
 
     @classmethod

@@ -20,7 +20,8 @@ from .report import (
 from .user import (
     User,
     UserSetting,
-    UserAction
+    UserAction,
+    HuanxinAccount
 )
 from .user_message import (
     UserMessage

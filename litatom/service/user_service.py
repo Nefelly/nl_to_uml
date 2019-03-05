@@ -8,10 +8,14 @@ from ..const import (
     INT_GIRL
 )
 
-from ..model import User
+from ..model import (
+    User,
+    HuanxinAccount
+)
 from ..service import (
     SmsCodeService,
-    FeedService
+    FeedService,
+    HuanxinService
 )
 
 sys_rnd = random.SystemRandom()
@@ -31,6 +35,17 @@ class UserService(object):
         if not user.logined:
             user.logined = True
             user.save()
+
+    @classmethod
+    def on_create(cls):
+        huanxin = HuanxinAccount()
+        huanxin_id = str(huanxin.id)
+        print huanxin_id
+        pwd = HuanxinAccount.get_password(huanxin_id)
+        HuanxinService.create_user(huanxin_id, pwd)
+        huanxin.password = pwd
+        huanxin.save()
+        return huanxin
 
     @classmethod
     def phone_login(cls, zone, phone, code):
