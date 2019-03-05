@@ -1,7 +1,7 @@
 # coding: utf-8
-from ..model import RedisClient
+from ..redis import RedisClient
 
-class FeedService(object):
+class StatisticService(object):
 
     @classmethod
     def feed_num(cls, user_id):
