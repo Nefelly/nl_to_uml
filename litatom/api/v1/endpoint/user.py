@@ -57,3 +57,5 @@ def verify_nickname():
         'data': exist
     }
 
+def update_info():
+    pass
