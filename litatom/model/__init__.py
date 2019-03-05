@@ -25,6 +25,9 @@ from .user import (
 from .user_message import (
     UserMessage
 )
+from .redis_lock import (
+    RedisLock
+)
 
 from ..db import DBManager
 
