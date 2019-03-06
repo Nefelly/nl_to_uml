@@ -173,7 +173,8 @@ class User(Document, UserSessionMixin):
             'user_id': str(self.id),
             'avatar': self.avatar,
             'gender': self.gender if self.gender else UNKNOWN_GENDER,
-            'birthdate': self.birthdate
+            'birthdate': self.birthdate,
+            'nickname': self.nickname
 
         }
 
