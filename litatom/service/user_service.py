@@ -57,7 +57,7 @@ class UserService(object):
             cls.refresh_status(str(user.id))
         gender = data.get('gender', '')
         if gender:
-            key = REDIS_UID_GENDER.format(str(user.id))
+            key = REDIS_UID_GENDER.format(user_id=str(user.id))
             redis_client.set(key, user.gender, ONLINE_LIVE)
 
     @classmethod
@@ -116,7 +116,7 @@ class UserService(object):
 
     @classmethod
     def get_gender(cls, user_id):
-        key = REDIS_UID_GENDER.format(user_id)
+        key = REDIS_UID_GENDER.format(user_id=user_id)
         gender = redis_client.get(key)
         if not gender:
             user = User.get_by_id(user_id)
