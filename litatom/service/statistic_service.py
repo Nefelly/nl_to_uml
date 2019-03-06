@@ -6,7 +6,8 @@ from ..key import (
 )
 from ..const import (
     ONLINE_LIVE,
-    GENDERS
+    GENDERS,
+    GIRL
 )
 from ..service import UserService
 from ..model import User
@@ -22,16 +23,17 @@ class StatisticService(object):
     def get_online_cnt(cls, gender=None):
         judge_time = int(time.time()) - ONLINE_LIVE
         if gender:
-            key = REDIS_ONLINE_GENDER.format(gender)
+            key = REDIS_ONLINE_GENDER.format(gender=gender)
             return redis_client.zcount(key, judge_time, cls.MAX_TIME)
         res = 0
         for _ in GENDERS:
-            key = REDIS_ONLINE_GENDER.format(gender)
+            key = REDIS_ONLINE_GENDER.format(gender=_)
             res += redis_client.zcount(key, judge_time, cls.MAX_TIME)
         return res
 
     @classmethod
     def get_online_users(cls, gender, start_p=0, num=10):
+        gender = gender if gender else GIRL
         key = REDIS_ONLINE_GENDER.format(gender)
         uids = redis_client.zrevrange(key, start_p, start_p + num)
         uids = uids if uids else []
