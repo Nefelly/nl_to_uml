@@ -49,8 +49,9 @@ class AnoyMatchService(object):
             gender = UserService.get_gender(user_id)
             if not gender:
                 return PROFILE_NOT_COMPLETE, False
+            int_time = int(time.time())
             anoy_gender_key = REDIS_ANOY_GENDER_ONLINE.format(gender=gender)
-            redis_client.zadd(anoy_gender_key, fake_id, )
+            redis_client.zadd(anoy_gender_key,{fake_id: int_time} )
 
             in_match_key = REDIS_FAKE_START.format(fake_id=fake_id)
             redis_client.set(in_match_key, 1, cls.MATCH_WAIT)

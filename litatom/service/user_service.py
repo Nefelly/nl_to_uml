@@ -131,7 +131,7 @@ class UserService(object):
         gender = cls.get_gender(user_id)
         if gender:
             key = REDIS_ONLINE_GENDER.format(gender=gender)
-            redis_client.zadd(key, user_id, int_time)
+            redis_client.zadd(key, {user_id: int_time})
         if int_time % 10 == 0:
             redis_client.zremrangebyscore(key, -1, int_time - ONLINE_LIVE)
 
