@@ -32,10 +32,7 @@ from ..key import (
 )
 from ..const import (
     TWO_WEEKS,
-    INT_GIRL,
-    INT_BOY,
-    BOY,
-    GIRL
+    UNKNOWN_GENDER
 )
 from ..redis import RedisClient
 from ..util import (
@@ -137,7 +134,7 @@ class User(Document, UserSessionMixin):
 
     nickname = StringField()
     avatar = StringField()
-    gender = IntField()
+    gender = StringField()
     birthdate = StringField()
     session = StringField()
     sessionCreateTime = DateTimeField()
@@ -175,7 +172,7 @@ class User(Document, UserSessionMixin):
         return {
             'user_id': str(self.id),
             'avatar': self.avatar,
-            'gender': BOY if self.gender == INT_BOY else GIRL,
+            'gender': self.gender if self.gender else UNKNOWN_GENDER,
             'birthdate': self.birthdate
 
         }

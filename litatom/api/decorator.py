@@ -48,6 +48,7 @@ def session_finished_required(view):
             user_finish_info = UserService.query_user_info_finished(request.user_id)
             if not user_finish_info:
                 return jsonify(error.FailedFinishedSession)
+            UserService.refresh_status(request.user_id)
             if request.is_guest:
                 # 游客用户返回460
                 return guest_forbidden()

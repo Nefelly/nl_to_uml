@@ -22,6 +22,10 @@ b.add_url_rule('/lit/user/<target_user_id>', 'user-get-info', endpoint.user.get_
 b.add_url_rule('/lit/image/upload', 'image-upload', endpoint.image.upload_image_from_file, methods=['POST'])
 b.add_url_rule('/lit/image/<fileid>', 'get-image', endpoint.image.get_image)
 
+# home
+b.add_url_rule('/lit/home/online_user_count', 'home-online-user-count', endpoint.home.online_user_count)
+b.add_url_rule('/lit/home/online_users', 'home-online-users', endpoint.home.online_users)
+
 # huanxin
 b.add_url_rule('/lit/huanxin/<target_user_id>', 'huanxin-get-info', endpoint.huanxin.get_user_info)
 

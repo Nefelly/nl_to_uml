@@ -1,18 +1,24 @@
 # coding: utf-8
 import random
+import time
 
 from ..redis import RedisClient
 from ..util import validate_phone_number
 from ..const import (
-    INT_BOY,
-    INT_GIRL,
     TWO_WEEKS,
     ONE_DAY,
-    USER_NOT_EXISTS
+    USER_NOT_EXISTS,
+    BOY,
+    GIRL,
+    GENDERS,
+    ONLINE_LIVE,
+    UNKNOWN_GENDER
 )
 
 from ..key import (
-    REDIS_USER_INFO_FINISHED
+    REDIS_USER_INFO_FINISHED,
+    REDIS_ONLINE_GENDER,
+    REDIS_UID_GENDER
 )
 from ..model import (
     User,
@@ -43,8 +49,12 @@ class UserService(object):
             user.save()
 
     @classmethod
-    def _on_update_info(cls, user):
+    def _on_update_info(cls, user, data):
         cls.update_info_finished_cache(user)
+        gender = data.get('gender', '')
+        if gender:
+            key = REDIS_UID_GENDER.format(str(user.id))
+            redis_client.set(key, user.gender, ONLINE_LIVE)
 
     @classmethod
     def query_user_info_finished(cls, user_id):
@@ -77,6 +87,9 @@ class UserService(object):
         for el in once:
             if getattr(user, el):
                 return u'%s can\'t be reset' % el, False
+        gender = data.get('gender', '')
+        if gender and  gender not in GENDERS:
+            return u'gender must be one of ' + ',' . join(GENDERS), False
         for el in data:
             setattr(user, el, data.get(el))
         status = True
@@ -85,6 +98,7 @@ class UserService(object):
             status = HuanxinService.update_nickname(huanxin_id, data.get('nickname'))
         if status:
             user.save()
+            cls._on_update_info(user, data)
             return None, True
         else:
             return u'update huanxin nickname failed', False
@@ -95,6 +109,27 @@ class UserService(object):
         res = 1 if user.finished_info else 0
         redis_client.set(key, res, exp=TWO_WEEKS + ONE_DAY)
         return res
+
+    @classmethod
+    def get_gender(cls, user_id):
+        key = REDIS_UID_GENDER.format(user_id)
+        gender = redis_client.get(key)
+        if not gender:
+            user = User.get_by_id(user_id)
+            gender = user.gender if user.gender else None
+        if gender:
+            redis_client.set(key, gender, ONLINE_LIVE)
+        return gender
+
+    @classmethod
+    def refresh_status(cls, user_id):
+        int_time = int(time.time())
+        gender = cls.get_gender(user_id)
+        if gender:
+            key = REDIS_ONLINE_GENDER.format(gender=gender)
+            redis_client.zadd(key, user_id, int_time)
+        if int_time % 10 == 0:
+            redis_client.zremrangebyscore(key, -1, int_time - ONLINE_LIVE)
 
     @classmethod
     def create_huanxin(cls):
@@ -145,7 +180,7 @@ class UserService(object):
         if user.bio:
             return user.bio
         feed_num = FeedService.feed_num(str(user.id))
-        he_or_she = 'He' if user.gender == INT_BOY else 'She'
+        he_or_she = 'He' if user.gender == BOY else 'She'
         if feed_num > 3:
             return u'%s is mysterious~' % he_or_she
         return u'%s loves to share' % he_or_she

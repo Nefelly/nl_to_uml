@@ -13,13 +13,17 @@ PLATFORM_ANDROID = 'android'
 DEFAULT_QUERY_LIMIT = 100
 BOY = 'boy'
 GIRL = 'girl'
+GENDERS = [BOY, GIRL]
+UNKNOWN_GENDER = 'unknown'
 INT_BOY = 1
 INT_GIRL = 0
 
 # 提示消息
 USER_NOT_EXISTS = u'user not exist, please login or register'
+PROFILE_NOT_COMPLETE = u'you must complete your profile first.'
 
 ONE_MIN = 60
+FIVE_MINS = 60 * 5
 TEN_MINS = 60 * 10
 HALF_HOUR = 60 * 30
 ONE_HOUR = 60 * 60 * 1
@@ -29,3 +33,5 @@ ONE_DAY = 60 * 60 * 24
 ONE_WEEK = 60 * 60 * 24 * 7
 TWO_WEEKS = 60 * 60 * 24 * 14
 ONE_MONTH = 60 * 60 * 24 * 30
+
+ONLINE_LIVE = FIVE_MINS

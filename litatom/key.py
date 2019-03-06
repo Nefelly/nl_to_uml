@@ -7,11 +7,12 @@ REDIS_USER_LAST_ACT = 'uid_act:{user_id}'   # 用户最后一次动作时间
 REDIS_UID_GENDER = 'uid_gender:{user_id}'
 REDIS_AGE_UID = 'age_uid:{age}'  # set
 REDIS_USER_SEC_ACT = 'user_sec_act:{user_id}'
-REDIS_USER_MATCH_LEFT = 'user_match_left:{user_date}'   # 过期时间一天
 REDIS_USER_INFO_FINISHED = 'user_info_finished:{user_id}'  # 用户是否完成
 
 REDIS_FAKE_START = 'fake_start:{fake_id}'
+REDIS_USER_MATCH_LEFT = 'user_match_left:{user_date}'   # 过期时间一天
 REDIS_FAKE_ID_UID = 'fakeid_uid:{fake_id}'
+REDIS_ANOY_GENDER_ONLINE = 'anoy_online:{gender}'   # sorted set
 REDIS_FAKE_ID_GENDER = 'fakeid_gender:{fake_id}'
 REDIS_FAKE_ID_AGE = 'fakeid_age:{fake_id}'
 REDIS_FAKE_LIKE = 'fake_like:{fake_id}'  # value fake_id
