@@ -47,10 +47,14 @@ class UserService(object):
         if not user.logined:
             user.logined = True
             user.save()
+        if user.finished_info:
+            cls.refresh_status(str(user.id))
 
     @classmethod
     def _on_update_info(cls, user, data):
         cls.update_info_finished_cache(user)
+        if user.finished_info:
+            cls.refresh_status(str(user.id))
         gender = data.get('gender', '')
         if gender:
             key = REDIS_UID_GENDER.format(str(user.id))
