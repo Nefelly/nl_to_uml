@@ -22,5 +22,6 @@ b.add_url_rule('/lit/user/<target_user_id>', 'user-get-info', endpoint.user.get_
 b.add_url_rule('/lit/image/upload', 'image-upload', endpoint.image.upload_image_from_file, methods=['POST'])
 b.add_url_rule('/lit/image/<fileid>', 'get-image', endpoint.image.get_image)
 
-# b.add_url_rule('/wx_mp/activity/emoji_2019/user_info', 'wx-mp-emoji-2019-get-user-info', endpoint.wx_mp_emoji_2019.get_user_info)
-# b.add_url_rule('/wx_mp/activity/emoji_2019/user_info', 'wx-mp-emoji-2019-update-user-info', endpoint.wx_mp_emoji_2019.update_user_info, methods=['POST'])
+# huanxin
+b.add_url_rule('/lit/huanxin/<target_user_id>', 'huanxin-get-info', endpoint.huanxin.get_user_info)
+
