@@ -39,12 +39,12 @@ class AnoyMatchService(object):
             fake_id = cls._get_anoy_id(user)
             now_date = now_date_key()
             key = REDIS_USER_MATCH_LEFT.format(user_date=user_id + now_date)
-            redis_client.setnx(key, 10, exp=ONE_DAY)
+            redis_client.setnx(key, 10, ex=ONE_DAY)
             times_left = int(redis_client.get(key))
             if times_left <= 0:
                 return u'Your anoymatch opportunity has run out, please try again tomorrow', False
             fake_uid_key = REDIS_FAKE_ID_UID.format(fake_id=fake_id)
-            redis_client.set(fake_uid_key, user_id, exp=cls.TOTAL_WAIT)
+            redis_client.set(fake_uid_key, user_id, ex=cls.TOTAL_WAIT)
 
             gender = UserService.get_gender(user_id)
             if not gender:

@@ -107,7 +107,7 @@ class UserService(object):
     def update_info_finished_cache(cls, user):
         key = REDIS_USER_INFO_FINISHED.format(user_id=str(user.id))
         res = 1 if user.finished_info else 0
-        redis_client.set(key, res, exp=TWO_WEEKS + ONE_DAY)
+        redis_client.set(key, res, ex=TWO_WEEKS + ONE_DAY)
         return res
 
     @classmethod
@@ -137,7 +137,6 @@ class UserService(object):
         pwd = None
         for i in range(5):
             huanxin_id = HuanxinAccount.gen_id()
-            print huanxin_id
             pwd = HuanxinAccount.get_password(huanxin_id)
             status = HuanxinService.create_user(huanxin_id, pwd)
             if status:
