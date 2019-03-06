@@ -28,7 +28,8 @@ def online_user_count():
     return success({'count': count})
 
 
-def online_users(gender):
+def online_users():
+    gender = request.values.get('gender', None)
     star_p = request.values.get('start_pos', 0)
     num = request.values.get('num', 1)
     if star_p < 0 or num < 1:

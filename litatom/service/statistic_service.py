@@ -32,7 +32,7 @@ class StatisticService(object):
         return res
 
     @classmethod
-    def get_online_users(cls, gender, start_p=0, num=10):
+    def get_online_users(cls, gender=None, start_p=0, num=10):
         gender = gender if gender else GIRL
         key = REDIS_ONLINE_GENDER.format(gender=gender)
         uids = redis_client.zrevrange(key, start_p, start_p + num)
