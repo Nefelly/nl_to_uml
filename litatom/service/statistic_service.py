@@ -1,4 +1,5 @@
 # coding: utf-8
+import time
 from ..redis import RedisClient
 from ..key import (
     REDIS_ONLINE_GENDER
