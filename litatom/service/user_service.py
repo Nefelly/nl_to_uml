@@ -85,7 +85,7 @@ class UserService(object):
         if not user:
             return USER_NOT_EXISTS, False
         for el in once:
-            if getattr(user, el):
+            if data.get(el, '') and getattr(user, el):
                 return u'%s can\'t be reset' % el, False
         gender = data.get('gender', '')
         if gender and  gender not in GENDERS:
