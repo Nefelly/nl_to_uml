@@ -111,9 +111,9 @@ class HuanxinAccount(EmbeddedDocument):
     def create(cls, user_id, password):
         if not user_id:
             return None
-        obj = cls.get_by_user_id(user_id)
-        if obj:
-            return obj
+        # obj = cls.get_by_user_id(user_id)
+        # if obj:
+        #     return obj
         obj = cls(user_id, password)
         obj.save()
         return obj
