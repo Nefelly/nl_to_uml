@@ -133,7 +133,7 @@ class AnoyMatchService(object):
         int_time = int(time.time())
         judge_time = int_time - cls.MATCH_WAIT
         other_gender = cls.OTHER_GENDER_M.get(gender)
-        other_fakeids = redis_client.zrangebyscore(REDIS_ANOY_GENDER_ONLINE.format(gender=other_gender), judge_time, 0, MAX_TIME, cls.MAX_CHOOSE_NUM)
+        other_fakeids = redis_client.zrangebyscore(REDIS_ANOY_GENDER_ONLINE.format(gender=other_gender), judge_time, MAX_TIME, 0, cls.MAX_CHOOSE_NUM)
         if not other_fakeids:
             return None
         fake_id2 = random.choice(other_fakeids)
