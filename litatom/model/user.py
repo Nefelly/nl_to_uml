@@ -155,12 +155,12 @@ class User(Document, UserSessionMixin):
         user = cls.get_by_phone(zone_phone)
         if not user:
             user = cls()
+            user.huanxin = huanxin
         user.nickname = nickname
         user.avatar = avatar
         user.gender = gender
         user.birthdate = birthdate
         user.phone = zone_phone
-        user.huanxin = huanxin
         user.save()
         return user
 
