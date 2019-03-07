@@ -35,7 +35,7 @@ class DebugHelperService(object):
         fields = ['nickname', 'avatar', 'gender', 'birthdate', 'zone_phone']
         res = []
         for _ in range(cls.TEST_NUM):
-            attrs = map(cls.get_field_by_batchid, [[_, el] for el in fields])
+            attrs = [cls.get_field_by_batchid([_, el]) for el in fields]
             user = User.create_by_phone(**attrs)
             zone_phone = attrs[-1]
             zone = zone_phone[:2]
