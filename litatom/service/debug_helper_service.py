@@ -57,7 +57,7 @@ class DebugHelperService(object):
         for _ in range(cls.TEST_NUM):
             zone_phone = cls.get_field_by_batchid([_, 'zone_phone'])
             user = User.get_by_phone(zone_phone)
-            res.append(AnoyMatchService.anoy_match(str(user.id)))
+            res.append(AnoyMatchService.create_fakeid(str(user.id)))
         return res
 
     @classmethod
