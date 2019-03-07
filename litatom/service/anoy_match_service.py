@@ -239,9 +239,11 @@ class AnoyMatchService(object):
         # if possible to reset pwd
 
     @classmethod
-    def debug_all_keys(cls):
+    def debug_all_keys(cls, key=None):
         res = {'time_now': int(time.time())}
         for k in redis_client.keys():
+            if key and key not in k:
+                continue
             try:
                 res[k] = redis_client.get(k)
             except:
