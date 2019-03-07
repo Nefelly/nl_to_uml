@@ -66,7 +66,7 @@ class UserService(object):
         res = redis_client.get(key)
         if not res:
             user = User.get_by_id(user_id)
-            if not res:
+            if not user:
                 return False
             return cls.update_info_finished_cache(user) == 1
         else:
