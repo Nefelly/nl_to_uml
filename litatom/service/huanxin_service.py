@@ -6,6 +6,9 @@ import traceback
 import logging
 import requests
 import time
+import datetime
+import random
+sys_rng = random.SystemRandom()
 from ..redis import RedisClient
 from ..model import (
     RedisLock
@@ -13,6 +16,9 @@ from ..model import (
 from ..key import (
     REDIS_HUANXIN_ACCESS_TOKEN,
     REDIS_HUANXIN_ACCESS_TOKEN_EXPIRE
+)
+from ..util import (
+    passwdhash
 )
 
 logger = logging.getLogger(__name__)
@@ -31,6 +37,21 @@ class HuanxinService(object):
     '''
     docs :http://docs-im.easemob.com/start/100serverintegration/20users
     '''
+
+    @classmethod
+    def gen_id_pwd(cls):
+        raw_id = None
+        pwd = None
+        for i in range(5):
+            td = datetime.datetime.now() - datetime.datetime(1980, 1, 1)
+            ss = (td.seconds + td.days * 24 * 3600)
+            rs = sys_rng.randint(10 ** 4, 10 ** 4 * 9)
+            raw_id = 'love%d%d' % (ss, rs)
+            pwd = passwdhash(raw_id)
+            status = cls.create_user(raw_id, pwd)
+            if status:
+                break
+        return raw_id, pwd
 
     @classmethod
     def get_access_token(cls):

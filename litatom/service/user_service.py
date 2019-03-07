@@ -101,8 +101,8 @@ class UserService(object):
             huanxin_id = user.huanxin.user_id
             status = HuanxinService.update_nickname(huanxin_id, data.get('nickname'))
         if status:
-            user.save()
             cls._on_update_info(user, data)
+            user.save()
             return None, True
         else:
             return u'update huanxin nickname failed', False
@@ -137,14 +137,7 @@ class UserService(object):
 
     @classmethod
     def create_huanxin(cls):
-        huanxin_id = None
-        pwd = None
-        for i in range(5):
-            huanxin_id = HuanxinAccount.gen_id()
-            pwd = HuanxinAccount.get_password(huanxin_id)
-            status = HuanxinService.create_user(huanxin_id, pwd)
-            if status:
-                break
+        huanxin_id, pwd = HuanxinService.gen_id_pwd()
         huanxin = HuanxinAccount()
         huanxin.user_id = huanxin_id
         huanxin.password = pwd

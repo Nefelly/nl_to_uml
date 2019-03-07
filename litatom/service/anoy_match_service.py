@@ -16,7 +16,7 @@ from ..util import (
     low_high_pair
 )
 from ..const import (
-    ONLINE_LIVE,
+    CREATE_HUANXIN_ERROR,
     ONE_DAY,
     FIVE_MINS,
     BOY,
@@ -29,7 +29,8 @@ from ..const import (
 )
 from ..service import (
     UserService,
-    FollowService
+    FollowService,
+    HuanxinService
 )
 from ..model import User
 redis_client = RedisClient()['lit']
@@ -44,7 +45,7 @@ class AnoyMatchService(object):
 
     @classmethod
     def _get_anoy_id(cls, user):
-        return user.huanxin.user_id
+        return HuanxinService.gen_id_pwd()
 
     @classmethod
     def _in_match(cls, fake_id1, fake_id2):
@@ -73,6 +74,8 @@ class AnoyMatchService(object):
         fake_id2 = redis_client.get(REDIS_MATCHED.format(fake_id=fake_id))
         if not fake_id2:
             return False
+        HuanxinService.delete_user(fake_id)
+        HuanxinService.delete_user(fake_id2)
         redis_client.delete(REDIS_FAKE_ID_UID.format(fake_id=fake_id))
         redis_client.delete(REDIS_FAKE_ID_UID.format(fake_id=fake_id2))
         pair = low_high_pair(fake_id, fake_id2)
@@ -121,10 +124,15 @@ class AnoyMatchService(object):
         times_left = int(redis_client.get(key))
         if times_left <= 0:
             return u'Your anoymatch opportunity has run out, please try again tomorrow', False
-
+        res = {}
         if not fake_id:
-            fake_id = cls._get_anoy_id(user)
-
+            fake_id, pwd = cls._get_anoy_id(user)
+            if not fake_id:
+                return CREATE_HUANXIN_ERROR, False
+            res = {
+                'fake_id': fake_id,
+                'password': pwd
+            }
             # 建立fakeid:uid索引
             fake_uid_key = REDIS_FAKE_ID_UID.format(fake_id=fake_id)
             redis_client.set(fake_uid_key, user_id, ex=cls.TOTAL_WAIT)
@@ -147,7 +155,8 @@ class AnoyMatchService(object):
         # 减少今日剩余次数
         key = REDIS_USER_MATCH_LEFT.format(user_date=user_id + now_date)
         redis_client.decr(key)
-        return matched_id, True
+        res.update({'matched_fake_id': fake_id})
+        return res, True
 
     @classmethod
     def _uid_by_fake_id(cls, fake_id):
@@ -157,11 +166,12 @@ class AnoyMatchService(object):
     def anoy_like(cls, fake_id, other_fake_id, user_id):
         if not cls._in_match(fake_id, other_fake_id):
             return u'your are not in match', False
-        res = {}
         redis_client.set(REDIS_FAKE_LIKE.format(fake_id=fake_id), other_fake_id, cls.MATCH_INT)
-
+        like_eachother = False
         if redis_client.get(REDIS_FAKE_LIKE.format(fake_id=fake_id)) == fake_id:
-            FollowService.follow(cls._uid_by_fake_id(fake_id), cls._uid_by_fake_id(other_fake_id))
+            like_eachother = True
+            FollowService.follow_eachother(cls._uid_by_fake_id(fake_id), cls._uid_by_fake_id(other_fake_id))
+        return {'like_eachother': like_eachother}, True
 
 
     @classmethod

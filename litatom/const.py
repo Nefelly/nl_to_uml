@@ -19,8 +19,9 @@ INT_BOY = 1
 INT_GIRL = 0
 
 # 提示消息
-USER_NOT_EXISTS = u'user not exist, please login or register'
+USER_NOT_EXISTS = u'user not exist, please login or register.'
 PROFILE_NOT_COMPLETE = u'you must complete your profile first.'
+CREATE_HUANXIN_ERROR = u'create huanxin failed.'
 
 ONE_MIN = 60
 FIVE_MINS = 60 * 5

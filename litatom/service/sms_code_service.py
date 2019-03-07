@@ -28,12 +28,12 @@ class SmsCodeService(object):
         return res
 
     @classmethod
-    def send_code(cls, zone, phone):
+    def send_code(cls, zone, phone, code=None):
         zone_phone = zone + phone
         zone_phone = validate_phone_number(zone_phone)
         if not zone_phone:
             return cls.ERR_WORONG_TELEPHONE, False
-        code = cls.gen_code()
+        code = cls.gen_code() if not code else code
         # TODO: send code to user
 
         key = REDIS_KEY_SMS_CODE.format(phone=zone_phone)
