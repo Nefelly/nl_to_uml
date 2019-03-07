@@ -70,11 +70,6 @@ class AnoyMatchService(object):
         redis_client.zadd(REDIS_ANOY_CHECK_POOL, {fake_id: int_time})
 
     @classmethod
-    def _remove_from_check_pool(cls, fake_id):
-        cls._destroy_fake_id(fake_id)
-        redis_client.zrem(REDIS_ANOY_CHECK_POOL, fake_id)
-
-    @classmethod
     def _destroy_fake_id(cls, fake_id, need_remove_from_pool=True):
         if not fake_id:
             return
@@ -97,7 +92,7 @@ class AnoyMatchService(object):
                 # redis_client.delete(REDIS_FAKE_LIKE.format(fake_id=other_fakeid))
             if not cls._remove_from_match_pool(BOY, fake_id):
                 cls._remove_from_match_pool(GIRL, fake_id)
-        cls._remove_from_check_pool(fake_id)
+        cls.redis_client.zrem(REDIS_ANOY_CHECK_POOL, fake_id)
 
     @classmethod
     def _in_match(cls, fake_id1, fake_id2):
