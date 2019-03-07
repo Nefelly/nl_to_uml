@@ -174,7 +174,8 @@ class User(Document, UserSessionMixin):
             'avatar': self.avatar,
             'gender': self.gender if self.gender else UNKNOWN_GENDER,
             'birthdate': self.birthdate,
-            'nickname': self.nickname
+            'nickname': self.nickname,
+            'huanxin_id': self.huanxin.user_id
 
         }
 
