@@ -237,3 +237,13 @@ class AnoyMatchService(object):
             return u'you are not authorized to quit', False
         cls._delete_match(fake_id)
         # if possible to reset pwd
+
+    @classmethod
+    def debug_all_keys(cls):
+        res = {}
+        for k in redis_client.keys():
+            try:
+                res[k] = redis_client.get(k)
+            except:
+                res[k] = redis_client.zscan(k)
+        return res
