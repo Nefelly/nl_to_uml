@@ -7,28 +7,25 @@ from ..key import (
 from ..const import (
     ONLINE_LIVE,
     GENDERS,
-    GIRL
+    GIRL,
+    MAX_TIME
 )
 from ..service import UserService
 from ..model import User
 redis_client = RedisClient()['lit']
 
 class StatisticService(object):
-    MAX_TIME = 10 ** 13
-    @classmethod
-    def feed_num(cls, user_id):
-        return 3
 
     @classmethod
     def get_online_cnt(cls, gender=None):
         judge_time = int(time.time()) - ONLINE_LIVE
         if gender:
             key = REDIS_ONLINE_GENDER.format(gender=gender)
-            return redis_client.zcount(key, judge_time, cls.MAX_TIME)
+            return redis_client.zcount(key, judge_time, MAX_TIME)
         res = 0
         for _ in GENDERS:
             key = REDIS_ONLINE_GENDER.format(gender=_)
-            res += redis_client.zcount(key, judge_time, cls.MAX_TIME)
+            res += redis_client.zcount(key, judge_time, MAX_TIME)
         return res
 
     @classmethod

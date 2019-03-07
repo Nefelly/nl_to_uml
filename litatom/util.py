@@ -50,6 +50,8 @@ def parse_standard_date(time_data_str):
 def now_date_key():
     return datetime.datetime.now().strftime('%Y-%m-%d')
 
+def low_high_pair(id1, id2):
+    return id1 + id2 if id1 < id2 else id2 + id1
 
 def unix_ts_string(ts):
     time_array = time.localtime(ts)

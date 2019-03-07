@@ -29,9 +29,9 @@ def online_user_count():
 
 
 def online_users():
-    gender = request.values.get('gender', None)
-    star_p = request.values.get('start_pos', 0)
-    num = request.values.get('num', 1)
+    gender = request.args.get('gender', None)
+    star_p = request.args.get('start_pos', 0)
+    num = request.args.get('num', 1)
     if star_p < 0 or num < 1:
         return fail(u'wrong argument, start_pos and num must >= 0')
     data = StatisticService.get_online_users(gender, star_p, num)

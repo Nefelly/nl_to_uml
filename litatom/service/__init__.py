@@ -5,4 +5,5 @@ from .huanxin_service import HuanxinService
 from .user_service import UserService
 from .ali_oss import AliOssService
 from .statistic_service import StatisticService
+from .follow_service import FollowService
 from .anoy_match_service import AnoyMatchService
