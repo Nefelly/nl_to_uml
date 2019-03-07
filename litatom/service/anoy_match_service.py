@@ -240,10 +240,10 @@ class AnoyMatchService(object):
 
     @classmethod
     def debug_all_keys(cls):
-        res = {}
+        res = {'time_now': int(time.time())}
         for k in redis_client.keys():
             try:
                 res[k] = redis_client.get(k)
             except:
-                res[k] = redis_client.zscan(k)
+                res[k] = redis_client.zscan(k)[1]
         return res
