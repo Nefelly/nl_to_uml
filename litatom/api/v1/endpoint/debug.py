@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 def redis_status():
     key = request.args.get('key')
-    return success(AnoyMatchService.debug_all_keys())
+    return success(AnoyMatchService.debug_all_keys(key))
 
 def batch_create_login():
     return success(DebugHelperService.batch_create_login())
