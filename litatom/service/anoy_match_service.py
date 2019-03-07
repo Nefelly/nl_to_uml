@@ -38,7 +38,7 @@ redis_client = RedisClient()['lit']
 class AnoyMatchService(object):
     MAX_TIME = 10 ** 13
     MATCH_WAIT = 60 * 93 + 1
-    MATCH_INT = 60 * 3
+    MATCH_INT = 60 * 93
     TOTAL_WAIT = MATCH_INT + MATCH_WAIT + FIVE_MINS
     MAX_CHOOSE_NUM = 10
     OTHER_GENDER_M = {BOY: GIRL, GIRL: BOY}
@@ -213,7 +213,11 @@ class AnoyMatchService(object):
         now_date = now_date_key()
         key = REDIS_USER_MATCH_LEFT.format(user_date=user_id + now_date)
         redis_client.decr(key)
-        res = {'matched_fake_id': fake_id}
+
+        other_user_id = cls._uid_by_fake_id(matched_id)
+        if other_user_id:
+            redis_client.decr(REDIS_USER_MATCH_LEFT.format(user_date=other_user_id + now_date))
+        res = {'matched_fake_id': matched_id}
         return res, True
 
     @classmethod
@@ -226,7 +230,7 @@ class AnoyMatchService(object):
             return u'your are not in match', False
         redis_client.set(REDIS_FAKE_LIKE.format(fake_id=fake_id), other_fake_id, cls.MATCH_INT)
         like_eachother = False
-        if redis_client.get(REDIS_FAKE_LIKE.format(fake_id=fake_id)) == fake_id:
+        if redis_client.get(REDIS_FAKE_LIKE.format(fake_id=other_fake_id)) == fake_id:
             like_eachother = True
             FollowService.follow_eachother(cls._uid_by_fake_id(fake_id), cls._uid_by_fake_id(other_fake_id))
         return {'like_eachother': like_eachother}, True
