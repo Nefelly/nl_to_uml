@@ -24,7 +24,7 @@ class DebugHelperService(object):
         bid = bid_field[0]
         field = bid_field[1]
         if field == 'gender':
-            gender = GIRL if bid < cls.TEST_NUM/2 else BOY
+            return GIRL if bid < cls.TEST_NUM/2 else BOY
         if field == 'zone_phone':
             return str(cls.BASE_PHONE + bid)
         if field == 'birthdate':
