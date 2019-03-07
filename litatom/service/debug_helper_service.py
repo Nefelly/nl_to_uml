@@ -55,7 +55,7 @@ class DebugHelperService(object):
     def batch_anoy_match_start(cls):
         res = []
         for _ in range(cls.TEST_NUM):
-            zone_phone = cls.get_field_by_batchid([_, 'zone_phone'])
+            zone_phone = cls.get_field_by_batchid(_, 'zone_phone')
             user = User.get_by_phone(zone_phone)
             res.append(AnoyMatchService.create_fakeid(str(user.id)))
         return res

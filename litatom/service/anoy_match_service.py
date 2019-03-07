@@ -179,6 +179,7 @@ class AnoyMatchService(object):
             'fake_id': fake_id,
             'password': pwd
         }
+        cls._add_to_check_pool(fake_id)
         # 建立fakeid:uid索引
         redis_client.set(REDIS_FAKE_ID_UID.format(fake_id=fake_id), user_id, ex=cls.TOTAL_WAIT)
 
