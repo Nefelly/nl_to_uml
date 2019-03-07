@@ -5,3 +5,4 @@ from . import user
 from . import image
 from . import huanxin
 from . import home
+from . import debug
