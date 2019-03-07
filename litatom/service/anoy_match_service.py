@@ -105,7 +105,19 @@ class AnoyMatchService(object):
         return None
 
     @classmethod
-    def anoy_match(cls, user_id, fake_id=None):
+    def _match_left_verify(cls, user_id):
+        # 匹配次数验证
+        now_date = now_date_key()
+        match_left_key = REDIS_USER_MATCH_LEFT.format(user_date=user_id + now_date)
+        redis_client.setnx(match_left_key, 10)
+        redis_client.expire(match_left_key, ONE_DAY)
+        times_left = int(redis_client.get(match_left_key))
+        if times_left <= 0:
+            return u'Your anoymatch opportunity has run out, please try again tomorrow'
+        return None
+
+    @classmethod
+    def create_fakeid(cls, user_id):
         user = User.get_by_id(user_id)
         if not user:
             return USER_NOT_EXISTS, False
@@ -113,50 +125,53 @@ class AnoyMatchService(object):
         gender = UserService.get_gender(user_id)
         if not gender:
             return PROFILE_NOT_COMPLETE, False
-
         int_time = int(time.time())
-        fake_expire_key = REDIS_FAKE_START.format(fake_id=fake_id)
-
-        # 匹配次数验证
-        now_date = now_date_key()
-        key = REDIS_USER_MATCH_LEFT.format(user_date=user_id + now_date)
-        redis_client.setnx(key, 10)
-        redis_client.expire(key, ONE_DAY)
-        times_left = int(redis_client.get(key))
-        if times_left <= 0:
-            return u'Your anoymatch opportunity has run out, please try again tomorrow', False
-        res = {}
+        user_id = str(user.id)
+        msg = cls._match_left_verify(user_id)
+        if msg:
+            return msg, False
+        fake_id, pwd = cls._get_anoy_id(user)
         if not fake_id:
-            fake_id, pwd = cls._get_anoy_id(user)
-            if not fake_id:
-                return CREATE_HUANXIN_ERROR, False
-            res = {
-                'fake_id': fake_id,
-                'password': pwd
-            }
-            # 建立fakeid:uid索引
-            fake_uid_key = REDIS_FAKE_ID_UID.format(fake_id=fake_id)
-            redis_client.set(fake_uid_key, user_id, ex=cls.TOTAL_WAIT)
+            return CREATE_HUANXIN_ERROR, False
+        fake_expire_key = REDIS_FAKE_START.format(fake_id=fake_id)
+        res = {
+            'fake_id': fake_id,
+            'password': pwd
+        }
+        # 建立fakeid:uid索引
+        fake_uid_key = REDIS_FAKE_ID_UID.format(fake_id=fake_id)
+        redis_client.set(fake_uid_key, user_id, ex=cls.TOTAL_WAIT)
 
-            # 进入匹配id池子
-            anoy_gender_key = REDIS_ANOY_GENDER_ONLINE.format(gender=gender)
-            redis_client.zadd(anoy_gender_key,{fake_id: int_time} )
+        # 进入匹配id池子
+        anoy_gender_key = REDIS_ANOY_GENDER_ONLINE.format(gender=gender)
+        redis_client.zadd(anoy_gender_key,{fake_id: int_time} )
 
-            # 进入匹配过期
-            redis_client.set(fake_expire_key, 1, cls.MATCH_WAIT)
+        # 进入匹配过期
+        redis_client.set(fake_expire_key, 1, cls.MATCH_WAIT)
+        return res, True
 
+    @classmethod
+    def anoy_match(cls, user_id, fake_id):
         # 匹配已过期
-        if not redis_client.get(fake_expire_key):
-            return u'time out, another try', False
+        fake_expire_key = REDIS_FAKE_START.format(fake_id=fake_id)
+        if not fake_id or  not redis_client.get(fake_expire_key):
+            return u'fakeid: %s time out, another try' % fake_expire_key, False
 
+        msg = cls._match_left_verify(user_id)
+        if msg:
+            return msg, False
+        gender = UserService.get_gender(user_id)
+        if not gender:
+            return PROFILE_NOT_COMPLETE, False
         matched_id = cls._match(fake_id, gender)
         if not matched_id:
             return u'please try again', False
 
         # 减少今日剩余次数
+        now_date = now_date_key()
         key = REDIS_USER_MATCH_LEFT.format(user_date=user_id + now_date)
         redis_client.decr(key)
-        res.update({'matched_fake_id': fake_id})
+        res = {'matched_fake_id': fake_id}
         return res, True
 
     @classmethod
