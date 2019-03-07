@@ -37,7 +37,7 @@ redis_client = RedisClient()['lit']
 
 class AnoyMatchService(object):
     MAX_TIME = 10 ** 13
-    MATCH_WAIT = 60 * 3 + 1
+    MATCH_WAIT = 60 * 93 + 1
     MATCH_INT = 60 * 3
     TOTAL_WAIT = MATCH_INT + MATCH_WAIT + FIVE_MINS
     MAX_CHOOSE_NUM = 10
