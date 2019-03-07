@@ -75,13 +75,14 @@ class AnoyMatchService(object):
             return
         HuanxinService.delete_user(fake_id)
         user_id = redis_client.get(REDIS_FAKE_ID_UID.format(fake_id=fake_id))
-        redis_client.delete(REDIS_FAKE_START.format(fake_id=fake_id))
+
         if user_id:
             redis_client.delete(REDIS_FAKE_ID_UID.format(fake_id=fake_id))
             redis_client.delete(REDIS_UID_FAKE_ID.format(user_id=user_id))
 
         # delete match infos
         if need_remove_from_pool:
+            redis_client.delete(REDIS_FAKE_START.format(fake_id=fake_id))
             other_fakeid = redis_client.get(REDIS_MATCHED.format(fake_id=fake_id))
             if other_fakeid:
                 redis_client.delete(REDIS_MATCHED.format(fake_id=fake_id))
@@ -110,6 +111,8 @@ class AnoyMatchService(object):
         # 将其从正在匹配队列中删除
         cls._remove_from_match_pool(gender1, fake_id1)
         cls._remove_from_match_pool(cls.OTHER_GENDER_M.get(gender1), fake_id2)
+        redis_client.delete(REDIS_FAKE_START.format(fake_id1))
+        redis_client.delete(REDIS_FAKE_START.format(fake_id2))
         return True
 
     @classmethod
@@ -193,7 +196,8 @@ class AnoyMatchService(object):
         return res, True
 
     @classmethod
-    def anoy_match(cls, user_id, fake_id):
+    def anoy_match(cls, user_id):
+        fake_id = cls._fakeid_by_uid(user_id)
         # 匹配已过期
         fake_expire_key = REDIS_FAKE_START.format(fake_id=fake_id)
         if not fake_id or not redis_client.get(fake_expire_key):
@@ -225,8 +229,20 @@ class AnoyMatchService(object):
         return redis_client.get(REDIS_FAKE_ID_UID.format(fake_id=fake_id))
 
     @classmethod
-    def anoy_like(cls, fake_id, other_fake_id, user_id):
-        if not cls._in_match(fake_id, other_fake_id):
+    def _fakeid_by_uid(cls, user_id):
+        return redis_client.get(REDIS_FAKE_ID_UID.format(user_id=user_id))
+
+    @classmethod
+    def _other_fakeid_byfake_id(cls, fake_id):
+        return redis_client.get(REDIS_MATCHED.format(fake_id=fake_id))
+
+    @classmethod
+    def anoy_like(cls, user_id):
+        fake_id = cls._fakeid_by_uid(user_id)
+        if not fake_id:
+            return u'you have no match to quit', False
+        other_fake_id = cls._other_fakeid_byfake_id(fake_id)
+        if not other_fake_id or cls._in_match(fake_id, other_fake_id):
             return u'your are not in match', False
         redis_client.set(REDIS_FAKE_LIKE.format(fake_id=fake_id), other_fake_id, cls.MATCH_INT)
         like_eachother = False
@@ -237,10 +253,15 @@ class AnoyMatchService(object):
 
 
     @classmethod
-    def quit_match(cls, fake_id, user_id):   # should delete match pair
-        if cls._uid_by_fake_id(fake_id) != user_id:
-            return u'you are not authorized to quit', False
+    def quit_match(cls, user_id):   # should delete match pair
+        fake_id = cls._fakeid_by_uid(user_id)
+        if not fake_id:
+            return None, True
+            # return u'you have no match to quit', False
+        # if cls._uid_by_fake_id(fake_id) != user_id:
+        #     return u'you are not authorized to quit', False
         cls._delete_match(fake_id)
+        return None, True
         # if possible to reset pwd
 
     @classmethod

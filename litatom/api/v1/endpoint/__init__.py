@@ -6,3 +6,4 @@ from . import image
 from . import huanxin
 from . import home
 from . import debug
+from . import anoy_match

@@ -29,6 +29,13 @@ b.add_url_rule('/lit/home/online_users', 'home-online-users', endpoint.home.onli
 # huanxin
 b.add_url_rule('/lit/huanxin/<target_user_id>', 'huanxin-get-info', endpoint.huanxin.get_user_info)
 
+# anoy_match
+b.add_url_rule('/lit/anoy_match/get_fakeid', 'anoy_match-create-fakeid', endpoint.anoy_match.get_fakeid)
+b.add_url_rule('/lit/anoy_match/anoy_match', 'anoy_match-anoy-match', endpoint.anoy_match.anoy_match)
+b.add_url_rule('/lit/anoy_match/anoy_like', 'anoy_match-anoy-like', endpoint.anoy_match.anoy_like)
+b.add_url_rule('/lit/anoy_match/quit_match', 'anoy_match-quit-match', endpoint.anoy_match.quit_match)
+
+
 # debug
 b.add_url_rule('/lit/debug/redis_status', 'debug-redis-status', endpoint.debug.redis_status)
 b.add_url_rule('/lit/debug/batch_create_login', 'debug-batch-create-login', endpoint.debug.batch_create_login)
