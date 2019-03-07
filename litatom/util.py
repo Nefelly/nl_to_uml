@@ -46,6 +46,8 @@ def parse_standard_time(time_data_str):
 def parse_standard_date(time_data_str):
     return datetime.datetime.strptime(time_data_str, '%Y-%m-%d')
 
+def date_to_int_time(d):
+    return int(time.mktime(d.timetuple()))
 
 def now_date_key():
     return datetime.datetime.now().strftime('%Y-%m-%d')

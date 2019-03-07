@@ -113,6 +113,8 @@ class AnoyMatchService(object):
         cls._remove_from_match_pool(cls.OTHER_GENDER_M.get(gender1), fake_id2)
         redis_client.delete(REDIS_FAKE_START.format(fake_id=fake_id1))
         redis_client.delete(REDIS_FAKE_START.format(fake_id=fake_id2))
+        cls._add_to_check_pool(fake_id1)
+        cls._add_to_check_pool(fake_id2)
         return True
 
     @classmethod
@@ -183,7 +185,7 @@ class AnoyMatchService(object):
             'fake_id': fake_id,
             'password': pwd
         }
-        cls._add_to_check_pool(fake_id)
+        # cls._add_to_check_pool(fake_id)
         # 建立fakeid:uid索引
         redis_client.set(REDIS_FAKE_ID_UID.format(fake_id=fake_id), user_id, ex=cls.TOTAL_WAIT)
 

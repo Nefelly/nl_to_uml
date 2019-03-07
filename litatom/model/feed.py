@@ -8,6 +8,9 @@ from mongoengine import (
     ListField,
     StringField,
 )
+from ..util import (
+    date_to_int_time
+)
 
 class Feed(Document):
     meta = {
@@ -15,13 +18,35 @@ class Feed(Document):
         'alias': 'db_alias'
     }
 
-    uid = StringField(required=True)
+    user_id = StringField(required=True)
     like_num = IntField(required=True, default=0)
     comment_num = IntField(required=True, default=0)
     pics = ListField(required=True, default=[])
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
     
-    
+    def get_info(self):
+        return {
+            'user_id': self.user_id,
+            'like_num': self.like_num,
+            'comment_num': self.comment_num,
+            'pics': self.pics if self.pics else [],
+            'create_time': date_to_int_time(self.create_time)
+
+        }
+
+    @classmethod
+    def create_feed(cls, user_id, words, pics):
+        obj = cls()
+        cls.user_id = user_id
+        cls.words = words
+        cls.pics = pics
+        obj.save()
+        return obj
+
+    @classmethod
+    def get_by_id(cls, feed_id):
+        return cls.objects().first()
+
 class FeedLike(Document):
     feed_id = StringField(required=True)
     uid = StringField(required=True)
