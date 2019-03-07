@@ -230,7 +230,7 @@ class AnoyMatchService(object):
 
     @classmethod
     def _fakeid_by_uid(cls, user_id):
-        return redis_client.get(REDIS_FAKE_ID_UID.format(user_id=user_id))
+        return redis_client.get(REDIS_UID_FAKE_ID.format(user_id=user_id))
 
     @classmethod
     def _other_fakeid_byfake_id(cls, fake_id):
