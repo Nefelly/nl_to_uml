@@ -151,11 +151,11 @@ class User(Document, UserSessionMixin):
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
 
     @classmethod
-    def create_by_phone(cls, nickname, avatar, gender, birthdate, zone_phone, huanxin):
+    def create_by_phone(cls, nickname, avatar, gender, birthdate, huanxin, zone_phone):
         user = cls.get_by_phone(zone_phone)
         if not user:
             user = cls()
-            user.huanxin = huanxin
+        user.huanxin = huanxin
         user.nickname = nickname
         user.avatar = avatar
         user.gender = gender
