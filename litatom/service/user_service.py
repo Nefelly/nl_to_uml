@@ -63,12 +63,12 @@ class UserService(object):
     @classmethod
     def query_user_info_finished(cls, user_id):
         key = REDIS_USER_INFO_FINISHED.format(user_id=str(user_id))
-        res =  redis_client.get(key)
+        res = int(redis_client.get(key))
         if not res:
             user = User.get_by_id(user_id)
             if not res:
                 return False
-            return  cls.update_info_finished_cache(user) == 1
+            return cls.update_info_finished_cache(user) == 1
         return res == 1
 
     @classmethod
