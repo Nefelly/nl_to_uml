@@ -20,9 +20,7 @@ class DebugHelperService(object):
     TEST_NUM = 20
 
     @classmethod
-    def get_field_by_batchid(cls, bid_field):
-        bid = bid_field[0]
-        field = bid_field[1]
+    def get_field_by_batchid(cls, bid, field):
         if field == 'gender':
             return GIRL if bid < cls.TEST_NUM/2 else BOY
         if field == 'zone_phone':
@@ -41,16 +39,25 @@ class DebugHelperService(object):
         fields = ['nickname', 'avatar', 'gender', 'birthdate', 'huanxin', 'zone_phone']
         res = []
         for _ in range(cls.TEST_NUM):
-            zone_phone = cls.get_field_by_batchid([_, 'zone_phone'])
+            zone_phone = cls.get_field_by_batchid(_, 'zone_phone')
             zone = zone_phone[:2]
             phone = zone_phone[2:]
             user = User.get_by_phone(zone_phone)
             if not user:
-                attrs = [cls.get_field_by_batchid([_, el]) for el in fields]
+                attrs = [cls.get_field_by_batchid(_, el) for el in fields]
                 user = User.create_by_phone(*attrs)
             code = '8888'
             SmsCodeService.send_code(zone, phone)
             res.append(UserService.phone_login(zone, phone, code)[0])
+        return res
+
+    @classmethod
+    def batch_anoy_match_start(cls):
+        res = []
+        for _ in range(cls.TEST_NUM):
+            zone_phone = cls.get_field_by_batchid([_, 'zone_phone'])
+            user = User.get_by_phone(zone_phone)
+            res.append(AnoyMatchService.anoy_match(str(user.id)))
         return res
 
     @classmethod

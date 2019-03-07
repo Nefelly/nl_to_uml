@@ -120,7 +120,8 @@ class AnoyMatchService(object):
         # 匹配次数验证
         now_date = now_date_key()
         key = REDIS_USER_MATCH_LEFT.format(user_date=user_id + now_date)
-        redis_client.setnx(key, 10, ex=ONE_DAY)
+        redis_client.setnx(key, 10)
+        redis_client.expire(key, ONE_DAY)
         times_left = int(redis_client.get(key))
         if times_left <= 0:
             return u'Your anoymatch opportunity has run out, please try again tomorrow', False
