@@ -38,7 +38,7 @@ class DebugHelperService(object):
 
     @classmethod
     def batch_create_login(cls):
-        fields = ['nickname', 'avatar', 'gender', 'birthdate', 'zone_phone', 'huanxin']
+        fields = ['nickname', 'avatar', 'gender', 'birthdate', 'huanxin', 'zone_phone']
         res = []
         for _ in range(cls.TEST_NUM):
             attrs = [cls.get_field_by_batchid([_, el]) for el in fields]
