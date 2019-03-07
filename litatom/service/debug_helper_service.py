@@ -17,7 +17,7 @@ class DebugHelperService(object):
 
     @classmethod
     def get_field_by_batchid(cls, bid_field):
-        bid, field = bid_field[0]
+        bid = bid_field[0]
         field = bid_field[1]
         if field == 'gender':
             gender = GIRL if bid < cls.TEST_NUM/2 else BOY
