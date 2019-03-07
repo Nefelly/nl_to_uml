@@ -111,8 +111,8 @@ class AnoyMatchService(object):
         # 将其从正在匹配队列中删除
         cls._remove_from_match_pool(gender1, fake_id1)
         cls._remove_from_match_pool(cls.OTHER_GENDER_M.get(gender1), fake_id2)
-        redis_client.delete(REDIS_FAKE_START.format(fake_id1))
-        redis_client.delete(REDIS_FAKE_START.format(fake_id2))
+        redis_client.delete(REDIS_FAKE_START.format(fake_id=fake_id1))
+        redis_client.delete(REDIS_FAKE_START.format(fake_id=fake_id2))
         return True
 
     @classmethod
