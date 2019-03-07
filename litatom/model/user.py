@@ -115,7 +115,6 @@ class HuanxinAccount(EmbeddedDocument):
         # if obj:
         #     return obj
         obj = cls(user_id, password)
-        obj.save()
         return obj
 
     @classmethod
