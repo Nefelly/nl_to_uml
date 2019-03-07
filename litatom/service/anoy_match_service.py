@@ -122,7 +122,9 @@ class AnoyMatchService(object):
         fake_id2 = redis_client.get(REDIS_MATCHED.format(fake_id=fake_id))
         pair = low_high_pair(fake_id, fake_id2)
         redis_client.delete(REDIS_MATCH_PAIR.format(low_high_fakeid=pair))
-        map(cls._destroy_fake_id, [fake_id, fake_id2])
+        cls._destroy_fake_id(fake_id, False)
+        cls._destroy_fake_id(fake_id2, False)
+        # map(cls._destroy_fake_id, [fake_id, fake_id2])
         return True
 
     @classmethod
@@ -172,7 +174,9 @@ class AnoyMatchService(object):
         msg = cls._match_left_verify(user_id)
         if msg:
             return msg, False
-
+        old_fake_id = redis_client.get(REDIS_UID_FAKE_ID.format(user_id=user_id))
+        if old_fake_id:
+            cls._destroy_fake_id(old_fake_id)
         fake_id, pwd = cls._get_anoy_id(user)
         if not fake_id:
             return CREATE_HUANXIN_ERROR, False
