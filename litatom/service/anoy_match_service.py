@@ -175,6 +175,7 @@ class AnoyMatchService(object):
         old_fake_id = redis_client.get(REDIS_UID_FAKE_ID.format(user_id=user_id))
         if old_fake_id:
             cls._destroy_fake_id(old_fake_id)
+
         fake_id, pwd = cls._get_anoy_id(user)
         if not fake_id:
             return CREATE_HUANXIN_ERROR, False
@@ -242,7 +243,7 @@ class AnoyMatchService(object):
         if not fake_id:
             return u'you have no match to quit', False
         other_fake_id = cls._other_fakeid_byfake_id(fake_id)
-        if not other_fake_id or cls._in_match(fake_id, other_fake_id):
+        if not other_fake_id or not cls._in_match(fake_id, other_fake_id):
             return u'your are not in match', False
         redis_client.set(REDIS_FAKE_LIKE.format(fake_id=fake_id), other_fake_id, cls.MATCH_INT)
         like_eachother = False
