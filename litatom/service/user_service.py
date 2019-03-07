@@ -138,10 +138,7 @@ class UserService(object):
     @classmethod
     def create_huanxin(cls):
         huanxin_id, pwd = HuanxinService.gen_id_pwd()
-        huanxin = HuanxinAccount()
-        huanxin.user_id = huanxin_id
-        huanxin.password = pwd
-        return huanxin
+        return HuanxinAccount.create(huanxin_id, pwd)
 
     @classmethod
     def phone_login(cls, zone, phone, code):

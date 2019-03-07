@@ -104,6 +104,21 @@ class HuanxinAccount(EmbeddedDocument):
     password = StringField(required=True)
 
     @classmethod
+    def get_by_user_id(cls, user_id):
+        return cls.objects(user_id=user_id).first()
+
+    @classmethod
+    def create(cls, user_id, password):
+        if not user_id:
+            return None
+        obj = cls.get_by_user_id(user_id)
+        if obj:
+            return obj
+        obj = cls(user_id, password)
+        obj.save()
+        return obj
+
+    @classmethod
     def get_info(cls, huanxin):
         if not huanxin:
             return {}
@@ -135,7 +150,7 @@ class User(Document, UserSessionMixin):
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
 
     @classmethod
-    def create_by_phone(cls, nickname, avatar, gender, birthdate, zone_phone):
+    def create_by_phone(cls, nickname, avatar, gender, birthdate, zone_phone, huanxin):
         user = cls.get_by_phone(zone_phone)
         if not user:
             user = cls()
@@ -144,6 +159,7 @@ class User(Document, UserSessionMixin):
         user.gender = gender
         user.birthdate = birthdate
         user.phone = zone_phone
+        user.huanxin = huanxin
         user.save()
         return user
 

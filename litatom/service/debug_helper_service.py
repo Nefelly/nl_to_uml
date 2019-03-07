@@ -1,10 +1,14 @@
 # coding: utf-8
 from ..redis import RedisClient
-from ..model import User
+from ..model import (
+    User,
+    HuanxinAccount,
+)
 from ..service import (
     SmsCodeService,
     UserService,
-    AnoyMatchService
+    AnoyMatchService,
+    HuanxinService
 )
 from ..const import (
     GIRL,
@@ -29,10 +33,12 @@ class DebugHelperService(object):
             return 'test-nick%d' % bid
         if field == 'avatar':
             return 'c05f00c6-40a7-11e9-b1c7-00163e02deb4'
+        if field == 'huanxin':
+            return HuanxinAccount.create(*HuanxinService.gen_id_pwd())
 
     @classmethod
     def batch_create_login(cls):
-        fields = ['nickname', 'avatar', 'gender', 'birthdate', 'zone_phone']
+        fields = ['nickname', 'avatar', 'gender', 'birthdate', 'zone_phone', 'huanxin']
         res = []
         for _ in range(cls.TEST_NUM):
             attrs = [cls.get_field_by_batchid([_, el]) for el in fields]
