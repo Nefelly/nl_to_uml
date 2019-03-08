@@ -41,8 +41,8 @@ def create_feed():
 def user_feeds(other_user_id):
     start_ts = request.args.get('start_ts')
     num = request.args.get('num')
-    start_ts = int(start_ts) if start_ts.isdigit() else MAX_TIME
-    num = int(num) if num.isdigit() else 10
+    start_ts = int(start_ts) if start_ts and start_ts.isdigit() else MAX_TIME
+    num = int(num) if num and num.isdigit() else 10
     data, status = FeedService.feeds_by_userid(other_user_id, start_ts, num)
     if status:
         return success(data)
@@ -53,8 +53,8 @@ def square_feeds():
     user_id = None
     start_pos = request.args.get('start_pos')
     num = request.args.get('num')
-    start_pos = int(start_pos) if start_pos.isdigit() else 0
-    num = int(num) if num.isdigit() else 10
+    start_pos = int(start_pos) if start_pos and start_pos.isdigit() else 0
+    num = int(num) if num and num.isdigit() else 10
     data = FeedService.feeds_by_square(user_id, start_pos, num)
     if data:
         return success(data)
