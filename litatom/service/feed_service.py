@@ -89,13 +89,13 @@ class FeedService(object):
         if not comment_id:
             Feed.chg_comment_num(feed_id, 1)
         else:
-            comment = FeedComment.get_by_id(comment_id)
-            if not comment:
+            father_comment = FeedComment.get_by_id(comment_id)
+            if not father_comment:
                 return u'comment of id:%s not exists' % comment_id, False
-            if comment.user_id == user_id:
+            if father_comment.user_id == user_id:
                 return u'could not comment on yourself\'s comement', False
             comment.comment_id = comment_id
-            comment.content_user_id = comment.user_id
+            comment.content_user_id = father_comment.user_id
         comment.user_id = user_id
         comment.feed_id = feed_id
         comment.content = content
