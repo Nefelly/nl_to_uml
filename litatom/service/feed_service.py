@@ -98,6 +98,7 @@ class FeedService(object):
             comment.content_user_id = comment.user_id
         comment.user_id = user_id
         comment.feed_id = feed_id
+        comment.content = content
         comment.create_time = int(time.time())
         comment.save()
         return None, True
