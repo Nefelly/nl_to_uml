@@ -65,11 +65,10 @@ def fail(msg=None, **kwargs):
     from .api.error import Failed
     res = Failed
     if msg:
-        res.update({'message':msg})
+        res['message'] = msg
     if kwargs:
         for k, v in kwargs.items():
             res[k] = v
-    print msg, res
     return LitatomResponse(res)
 
 
