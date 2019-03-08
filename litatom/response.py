@@ -63,7 +63,7 @@ def failure(err=None):
 
 def fail(msg=None, **kwargs):
     from .api.error import Failed
-    res = Failed
+    res = {'result': -1, 'success': False}
     if msg:
         res['message'] = msg
     if kwargs:
