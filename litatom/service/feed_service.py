@@ -34,8 +34,8 @@ class FeedService(object):
         redis_client.zadd(REDIS_FEED_SQUARE, {str(feed.id): feed.create_time})
 
     @classmethod
-    def create_feed(cls, user_id, words, pics):
-        feed = Feed.create_feed(user_id, words, pics)
+    def create_feed(cls, user_id, content, pics):
+        feed = Feed.create_feed(user_id, content, pics)
         cls._add_to_feed_pool(feed)
         return True
 

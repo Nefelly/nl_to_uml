@@ -22,6 +22,7 @@ class Feed(Document):
     user_id = StringField(required=True)
     like_num = IntField(required=True, default=0)
     comment_num = IntField(required=True, default=0)
+    content = StringField()
     pics = ListField(required=True, default=[])
     create_time = IntField(required=True)
 
@@ -36,14 +37,15 @@ class Feed(Document):
             'like_num': self.like_num,
             'comment_num': self.comment_num,
             'pics': self.pics if self.pics else [],
+            'content': self.content,
             'create_time': get_time_info(self.create_time)
         }
 
     @classmethod
-    def create_feed(cls, user_id, words, pics):
+    def create_feed(cls, user_id, content, pics):
         obj = cls()
         cls.user_id = user_id
-        cls.words = words
+        cls.content = content
         cls.pics = pics
         cls.create_time = int(time.time())
         obj.save()
