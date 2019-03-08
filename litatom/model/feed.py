@@ -44,10 +44,10 @@ class Feed(Document):
     @classmethod
     def create_feed(cls, user_id, content, pics):
         obj = cls()
-        cls.user_id = user_id
-        cls.content = content
-        cls.pics = pics
-        cls.create_time = int(time.time())
+        obj.user_id = user_id
+        obj.content = content
+        obj.pics = pics
+        obj.create_time = int(time.time())
         obj.save()
         return obj
 
