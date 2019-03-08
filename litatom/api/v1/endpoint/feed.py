@@ -71,7 +71,7 @@ def like_feed(feed_id):
 
 
 def comment_feed():
-    pass
+    return success()
 
 
 def feed_comments(feed_id):
