@@ -9,6 +9,9 @@ from ..key import (
 from ..util import (
     get_time_info,
 )
+from ..const import (
+    MAX_TIME
+)
 
 from ..service import (
     UserService,
@@ -34,13 +37,13 @@ class FeedService(object):
         redis_client.zadd(REDIS_FEED_SQUARE, {str(feed.id): feed.create_time})
 
     @classmethod
-    def create_feed(cls, user_id, content, pics):
+    def create_feed(cls, user_id, content, pics=None):
         feed = Feed.create_feed(user_id, content, pics)
         cls._add_to_feed_pool(feed)
         return True
 
     @classmethod
-    def feeds_by_userid(cls, user_id, start_ts=0, num=10):
+    def feeds_by_userid(cls, user_id, start_ts=MAX_TIME, num=10):
         if start_ts < 0:
             return u'wrong start_ts', False
         next_start = -1
@@ -60,7 +63,7 @@ class FeedService(object):
     @classmethod
     def feeds_by_square(cls, user_id, start_p=0, num=10):
         feeds = redis_client.zrevrange(REDIS_FEED_SQUARE, start_p, start_p + num)
-        feeds = feeds if feeds else []
+        feeds = map(Feed.get_by_id, feeds) if feeds else []
         has_next = False
         if len(feeds) == num + 1:
             has_next = True
