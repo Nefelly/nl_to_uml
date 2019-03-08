@@ -30,6 +30,9 @@ from ..form import (
     LitatomForm,
     PlatformField,
 )
+from ...const import (
+    MAX_TIME
+)
 
 logger = logging.getLogger(__name__)
 
@@ -49,3 +52,6 @@ class PostBurnItemForm(LitatomForm):
     item_width = IntegerField(validators=[Optional()], default=0)
     item_height = IntegerField(validators=[Optional()], default=0)
 
+class GetFeedForm(LitatomForm):
+    start_ts = IntegerField(validators=[Optional()], default=MAX_TIME)
+    num = IntegerField(validators=[Optional()], default=10)

@@ -41,3 +41,10 @@ b.add_url_rule('/lit/debug/redis_status', 'debug-redis-status', endpoint.debug.r
 b.add_url_rule('/lit/debug/batch_create_login', 'debug-batch-create-login', endpoint.debug.batch_create_login)
 b.add_url_rule('/lit/debug/batch_anoy_match_start', 'debug-batch-anoy-match-start', endpoint.debug.batch_anoy_match_start)
 
+# feed
+b.add_url_rule('/lit/feed', 'feed-create-feed', endpoint.feed.create_feed, methods=['POST'])
+b.add_url_rule('/lit/feed/<other_user_id>', 'feed-user_feeds', endpoint.feed.user_feeds)
+b.add_url_rule('/lit/feed/square', 'feed-square-feeds', endpoint.feed.square_feeds)
+b.add_url_rule('/lit/feed/like/<feed_id>', 'feed-like-feed', endpoint.feed.like_feed)
+b.add_url_rule('/lit/feed/comment', 'feed-comment-feed', endpoint.feed.comment_feed, methods=['POST'])
+b.add_url_rule('/lit/feed/comment/<feed_id>', 'feed-feed-comments', endpoint.feed.feed_comments)

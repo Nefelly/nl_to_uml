@@ -40,7 +40,7 @@ class FeedService(object):
     def create_feed(cls, user_id, content, pics=None):
         feed = Feed.create_feed(user_id, content, pics)
         cls._add_to_feed_pool(feed)
-        return True
+        return str(feed.id)
 
     @classmethod
     def feeds_by_userid(cls, user_id, start_ts=MAX_TIME, num=10):
