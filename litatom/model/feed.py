@@ -65,7 +65,7 @@ class Feed(Document):
 
     @classmethod
     def get_by_id(cls, feed_id):
-        return cls.objects().first()
+        return cls.objects(id=feed_id).first()
 
 class FeedLike(Document):
     feed_id = StringField(required=True)
