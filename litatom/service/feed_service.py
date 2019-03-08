@@ -49,6 +49,7 @@ class FeedService(object):
         next_start = -1
         feeds = Feed.objects(create_time__lte=start_ts).limit(num + 1)
         feeds = list(feeds)
+        feeds.reverse()   # 时间顺序错误
         has_next = False
         if len(feeds) == num + 1:
             has_next = True
@@ -91,11 +92,14 @@ class FeedService(object):
             comment = FeedComment.get_by_id(comment_id)
             if not comment:
                 return u'comment of id:%s not exists' % comment_id, False
+            if comment.user_id == user_id:
+                return u'could not comment on yourself\'s comement', False
             comment.comment_id = comment_id
             comment.content_user_id = comment.user_id
         comment.user_id = user_id
         comment.feed_id = feed_id
         comment.create_time = int(time.time())
+        comment.save()
         return None, True
 
     @classmethod
