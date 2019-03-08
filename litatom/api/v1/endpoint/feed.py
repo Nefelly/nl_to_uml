@@ -65,6 +65,7 @@ def square_feeds():
 def like_feed(feed_id):
     data, status = FeedService.like_feed(request.user_id, feed_id)
     if status:
+        return jsonify({'succ':'fffffk'})
         return success(data)
     return jsonify(
         {
