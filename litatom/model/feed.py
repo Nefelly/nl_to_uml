@@ -24,7 +24,11 @@ class Feed(Document):
     comment_num = IntField(required=True, default=0)
     pics = ListField(required=True, default=[])
     create_time = IntField(required=True)
-    
+
+    @classmethod
+    def feed_num(cls, user_id):
+        return cls.objects(user_id=user_id).count()
+
     def get_info(self):
         return {
             'id': str(self.id),

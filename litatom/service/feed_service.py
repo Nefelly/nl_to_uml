@@ -24,10 +24,6 @@ redis_client = RedisClient()['lit']
 class FeedService(object):
 
     @classmethod
-    def feed_num(cls, user_id):
-        return Feed.objects(user_id=user_id).count()
-
-    @classmethod
     def _feed_info(cls, feed):
         if not feed:
             return {}

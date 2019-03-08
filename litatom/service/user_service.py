@@ -22,11 +22,11 @@ from ..key import (
 )
 from ..model import (
     User,
+    Feed,
     HuanxinAccount
 )
 from ..service import (
     SmsCodeService,
-    FeedService,
     HuanxinService
 )
 
@@ -174,7 +174,7 @@ class UserService(object):
     def get_bio(cls, user):
         if user.bio:
             return user.bio
-        feed_num = FeedService.feed_num(str(user.id))
+        feed_num = Feed.feed_num(str(user.id))
         he_or_she = 'He' if user.gender == BOY else 'She'
         if feed_num > 3:
             return u'%s is mysterious~' % he_or_she
@@ -203,7 +203,6 @@ class UserService(object):
             if user:
                 res_m[uid] = user.basic_info()
         return res_m
-
 
     @classmethod
     def get_avatars(cls):
