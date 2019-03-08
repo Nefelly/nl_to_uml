@@ -132,6 +132,7 @@ class FeedService(object):
                 if not tmp_ind and tmp_ind != 0:
                     c.delete()
                     c.save()
+                    continue
                 _ = {
                     'time_info': get_time_info(c.create_time),
                     'user_info': user_info_m.get(c.user_id, {}),
