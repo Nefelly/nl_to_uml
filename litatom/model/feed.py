@@ -23,7 +23,7 @@ class Feed(Document):
     like_num = IntField(required=True, default=0)
     comment_num = IntField(required=True, default=0)
     content = StringField()
-    pics = ListField(required=True, default=[])
+    pics = ListField(default=[])
     create_time = IntField(required=True)
 
     @classmethod
