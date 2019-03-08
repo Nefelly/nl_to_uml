@@ -49,6 +49,22 @@ def parse_standard_date(time_data_str):
 def date_to_int_time(d):
     return int(time.mktime(d.timetuple()))
 
+def get_time_info(int_time):
+    time_now = int(time.time())
+    time_dis = time_now - int_time
+    if time_dis < const.ONE_MIN:
+        time_desc = 'now'
+    elif time_dis < const.ONE_HOUR:
+        time_desc = '%dm ago' % (time_dis/const.ONE_MIN)
+    elif time_dis < const.ONE_DAY:
+        time_desc = '%dh ago' % (time_dis/const.ONE_HOUR)
+    else:
+        time_desc = '%dd ago' % (time_dis/const.ONE_DAY)
+    return {
+        'time': int_time,
+        'time_desc': time_desc
+    }
+
 def now_date_key():
     return datetime.datetime.now().strftime('%Y-%m-%d')
 

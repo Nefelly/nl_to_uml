@@ -1,5 +1,6 @@
 # coding: utf-8
 import datetime
+import time
 from mongoengine import (
     BooleanField,
     DateTimeField,
@@ -9,7 +10,7 @@ from mongoengine import (
     StringField,
 )
 from ..util import (
-    date_to_int_time
+    get_time_info
 )
 
 class Feed(Document):
@@ -22,16 +23,16 @@ class Feed(Document):
     like_num = IntField(required=True, default=0)
     comment_num = IntField(required=True, default=0)
     pics = ListField(required=True, default=[])
-    create_time = DateTimeField(required=True, default=datetime.datetime.now)
+    create_time = IntField(required=True)
     
     def get_info(self):
         return {
+            'id': str(self.id),
             'user_id': self.user_id,
             'like_num': self.like_num,
             'comment_num': self.comment_num,
             'pics': self.pics if self.pics else [],
-            'create_time': date_to_int_time(self.create_time)
-
+            'create_time': get_time_info(self.create_time)
         }
 
     @classmethod
@@ -40,8 +41,21 @@ class Feed(Document):
         cls.user_id = user_id
         cls.words = words
         cls.pics = pics
+        cls.create_time = int(time.time())
         obj.save()
         return obj
+
+    @classmethod
+    def chg_like_num(cls, feed_id, num=1):
+        feed = cls.get_by_id(feed_id)
+        feed.like_num += num
+        feed.save()
+
+    @classmethod
+    def chg_comment_num(cls, feed_id, num=1):
+        feed = cls.get_by_id(feed_id)
+        feed.comment_num += num
+        feed.save()
 
     @classmethod
     def get_by_id(cls, feed_id):
@@ -84,16 +98,25 @@ class FeedLike(Document):
         if not obj:
             obj = cls(uid=uid, feed_id=feed_id)
             obj.save()
-            feed_id = True
+            like_now = True
         else:
             obj.delete()
-            feed_id = False
-        return feed_id
+            like_now = False
+        return like_now
 
 
 class FeedComment(Document):
     feed_id = StringField(required=True)
-    comment_id = StringField(required=True)
-    uid = StringField(required=True)
+    comment_id = StringField()
+    user_id = StringField(required=True)
     content = StringField(required=True)
-    time = DateTimeField(required=True, default=datetime.datetime.now)
+    content_user_id = StringField()
+    create_time = IntField(required=True)
+
+    @classmethod
+    def get_by_id(cls, comment_id):
+        return cls.objects(id=comment_id).first()
+
+    @classmethod
+    def get_by_feed_id(cls, feed_id):
+        return cls.objects(feed_id=feed_id).order_by('-create_time').limit(50)

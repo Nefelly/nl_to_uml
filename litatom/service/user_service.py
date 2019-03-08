@@ -194,6 +194,18 @@ class UserService(object):
         return cls.get_basic_info(target_user), True
 
     @classmethod
+    def batch_get_user_info_m(cls, uids):
+        res_m = {}
+        for uid in uids:
+            if res_m.has_key(uid):
+                continue
+            user = User.get_by_id(uid)
+            if user:
+                res_m[uid] = user.basic_info()
+        return res_m
+
+
+    @classmethod
     def get_avatars(cls):
         return
 

@@ -27,4 +27,6 @@ REDIS_HUANXIN_ACCESS_TOKEN = 'huanxin_access_token'
 REDIS_HUANXIN_ACCESS_TOKEN_EXPIRE = 'huanxin_access_token_expire'
 REDIS_LOCK = 'redis_lock:{key}'
 
+# feed service
+REDIS_FEED_SQUARE = 'feed_square'
 

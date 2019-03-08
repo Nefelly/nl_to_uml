@@ -4,26 +4,14 @@ import random
 import datetime
 from ..redis import RedisClient
 from ..key import (
-
+    REDIS_FEED_SQUARE
 )
 from ..util import (
-    now_date_key,
-    low_high_pair
+    get_time_info,
 )
-from ..const import (
-    CREATE_HUANXIN_ERROR,
-    ONE_DAY,
-    FIVE_MINS,
-    BOY,
-    GIRL,
-    MAX_TIME,
-    USER_NOT_EXISTS,
-    PROFILE_NOT_COMPLETE
-)
+
 from ..service import (
     UserService,
-    FollowService,
-    HuanxinService
 )
 from ..model import (
     Feed,
@@ -40,30 +28,110 @@ class FeedService(object):
         return Feed.objects(user_id=user_id).count()
 
     @classmethod
-    def feed_info(cls, user_id, feed):
+    def _feed_info(cls, feed):
         if not feed:
             return {}
         return feed.get_info()
 
     @classmethod
+    def _add_to_feed_pool(cls, feed):
+        redis_client.zadd(REDIS_FEED_SQUARE, {str(feed.id): feed.create_time})
+
+    @classmethod
     def create_feed(cls, user_id, words, pics):
-        Feed.create_feed(user_id, words, pics)
+        feed = Feed.create_feed(user_id, words, pics)
+        cls._add_to_feed_pool(feed)
+        return True
 
     @classmethod
-    def feeds_by_userid(cls, user_id, start_id=0, num=10):
-        User.objects(create_time__gte=datetime.datetime(2019, 3, 7, 15, 53, 22, 117000)).limit(5)
+    def feeds_by_userid(cls, user_id, start_ts=0, num=10):
+        if start_ts < 0:
+            return u'wrong start_ts', False
+        next_start = -1
+        feeds = Feed.objects(create_time__lte=start_ts).limit(num + 1)
+        feeds = list(feeds)
+        has_next = False
+        if len(feeds) == num + 1:
+            has_next = True
+            next_start = feeds[-1].create_time
+            feeds = feeds[:-1]
+        return {
+            'feeds': map(cls._feed_info, feeds),
+            'has_next': has_next,
+            'next_start': next_start
+        }, True
 
     @classmethod
-    def feeds_by_gender(cls, user_id, gender):
-
-
+    def feeds_by_square(cls, user_id, start_p=0, num=10):
+        feeds = redis_client.zrevrange(REDIS_FEED_SQUARE, start_p, start_p + num)
+        feeds = feeds if feeds else []
+        has_next = False
+        if len(feeds) == num + 1:
+            has_next = True
+            feeds = feeds[:-1]
+        feeds = map(cls._feed_info, feeds)
+        return {
+            'has_next': has_next,
+            'feeds': feeds,
+            'next_start': start_p + num if has_next else -1
+        }
+        
+    @classmethod
+    def like_feed(cls, user_id, feed_id):
+        like_now = FeedLike.reverse(user_id, feed_id)
+        num = 1 if like_now else -1
+        Feed.chg_comment_num(feed_id, num)
+        return {'like_now': like_now}, True
 
     @classmethod
-    def like_feed(cls, user_id, feed_id, start_pos=0, num=10):
-
-
+    def comment_feed(cls, user_id, feed_id, content, comment_id=None):
+        comment = FeedComment()
+        if not comment_id:
+            Feed.chg_comment_num(feed_id, 1)
+        else:
+            comment = FeedComment.get_by_id(comment_id)
+            if not comment:
+                return u'comment of id:%s not exists' % comment_id, False
+            comment.comment_id = comment_id
+            comment.content_user_id = comment.user_id
+        comment.user_id = user_id
+        comment.feed_id = feed_id
+        comment.create_time = int(time.time())
+        return None, True
 
     @classmethod
-    def comment_feed(cls, user_id, feed_id, comment_id):
-
-
+    def get_feed_comments(cls, user_id, feed_id):
+        comments = FeedComment.get_by_feed_id(feed_id)
+        comments = list(comments)
+        user_ids = [obj.user_id for obj in comments]
+        user_info_m = UserService.batch_get_user_info_m(user_ids)
+        res = []
+        ind = 0
+        comment_id_index = {}
+        for c in comments:
+            if not c.comment_id:
+                _ = {
+                    'time_info': get_time_info(c.create_time),
+                    'inner_comments': [],
+                    'user_info': user_info_m.get(c.user_id, {}),
+                    'content': c.content,
+                    'comment_id': c.comment_id
+                }
+                res.append(_)
+                comment_id_index[c.comment_id] = ind
+                ind += 1
+        for c in comments:
+            if c.comment_id:
+                tmp_ind = comment_id_index.get(c.comment_id)
+                if not tmp_ind and tmp_ind != 0:
+                    c.delete()
+                    c.save()
+                _ = {
+                    'time_info': get_time_info(c.create_time),
+                    'user_info': user_info_m.get(c.user_id, {}),
+                    'content': c.content,
+                    'comment_id': c.comment_id,
+                    'content_user_id': c.content_user_id
+                }
+                res[tmp_ind].append(_)
+        return res
