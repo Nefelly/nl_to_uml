@@ -51,7 +51,3 @@ class PostBurnItemForm(LitatomForm):
     item_type = IntegerField(validators=[DataRequired(), AnyOf([1, 2])])
     item_width = IntegerField(validators=[Optional()], default=0)
     item_height = IntegerField(validators=[Optional()], default=0)
-
-class GetFeedForm(LitatomForm):
-    start_ts = IntegerField(validators=[Optional()], default=MAX_TIME)
-    num = IntegerField(validators=[Optional()], default=10)
