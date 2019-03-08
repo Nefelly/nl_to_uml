@@ -80,11 +80,10 @@ class FeedService(object):
     def like_feed(cls, user_id, feed_id):
         like_now = FeedLike.reverse(user_id, feed_id)
         num = 1 if like_now else -1
-        feedee = Feed.get_by_id(feed_id)
-        return 'wrong feed id', False
-        if not feedee:
+        feed = Feed.get_by_id(feed_id)
+        if not feed:
             return 'wrong feed id', False
-        feedee.chg_comment_num(num)
+        feed.chg_comment_num(num)
         return {'like_now': like_now}, True
 
     @classmethod
