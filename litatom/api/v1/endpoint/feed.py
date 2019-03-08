@@ -49,18 +49,18 @@ def user_feeds(other_user_id):
 
 def square_feeds():
     user_id = None
-    data, status = FeedService.feeds_by_square(user_id, 0, 0)
-    if status:
+    data = FeedService.feeds_by_square(user_id, 0, 0)
+    if data:
         return success(data)
-    return fail(data)
+    return fail()
 
 
 @session_finished_required
 def like_feed(feed_id):
-    data  = FeedService.like_feed(request.user_id)
-    if data:
+    data, status = FeedService.like_feed(request.user_id)
+    if status:
         return success(data)
-    return fail()
+    return fail(data)
 
 
 def comment_feed():
