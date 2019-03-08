@@ -63,7 +63,7 @@ def square_feeds():
 
 @session_finished_required
 def like_feed(feed_id):
-    data, status = FeedService.like_feed(request.user_id)
+    data, status = FeedService.like_feed(request.user_id, feed_id)
     if status:
         return success(data)
     return fail(data)
