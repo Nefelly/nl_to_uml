@@ -66,7 +66,7 @@ def like_feed(feed_id):
     data, status = FeedService.like_feed(request.user_id, feed_id)
     if status:
         return success(data)
-    return fail(msg=data)
+    return fail(data)
 
 
 def comment_feed():
