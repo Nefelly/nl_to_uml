@@ -69,6 +69,7 @@ def fail(msg=None, **kwargs):
     if kwargs:
         for k, v in kwargs.items():
             res[k] = v
+    print msg, res
     return LitatomResponse(res)
 
 
