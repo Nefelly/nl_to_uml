@@ -40,7 +40,7 @@ class Avatar(Document):
             for obj in objs:
                 fileid = obj.fileid
                 cls.avatars[g].append(fileid)
-                cls.avatars_m[fileid] = g
+                cls.avatar_m[fileid] = g
         return cls.avatars
 
     @classmethod
