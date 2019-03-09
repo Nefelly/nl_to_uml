@@ -76,6 +76,13 @@ class UserService(object):
         return res == 1
 
     @classmethod
+    def user_info_by_uid(cls, user_id):
+        user = User.get_by_id(user_id)
+        if not user:
+            return {}
+        return cls.get_basic_info(user)
+
+    @classmethod
     def update_info(cls, user_id, data):
         els = ['nickname', 'birthdate', 'avatar', 'bio']
         once = ['gender']
@@ -171,6 +178,8 @@ class UserService(object):
 
     @classmethod
     def get_basic_info(cls, user):
+        if not user:
+            return {}
         basic_info = user.basic_info()
         basic_info.update({'bio': cls.get_bio(user)})
         return basic_info

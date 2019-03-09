@@ -33,7 +33,10 @@ class FeedService(object):
     def _feed_info(cls, feed):
         if not feed:
             return {}
-        return feed.get_info()
+        user_info = UserService.user_info_by_uid(feed.user_id)
+        res = feed.get_info()
+        res['user_info'] = user_info
+        return res
 
     @classmethod
     def _add_to_feed_pool(cls, feed):
