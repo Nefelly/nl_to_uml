@@ -45,7 +45,9 @@ class AnoyMatchService(object):
 
     @classmethod
     def _get_anoy_id(cls, user):
-        return HuanxinService.gen_id_pwd()
+        huanxin = user.huanxin
+        return huanxin.user_id, huanxin.password
+        # return HuanxinService.gen_id_pwd()
 
     @classmethod
     def _add_to_match_pool(cls, gender, fake_id):
@@ -73,7 +75,7 @@ class AnoyMatchService(object):
     def _destroy_fake_id(cls, fake_id, need_remove_from_pool=True):
         if not fake_id:
             return
-        HuanxinService.delete_user(fake_id)
+        #HuanxinService.delete_user(fake_id)
         user_id = redis_client.get(REDIS_FAKE_ID_UID.format(fake_id=fake_id))
 
         if user_id:
