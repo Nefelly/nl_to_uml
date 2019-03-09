@@ -82,7 +82,7 @@ class FeedService(object):
         num = 1 if like_now else -1
         feed = Feed.get_by_id(feed_id)
         if not feed:
-            return {'info':'wrong feed id'}, False
+            return 'wrong feed id', False
         feed.chg_comment_num(num)
         return {'like_now': like_now}, True
 
