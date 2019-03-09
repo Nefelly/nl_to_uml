@@ -4,6 +4,9 @@ from flask import (
     jsonify,
     request
 )
+from ....model import (
+    Wording
+)
 
 from ...decorator import (
     session_required,
@@ -36,3 +39,8 @@ def online_users():
         return fail(u'wrong argument, start_pos and num must >= 0')
     data = StatisticService.get_online_users(gender, star_p, num)
     return success(data)
+
+def get_wording():
+    word_type = request.args.get('word_type')
+    wording = Wording.get_word_type(word_type)
+    return success(wording)

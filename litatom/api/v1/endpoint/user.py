@@ -82,3 +82,7 @@ def get_user_info(target_user_id):
     return success(data)
 
 
+def get_avatars():
+    data = UserService.get_avatars()
+    return success(data)
+

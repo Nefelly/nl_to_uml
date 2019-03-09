@@ -8,6 +8,9 @@ from mongoengine import (
     ListField,
     StringField,
 )
+from ..const import (
+    GENDERS
+)
 
 class Avatar(Document):
     meta = {
@@ -24,6 +27,27 @@ class Avatar(Document):
         obj = cls(fileid=fileid, gender=gender)
         obj.save()
 
+    @classmethod
+    def get_avatars(cls):
+        if getattr(cls, 'avatars'):
+            return cls.avatars
+        cls.avatars = {}
+        cls.avatar_m = {}
+        for g in GENDERS:
+            if not cls.avatars.get(g):
+                cls.avatars[g] =[]
+            objs = cls.objects(gender=g)
+            for obj in objs:
+                fileid = obj.fileid
+                cls.avatars[g].append(fileid)
+                cls.avatars_m[fileid] = g
+        return cls.avatars
+
+    @classmethod
+    def valid_avatar(cls, fileid):
+        cls.get_avatars()
+        return cls.avatar_m.get(fileid, None) is None
+
 
 class Wording(Document):
     meta = {
@@ -36,7 +60,18 @@ class Wording(Document):
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
 
     @classmethod
-    def create(cls, nickname, gender):
-        obj = cls(nickname=nickname, gender=gender)
+    def create(cls, content, word_type):
+        obj = cls.objects(word_type=word_type).first()
+        if obj:
+            return 
+        obj = cls(content=content, word_type=word_type)
         obj.save()
-
+    
+    @classmethod
+    def get_word_type(cls, word_type):
+        if getattr(cls, 'word_types'):
+            return cls.word_types.get(word_type, '')
+        cls.word_types = {}
+        for obj in cls.objects():
+            cls.word_types[obj.word_type] = obj.content
+        return cls.word_types.get(word_type, '')

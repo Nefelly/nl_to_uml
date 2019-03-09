@@ -17,6 +17,8 @@ b.add_url_rule('/lit/user/phone_login', 'user-phone-login', endpoint.user.phone_
 b.add_url_rule('/lit/user/verify_nickname', 'user-verify-nickname', endpoint.user.verify_nickname)
 b.add_url_rule('/lit/user/info', 'user-update-info', endpoint.user.update_info, methods=['POST'])
 b.add_url_rule('/lit/user/<target_user_id>', 'user-get-info', endpoint.user.get_user_info)
+b.add_url_rule('/lit/user/avatars', 'user-get-avatars', endpoint.user.get_avatars)
+
 
 # 图片
 b.add_url_rule('/lit/image/upload', 'image-upload', endpoint.image.upload_image_from_file, methods=['POST'])
@@ -25,6 +27,7 @@ b.add_url_rule('/lit/image/<fileid>', 'get-image', endpoint.image.get_image)
 # home
 b.add_url_rule('/lit/home/online_user_count', 'home-online-user-count', endpoint.home.online_user_count)
 b.add_url_rule('/lit/home/online_users', 'home-online-users', endpoint.home.online_users)
+b.add_url_rule('/lit/home/wording', 'home-wordings', endpoint.home.get_wording)
 
 # huanxin
 b.add_url_rule('/lit/huanxin/<target_user_id>', 'huanxin-get-info', endpoint.huanxin.get_user_info)

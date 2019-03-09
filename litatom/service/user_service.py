@@ -23,7 +23,8 @@ from ..key import (
 from ..model import (
     User,
     Feed,
-    HuanxinAccount
+    HuanxinAccount,
+    Avatar
 )
 from ..service import (
     SmsCodeService,
@@ -210,5 +211,5 @@ class UserService(object):
 
     @classmethod
     def get_avatars(cls):
-        return
+        return Avatar.get_avatars()
 
