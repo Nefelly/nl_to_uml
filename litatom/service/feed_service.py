@@ -140,7 +140,7 @@ class FeedService(object):
                     'time_info': get_time_info(c.create_time),
                     'user_info': user_info_m.get(c.user_id, {}),
                     'content': c.content,
-                    'comment_id': (c.id),
+                    'comment_id': str(c.id),
                     'content_user_id': c.content_user_id
                 }
                 res[tmp_ind]['inner_comments'].append(_)
