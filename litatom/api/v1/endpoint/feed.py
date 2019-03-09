@@ -74,8 +74,9 @@ def like_feed(feed_id):
 
 @session_finished_required
 def comment_feed(feed_id):
-    content = FeedCommentForm.content.data
-    comment_id = FeedCommentForm.comment_id.data
+    form = FeedCommentForm(data=request.json)
+    content = form.content.data
+    comment_id = form.comment_id.data
     data, status = FeedService.comment_feed(request.user_id, feed_id, content, comment_id)
     if status:
         return success(data)
