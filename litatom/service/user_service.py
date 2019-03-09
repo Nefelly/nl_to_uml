@@ -92,6 +92,9 @@ class UserService(object):
         user = User.get_by_id(user_id)
         if not user:
             return USER_NOT_EXISTS, False
+        if data.get('avatar', ''):
+            if not Avatar.valid_avatar(data.get('avatar')):
+                data.pop('avatar')
         for el in once:
             if data.get(el, '') and getattr(user, el):
                 return u'%s can\'t be reset' % el, False

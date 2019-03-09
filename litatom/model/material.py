@@ -46,7 +46,7 @@ class Avatar(Document):
     @classmethod
     def valid_avatar(cls, fileid):
         cls.get_avatars()
-        return cls.avatar_m.get(fileid, None) is None
+        return cls.avatar_m.get(fileid, None) is not None
 
 
 class Wording(Document):
