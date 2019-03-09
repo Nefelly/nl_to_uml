@@ -45,21 +45,21 @@ def blocks():
 
 @session_finished_required
 def follow(other_user_id):
-    data, status = BlockService.follow(request.user_id, other_user_id)
+    data, status = FollowService.follow(request.user_id, other_user_id)
     if status:
         return success()
     return fail(data)
 
 @session_finished_required
 def unfollow(other_user_id):
-    data, status = BlockService.unfollow(request.user_id, other_user_id)
+    data, status = FollowService.unfollow(request.user_id, other_user_id)
     if status:
         return success()
     return fail(data)
 
 @session_finished_required
 def follows():
-    data, status = BlockService.follows(request.user_id)
+    data, status = FollowService.follows(request.user_id)
     if status:
         return success(data)
     return fail(data)
