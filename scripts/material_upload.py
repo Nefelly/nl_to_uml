@@ -13,7 +13,7 @@ def up_wording():
 
 
 def up_avatar():
-    dirName = ''
+    dirName = '/data/datas/Avatar'
     for g in GENDERS:
         tmp = os.path.join(dirName, g)
         for f in os.listdir(tmp):
