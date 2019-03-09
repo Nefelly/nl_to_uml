@@ -106,7 +106,7 @@ class FeedService(object):
         comment.content = content
         comment.create_time = int(time.time())
         comment.save()
-        return str(comment.id), True
+        return {'comment_id': str(comment.id)}, True
 
     @classmethod
     def get_feed_comments(cls, user_id, feed_id):

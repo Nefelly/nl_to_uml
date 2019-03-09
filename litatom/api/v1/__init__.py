@@ -46,5 +46,5 @@ b.add_url_rule('/lit/feed/create', 'feed-create-feed', endpoint.feed.create_feed
 b.add_url_rule('/lit/feed/view/<other_user_id>', 'feed-user_feeds', endpoint.feed.user_feeds)
 b.add_url_rule('/lit/feed/square', 'feed-square-feeds', endpoint.feed.square_feeds)
 b.add_url_rule('/lit/feed/like/<feed_id>', 'feed-like-feed', endpoint.feed.like_feed)
-b.add_url_rule('/lit/feed/comment', 'feed-comment-feed', endpoint.feed.comment_feed, methods=['POST'])
+b.add_url_rule('/lit/feed/comment/<feed_id>', 'feed-comment-feed', endpoint.feed.comment_feed, methods=['POST'])
 b.add_url_rule('/lit/feed/comment/<feed_id>', 'feed-feed-comments', endpoint.feed.feed_comments)

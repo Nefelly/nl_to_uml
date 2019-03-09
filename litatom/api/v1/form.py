@@ -51,3 +51,7 @@ class PostBurnItemForm(LitatomForm):
     item_type = IntegerField(validators=[DataRequired(), AnyOf([1, 2])])
     item_width = IntegerField(validators=[Optional()], default=0)
     item_height = IntegerField(validators=[Optional()], default=0)
+
+class FeedCommentForm(LitatomForm):
+    content = StringField(validators=[DataRequired()])
+    comment_id = StringField(validators=[Optional()])
