@@ -43,8 +43,17 @@ b.add_url_rule('/lit/debug/batch_anoy_match_start', 'debug-batch-anoy-match-star
 
 # feed
 b.add_url_rule('/lit/feed/create', 'feed-create-feed', endpoint.feed.create_feed, methods=['POST'])
-b.add_url_rule('/lit/feed/view/<other_user_id>', 'feed-user_feeds', endpoint.feed.user_feeds)
+b.add_url_rule('/lit/feed/view/<other_user_id>', 'feed-user-feeds', endpoint.feed.user_feeds)
 b.add_url_rule('/lit/feed/square', 'feed-square-feeds', endpoint.feed.square_feeds)
 b.add_url_rule('/lit/feed/like/<feed_id>', 'feed-like-feed', endpoint.feed.like_feed)
 b.add_url_rule('/lit/feed/comment/<feed_id>', 'feed-comment-feed', endpoint.feed.comment_feed, methods=['POST'])
 b.add_url_rule('/lit/feed/comment/<feed_id>', 'feed-feed-comments', endpoint.feed.feed_comments)
+
+# user_relations
+b.add_url_rule('/lit/block/<other_user_id>', 'block', endpoint.user_relations.block)
+b.add_url_rule('/lit/unblock/<other_user_id>', 'unblock', endpoint.user_relations.unblock)
+b.add_url_rule('/lit/blocks', 'blocks', endpoint.user_relations.blocks)
+
+b.add_url_rule('/lit/follow/<other_user_id>', 'follow', endpoint.user_relations.follow)
+b.add_url_rule('/lit/unfollow/<other_user_id>', 'unfollow', endpoint.user_relations.unfollow)
+b.add_url_rule('/lit/follows', 'follows', endpoint.user_relations.follows)

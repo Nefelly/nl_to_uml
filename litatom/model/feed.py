@@ -13,6 +13,9 @@ from mongoengine import (
 from ..util import (
     get_time_info
 )
+from ..const import (
+    DEFAULT_QUERY_LIMIT
+)
 
 class Feed(Document):
     meta = {
@@ -134,4 +137,4 @@ class FeedComment(Document):
 
     @classmethod
     def get_by_feed_id(cls, feed_id):
-        return cls.objects(feed_id=feed_id).order_by('-create_time').limit(50)
+        return cls.objects(feed_id=feed_id).order_by('-create_time').limit(DEFAULT_QUERY_LIMIT)

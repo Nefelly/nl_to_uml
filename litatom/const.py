@@ -22,6 +22,9 @@ INT_GIRL = 0
 USER_NOT_EXISTS = u'user not exist, please register.'
 PROFILE_NOT_COMPLETE = u'you must complete your profile first.'
 CREATE_HUANXIN_ERROR = u'create huanxin failed.'
+BLOCKED_MSG = u'you have been blocked'
+BLOCK_OTHER_MSG = u'you have block the user'
+
 
 ONE_MIN = 60
 FIVE_MINS = 60 * 5

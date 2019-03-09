@@ -21,6 +21,9 @@ from ..model import (
     FeedLike,
     FeedComment
 )
+from ..service import (
+    BlockService
+)
 
 redis_client = RedisClient()['lit']
 
@@ -43,7 +46,10 @@ class FeedService(object):
         return str(feed.id)
 
     @classmethod
-    def feeds_by_userid(cls, user_id, start_ts=MAX_TIME, num=10):
+    def feeds_by_userid(cls, visitor_user_id, user_id, start_ts=MAX_TIME, num=10):
+        msg = BlockService.get_block_msg(visitor_user_id, user_id)
+        if msg:
+            return msg, False
         if start_ts < 0:
             return u'wrong start_ts', False
         next_start = -1

@@ -27,7 +27,8 @@ from ..model import (
 )
 from ..service import (
     SmsCodeService,
-    HuanxinService
+    HuanxinService,
+    BlockService
 )
 
 sys_rnd = random.SystemRandom()
@@ -188,6 +189,9 @@ class UserService(object):
 
     @classmethod
     def get_user_info(cls, user_id, target_user_id):
+        msg =  BlockService.get_block_msg(user_id, target_user_id)
+        if msg:
+            return msg, False
         target_user = User.get_by_id(target_user_id)
         if not target_user:
             return USER_NOT_EXISTS, False

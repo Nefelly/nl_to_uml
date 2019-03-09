@@ -175,6 +175,13 @@ class User(Document, UserSessionMixin):
         return cls.objects(phone=zone_phone).first()
 
     @classmethod
+    def huanxin_id_by_user_id(cls, user_id):
+        user = cls.get_by_id(user_id)
+        if not user or not user.huanxin:
+            return None
+        return user.huanxin.user_id
+
+    @classmethod
     def get_by_nickname(cls, nickname):
         return cls.objects(nickname=nickname).first()
 

@@ -30,7 +30,8 @@ from ..const import (
 from ..service import (
     UserService,
     FollowService,
-    HuanxinService
+    HuanxinService,
+    BlockService
 )
 from ..model import User
 redis_client = RedisClient()['lit']
@@ -144,6 +145,10 @@ class AnoyMatchService(object):
         if not other_fakeids:
             return None
         fake_id2 = random.choice(other_fakeids)
+        user_id = cls._uid_by_fake_id(fake_id)
+        user_id2 = cls._uid_by_fake_id(fake_id2)
+        if BlockService.get_block_msg(user_id, user_id2):
+            return None
         redis_client.zadd(matched_key, {fake_id2: int_time})
         fake_id2_matched = redis_client.get(REDIS_MATCHED.format(fake_id=fake_id2))
         if not fake_id2_matched or fake_id2_matched == fake_id:
