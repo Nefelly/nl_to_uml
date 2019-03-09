@@ -29,7 +29,7 @@ class Avatar(Document):
 
     @classmethod
     def get_avatars(cls):
-        if getattr(cls, 'avatars'):
+        if getattr(cls, 'avatars', ''):
             return cls.avatars
         cls.avatars = {}
         cls.avatar_m = {}
@@ -69,7 +69,7 @@ class Wording(Document):
     
     @classmethod
     def get_word_type(cls, word_type):
-        if getattr(cls, 'word_types'):
+        if getattr(cls, 'word_types', None):
             return cls.word_types.get(word_type, '')
         cls.word_types = {}
         for obj in cls.objects():
