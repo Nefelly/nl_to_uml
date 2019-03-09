@@ -59,12 +59,12 @@ class Feed(Document):
         feed.save()
 
     @classmethod
-    def chg_comment_num(cls, feed_id, num=1):
+    def cls_chg_comment_num(cls, feed_id, num=1):
         feed = cls.get_by_id(feed_id)
         feed.comment_num += num
         feed.save()
 
-    def cls_chg_comment_num(self, num=1):
+    def chg_comment_num(self, num=1):
         self.comment_num += num
         self.save()
 
