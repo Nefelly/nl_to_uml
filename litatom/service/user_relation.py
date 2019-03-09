@@ -98,6 +98,6 @@ class BlockService(object):
 
     @classmethod
     def blocks(cls, user_id):
-        blocked_uids = [obj.bloked for obj in Blocked.objects(uid=user_id).limit(DEFAULT_QUERY_LIMIT)]
+        blocked_uids = [obj.blocked for obj in Blocked.objects(uid=user_id).limit(DEFAULT_QUERY_LIMIT)]
         users = map(User.get_by_id, blocked_uids)
         return [u.basic_info() for u in users if u], True
