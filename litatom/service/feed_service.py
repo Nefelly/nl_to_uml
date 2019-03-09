@@ -90,7 +90,7 @@ class FeedService(object):
     def comment_feed(cls, user_id, feed_id, content, comment_id=None):
         comment = FeedComment()
         if not comment_id:
-            Feed.chg_comment_num(feed_id, 1)
+            Feed.cls_chg_comment_num(feed_id, 1)
         else:
             father_comment = FeedComment.get_by_id(comment_id)
             if not father_comment:

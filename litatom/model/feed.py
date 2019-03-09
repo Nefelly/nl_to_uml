@@ -64,7 +64,7 @@ class Feed(Document):
         feed.comment_num += num
         feed.save()
 
-    def chg_comment_num(self, num=1):
+    def cls_chg_comment_num(self, num=1):
         self.comment_num += num
         self.save()
 
