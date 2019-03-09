@@ -144,4 +144,4 @@ class FeedService(object):
                     'content_user_id': c.content_user_id
                 }
                 res[tmp_ind].append(_)
-        return res
+        return res, True
