@@ -1,6 +1,7 @@
 # coding: utf-8
 import datetime
 import time
+import bson
 from mongoengine import (
     BooleanField,
     DateTimeField,
@@ -69,6 +70,8 @@ class Feed(Document):
 
     @classmethod
     def get_by_id(cls, feed_id):
+        if not bson.ObjectId.is_valid(feed_id):
+            return None
         return cls.objects(id=feed_id).first()
 
 class FeedLike(Document):
@@ -125,6 +128,8 @@ class FeedComment(Document):
 
     @classmethod
     def get_by_id(cls, comment_id):
+        if not bson.ObjectId.is_valid(comment_id):
+            return None
         return cls.objects(id=comment_id).first()
 
     @classmethod

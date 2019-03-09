@@ -166,6 +166,8 @@ class User(Document, UserSessionMixin):
 
     @classmethod
     def get_by_id(cls, user_id):
+        if not bson.ObjectId.is_valid(user_id):
+            return None
         return cls.objects(id=user_id).first()
 
     @classmethod
