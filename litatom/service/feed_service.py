@@ -127,7 +127,7 @@ class FeedService(object):
                     'comment_id': str(c.id)
                 }
                 res.append(_)
-                comment_id_index[c.comment_id] = ind
+                comment_id_index[str(c.id)] = ind
                 ind += 1
         for c in comments:
             if c.comment_id:
@@ -143,5 +143,5 @@ class FeedService(object):
                     'comment_id': (c.id),
                     'content_user_id': c.content_user_id
                 }
-                res[tmp_ind].append(_)
+                res[tmp_ind]['inner_comments'].append(_)
         return res, True
