@@ -58,7 +58,7 @@ def square_feeds():
     data = FeedService.feeds_by_square(user_id, start_pos, num)
     if data:
         return success(data)
-    return fail()
+    return success()
 
 
 @session_finished_required
