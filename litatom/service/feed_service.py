@@ -30,12 +30,14 @@ redis_client = RedisClient()['lit']
 class FeedService(object):
 
     @classmethod
-    def _feed_info(cls, feed):
+    def _feed_info(cls, feed, visitor_user_id=None):
         if not feed:
             return {}
         user_info = UserService.user_info_by_uid(feed.user_id)
         res = feed.get_info()
         res['user_info'] = user_info
+        if visitor_user_id:
+            res['liked'] = True if FeedLike.get_by_ids(visitor_user_id, str(feed.id)) else False
         return res
 
     @classmethod
@@ -65,7 +67,7 @@ class FeedService(object):
             next_start = feeds[-1].create_time
             feeds = feeds[:-1]
         return {
-            'feeds': map(cls._feed_info, feeds),
+            'feeds': map(cls._feed_info, feeds, [visitor_user_id for el in feeds]),
             'has_next': has_next,
             'next_start': next_start
         }, True
@@ -78,7 +80,7 @@ class FeedService(object):
         if len(feeds) == num + 1:
             has_next = True
             feeds = feeds[:-1]
-        feeds = map(cls._feed_info, feeds)
+        feeds = map(cls._feed_info, feeds, [user_id for el in feeds])
         return {
             'has_next': has_next,
             'feeds': feeds,
