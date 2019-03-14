@@ -54,7 +54,7 @@ def user_feeds(other_user_id):
 
 
 def square_feeds():
-    user_id = None
+    user_id = request.user_id
     start_pos = request.args.get('start_pos')
     num = request.args.get('num')
     start_pos = int(start_pos) if start_pos and start_pos.isdigit() else 0
