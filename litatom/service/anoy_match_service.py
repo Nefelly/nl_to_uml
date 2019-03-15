@@ -21,6 +21,7 @@ from ..const import (
     CREATE_HUANXIN_ERROR,
     ONE_DAY,
     FIVE_MINS,
+    GENDERS,
     BOY,
     GIRL,
     MAX_TIME,
@@ -261,6 +262,20 @@ class AnoyMatchService(object):
             FollowService.follow_eachother(cls._uid_by_fake_id(fake_id), cls._uid_by_fake_id(other_fake_id))
         return {'like_eachother': like_eachother}, True
 
+    @classmethod
+    def clean_pools(cls):
+        wait_buff = 2
+        for g in GENDERS:
+            int_time = time.time()
+            judge_time = int_time - cls.MATCH_WAIT
+            to_rem = redis_client.zrangebyscore(REDIS_ANOY_GENDER_ONLINE.format(gender=g), 0, judge_time - wait_buff, 0, cls.MAX_CHOOSE_NUM)
+            for el in to_rem:
+                cls._destroy_fake_id(el)
+                print "match pool fake_id: %s destoryed" % el
+            to_rem_check = redis_client.zrangebyscore(REDIS_ANOY_CHECK_POOL.format(gender=g), 0,  int_time - cls.MATCH_INT - wait_buff, 0, cls.MAX_CHOOSE_NUM)
+            for el in to_rem:
+                cls._destroy_fake_id(el, False)
+                print "check pool fake_id: %s destoryed" % el
 
     @classmethod
     def quit_match(cls, user_id):   # should delete match pair
