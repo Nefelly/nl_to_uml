@@ -52,21 +52,22 @@ class StatisticService(object):
                 has_next = True
                 uids = uids[:-1]
             user_infos = []
-            all_online = cls.uid_online(key, uids[-1]) == True   # last user online
-            all_not_online = cls.uid_online(key, uids[0]) == False   # first user not online
-            for uid in uids:
-                _ = UserService.get_basic_info(User.get_by_id(uid))
-                if all_online:
-                    online = True
-                elif all_not_online:
-                    online = False
-                else:
-                    online = cls.uid_online(uid, key)
-                _['online'] = online
-                user_infos.append(_)
-            user_infos = map(UserService.get_basic_info, map(User.get_by_id, uids))
-            for el in user_infos:
-                el['online'] = True
+            if uids:
+                all_online = cls.uid_online(key, uids[-1]) == True   # last user online
+                all_not_online = cls.uid_online(key, uids[0]) == False   # first user not online
+                for uid in uids:
+                    _ = UserService.get_basic_info(User.get_by_id(uid))
+                    if all_online:
+                        online = True
+                    elif all_not_online:
+                        online = False
+                    else:
+                        online = cls.uid_online(uid, key)
+                    _['online'] = online
+                    user_infos.append(_)
+                user_infos = map(UserService.get_basic_info, map(User.get_by_id, uids))
+                for el in user_infos:
+                    el['online'] = True
             return {
                 'has_next': has_next,
                 'user_infos': user_infos,
