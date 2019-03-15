@@ -18,7 +18,8 @@ from ..const import (
 from ..key import (
     REDIS_USER_INFO_FINISHED,
     REDIS_ONLINE_GENDER,
-    REDIS_UID_GENDER
+    REDIS_UID_GENDER,
+    REDIS_ONLINE
 )
 from ..model import (
     User,
@@ -146,6 +147,7 @@ class UserService(object):
         if gender:
             key = REDIS_ONLINE_GENDER.format(gender=gender)
             redis_client.zadd(key, {user_id: int_time})
+            redis_client.zadd(REDIS_ONLINE, {user_id: int_time})
         if int_time % 10 == 0:
             redis_client.zremrangebyscore(key, -1, int_time - ONLINE_LIVE)
 

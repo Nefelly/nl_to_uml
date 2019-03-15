@@ -2,7 +2,8 @@
 import time
 from ..redis import RedisClient
 from ..key import (
-    REDIS_ONLINE_GENDER
+    REDIS_ONLINE_GENDER,
+    REDIS_ONLINE
 )
 from ..const import (
     ONLINE_LIVE,
@@ -45,36 +46,33 @@ class StatisticService(object):
     def get_online_users(cls, gender=None, start_p=0, num=10):
         if gender:
             key = REDIS_ONLINE_GENDER.format(gender=gender)
-            uids = redis_client.zrevrange(key, start_p, start_p + num)
-            uids = uids if uids else []
-            has_next = False
-            if len(uids) == num + 1:
-                has_next = True
-                uids = uids[:-1]
-            user_infos = []
-            if uids:
-                all_online = cls.uid_online(key, uids[-1]) == True   # last user online
-                all_not_online = cls.uid_online(key, uids[0]) == False   # first user not online
-                for uid in uids:
-                    _ = UserService.get_basic_info(User.get_by_id(uid))
-                    if all_online:
-                        online = True
-                    elif all_not_online:
-                        online = False
-                    else:
-                        online = cls.uid_online(uid, key)
-                    _['online'] = online
-                    user_infos.append(_)
-                user_infos = map(UserService.get_basic_info, map(User.get_by_id, uids))
-                for el in user_infos:
-                    el['online'] = True
-            return {
-                'has_next': has_next,
-                'user_infos': user_infos,
-                'next_start': start_p + num if has_next else -1
-            }
         else:
-            res = {}
-            for gender in GENDERS:
-                res[gender] = cls.get_online_users(gender, start_p, num)
-            return res
+            key = REDIS_ONLINE
+        uids = redis_client.zrevrange(key, start_p, start_p + num)
+        uids = uids if uids else []
+        has_next = False
+        if len(uids) == num + 1:
+            has_next = True
+            uids = uids[:-1]
+        user_infos = []
+        if uids:
+            all_online = cls.uid_online(key, uids[-1]) == True   # last user online
+            all_not_online = cls.uid_online(key, uids[0]) == False   # first user not online
+            for uid in uids:
+                _ = UserService.get_basic_info(User.get_by_id(uid))
+                if all_online:
+                    online = True
+                elif all_not_online:
+                    online = False
+                else:
+                    online = cls.uid_online(uid, key)
+                _['online'] = online
+                user_infos.append(_)
+            user_infos = map(UserService.get_basic_info, map(User.get_by_id, uids))
+            for el in user_infos:
+                el['online'] = True
+        return {
+            'has_next': has_next,
+            'user_infos': user_infos,
+            'next_start': start_p + num if has_next else -1
+        }

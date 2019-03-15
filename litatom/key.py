@@ -3,6 +3,7 @@
 REDIS_KEY_SMS_CODE = 'sms_code:{phone}'
 REDIS_KEY_SESSION_USER = 'session_userid:{session}'
 REDIS_ONLINE_GENDER = 'online:{gender}'
+REDIS_ONLINE = 'online'
 REDIS_USER_LAST_ACT = 'uid_act:{user_id}'   # 用户最后一次动作时间
 REDIS_UID_GENDER = 'uid_gender:{user_id}'
 REDIS_AGE_UID = 'age_uid:{age}'  # set
