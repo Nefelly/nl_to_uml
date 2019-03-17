@@ -34,12 +34,12 @@ b.add_url_rule('/lit/home/wording', 'home-wordings', endpoint.home.get_wording)
 b.add_url_rule('/lit/huanxin/<target_user_id>', 'huanxin-get-info', endpoint.huanxin.get_user_info)
 
 # anoy_match
-b.add_url_rule('/lit/anoy_match/get_fakeid', 'anoy_match-create-fakeid', endpoint.anoy_match.get_fakeid)
-b.add_url_rule('/lit/anoy_match/anoy_match', 'anoy_match-anoy-match', endpoint.anoy_match.anoy_match)
-b.add_url_rule('/lit/anoy_match/anoy_like', 'anoy_match-anoy-like', endpoint.anoy_match.anoy_like)
-b.add_url_rule('/lit/anoy_match/quit_match', 'anoy_match-quit-match', endpoint.anoy_match.quit_match)
-b.add_url_rule('/lit/anoy_match/times_left', 'anoy_match-times-left', endpoint.anoy_match.match_times_left)
-b.add_url_rule('/lit/anoy_match/judge', 'anoy_match-judget', endpoint.anoy_match.anoy_judge, methods=['POST'])
+b.add_url_rule('/lit/anoy_match/get_fakeid', 'anoy-match-create-fakeid', endpoint.anoy_match.get_fakeid)
+b.add_url_rule('/lit/anoy_match/anoy_match', 'anoy-match-anoy-match', endpoint.anoy_match.anoy_match)
+b.add_url_rule('/lit/anoy_match/anoy_like', 'anoy-match-anoy-like', endpoint.anoy_match.anoy_like)
+b.add_url_rule('/lit/anoy_match/quit_match', 'anoy-match-quit-match', endpoint.anoy_match.quit_match)
+b.add_url_rule('/lit/anoy_match/times_left', 'anoy-match-times-left', endpoint.anoy_match.match_times_left)
+b.add_url_rule('/lit/anoy_match/judge', 'anoy-match-judge', endpoint.anoy_match.anoy_judge, methods=['POST'])
 
 
 # debug
