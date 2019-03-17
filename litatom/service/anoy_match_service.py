@@ -85,7 +85,7 @@ class AnoyMatchService(object):
         if user_id:
             # could not be clear now, because should be used to judge
             # redis_client.delete(REDIS_FAKE_ID_UID.format(fake_id=fake_id))
-            redis_client.delete(REDIS_JUDGE_LOCK.format(redis_key=fake_id))
+            redis_client.delete(REDIS_JUDGE_LOCK.format(fake_id=fake_id))
             redis_client.delete(REDIS_UID_FAKE_ID.format(user_id=user_id))
 
         # delete match infos
@@ -297,7 +297,7 @@ class AnoyMatchService(object):
         if not other_fakeid:
             return NOT_IN_MATCH, False
         fake_ids = fake_id + other_fakeid
-        redis_key = REDIS_JUDGE_LOCK.format(redis_key=fake_id)
+        redis_key = REDIS_JUDGE_LOCK.format(fake_id=fake_id)
         lock = redis_client.setnx(redis_key, 1)
         redis_client.expire(redis_key, cls.MATCH_INT)
         if not lock:
