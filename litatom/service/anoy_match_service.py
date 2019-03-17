@@ -296,7 +296,6 @@ class AnoyMatchService(object):
         other_fakeid = redis_client.get(REDIS_MATCHED.format(fake_id=fake_id))
         if not other_fakeid:
             return NOT_IN_MATCH, False
-        fake_ids = fake_id + other_fakeid
         redis_key = REDIS_JUDGE_LOCK.format(fake_id=fake_id)
         lock = redis_client.setnx(redis_key, 1)
         redis_client.expire(redis_key, cls.MATCH_INT)
@@ -304,7 +303,8 @@ class AnoyMatchService(object):
             return u'you have judged', False
         if not judge in User.JUDGES:
             return u'judge must be one of %s' % ','.join(User.JUDGES)
-        user = User.get_by_id(user_id)
+        other_user_id = cls._uid_by_fake_id(other_fakeid)
+        user = User.get_by_id(other_user_id)
         user.add_judge(judge)
         return None, True
 
