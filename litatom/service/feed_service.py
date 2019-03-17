@@ -94,15 +94,13 @@ class FeedService(object):
         feed = Feed.get_by_id(feed_id)
         if not feed:
             return 'wrong feed id', False
-        feed.chg_comment_num(num)
+        feed.chg_feed_num(num)
         return {'like_now': like_now}, True
 
     @classmethod
     def comment_feed(cls, user_id, feed_id, content, comment_id=None):
         comment = FeedComment()
-        if not comment_id:
-            Feed.cls_chg_comment_num(feed_id, 1)
-        else:
+        if comment_id:
             father_comment = FeedComment.get_by_id(comment_id)
             if not father_comment:
                 return u'comment of id:%s not exists' % comment_id, False
@@ -112,6 +110,7 @@ class FeedService(object):
                 comment_id = father_comment.comment_id
             comment.comment_id = comment_id
             comment.content_user_id = father_comment.user_id
+        Feed.cls_chg_comment_num(feed_id, 1)
         comment.user_id = user_id
         comment.feed_id = feed_id
         comment.content = content

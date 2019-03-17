@@ -71,6 +71,10 @@ class Feed(Document):
         self.comment_num += num
         self.save()
 
+    def chg_feed_num(self, num=1):
+        self.like_num += num
+        self.save()
+
     @classmethod
     def get_by_id(cls, feed_id):
         if not bson.ObjectId.is_valid(feed_id):

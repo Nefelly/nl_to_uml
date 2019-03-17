@@ -5,6 +5,7 @@ from ..key import (
     REDIS_ONLINE_GENDER,
     REDIS_ONLINE
 )
+from flask import request
 from ..const import (
     ONLINE_LIVE,
     GENDERS,
@@ -49,6 +50,12 @@ class StatisticService(object):
         else:
             key = REDIS_ONLINE
         uids = redis_client.zrevrange(key, start_p, start_p + num)
+        has_uid = False
+        temp_uid = request.user_id
+        if temp_uid and temp_uid in uids:
+            temp_num = num + 1
+            uids = redis_client.zrevrange(key, start_p, start_p + temp_num)
+            uids = [uid for uid in uids if uid != temp_uid]
         uids = uids if uids else []
         has_next = False
         if len(uids) == num + 1:
@@ -59,6 +66,7 @@ class StatisticService(object):
             all_online = cls.uid_online(key, uids[-1]) == True   # last user online
             all_not_online = cls.uid_online(key, uids[0]) == False   # first user not online
             for uid in uids:
+
                 _ = UserService.get_basic_info(User.get_by_id(uid))
                 if all_online:
                     online = True

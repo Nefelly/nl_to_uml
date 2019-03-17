@@ -171,6 +171,13 @@ class User(Document, UserSessionMixin):
         return cls.objects(id=user_id).first()
 
     @classmethod
+    def get_by_huanxin_id(cls, huanxinid):
+        if not huanxinid:
+            return None
+        return cls.objects(huanxin__user_id=huanxinid).first()
+
+
+    @classmethod
     def get_by_phone(cls, zone_phone):
         return cls.objects(phone=zone_phone).first()
 
@@ -197,7 +204,10 @@ class User(Document, UserSessionMixin):
             'gender': self.gender if self.gender else UNKNOWN_GENDER,
             'birthdate': self.birthdate,
             'nickname': self.nickname,
-            'huanxin_id': self.huanxin.user_id
+            'huanxin_id': self.huanxin.user_id,
+            'judged_nasty': self.judge[0],
+            'judged_boring': self.judge[1],
+            'judged_like': self.judge[2]
 
         }
 

@@ -86,3 +86,11 @@ def get_avatars():
     data = UserService.get_avatars()
     return success(data)
 
+
+@session_required
+def user_info_by_huanxinids():
+    ids = request.json.get('ids')
+    data, status = UserService.user_infos_by_huanxinids(ids)
+    if not status:
+        return fail(data)
+    return success(data)

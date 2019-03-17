@@ -18,6 +18,7 @@ b.add_url_rule('/lit/user/verify_nickname', 'user-verify-nickname', endpoint.use
 b.add_url_rule('/lit/user/info', 'user-update-info', endpoint.user.update_info, methods=['POST'])
 b.add_url_rule('/lit/user/<target_user_id>', 'user-get-info', endpoint.user.get_user_info)
 b.add_url_rule('/lit/user/avatars', 'user-get-avatars', endpoint.user.get_avatars)
+b.add_url_rule('/lit/user/info_by_huanxin', 'user-info-by-huanxin', endpoint.user.user_info_by_huanxinids)
 
 
 # 图片

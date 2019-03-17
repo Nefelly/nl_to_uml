@@ -12,7 +12,8 @@ from ..const import (
     GIRL,
     GENDERS,
     ONLINE_LIVE,
-    UNKNOWN_GENDER
+    UNKNOWN_GENDER,
+
 )
 
 from ..key import (
@@ -82,6 +83,17 @@ class UserService(object):
         if not user:
             return {}
         return cls.get_basic_info(user)
+
+    @classmethod
+    def user_infos_by_huanxinids(cls, ids):
+        if not ids or not isinstance(ids, list):
+            return u'wrong arguments, exp: {ids:[1,2,3]}', False
+        res = {}
+        ids = ids
+        for _ in ids:
+            u = User.get_by_huanxin_id(_)
+            res[_] = cls.get_basic_info(u)
+        return res, True
 
     @classmethod
     def update_info(cls, user_id, data):
