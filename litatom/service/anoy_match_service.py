@@ -11,7 +11,8 @@ from ..key import (
     REDIS_ANOY_CHECK_POOL,
     REDIS_MATCH_PAIR,
     REDIS_MATCHED,
-    REDIS_FAKE_LIKE
+    REDIS_FAKE_LIKE,
+    REDIS_JUDGE_LOCK
 )
 from ..util import (
     now_date_key,
@@ -26,7 +27,8 @@ from ..const import (
     GIRL,
     MAX_TIME,
     USER_NOT_EXISTS,
-    PROFILE_NOT_COMPLETE
+    PROFILE_NOT_COMPLETE,
+    NOT_IN_MATCH
 )
 from ..service import (
     UserService,
@@ -81,7 +83,9 @@ class AnoyMatchService(object):
         user_id = redis_client.get(REDIS_FAKE_ID_UID.format(fake_id=fake_id))
 
         if user_id:
-            redis_client.delete(REDIS_FAKE_ID_UID.format(fake_id=fake_id))
+            # could not be clear now, because should be used to judge
+            # redis_client.delete(REDIS_FAKE_ID_UID.format(fake_id=fake_id))
+            redis_client.delete(REDIS_JUDGE_LOCK.format(redis_key=fake_id))
             redis_client.delete(REDIS_UID_FAKE_ID.format(user_id=user_id))
 
         # delete match infos
@@ -167,8 +171,8 @@ class AnoyMatchService(object):
         redis_client.expire(match_left_key, ONE_DAY)
         times_left = int(redis_client.get(match_left_key))
         if times_left <= 0:
-            return u'Your anoymatch opportunity has run out, please try again tomorrow'
-        return None
+            return u'Your anoymatch opportunity has run out, please try again tomorrow', False
+        return times_left, True
 
     @classmethod
     def create_fakeid(cls, user_id):
@@ -180,8 +184,8 @@ class AnoyMatchService(object):
         if not gender:
             return PROFILE_NOT_COMPLETE, False
         user_id = str(user.id)
-        msg = cls._match_left_verify(user_id)
-        if msg:
+        msg, status = cls._match_left_verify(user_id)
+        if not status:
             return msg, False
         old_fake_id = redis_client.get(REDIS_UID_FAKE_ID.format(user_id=user_id))
         if old_fake_id:
@@ -237,6 +241,14 @@ class AnoyMatchService(object):
         return res, True
 
     @classmethod
+    def get_times_left(cls, user_id):
+        msg, status = cls._match_left_verify(user_id)
+        times = 0
+        if status:
+            times = msg
+        return '%d Times left' % times
+
+    @classmethod
     def _uid_by_fake_id(cls, fake_id):
         return redis_client.get(REDIS_FAKE_ID_UID.format(fake_id=fake_id))
 
@@ -277,6 +289,25 @@ class AnoyMatchService(object):
             for el in to_rem:
                 cls._destroy_fake_id(el, False)
                 print "check pool fake_id: %s destoryed" % el
+
+    @classmethod
+    def judge(cls, user_id, judge):
+        fake_id = cls._fakeid_by_uid(user_id)
+        other_fakeid = redis_client.get(REDIS_MATCHED.format(fake_id=fake_id))
+        if not other_fakeid:
+            return NOT_IN_MATCH, False
+        fake_ids = fake_id + other_fakeid
+        redis_key = REDIS_JUDGE_LOCK.format(redis_key=fake_id)
+        lock = redis_client.setnx(redis_key, 1)
+        redis_client.expire(redis_key, cls.MATCH_INT)
+        if not lock:
+            return u'you have judged', False
+        if not judge in User.JUDGES:
+            return u'judge must be one of %s' % ','.join(User.JUDGES)
+        user = User.get_by_id(user_id)
+        user.add_judge(judge)
+        return None, True
+
 
     @classmethod
     def quit_match(cls, user_id):   # should delete match pair

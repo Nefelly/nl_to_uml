@@ -46,6 +46,22 @@ def anoy_like():
 
 
 @session_finished_required
+def anoy_judge():
+    user_id = request.user_id
+    judge = request.json.get('judge')
+    data, status = AnoyMatchService.judge(user_id, judge)
+    if not status:
+        return fail(data)
+    return success(data)
+
+
+@session_finished_required
+def match_times_left():
+    user_id = request.user_id
+    words = AnoyMatchService.get_times_left(user_id)
+    return success(words)
+
+@session_finished_required
 def quit_match():
     data, status = AnoyMatchService.quit_match(request.user_id)
     if not status:

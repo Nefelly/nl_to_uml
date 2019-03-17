@@ -23,6 +23,7 @@ REDIS_MATCH_PAIR = 'match_start:{low_high_fakeid}'
 REDIS_MATCHED = 'matched:{fake_id}'   # 双方匹配上, 匹配动作 需要同时填写 两个键值对
 REDIS_GENDER_FEED_LIST = 'feeds_list:{gender}'   # sorted set
 REDIS_USER_MESSAGES = 'user_messages:{user_id}'   #sortedset
+REDIS_JUDGE_LOCK = 'judge_lock:{fakeid}'   # 评价对方的接口, 用于防范被刷评价
 
 REDIS_HUANXIN_ACCESS_TOKEN = 'huanxin_access_token'
 REDIS_HUANXIN_ACCESS_TOKEN_EXPIRE = 'huanxin_access_token_expire'

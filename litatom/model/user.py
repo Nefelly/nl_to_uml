@@ -135,7 +135,7 @@ class User(Document, UserSessionMixin):
         'strict': False,
         'alias': 'db_alias'
     }
-
+    JUDGES = ['nasty', 'boring', 'like']
 
     nickname = StringField()
     avatar = StringField()
@@ -169,6 +169,17 @@ class User(Document, UserSessionMixin):
         if not bson.ObjectId.is_valid(user_id):
             return None
         return cls.objects(id=user_id).first()
+
+    def add_judge(self, judge):
+        if not judge in self.JUDGES:
+            return False
+        tmp = 0
+        for _ in self.JUDGES:
+            tmp += 1
+            if judge == _:
+                break
+        self.judge[tmp] += 1
+        self.save()
 
     @classmethod
     def get_by_huanxin_id(cls, huanxinid):
