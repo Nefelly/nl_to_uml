@@ -22,7 +22,7 @@ class Report(Document):
     uid = StringField(required=True)
     target_uid = StringField()
     pics = ListField(required=True, default=[])
-    deal_res = StringField(required=True)
+    deal_res = StringField()
     passed = BooleanField(required=True, default=False)
     create_ts = IntField(required=True)
     deal_ts = IntField()
