@@ -75,7 +75,7 @@ def track_chat():
     form = TrackChatForm(request.json)
     target_user_id = form.target_user_id.data
     content = form.content.data
-    status = StatisticService.track_chat(request.user_id, target_user_id, content)
+    data, status = StatisticService.track_chat(request.user_id, target_user_id, content)
     if status:
-        return success()
-    return fail()
+        return success(data)
+    return fail(data)

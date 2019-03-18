@@ -96,4 +96,4 @@ class StatisticService(object):
         track.content = content
         track.create_ts = int(time.time())
         track.save()
-        return True
+        return {"track_id": str(track.id)}
