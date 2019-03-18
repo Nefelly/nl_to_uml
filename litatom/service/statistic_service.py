@@ -13,7 +13,10 @@ from ..const import (
     MAX_TIME
 )
 from ..service import UserService
-from ..model import User
+from ..model import (
+    User,
+    TrackChat
+)
 redis_client = RedisClient()['lit']
 
 class StatisticService(object):
@@ -84,3 +87,13 @@ class StatisticService(object):
             'user_infos': user_infos,
             'next_start': start_p + num if has_next else -1
         }
+
+    @classmethod
+    def track_chat(cls, user_id, target_user_id, content):
+        track = TrackChat()
+        track.uid = user_id
+        track.target_uid = target_user_id
+        track.content = content
+        track.create_ts = int(time.time())
+        track.save()
+        return True

@@ -8,7 +8,8 @@ from ....model import (
     Wording
 )
 from ..form import (
-    ReportForm
+    ReportForm,
+    TrackChatForm
 )
 from ...decorator import (
     session_required,
@@ -67,3 +68,14 @@ def report_info(report_id):
     if status:
         return success(data)
     return fail(data)
+
+
+@session_finished_required
+def track_chat():
+    form = TrackChatForm(request.json)
+    target_user_id = form.target_user_id.data
+    content = form.content.data
+    status = StatisticService.track_chat(request.user_id, target_user_id, content)
+    if status:
+        return success()
+    return fail()
