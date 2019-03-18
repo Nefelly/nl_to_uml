@@ -72,7 +72,7 @@ def report_info(report_id):
 
 @session_finished_required
 def track_chat():
-    form = TrackChatForm(request.json)
+    form = TrackChatForm(data=request.json)
     target_user_id = form.target_user_id.data
     content = form.content.data
     data, status = StatisticService.track_chat(request.user_id, target_user_id, content)
