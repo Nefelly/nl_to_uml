@@ -29,6 +29,8 @@ b.add_url_rule('/lit/image/<fileid>', 'get-image', endpoint.image.get_image)
 b.add_url_rule('/lit/home/online_user_count', 'home-online-user-count', endpoint.home.online_user_count)
 b.add_url_rule('/lit/home/online_users', 'home-online-users', endpoint.home.online_users)
 b.add_url_rule('/lit/home/wording', 'home-wordings', endpoint.home.get_wording)
+b.add_url_rule('/lit/home/report', 'home-report', endpoint.home.report, methods=['POST'])
+b.add_url_rule('/lit/home/report/<report_id>', 'home-report-info', endpoint.home.report_info)
 
 # huanxin
 b.add_url_rule('/lit/huanxin/<target_user_id>', 'huanxin-get-info', endpoint.huanxin.get_user_info)

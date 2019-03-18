@@ -55,3 +55,8 @@ class PostBurnItemForm(LitatomForm):
 class FeedCommentForm(LitatomForm):
     content = StringField(validators=[DataRequired()])
     comment_id = StringField(validators=[Optional()])
+
+class ReportForm(LitatomForm):
+    reason = StringField(validators=[DataRequired()])
+    pics = FieldList(validators=[Optional()])
+    target_user_id = StringField(validators=[Optional()])

@@ -7,7 +7,9 @@ from flask import (
 from ....model import (
     Wording
 )
-
+from ..form import (
+    ReportForm
+)
 from ...decorator import (
     session_required,
     session_finished_required
@@ -18,7 +20,8 @@ from ....response import (
     success
 )
 from ....service import (
-    StatisticService
+    StatisticService,
+    ReportService
 )
 
 logger = logging.getLogger(__name__)
@@ -44,3 +47,23 @@ def get_wording():
     word_type = request.args.get('word_type')
     wording = Wording.get_word_type(word_type)
     return success(wording)
+
+
+@session_finished_required
+def report():
+    user_id = request.user_id
+    form = ReportForm(data=request.json)
+    reason = form.reason.data
+    pics = form.pics.data
+    target_user_id = form.target_user_id.data
+    data, status = ReportService.report(user_id, reason, pics, target_user_id)
+    if status:
+        return success(data)
+    return fail(data)
+
+
+def report_info(report_id):
+    data, status = ReportService.info_by_id(report_id)
+    if status:
+        return success(data)
+    return fail(data)
