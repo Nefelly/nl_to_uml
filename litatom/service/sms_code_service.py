@@ -44,7 +44,7 @@ class SmsCodeService(object):
 
         request.add_query_param('RegionId', 'cn-hangzhou')
         request.add_query_param('PhoneNumbers', phone)
-        request.add_query_param('SignName', '肯斯爪特')
+        request.add_query_param('SignName', u'肯斯爪特')
         request.add_query_param('TemplateCode', 'SMS_161275181')
         request.add_query_param('TemplateParam', {"code":code})
         response = ali_client.do_action(request)
