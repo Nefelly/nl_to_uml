@@ -402,7 +402,7 @@ def validate_phone_number(phone):
     if not phone.isdigit():
         return None
 
-    if len(phone) == 11:
+    if len(phone) == 11 and phone.startwith('1'):
         phone = '86' + phone
 
     if len(phone) == 13:
