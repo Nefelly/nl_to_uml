@@ -27,7 +27,7 @@ class SmsCodeService(object):
     @classmethod
     def gen_code(cls):
         res = ''
-        for _ in cls.CODE_LEN:
+        for _ in range(cls.CODE_LEN):
             res += sys_rnd.choice(cls.CODE_CHARS)
         return res
 
