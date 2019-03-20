@@ -48,8 +48,7 @@ class SmsCodeService(object):
         request.add_query_param('TemplateCode', 'SMS_161275181')
         request.add_query_param('TemplateParam', {"code":code})
         response = ali_client.do_action(request)
-        # python2:  print(response)
-        print(str(response, encoding = 'utf-8'))
+        print(response)
 
     @classmethod
     def send_code(cls, zone, phone, code=None):
