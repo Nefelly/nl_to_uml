@@ -27,7 +27,6 @@ class SmsCodeService(object):
     @classmethod
     def gen_code(cls):
         res = ''
-        return '8888'
         for _ in cls.CODE_LEN:
             res += sys_rnd.choice(cls.CODE_CHARS)
         return res
@@ -45,7 +44,7 @@ class SmsCodeService(object):
         request.add_query_param('RegionId', 'cn-hangzhou')
         request.add_query_param('PhoneNumbers', phone)
         request.add_query_param('SignName', '肯斯爪特')
-        request.add_query_param('TemplateCode', 'SMS_161275181')
+        request.add_query_param('TemplateCode', 'SMS_161325322')
         request.add_query_param('TemplateParam', {"code":code})
         response = ali_client.do_action(request)
         # print(response)
@@ -57,10 +56,11 @@ class SmsCodeService(object):
         zone_phone = validate_phone_number(zone_phone)
         if not zone_phone:
             return cls.ERR_WORONG_TELEPHONE, False
-        code = cls.gen_code() if not code else code
-        # TODO: send code to user
-        send_phone = zone_phone if zone.replace('+', '') != '86' else phone
-        cls._ali_send_code(send_phone, code)
+        if zone.replace('+', '') == '86':
+            code = '8888'
+        else:
+            code = cls.gen_code() if not code else code
+            cls._ali_send_code(zone_phone, code)
         key = REDIS_KEY_SMS_CODE.format(phone=zone_phone)
         redis_client.set(key, code, ex=TEN_MINS)
         return '', True
