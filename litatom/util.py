@@ -407,7 +407,7 @@ def validate_phone_number(phone):
 
     if len(phone) == 13:
         return phone
-
+    return phone
 
 def normalize_cache_key(text):
     """
