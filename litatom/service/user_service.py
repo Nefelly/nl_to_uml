@@ -97,7 +97,7 @@ class UserService(object):
 
     @classmethod
     def update_info(cls, user_id, data):
-        els = ['nickname', 'birthdate', 'avatar', 'bio']
+        els = ['nickname', 'birthdate', 'avatar', 'bio', 'country']
         once = ['gender']
         total_fields = els + once
         field_info = u'field must be at least one of: [%s]' % ','.join(total_fields)

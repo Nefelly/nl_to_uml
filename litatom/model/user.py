@@ -146,6 +146,7 @@ class User(Document, UserSessionMixin):
     logined = BooleanField(default=False)
     bio = StringField()
     phone = StringField()
+    country = StringField()
     judge = ListField(default=[0, 0, 0])   # nasty, boring, like
     huanxin = EmbeddedDocumentField(HuanxinAccount)
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
