@@ -9,7 +9,8 @@ from ....model import (
 )
 from ..form import (
     ReportForm,
-    TrackChatForm
+    TrackChatForm,
+    TrackActionForm
 )
 from ...decorator import (
     session_required,
@@ -22,7 +23,8 @@ from ....response import (
 )
 from ....service import (
     StatisticService,
-    ReportService
+    ReportService,
+    TrackActionService
 )
 
 logger = logging.getLogger(__name__)
@@ -76,6 +78,24 @@ def track_chat():
     target_user_id = form.target_user_id.data
     content = form.content.data
     data, status = StatisticService.track_chat(request.user_id, target_user_id, content)
+    if status:
+        return success(data)
+    return fail(data)
+
+
+@session_required
+def track_action():
+    form = TrackActionForm(data=request.json)
+    action = form.action.data
+    remark = form.remark.data
+    status = TrackActionService.create_action(request.user_id, action, remark)
+    if status:
+        return success()
+    return fail()
+
+@session_required
+def action_by_user_id():
+    data, status = TrackActionService.action_by_uid(request.user_id)
     if status:
         return success(data)
     return fail(data)

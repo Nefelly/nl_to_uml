@@ -32,7 +32,8 @@ from ..key import (
 )
 from ..const import (
     TWO_WEEKS,
-    UNKNOWN_GENDER
+    UNKNOWN_GENDER,
+    DEFAULT_QUERY_LIMIT
 )
 from ..redis import RedisClient
 from ..util import (
@@ -247,6 +248,19 @@ class UserAction(Document):
         'strict': False,
         'alias': 'db_alias'
     }
-    user_id = StringField()
-    action = StringField()
-    create_time = DateTimeField(required=True, default=datetime.datetime.now)
+    user_id = StringField(required=True)
+    action = StringField(required=True)
+    remark = StringField()
+    create_time = IntField(required=True)
+
+    def to_json(self):
+        res = {}
+        for attr in self._fields:
+            if attr == 'id':
+                continue
+            res[attr] = getattr(self, attr)
+        return res
+
+    @classmethod
+    def get_by_user_id(cls, user_id):
+        return cls.objects(user_id=user_id).limit(DEFAULT_QUERY_LIMIT)

@@ -64,3 +64,7 @@ class ReportForm(LitatomForm):
 class TrackChatForm(LitatomForm):
     content = StringField(validators=[DataRequired()])
     target_user_id = StringField(validators=[DataRequired()])
+
+class TrackActionForm(LitatomForm):
+    action = StringField(validators=[DataRequired()])
+    remark = StringField(validators=[Optional()])

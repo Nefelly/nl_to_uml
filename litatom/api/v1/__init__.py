@@ -32,6 +32,8 @@ b.add_url_rule('/lit/home/wording', 'home-wordings', endpoint.home.get_wording)
 b.add_url_rule('/lit/home/report', 'home-report', endpoint.home.report, methods=['POST'])
 b.add_url_rule('/lit/home/report/<report_id>', 'home-report-info', endpoint.home.report_info)
 b.add_url_rule('/lit/home/track', 'home-track-chat', endpoint.home.track_chat, methods=['POST'])
+b.add_url_rule('/lit/home/track_action', 'home-track-action', endpoint.home.track_action, methods=['POST'])
+b.add_url_rule('/lit/home/track_action', 'home-action-info', endpoint.home.action_by_user_id)
 
 # huanxin
 b.add_url_rule('/lit/huanxin/<target_user_id>', 'huanxin-get-info', endpoint.huanxin.get_user_info)
