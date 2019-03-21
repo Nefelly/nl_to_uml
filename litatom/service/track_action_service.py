@@ -8,13 +8,13 @@ class TrackActionService(object):
 
     @classmethod
     def create_action(cls, user_id, action, remark=None):
-        action = UserAction()
-        action.user_id = user_id
-        action.action = action
+        userAction = UserAction()
+        userAction.user_id = user_id
+        userAction.action = action
         if remark:
-            action.remark = remark
-        action.create_time = int(time.time())
-        action.save()
+            userAction.remark = remark
+        userAction.create_time = int(time.time())
+        userAction.save()
         return True
 
 
