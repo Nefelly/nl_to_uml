@@ -27,7 +27,7 @@ class UserMessage(Document):
 
     @classmethod
     def add_message(cls, user_id, related_user_id, m_type, related_feed_id=None, content=None):
-        obj = UserMessage()
+        obj = cls()
         obj.uid = user_id
         obj.related_uid = related_user_id
         obj.m_type = m_type
