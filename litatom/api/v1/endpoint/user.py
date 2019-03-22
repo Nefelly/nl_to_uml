@@ -23,7 +23,8 @@ from ..form import (
     PhoneLoginForm
 )
 from ....service import (
-    UserService
+    UserService,
+    UserMessageService
 )
 
 logger = logging.getLogger(__name__)
@@ -91,6 +92,14 @@ def get_avatars():
 def user_info_by_huanxinids():
     ids = request.json.get('ids')
     data, status = UserService.user_infos_by_huanxinids(ids)
+    if not status:
+        return fail(data)
+    return success(data)
+
+
+@session_required
+def user_messages():
+    data, status = UserMessageService.messages_by_uid_and_del(request.user_id)
     if not status:
         return fail(data)
     return success(data)

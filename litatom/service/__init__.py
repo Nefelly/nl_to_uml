@@ -7,6 +7,7 @@ from .user_relation import (
 )
 from .user_service import UserService
 from .ali_oss import AliOssService
+from .message_service import UserMessageService
 from .statistic_service import StatisticService
 from .anoy_match_service import AnoyMatchService
 from .feed_service import FeedService

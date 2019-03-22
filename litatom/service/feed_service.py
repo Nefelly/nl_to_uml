@@ -15,14 +15,13 @@ from ..const import (
 
 from ..service import (
     UserService,
+    BlockService
 )
 from ..model import (
     Feed,
     FeedLike,
-    FeedComment
-)
-from ..service import (
-    BlockService
+    FeedComment,
+    UserMessage
 )
 
 redis_client = RedisClient()['lit']
@@ -95,6 +94,7 @@ class FeedService(object):
         if not feed:
             return 'wrong feed id', False
         feed.chg_feed_num(num)
+        UserMessage.add_message(feed.user_id, user_id, UserMessage.MSG_LIKE, feed_id)
         return {'like_now': like_now}, True
 
     @classmethod
@@ -113,6 +113,9 @@ class FeedService(object):
                 comment_id = father_comment.comment_id
             comment.comment_id = comment_id
             comment.content_user_id = father_comment.user_id
+            UserMessage.add_message(father_comment.user_id, user_id, UserMessage.MSG_COMMENT, feed_id, content)
+        else:
+            UserMessage.add_message(feed.user_id, user_id, UserMessage.MSG_REPLY, feed_id, content)
         feed.chg_comment_num(1)
         comment.user_id = user_id
         comment.feed_id = feed_id

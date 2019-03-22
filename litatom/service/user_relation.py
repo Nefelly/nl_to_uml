@@ -3,7 +3,8 @@ from ..redis import RedisClient
 from ..model import (
     Follow,
     Blocked,
-    User
+    User,
+    UserMessage
 )
 from ..const import (
     BLOCKED_MSG,
@@ -28,6 +29,7 @@ class FollowService(object):
             if user_huanxin and followed_huanxin:
                 HuanxinService.add_friend(user_huanxin, followed_huanxin)
                 HuanxinService.add_friend(followed_huanxin, user_huanxin)
+        UserMessage.add_message(followed_user_id, user_id, UserMessage.MSG_FOLLOW)
         return None, True
 
     @classmethod

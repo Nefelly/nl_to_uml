@@ -13,8 +13,28 @@ class UserMessage(Document):
     '''
     用户登录时给用户推送的消息
     '''
-    related_feedid = StringField(required=True)
+    MSG_LIKE = 'like'
+    MSG_FOLLOW = 'follow'
+    MSG_REPLY = 'reply'
+    MSG_COMMENT = 'comment'
+
+    related_feedid = StringField()
     uid = StringField(required=True)
     related_uid = StringField()
     m_type = StringField(required=True)
-    time = DateTimeField(required=True, default=datetime.datetime.now)
+    content = StringField()
+    create_time = IntField(required=True)
+
+    @classmethod
+    def add_msg(cls, user_id, related_user_id, m_type, related_feed_id=None, content=None):
+        obj = UserMessage()
+        obj.uid = user_id
+        obj.related_uid = related_user_id
+        obj.m_type = m_type
+        if related_feed_id:
+            obj.related_feedid = related_feed_id
+        if content:
+            obj.content = content
+        obj.create_time = int(time.time())
+        obj.save()
+        return str(obj.id)
