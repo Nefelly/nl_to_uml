@@ -148,7 +148,7 @@ class User(Document, UserSessionMixin):
     bio = StringField()
     phone = StringField()
     country = StringField()
-    judge = ListField(default=[0, 0, 0])   # nasty, boring, like
+    judge = ListField(required=True, default=[0, 0, 0])   # nasty, boring, like
     huanxin = EmbeddedDocumentField(HuanxinAccount)
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
 
@@ -177,9 +177,9 @@ class User(Document, UserSessionMixin):
             return False
         tmp = 0
         for _ in self.JUDGES:
-            tmp += 1
             if judge == _:
                 break
+            tmp += 1
         self.judge[tmp] += 1
         self.save()
 

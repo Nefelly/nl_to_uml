@@ -252,7 +252,7 @@ class HuanxinService(object):
         data = {'username': user_name, 'password': password}
         try:
             response = requests.post(url, verify=False, headers=headers, json=data).json()
-            assert response.get('entities')[0]['username']
+            #assert response.get('entities')[0]['username']
             return True
         except Exception, e:
             traceback.print_exc()
