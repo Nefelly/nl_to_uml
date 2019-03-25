@@ -246,7 +246,10 @@ class AnoyMatchService(object):
         times = 0
         if status:
             times = msg
-        return '%d Times left' % times
+        return {
+            'wording':'%d Times left' % times,
+            'times': times
+            }
 
     @classmethod
     def _uid_by_fake_id(cls, fake_id):
