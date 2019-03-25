@@ -42,7 +42,7 @@ class HuanxinService(object):
     def gen_id_pwd(cls):
         raw_id = None
         pwd = None
-        for i in range(5):
+        for i in range(3):
             td = datetime.datetime.now() - datetime.datetime(1980, 1, 1)
             ss = (td.seconds + td.days * 24 * 3600)
             rs = sys_rng.randint(10 ** 4, 10 ** 4 * 9)
@@ -252,7 +252,6 @@ class HuanxinService(object):
         data = {'username': user_name, 'password': password}
         try:
             response = requests.post(url, verify=False, headers=headers, json=data).json()
-            print response
             assert response.get('entities')[0]['username']
             return True
         except Exception, e:

@@ -239,3 +239,9 @@ class UserService(object):
     def get_avatars(cls):
         return Avatar.get_avatars()
 
+    @classmethod
+    def _delete_user(cls, user):
+        if user.huanxin.user_id:
+            HuanxinService.delete_user(user.huanxin.user_id)
+        user.delete()
+        user.save()
