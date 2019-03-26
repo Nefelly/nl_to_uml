@@ -28,7 +28,6 @@ def _get_db_setting(envvar, db, alias=None):
     if alias:
         default.update({'alias': alias})
     url = r.get_json(envvar, default)
-    print url
     return url
 
 CB_ENABLED = False
