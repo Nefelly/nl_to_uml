@@ -30,7 +30,7 @@ class GoogleService(object):
     CLIENT_ID = '272687572250-i5659eubkl38ck9n17mrijl0neh7rgkc.apps.googleusercontent.com '
     @classmethod
     def login_info(cls, token):
-        try:
+        #try:
             # Specify the CLIENT_ID of the app that accesses the backend:
             idinfo = id_token.verify_oauth2_token(token, requests.Request(), cls.CLIENT_ID)
 
@@ -49,9 +49,9 @@ class GoogleService(object):
             # ID token is valid. Get the user's Google Account ID from the decoded token.
             userid = idinfo['sub']
             print idinfo
-        except ValueError:
-            # Invalid token
-            pass
+        # except ValueError:
+        #     # Invalid token
+        #     pass
 
 
 
