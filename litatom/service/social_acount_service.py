@@ -27,7 +27,7 @@ class GoogleService(object):
     '''
     https://developers.google.com/identity/sign-in/android/backend-auth
     '''
-    CLIENT_ID = '272687572250-i5659eubkl38ck9n17mrijl0neh7rgkc.apps.googleusercontent.com '
+    CLIENT_ID = '272687572250-i5659eubkl38ck9n17mrijl0neh7rgkc.apps.googleusercontent.com'
     @classmethod
     def login_info(cls, token):
         #try:
