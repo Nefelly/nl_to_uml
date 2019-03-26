@@ -243,5 +243,14 @@ class UserService(object):
     def _delete_user(cls, user):
         if user.huanxin.user_id:
             HuanxinService.delete_user(user.huanxin.user_id)
+        user_id = str(user.id)
+        redis_client.delete(REDIS_USER_INFO_FINISHED.format(user_id=user_id))
+        gender = cls.get_gender(user_id)
+        if gender:
+            key = REDIS_ONLINE_GENDER.format(gender=gender)
+            redis_client.zrem(key, user_id)
+        redis_client.delete(REDIS_UID_GENDER.format(user_id=user_id))
+        redis_client.zrem(REDIS_ONLINE, user_id)
+        user.clear_session()
         user.delete()
         user.save()
