@@ -48,6 +48,7 @@ class GoogleService(object):
 
             # ID token is valid. Get the user's Google Account ID from the decoded token.
             userid = idinfo['sub']
+            print idinfo
         except ValueError:
             # Invalid token
             pass
