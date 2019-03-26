@@ -142,7 +142,7 @@ class SocialAccountInfo(EmbeddedDocument):
 
     @classmethod
     def make(cls, other_id, payload):
-        obj = cls(other_id=other_id, extra_data=payload)
+        obj = cls(other_id=other_id, extra_data=str(payload))
         return obj
 
 
