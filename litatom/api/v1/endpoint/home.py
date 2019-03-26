@@ -96,7 +96,7 @@ def track_action():
 
 
 def privacy():
-    return render_template('ppAndTos.html', {'Content-Type': 'text/html'})
+    return render_template('ppAndTos.html'), 200, {'Content-Type': 'text/html'}
 
 
 @session_required
