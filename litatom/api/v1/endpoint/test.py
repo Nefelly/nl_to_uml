@@ -6,7 +6,8 @@ import logging
 
 from flask import (
     jsonify,
-    request
+    request,
+    render_template
 )
 
 
@@ -17,3 +18,6 @@ logger = logging.getLogger(__name__)
 
 def test():
     return jsonify(Success)
+
+def hello():
+    return render_template('hello.html', 'joey')
