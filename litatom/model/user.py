@@ -130,12 +130,30 @@ class HuanxinAccount(EmbeddedDocument):
         }
 
 
+class SocialAccountInfo(EmbeddedDocument):
+    meta = {
+        'strict': False,
+    }
+
+    other_id = StringField()
+    expires_in = IntField()
+    time = DateTimeField(required=True, default=lambda: datetime.datetime.now)
+    extra_data = StringField()
+
+    @classmethod
+    def make(cls, other_id, payload):
+        obj = cls(other_id=other_id, extra_data=payload)
+        return obj
+
 
 class User(Document, UserSessionMixin):
     meta = {
         'strict': False,
         'alias': 'db_alias'
     }
+    GOOGLE_TYPE = 'google'
+    FACEBOOK_TYPE = 'facebook'
+    TYPES = [GOOGLE_TYPE, FACEBOOK_TYPE]
     JUDGES = ['nasty', 'boring', 'like']
 
     nickname = StringField()
@@ -150,6 +168,8 @@ class User(Document, UserSessionMixin):
     country = StringField()
     judge = ListField(required=True, default=[0, 0, 0])   # nasty, boring, like
     huanxin = EmbeddedDocumentField(HuanxinAccount)
+    google = EmbeddedDocumentField(SocialAccountInfo)
+    facebook = EmbeddedDocumentField(SocialAccountInfo)
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
 
     @classmethod
@@ -189,6 +209,14 @@ class User(Document, UserSessionMixin):
             return None
         return cls.objects(huanxin__user_id=huanxinid).first()
 
+    @classmethod
+    def get_by_social_account_id(cls, account_type, account_id):
+        if account_type not in cls.TYPES:
+            return None
+        if account_type == cls.GOOGLE_TYPE:
+            return cls.objects(google__other_id=account_id).first()
+        elif account_type == cls.FACEBOOK_TYPE:
+            return cls.objects(facebook__other_id=account_id).first()
 
     @classmethod
     def get_by_phone(cls, zone_phone):

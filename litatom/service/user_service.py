@@ -26,11 +26,13 @@ from ..model import (
     User,
     Feed,
     HuanxinAccount,
-    Avatar
+    Avatar,
+    SocialAccountInfo
 )
 from ..service import (
     SmsCodeService,
     HuanxinService,
+    GoogleService,
     BlockService
 )
 
@@ -181,6 +183,28 @@ class UserService(object):
             user = User()
             user.huanxin = cls.create_huanxin()
             user.phone = zone_phone
+            user.save()
+            cls.update_info_finished_cache(user)
+        cls.login_job(user)
+
+        basic_info = cls.get_basic_info(user)
+        login_info = user.get_login_info()
+        basic_info.update(login_info)
+        return basic_info, True
+
+    @classmethod
+    def google_login(cls, token):
+        idinfo = GoogleService.login_info(token)
+        if not idinfo:
+            return u'google login check false', False
+        google_id = idinfo.get('sub', '')
+        if not google_id:
+            return u'google login get wrong google id', False
+        user = User.get_by_social_account_id(User.GOOGLE_TYPE, google_id)
+        if not user:
+            user = User()
+            user.huanxin = cls.create_huanxin()
+            user.google = SocialAccountInfo.make(google_id, idinfo)
             user.save()
             cls.update_info_finished_cache(user)
         cls.login_job(user)

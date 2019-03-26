@@ -21,7 +21,8 @@ from .user import (
     User,
     UserSetting,
     UserAction,
-    HuanxinAccount
+    HuanxinAccount,
+    SocialAccountInfo
 )
 from .user_message import (
     UserMessage

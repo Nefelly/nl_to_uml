@@ -52,6 +52,22 @@ def phone_login():
     })
 
 
+def goolge_login():
+    token = request.json.get('token')
+    data, status = UserService.google_login(token)
+    if not status:
+        return jsonify({
+            'success': False,
+            'result': -1,
+            'msg': data
+        })
+    return jsonify({
+        'success': True,
+        'result': 0,
+        'data': data
+    })
+
+
 @session_required
 def verify_nickname():
     nickname = request.values.get('nickname', '')
