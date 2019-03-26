@@ -28,7 +28,8 @@ class Follow(Document):
         if not cls.get_by_follow(uid, followed):
             obj = cls(uid=uid, followed=followed)
             obj.save()
-        return True
+            return True
+        return False
 
     @classmethod
     def unfollow(cls, uid, followed):

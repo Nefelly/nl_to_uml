@@ -98,6 +98,8 @@ def track_action():
 def privacy():
     return render_template('ppAndTos.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
 
+def rules():
+    return render_template('rules.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
 
 @session_required
 def action_by_user_id():
