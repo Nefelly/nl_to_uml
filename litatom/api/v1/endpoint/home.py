@@ -2,7 +2,8 @@ import logging
 
 from flask import (
     jsonify,
-    request
+    request,
+    render_template
 )
 from ....model import (
     Wording
@@ -92,6 +93,11 @@ def track_action():
     if status:
         return success()
     return fail()
+
+
+def privacy():
+    return render_template('ppAndTos.html')
+
 
 @session_required
 def action_by_user_id():
