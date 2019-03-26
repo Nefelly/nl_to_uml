@@ -20,4 +20,4 @@ def test():
     return jsonify(Success)
 
 def hello():
-    return render_template('hello.html', 'joey')
+    return render_template('hello.html', name='joey')
