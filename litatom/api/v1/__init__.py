@@ -37,6 +37,7 @@ b.add_url_rule('/lit/home/track', 'home-track-chat', endpoint.home.track_chat, m
 b.add_url_rule('/lit/home/track_action', 'home-track-action', endpoint.home.track_action, methods=['POST'])
 b.add_url_rule('/lit/home/track_action', 'home-action-info', endpoint.home.action_by_user_id)
 b.add_url_rule('/lit/home/privacy', 'home-privacy', endpoint.home.privacy)
+b.add_url_rule('/lit/home/rules', 'home-rules', endpoint.home.rules)
 
 # huanxin
 b.add_url_rule('/lit/huanxin/<target_user_id>', 'huanxin-get-info', endpoint.huanxin.get_user_info)
