@@ -58,12 +58,13 @@ class FeedService(object):
         feed = Feed.get_by_id(feed_id)
         if not feed:
             return None, True
-        if not feed.user_id != user_id:
+        if feed.user_id != user_id:
             return u'you are not authorized', False
         cls._del_from_feed_pool(feed)
         FeedLike.objects(feed_id=feed_id).delete()
         FeedComment.objects(feed_id=feed_id).delete()
         feed.delete()
+        return None, True
 
     @classmethod
     def feeds_by_userid(cls, visitor_user_id, user_id, start_ts=MAX_TIME, num=10):
