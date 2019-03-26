@@ -22,7 +22,10 @@ class FollowService(object):
         block_msg = BlockService.get_block_msg(user_id, followed_user_id)
         if block_msg:
             return block_msg, False
-        Follow.follow(user_id, followed_user_id)
+        status = Follow.follow(user_id, followed_user_id)
+        if status:
+            User.chg_follower(followed_user_id, 1)
+            User.chg_following(user_id, 1)
         if Follow.get_by_follow(followed_user_id, user_id):
             user_huanxin = User.huanxin_id_by_user_id(user_id)
             followed_huanxin = User.huanxin_id_by_user_id(followed_user_id)
@@ -34,7 +37,10 @@ class FollowService(object):
 
     @classmethod
     def unfollow(cls, user_id, followed_user_id):
-        Follow.unfollow(user_id, followed_user_id)
+        status = Follow.unfollow(user_id, followed_user_id)
+        if status:
+            User.chg_follower(followed_user_id, -1)
+            User.chg_following(user_id, -1)
         return None, True
 
     @classmethod
@@ -42,8 +48,14 @@ class FollowService(object):
         block_msg = BlockService.get_block_msg(uid1, uid2)
         if block_msg:
             return block_msg, False
-        Follow.follow(uid1, uid2)
-        Follow.follow(uid2, uid1)
+        status1 = Follow.follow(uid1, uid2)
+        if status1:
+            User.chg_follower(uid2, 1)
+            User.chg_following(uid1, 1)
+        status2 = Follow.follow(uid2, uid1)
+        if status2:
+            User.chg_follower(uid1, 1)
+            User.chg_following(uid2, 1)
         user_huanxin = User.huanxin_id_by_user_id(uid1)
         followed_huanxin = User.huanxin_id_by_user_id(uid2)
         if user_huanxin and followed_huanxin:
@@ -53,8 +65,14 @@ class FollowService(object):
 
     @classmethod
     def unfollow_eachother(cls, uid1, uid2):
-        Follow.unfollow(uid1, uid2)
-        Follow.unfollow(uid2, uid1)
+        status1 = Follow.unfollow(uid1, uid2)
+        if status1:
+            User.chg_follower(uid2, -1)
+            User.chg_following(uid1, -1)
+        status2 = Follow.unfollow(uid2, uid1)
+        if status2:
+            User.chg_follower(uid1, -1)
+            User.chg_following(uid2, -1)
         return None, True
 
     @classmethod

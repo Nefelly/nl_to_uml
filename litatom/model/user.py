@@ -166,6 +166,8 @@ class User(Document, UserSessionMixin):
     bio = StringField()
     phone = StringField()
     country = StringField()
+    follower = IntField(required=True, default=0)
+    following = IntField(required=True, default=0)
     judge = ListField(required=True, default=[0, 0, 0])   # nasty, boring, like
     huanxin = EmbeddedDocumentField(HuanxinAccount)
     google = EmbeddedDocumentField(SocialAccountInfo)
@@ -221,7 +223,26 @@ class User(Document, UserSessionMixin):
     @classmethod
     def get_by_phone(cls, zone_phone):
         return cls.objects(phone=zone_phone).first()
-
+    
+    
+    @classmethod
+    def chg_follower(cls, user_id, num):
+        user = cls.get_by_id(user_id)
+        if not user:
+            return False
+        new = user.follower + num
+        user.follower = max(0, new)
+        user.save()
+        
+    @classmethod
+    def chg_following(cls, user_id, num):
+        user = cls.get_by_id(user_id)
+        if not user:
+            return False
+        new = user.following + num
+        user.following = max(0, new)
+        user.save()
+    
     @classmethod
     def huanxin_id_by_user_id(cls, user_id):
         user = cls.get_by_id(user_id)
@@ -248,7 +269,9 @@ class User(Document, UserSessionMixin):
             'huanxin_id': self.huanxin.user_id,
             'judged_nasty': self.judge[0],
             'judged_boring': self.judge[1],
-            'judged_like': self.judge[2]
+            'judged_like': self.judge[2],
+            'follower': self.follower,
+            'following': self.following
 
         }
 
