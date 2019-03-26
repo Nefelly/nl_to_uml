@@ -38,7 +38,7 @@ class GoogleService(object):
             # idinfo = id_token.verify_oauth2_token(token, requests.Request())
             # if idinfo['aud'] not in [CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3]:
             #     raise ValueError('Could not verify audience.')
-
+            print idinfo
             if idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
                 raise ValueError('Wrong issuer.')
 
