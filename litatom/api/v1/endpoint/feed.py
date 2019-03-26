@@ -41,6 +41,14 @@ def create_feed():
     return success({'feed_id':feed_id})
 
 
+@session_finished_required
+def delete_feed(feed_id):
+    data, status = FeedService.delete_feed(request.user_id, feed_id)
+    if not status:
+        return fail(data)
+    return success()
+
+
 def user_feeds(other_user_id):
     visitor_user_id = request.user_id
     start_ts = request.args.get('start_ts')

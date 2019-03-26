@@ -44,10 +44,26 @@ class FeedService(object):
         redis_client.zadd(REDIS_FEED_SQUARE, {str(feed.id): feed.create_time})
 
     @classmethod
+    def _del_from_feed_pool(cls, feed):
+        redis_client.zrem(REDIS_FEED_SQUARE, str(feed.id))
+
+    @classmethod
     def create_feed(cls, user_id, content, pics=None):
         feed = Feed.create_feed(user_id, content, pics)
         cls._add_to_feed_pool(feed)
         return str(feed.id)
+
+    @classmethod
+    def delete_feed(cls, user_id, feed_id):
+        feed = Feed.get_by_id(feed_id)
+        if not feed:
+            return None, True
+        if not feed.user_id != user_id:
+            return u'you are not authorized', False
+        cls._del_from_feed_pool(feed)
+        FeedLike.objects(feed_id=feed_id).delete()
+        FeedComment.objects(feed_id=feed_id).delete()
+        feed.delete()
 
     @classmethod
     def feeds_by_userid(cls, visitor_user_id, user_id, start_ts=MAX_TIME, num=10):
