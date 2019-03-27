@@ -159,7 +159,7 @@ class HuanxinService(object):
             return True
         except Exception, e:
             traceback.print_exc()
-            logger.error('Error create huanxin  add friend, user_id: %r, err: %r', source_user_name, e)
+            logger.error('Error block huanxin, user_id: %r, err: %r', source_user_name, e)
             return {}
 
     @classmethod

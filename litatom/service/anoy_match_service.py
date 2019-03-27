@@ -137,30 +137,33 @@ class AnoyMatchService(object):
 
     @classmethod
     def _match(cls, fake_id, gender):
+        '''
+        return matched fake_id, if this match info has been set up
+        '''
         matched_key = REDIS_MATCHED.format(fake_id=fake_id)
         fake_id2 = redis_client.get(matched_key)
         if fake_id2:
             if cls._in_match(fake_id, fake_id2):
                 redis_client.delete(REDIS_FAKE_START.format(fake_id=fake_id))
-                return fake_id2
+                return fake_id2, True
             redis_client.delete(matched_key)
         int_time = int(time.time())
         judge_time = int_time - cls.MATCH_WAIT
         other_gender = cls.OTHER_GENDER_M.get(gender)
         other_fakeids = redis_client.zrangebyscore(REDIS_ANOY_GENDER_ONLINE.format(gender=other_gender), judge_time, MAX_TIME, 0, cls.MAX_CHOOSE_NUM)
         if not other_fakeids:
-            return None
+            return None, False
         fake_id2 = random.choice(other_fakeids)
         user_id = cls._uid_by_fake_id(fake_id)
         user_id2 = cls._uid_by_fake_id(fake_id2)
         if BlockService.get_block_msg(user_id, user_id2):
-            return None
+            return None, False
         redis_client.zadd(matched_key, {fake_id2: int_time})
         fake_id2_matched = redis_client.get(REDIS_MATCHED.format(fake_id=fake_id2))
         if not fake_id2_matched or fake_id2_matched == fake_id:
             cls._create_match(fake_id, fake_id2, gender)
-            return fake_id2
-        return None
+            return fake_id2, False
+        return None, False
 
     @classmethod
     def _match_left_verify(cls, user_id):
@@ -225,18 +228,19 @@ class AnoyMatchService(object):
         gender = UserService.get_gender(user_id)
         if not gender:
             return PROFILE_NOT_COMPLETE, False
-        matched_id = cls._match(fake_id, gender)
+        matched_id, has_matched = cls._match(fake_id, gender)
         if not matched_id:
             return u'please try again', False
 
-        # 减少今日剩余次数
-        now_date = now_date_key()
-        key = REDIS_USER_MATCH_LEFT.format(user_date=user_id + now_date)
-        redis_client.decr(key)
+        if not has_matched:
+            # 减少今日剩余次数
+            now_date = now_date_key()
+            key = REDIS_USER_MATCH_LEFT.format(user_date=user_id + now_date)
+            redis_client.decr(key)
 
-        other_user_id = cls._uid_by_fake_id(matched_id)
-        if other_user_id:
-            redis_client.decr(REDIS_USER_MATCH_LEFT.format(user_date=other_user_id + now_date))
+            other_user_id = cls._uid_by_fake_id(matched_id)
+            if other_user_id:
+                redis_client.decr(REDIS_USER_MATCH_LEFT.format(user_date=other_user_id + now_date))
         res = {'matched_fake_id': matched_id}
         return res, True
 
