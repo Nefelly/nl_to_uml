@@ -11,7 +11,8 @@ from ....model import (
 from ..form import (
     ReportForm,
     TrackChatForm,
-    TrackActionForm
+    TrackActionForm,
+    FeedbackForm
 )
 from ...decorator import (
     session_required,
@@ -25,7 +26,8 @@ from ....response import (
 from ....service import (
     StatisticService,
     ReportService,
-    TrackActionService
+    TrackActionService,
+    FeedbackService
 )
 
 logger = logging.getLogger(__name__)
@@ -68,6 +70,24 @@ def report():
 
 def report_info(report_id):
     data, status = ReportService.info_by_id(report_id)
+    if status:
+        return success(data)
+    return fail(data)
+
+@session_finished_required
+def feedback():
+    user_id = request.user_id
+    form = FeedbackForm(data=request.json)
+    content = form.content.data
+    pics = form.pics.data
+    data, status = FeedbackService.feedback(user_id, content, pics)
+    if status:
+        return success(data)
+    return fail(data)
+
+
+def feedback_info(feedback_id):
+    data, status = ReportService.info_by_id(feedback_id)
     if status:
         return success(data)
     return fail(data)

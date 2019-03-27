@@ -17,6 +17,9 @@ from .material import (
 from .report import (
     Report
 )
+from .feedback import (
+    Feedback
+)
 from .user import (
     User,
     UserSetting,

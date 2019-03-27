@@ -61,6 +61,10 @@ class ReportForm(LitatomForm):
     pics = FieldList(StringField(validators=[Optional()]))
     target_user_id = StringField(validators=[Optional()])
 
+class FeedbackForm(LitatomForm):
+    content = StringField(validators=[DataRequired()])
+    pics = FieldList(StringField(validators=[Optional()]))
+
 class TrackChatForm(LitatomForm):
     content = StringField(validators=[DataRequired()])
     target_user_id = StringField(validators=[DataRequired()])
