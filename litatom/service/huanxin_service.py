@@ -309,7 +309,8 @@ class HuanxinService(object):
             'Authorization':'Bearer %s' % access_token
         }
         try:
-            response = requests.delete(url, verify=False, headers=headers).json()
+            response = requests.post(url, verify=False, headers=headers).json()
+            print response
             assert response.get('entities')[0]['username']
             return True
         except Exception, e:
