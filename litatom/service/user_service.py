@@ -50,8 +50,16 @@ class UserService(object):
         :param user:
         :return:
         """
-        if user.is_forbidden:
-            return u'you are forbidden', False
+        if not user.forbidden:
+            return False
+        if user.forbidden:
+            if int(time.time()) > self.forbidden_ts:
+                user.forbidden = False
+                user.save()
+                if user.huanxin and user.huanxin.user_id:
+                    HuanxinService.active_user(user.huanxin.user_id)
+            else:
+                return u'you are forbidden', False
         user.generate_new_session()
         user._set_session_cache(str(user.id))
         if not user.logined:
@@ -113,6 +121,8 @@ class UserService(object):
         user.forbidden = True
         user.forbidden_ts = int(time.time()) + forbid_time
         user.save()
+        if user.huanxin and user.huanxin.user_id:
+            HuanxinService.deactive_user(user.huanxin.user_id)
         UserRecord.add_forbidden(user_id)
         return True
 

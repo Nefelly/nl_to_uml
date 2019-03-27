@@ -278,3 +278,42 @@ class HuanxinService(object):
             traceback.print_exc()
             logger.error('Error create huanxin get user, user_id: %r, err: %r', user_name, e)
             return False
+
+    @classmethod
+    def active_user(cls, user_name):
+        url = cls.APP_URL + 'users/%s/active' % user_name
+
+        access_token = cls.get_access_token()
+        if not access_token:
+            return False
+        headers = {
+            'Authorization':'Bearer %s' % access_token
+        }
+        try:
+            response = requests.post(url, verify=False, headers=headers, data=json.dumps({})).json()
+            assert response.get('action')
+            return True
+        except Exception, e:
+            traceback.print_exc()
+            logger.error('Error active huanxin, user_id: %r, err: %r', user_name, e)
+            return {}
+
+    @classmethod
+    def deactive_user(cls, user_name):
+        url = cls.APP_URL + 'users/%s/deactive' % user_name
+
+        access_token = cls.get_access_token()
+        if not access_token:
+            return False
+        headers = {
+            'Authorization':'Bearer %s' % access_token
+        }
+        try:
+            response = requests.delete(url, verify=False, headers=headers).json()
+            assert response.get('entities')[0]['username']
+            return True
+        except Exception, e:
+            traceback.print_exc()
+            logger.error('Error deactive huanxin  add friend, user_id: %r, err: %r', user_name, e)
+            return {}
+    
