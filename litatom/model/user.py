@@ -1,4 +1,5 @@
 # coding: utf-8
+import time
 import datetime
 import hashlib
 import logging
@@ -166,6 +167,8 @@ class User(Document, UserSessionMixin):
     bio = StringField()
     phone = StringField()
     country = StringField()
+    forbidden = BooleanField(required=True, default=False)
+    forbidden_ts = IntField(required=True, default=0)
     follower = IntField(required=True, default=0)
     following = IntField(required=True, default=0)
     judge = ListField(required=True, default=[0, 0, 0])   # nasty, boring, like
@@ -173,6 +176,16 @@ class User(Document, UserSessionMixin):
     google = EmbeddedDocumentField(SocialAccountInfo)
     facebook = EmbeddedDocumentField(SocialAccountInfo)
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
+
+    @property
+    def is_forbidden(self):
+        if not self.forbidden:
+            return False
+        if int(time.time()) > self.forbidden_ts:
+            self.forbidden = False
+            self.save()
+            return False
+        return True
 
     @classmethod
     def create_by_phone(cls, nickname, avatar, gender, birthdate, huanxin, zone_phone):
@@ -295,6 +308,9 @@ class UserSetting(Document):
 
 
 class UserAction(Document):
+    '''
+    user's daily records
+    '''
     meta = {
         'strict': False,
         'alias': 'db_alias'
@@ -315,3 +331,30 @@ class UserAction(Document):
     @classmethod
     def get_by_user_id(cls, user_id):
         return cls.objects(user_id=user_id).limit(DEFAULT_QUERY_LIMIT)
+
+
+class UserRecord(Document):
+    """
+    user's forbidden or other recodrd
+    """
+    meta = {
+        'strict': False,
+        'alias': 'db_alias'
+    }
+    FORBIDDEN_ACTION = 'forbidden'
+    user_id = StringField(required=True)
+    action = StringField(required=True)
+    create_time = IntField(required=True)
+
+    @classmethod
+    def get_forbidden_times_user_id(cls, user_id):
+        return cls.objects(action=cls.FORBIDDEN_ACTION, user_id=user_id).count()
+
+    @classmethod
+    def add_forbidden(cls, user_id):
+        obj = cls()
+        obj.user_id = user_id
+        obj.action = cls.FORBIDDEN_ACTION
+        obj.create_time = int(time.time())
+        obj.save()
+        return True

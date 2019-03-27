@@ -7,6 +7,7 @@ from ..util import validate_phone_number
 from ..const import (
     TWO_WEEKS,
     ONE_DAY,
+    ONE_MIN,
     USER_NOT_EXISTS,
     BOY,
     GIRL,
@@ -27,7 +28,8 @@ from ..model import (
     Feed,
     HuanxinAccount,
     Avatar,
-    SocialAccountInfo
+    SocialAccountInfo,
+    UserRecord
 )
 from ..service import (
     SmsCodeService,
@@ -40,7 +42,7 @@ sys_rnd = random.SystemRandom()
 redis_client = RedisClient()['lit']
 
 class UserService(object):
-
+    FORBID_TIME = ONE_MIN
     @classmethod
     def login_job(cls, user):
         """
@@ -48,6 +50,8 @@ class UserService(object):
         :param user:
         :return:
         """
+        if user.is_forbidden:
+            return u'you are forbidden', False
         user.generate_new_session()
         user._set_session_cache(str(user.id))
         if not user.logined:
@@ -55,6 +59,7 @@ class UserService(object):
             user.save()
         if user.finished_info:
             cls.refresh_status(str(user.id))
+        return None, True
 
     @classmethod
     def _on_update_info(cls, user, data):
@@ -96,6 +101,20 @@ class UserService(object):
             u = User.get_by_huanxin_id(_)
             res[_] = cls.get_basic_info(u)
         return res, True
+
+    @classmethod
+    def forbid_user(cls, user_id):
+        forbid_time = cls.FORBID_TIME
+        if UserRecord.get_forbidden_times_user_id(user_id) > 0:
+            forbid_time *= 10
+        user = User.get_by_id(user_id)
+        if not user:
+            return False
+        user.forbidden = True
+        user.forbidden_ts = int(time.time()) + forbid_time
+        user.save()
+        UserRecord.add_forbidden(user_id)
+        return True
 
     @classmethod
     def update_info(cls, user_id, data):
@@ -185,7 +204,9 @@ class UserService(object):
             user.phone = zone_phone
             user.save()
             cls.update_info_finished_cache(user)
-        cls.login_job(user)
+        msg, status = cls.login_job(user)
+        if not status:
+            return msg, False
 
         basic_info = cls.get_basic_info(user)
         login_info = user.get_login_info()
@@ -207,7 +228,9 @@ class UserService(object):
             user.google = SocialAccountInfo.make(google_id, idinfo)
             user.save()
             cls.update_info_finished_cache(user)
-        cls.login_job(user)
+        msg, status = cls.login_job(user)
+        if not status:
+            return msg, False
 
         basic_info = cls.get_basic_info(user)
         login_info = user.get_login_info()
