@@ -50,8 +50,6 @@ class UserService(object):
         :param user:
         :return:
         """
-        if not user.forbidden:
-            return False
         if user.forbidden:
             if int(time.time()) > self.forbidden_ts:
                 user.forbidden = False
