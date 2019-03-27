@@ -281,7 +281,7 @@ class HuanxinService(object):
 
     @classmethod
     def active_user(cls, user_name):
-        url = cls.APP_URL + 'users/%s/active' % user_name
+        url = cls.APP_URL + 'users/%s/activate' % user_name
 
         access_token = cls.get_access_token()
         if not access_token:
@@ -300,7 +300,7 @@ class HuanxinService(object):
 
     @classmethod
     def deactive_user(cls, user_name):
-        url = cls.APP_URL + 'users/%s/deactive' % user_name
+        url = cls.APP_URL + 'users/%s/deactivate' % user_name
 
         access_token = cls.get_access_token()
         if not access_token:
