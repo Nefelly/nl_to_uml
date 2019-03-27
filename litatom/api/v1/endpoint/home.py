@@ -74,6 +74,7 @@ def report_info(report_id):
         return success(data)
     return fail(data)
 
+
 @session_finished_required
 def feedback():
     user_id = request.user_id
@@ -87,7 +88,7 @@ def feedback():
 
 
 def feedback_info(feedback_id):
-    data, status = ReportService.info_by_id(feedback_id)
+    data, status = FeedbackService.info_by_id(feedback_id)
     if status:
         return success(data)
     return fail(data)
