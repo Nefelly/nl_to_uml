@@ -20,7 +20,7 @@ class Feedback(Document):
     '''
     content = StringField(required=True)
     uid = StringField(required=True)
-    pics = ListField(required=True, default=[])
+    pics = ListField(required=False, default=[])
     deal_res = StringField()
     passed = BooleanField(required=True, default=False)
     create_ts = IntField(required=True)
