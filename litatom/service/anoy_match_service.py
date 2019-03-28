@@ -215,6 +215,16 @@ class AnoyMatchService(object):
         return res, True
 
     @classmethod
+    def anoy_user_info(cls, fake_id):
+        res = {}
+        user_id = cls._uid_by_fake_id(fake_id)
+        user = User.get_by_id(user_id)
+        if not user_id:
+            return res
+        res['avatar'] = user.avatar
+        return res
+
+    @classmethod
     def anoy_match(cls, user_id):
         fake_id = cls._fakeid_by_uid(user_id)
         # 匹配已过期
@@ -241,7 +251,10 @@ class AnoyMatchService(object):
             other_user_id = cls._uid_by_fake_id(matched_id)
             if other_user_id:
                 redis_client.decr(REDIS_USER_MATCH_LEFT.format(user_date=other_user_id + now_date))
-        res = {'matched_fake_id': matched_id}
+        res = {
+            'matched_fake_id': matched_id
+        }
+        res.update(cls.anoy_user_info(matched_id))
         return res, True
 
     @classmethod

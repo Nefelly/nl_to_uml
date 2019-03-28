@@ -302,7 +302,12 @@ class UserService(object):
         target_user = User.get_by_id(target_user_id)
         if not target_user:
             return USER_NOT_EXISTS, False
-        return cls.get_basic_info(target_user), True
+        if user_id != target_user_id:
+            return cls.get_basic_info(target_user), True
+        basic_info = cls.get_basic_info(target_user)
+        login_info = target_user.get_login_info()
+        basic_info.update(login_info)
+        return basic_info, True
 
     @classmethod
     def batch_get_user_info_m(cls, uids):
