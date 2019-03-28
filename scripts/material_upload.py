@@ -14,6 +14,7 @@ def up_wording():
 
 def up_avatar():
     dirName = '/data/datas/Avatar'
+    Avatar.objects().delete()
     for g in GENDERS:
         tmp = os.path.join(dirName, g)
         for f in os.listdir(tmp):

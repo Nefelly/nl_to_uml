@@ -135,3 +135,10 @@ def user_messages():
     if not status:
         return fail(data)
     return success(data)
+
+@session_required
+def read_message(message_id):
+    data, status = UserMessageService.read_message(request.user_id, message_id)
+    if not status:
+        return fail(data)
+    return success()

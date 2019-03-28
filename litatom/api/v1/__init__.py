@@ -23,6 +23,7 @@ b.add_url_rule('/lit/user/<target_user_id>', 'user-get-info', endpoint.user.get_
 b.add_url_rule('/lit/user/avatars', 'user-get-avatars', endpoint.user.get_avatars)
 b.add_url_rule('/lit/user/info_by_huanxin', 'user-info-by-huanxin', endpoint.user.user_info_by_huanxinids, methods=['POST'])
 b.add_url_rule('/lit/user/messages', 'user-messages', endpoint.user.user_messages)
+b.add_url_rule('/lit/user/read_message/<message_id>', 'user-message-read', endpoint.user.read_message)
 
 # 图片
 b.add_url_rule('/lit/image/upload', 'image-upload', endpoint.image.upload_image_from_file, methods=['POST'])

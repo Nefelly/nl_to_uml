@@ -37,8 +37,23 @@ class UserMessageService(object):
         :return:
         '''
         res = []
+        next_start = -1
+        feeds = Feed.objects(user_id=user_id, create_time__lte=start_ts).limit(num + 1)
+        feeds = list(feeds)
+        feeds.reverse()   # 时间顺序错误
+        has_next = False
+        if len(feeds) == num + 1:
+            has_next = True
+            next_start = feeds[-1].create_time
+            feeds = feeds[:-1]
+        return {
+                   'feeds': map(cls._feed_info, feeds, [visitor_user_id for el in feeds]),
+                   'has_next': has_next,
+                   'next_start': next_start
+               }, True
+
         objs = UserMessage.objects(uid=user_id).order_by('-create_time').limit(DEFAULT_QUERY_LIMIT)
         for obj in objs:
             res.append(cls.msg_by_message_obj(obj))
-        UserMessage.objects(uid=user_id).limit(DEFAULT_QUERY_LIMIT).delete()
+        #UserMessage.objects(uid=user_id).limit(DEFAULT_QUERY_LIMIT).delete()
         return res, True
