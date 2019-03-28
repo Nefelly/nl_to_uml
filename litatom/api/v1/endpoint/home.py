@@ -62,7 +62,7 @@ def report():
     # reason = form.reason.data
     # pics = form.pics.data
     # target_user_id = form.target_user_id.data
-    reason = request.json.get("reason")
+    reason = request.json.get("reason", "")
     pics = request.json.get("pics", [])
     target_user_id = request.json.get("target_user_id")
     if not reason:
