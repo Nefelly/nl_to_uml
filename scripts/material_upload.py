@@ -19,7 +19,7 @@ def up_avatar():
         tmp = os.path.join(dirName, g)
         for f in os.listdir(tmp):
             fileName = os.path.join(tmp, f)
-            fileid = AliOssService.upload_from_binary(fileName)
+            fileid = AliOssService.upload_from_binary(open(fileName).read())
             Avatar.create(fileid, g)
 
 if __name__ == "__main__":
