@@ -15,7 +15,8 @@ b.add_url_rule('/lit/get_sms_code', 'get-sms-code', endpoint.sms_code.get_sms_co
 
 # user
 b.add_url_rule('/lit/user/phone_login', 'user-phone-login', endpoint.user.phone_login, methods=['POST'])
-b.add_url_rule('/lit/user/google_login', 'user-google-login', endpoint.user.goolge_login, methods=['POST'])
+b.add_url_rule('/lit/user/google_login', 'user-google-login', endpoint.user.google_login, methods=['POST'])
+b.add_url_rule('/lit/user/facebook_login', 'user-facebook-login', endpoint.user.facebook_login, methods=['POST'])
 b.add_url_rule('/lit/user/verify_nickname', 'user-verify-nickname', endpoint.user.verify_nickname)
 b.add_url_rule('/lit/user/info', 'user-update-info', endpoint.user.update_info, methods=['POST'])
 b.add_url_rule('/lit/user/<target_user_id>', 'user-get-info', endpoint.user.get_user_info)

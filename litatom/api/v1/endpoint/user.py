@@ -52,9 +52,25 @@ def phone_login():
     })
 
 
-def goolge_login():
+def google_login():
     token = request.json.get('token')
     data, status = UserService.google_login(token)
+    if not status:
+        return jsonify({
+            'success': False,
+            'result': -1,
+            'msg': data
+        })
+    return jsonify({
+        'success': True,
+        'result': 0,
+        'data': data
+    })
+
+
+def facebook_login():
+    token = request.json.get('token')
+    data, status = UserService.facebook_login(token)
     if not status:
         return jsonify({
             'success': False,
