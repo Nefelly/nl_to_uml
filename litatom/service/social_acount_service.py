@@ -68,7 +68,7 @@ class FacebookService(object):
     def _get_user_id(cls, token):
         try:
             url = 'https://graph.facebook.com/debug_token?access_token=%s&input_token=%s' % (cls.APP_TOKEN, token)
-            response = requests.post(url, verify=False).json()
+            response = requests.get(url, verify=False).json()
             assert response.get('is_valid')
             return response.get('user_id')
         except Exception, e:
@@ -80,7 +80,7 @@ class FacebookService(object):
     def _get_info(cls, fb_user_id):
         try:
             url = 'https://graph.facebook.com/%s?access_token=%s' % (fb_user_id, cls.APP_TOKEN)
-            response = requests.post(url, verify=False).json()
+            response = requests.get(url, verify=False).json()
             assert response.get('id')
             return response
         except Exception, e:
