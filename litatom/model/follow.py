@@ -17,7 +17,7 @@ class Follow(Document):
 
     uid = StringField(required=True)
     followed = StringField(required=False)
-    create_time = DateTimeField(required=True, default=datetime.datetime.now)
+    create_time = IntField(required=True)
 
     @classmethod
     def get_by_follow(cls, uid, followed):
@@ -27,6 +27,7 @@ class Follow(Document):
     def follow(cls, uid, followed):
         if not cls.get_by_follow(uid, followed):
             obj = cls(uid=uid, followed=followed)
+            obj.create_time = int(time.time())
             obj.save()
             return True
         return False
