@@ -58,10 +58,15 @@ def get_wording():
 @session_finished_required
 def report():
     user_id = request.user_id
-    form = ReportForm(data=request.json)
-    reason = form.reason.data
-    pics = form.pics.data
-    target_user_id = form.target_user_id.data
+    # form = ReportForm(data=request.json)
+    # reason = form.reason.data
+    # pics = form.pics.data
+    # target_user_id = form.target_user_id.data
+    reason = request.json.get("reason")
+    pics = request.json.get("pics", [])
+    target_user_id = request.json.get("target_user_id")
+    if not reason:
+        return fail()
     data, status = ReportService.report(user_id, reason, pics, target_user_id)
     if status:
         return success(data)
@@ -78,9 +83,13 @@ def report_info(report_id):
 @session_finished_required
 def feedback():
     user_id = request.user_id
-    form = FeedbackForm(data=request.json)
-    content = form.content.data
-    pics = form.pics.data
+    # form = FeedbackForm(data=request.json)
+    # content = form.content.data
+    # pics = form.pics.data
+    content = request.json.get("content")
+    pics = request.json.get("pics", [])
+    if not content:
+        return fail()
     data, status = FeedbackService.feedback(user_id, content, pics)
     if status:
         return success(data)
