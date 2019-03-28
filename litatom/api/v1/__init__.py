@@ -76,4 +76,5 @@ b.add_url_rule('/lit/blocks', 'blocks', endpoint.user_relations.blocks)
 
 b.add_url_rule('/lit/follow/<other_user_id>', 'follow', endpoint.user_relations.follow)
 b.add_url_rule('/lit/unfollow/<other_user_id>', 'unfollow', endpoint.user_relations.unfollow)
-b.add_url_rule('/lit/follows', 'follows', endpoint.user_relations.follows)
+b.add_url_rule('/lit/following', 'following', endpoint.user_relations.following)
+b.add_url_rule('/lit/follower', 'follower', endpoint.user_relations.follower)

@@ -9,7 +9,8 @@ from ..model import (
 from ..const import (
     BLOCKED_MSG,
     BLOCK_OTHER_MSG,
-    DEFAULT_QUERY_LIMIT
+    DEFAULT_QUERY_LIMIT,
+    MAX_TIME
 )
 from ..service import (
     HuanxinService
@@ -76,10 +77,40 @@ class FollowService(object):
         return None, True
 
     @classmethod
-    def follows(cls, user_id):
-        follow_uids = [obj.followed for obj in Follow.objects(uid=user_id).limit(DEFAULT_QUERY_LIMIT)]
+    def following(cls, user_id, start_ts=0, num=10):
+        objs = Follow.objects(uid=user_id, create_time__gte=start_ts).limit(num + 1)
+        has_next = False
+        next_start = -1
+        if len(objs) == num + 1:
+            has_next = True
+            next_start = objs[-1].create_time
+            objs = objs[:-1]
+        follow_uids = [obj.followed for obj in objs]
         users = map(User.get_by_id, follow_uids)
-        return [u.basic_info() for u in users if u], True
+        res = {
+            'has_next': has_next,
+            'next_start': next_start,
+            'users': [u.basic_info() for u in users if u]
+        }
+        return res, True
+
+    @classmethod
+    def follower(cls, user_id, start_ts=0, num=10):
+        objs = Follow.objects(followed=user_id, create_time__gte=start_ts).limit(num + 1)
+        has_next = False
+        next_start = -1
+        if len(objs) == num + 1:
+            has_next = True
+            next_start = objs[-1].create_time
+            objs = objs[:-1]
+        follow_uids = [obj.uid for obj in objs]
+        users = map(User.get_by_id, follow_uids)
+        res = {
+            'has_next': has_next,
+            'next_start': next_start,
+            'users': [u.basic_info() for u in users if u]
+        }
+        return res, True
     
 
 class BlockService(object):

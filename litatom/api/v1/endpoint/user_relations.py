@@ -17,6 +17,9 @@ from ....service import (
     BlockService,
     FollowService
 )
+from ....const import (
+    MAX_TIME
+)
 
 logger = logging.getLogger(__name__)
 
@@ -58,8 +61,23 @@ def unfollow(other_user_id):
     return fail(data)
 
 @session_finished_required
-def follows():
-    data, status = FollowService.follows(request.user_id)
+def following():
+    start_ts = request.args.get('start_ts')
+    num = request.args.get('num')
+    start_ts = int(start_ts) if start_ts and start_ts.isdigit() else MAX_TIME
+    num = int(num) if num and num.isdigit() else 10
+    data, status = FollowService.following(request.user_id, start_ts, num)
+    if status:
+        return success(data)
+    return fail(data)
+
+@session_finished_required
+def follower():
+    start_ts = request.args.get('start_ts')
+    num = request.args.get('num')
+    start_ts = int(start_ts) if start_ts and start_ts.isdigit() else MAX_TIME
+    num = int(num) if num and num.isdigit() else 10
+    data, status = FollowService.follower(request.user_id, start_ts, num)
     if status:
         return success(data)
     return fail(data)
