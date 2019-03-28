@@ -79,6 +79,7 @@ class FollowService(object):
     @classmethod
     def following(cls, user_id, start_ts=0, num=10):
         objs = Follow.objects(uid=user_id, create_time__gte=start_ts).limit(num + 1)
+        objs = list(objs)
         has_next = False
         next_start = -1
         if len(objs) == num + 1:
@@ -97,6 +98,7 @@ class FollowService(object):
     @classmethod
     def follower(cls, user_id, start_ts=0, num=10):
         objs = Follow.objects(followed=user_id, create_time__gte=start_ts).limit(num + 1)
+        objs = list(objs)
         has_next = False
         next_start = -1
         if len(objs) == num + 1:
