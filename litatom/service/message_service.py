@@ -44,6 +44,7 @@ class UserMessageService(object):
         objs = list(objs)
         objs.reverse()   # 时间顺序错误
         has_next = False
+        next_start = -1
         if len(objs) == num + 1:
             has_next = True
             next_start = objs[-1].create_time
