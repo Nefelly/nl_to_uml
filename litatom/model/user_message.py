@@ -26,6 +26,10 @@ class UserMessage(Document):
     create_time = IntField(required=True)
 
     @classmethod
+    def get_by_id(cls, message_id):
+        return cls.objects(id=message_id).first()
+
+    @classmethod
     def add_message(cls, user_id, related_user_id, m_type, related_feed_id=None, content=None):
         obj = cls()
         obj.uid = user_id

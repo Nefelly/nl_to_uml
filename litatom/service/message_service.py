@@ -5,7 +5,8 @@ from ..model import (
 )
 from ..const import (
     DEFAULT_QUERY_LIMIT,
-    MAX_TIME
+    MAX_TIME,
+    NOT_AUTHORIZED
 )
 from ..util import get_time_info
 from ..service import (
@@ -27,7 +28,8 @@ class UserMessageService(object):
             'user_info': UserService.user_info_by_uid(obj.uid),
             'message':  cls.MSG_MESSAGE_M.get(obj.m_type, ''),
             'time_info': get_time_info(obj.create_time),
-            'content': obj.content if obj.content else ''
+            'content': obj.content if obj.content else ',',
+            'message_id': str(obj.id)
         }
 
     @classmethod
@@ -55,3 +57,13 @@ class UserMessageService(object):
             'next_start': next_start
         }
         return ret, True
+
+    @classmethod
+    def read_message(cls, user_id, message_id):
+        obj = UserMessage.get_by_id(message_id)
+        if not obj:
+            return None, True
+        if obj.uid != user_id:
+            return NOT_AUTHORIZED, False
+        obj.delete()
+        return None, True

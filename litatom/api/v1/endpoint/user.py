@@ -26,7 +26,9 @@ from ....service import (
     UserService,
     UserMessageService
 )
-
+from  ....const import (
+    MAX_TIME
+)
 logger = logging.getLogger(__name__)
 # handler = logging.FileHandler("/data/log/litatom.log")
 # logger.addHandler(handler)
@@ -131,7 +133,11 @@ def user_info_by_huanxinids():
 
 @session_required
 def user_messages():
-    data, status = UserMessageService.messages_by_uid_and_del(request.user_id)
+    start_ts = request.args.get('start_ts')
+    num = request.args.get('num')
+    start_ts = int(start_ts) if start_ts and start_ts.isdigit() else MAX_TIME
+    num = int(num) if num and num.isdigit() else 10
+    data, status = UserMessageService.messages_by_uid(request.user_id, start_ts, num)
     if not status:
         return fail(data)
     return success(data)
