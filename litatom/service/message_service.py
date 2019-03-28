@@ -4,7 +4,8 @@ from ..model import (
     UserMessage,
 )
 from ..const import (
-    DEFAULT_QUERY_LIMIT
+    DEFAULT_QUERY_LIMIT,
+    MAX_TIME
 )
 from ..util import get_time_info
 from ..service import (
@@ -30,30 +31,27 @@ class UserMessageService(object):
         }
 
     @classmethod
-    def messages_by_uid_and_del(cls, user_id):
+    def messages_by_uid(cls, user_id, start_ts=MAX_TIME, num=10):
         '''
         :return uid: online map
         :param uids:
         :return:
         '''
         res = []
-        next_start = -1
-        feeds = Feed.objects(user_id=user_id, create_time__lte=start_ts).limit(num + 1)
-        feeds = list(feeds)
-        feeds.reverse()   # 时间顺序错误
+        objs = UserMessage.objects(uid=user_id, create_time__lte=start_ts).limit(num + 1)
+        objs = list(objs)
+        objs.reverse()   # 时间顺序错误
         has_next = False
-        if len(feeds) == num + 1:
+        if len(objs) == num + 1:
             has_next = True
-            next_start = feeds[-1].create_time
-            feeds = feeds[:-1]
-        return {
-                   'feeds': map(cls._feed_info, feeds, [visitor_user_id for el in feeds]),
-                   'has_next': has_next,
-                   'next_start': next_start
-               }, True
-
-        objs = UserMessage.objects(uid=user_id).order_by('-create_time').limit(DEFAULT_QUERY_LIMIT)
+            next_start = objs[-1].create_time
+            objs = objs[:-1]
         for obj in objs:
             res.append(cls.msg_by_message_obj(obj))
         #UserMessage.objects(uid=user_id).limit(DEFAULT_QUERY_LIMIT).delete()
-        return res, True
+        ret = {
+            'messages': res,
+            'has_next': has_next,
+            'next_start': next_start
+        }
+        return ret, True
