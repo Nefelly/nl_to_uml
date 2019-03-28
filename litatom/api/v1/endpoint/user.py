@@ -43,7 +43,7 @@ def phone_login():
         return jsonify({
             'success': False,
             'result': -1,
-            'msg': data
+            'message': data
         })
     return jsonify({
         'success': True,
@@ -59,7 +59,7 @@ def google_login():
         return jsonify({
             'success': False,
             'result': -1,
-            'msg': data
+            'message': data
         })
     return jsonify({
         'success': True,
@@ -75,7 +75,7 @@ def facebook_login():
         return jsonify({
             'success': False,
             'result': -1,
-            'msg': data
+            'message': data
         })
     return jsonify({
         'success': True,

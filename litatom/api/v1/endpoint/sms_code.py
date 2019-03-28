@@ -38,7 +38,7 @@ def get_sms_code():
     return jsonify({
         'success': False,
         'result': -1,
-        'msg': msg
+        'message': msg
     })
 
 
