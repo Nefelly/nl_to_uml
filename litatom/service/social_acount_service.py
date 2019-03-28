@@ -69,7 +69,7 @@ class FacebookService(object):
         try:
             url = 'https://graph.facebook.com/debug_token?access_token=%s&input_token=%s' % (cls.APP_TOKEN, token)
             response = rq.get(url, verify=False).json()
-            assert response.get('is_valid')
+            assert response.get('data')['is_valid']
             return response.get('user_id')
         except Exception, e:
             traceback.print_exc()
