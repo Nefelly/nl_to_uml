@@ -51,7 +51,7 @@ class FeedCommentForm(LitatomForm):
 
 class ReportForm(LitatomForm):
     reason = StringField(validators=[DataRequired()])
-    pics = FieldList(StringField(validators=[Optional()]), default=[])
+    pics = FieldList(StringField(), default=[])
     target_user_id = StringField(validators=[Optional()])
 
 class FeedbackForm(LitatomForm):
