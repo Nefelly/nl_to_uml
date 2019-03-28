@@ -35,6 +35,7 @@ from ..service import (
     SmsCodeService,
     HuanxinService,
     GoogleService,
+    FacebookService,
     BlockService
 )
 
@@ -245,6 +246,30 @@ class UserService(object):
         basic_info.update(login_info)
         return basic_info, True
 
+    @classmethod
+    def facebook_login(cls, token):
+        idinfo = FacebookService.login_info(token)
+        if not idinfo:
+            return u'facebook login check false', False
+        facebook_id = idinfo.get('id', '')
+        if not facebook_id:
+            return u'facebook login get wrong facebook id', False
+        user = User.get_by_social_account_id(User.FACEBOOK_TYPE, facebook_id)
+        if not user:
+            user = User()
+            user.huanxin = cls.create_huanxin()
+            user.facebook = SocialAccountInfo.make(facebook_id, idinfo)
+            user.save()
+            cls.update_info_finished_cache(user)
+        msg, status = cls.login_job(user)
+        if not status:
+            return msg, False
+
+        basic_info = cls.get_basic_info(user)
+        login_info = user.get_login_info()
+        basic_info.update(login_info)
+        return basic_info, True
+    
     @classmethod
     def get_basic_info(cls, user):
         if not user:

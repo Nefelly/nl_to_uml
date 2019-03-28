@@ -3,8 +3,8 @@ import base64
 import hashlib
 import json
 import logging
-import time
-import uuid
+import requests
+import traceback
 from urllib2 import urlopen
 
 import oss2
@@ -56,3 +56,53 @@ class GoogleService(object):
 
 
 
+class FacebookService(object):
+    '''
+    https://blog.csdn.net/mycwq/article/details/71308186
+    '''
+    APP_ID = '372877603536187'
+    APP_SECRET = '29e68240c95ceddbe0a6798400ce2f0a'
+    APP_TOKEN = '%s|%s' % (APP_ID, APP_SECRET)
+
+    @classmethod
+    def _get_user_id(cls, token):
+        try:
+            url = 'https://graph.facebook.com/debug_token?access_token=%s&input_token=%s' % (cls.APP_TOKEN, token)
+            response = requests.post(url, verify=False).json()
+            assert response.get('is_valid')
+            return response.get('user_id')
+        except Exception, e:
+            traceback.print_exc()
+            logger.error('Error get , token: %r, err: %r', token, e)
+            return None
+
+    @classmethod
+    def _get_info(cls, fb_user_id):
+        try:
+            url = 'https://graph.facebook.com/%s?access_token=%s' % (fb_user_id, cls.APP_TOKEN)
+            response = requests.post(url, verify=False).json()
+            assert response.get('id')
+            return response
+        except Exception, e:
+            traceback.print_exc()
+            logger.error('Error get , token: %r, err: %r', token, e)
+            return None
+
+    @classmethod
+    def login_info(cls, token):
+        '''
+        https://graph.facebook.com/debug_token?access_token=372877603536187|29e68240c95ceddbe0a6798400ce2f0a&
+        input_token=EAAFTIVUafTsBAFEDaxP3vODkuCxbdGuxZAhpyDsKYvUUY7jJtIsauhDWyoQm2uIbToY9J07ZCMnrlpZCu0ZBlKWE
+        sSHlxp99AmBZCKFE7Juo2Kf4eWdpEyS9gtO30D8Pmq7B22HJfJ8nKJCMRnD3caZCm8NVBIJ3JKjfZBZADar8niZB5JqFrZAcj4U6B
+        Dcn8fQfI4XBXCaaZCekhDWhYg7BxdHE1gxyRCfQySJztzc5h71MQbqRRzlsZA9r
+        :param token:
+        :return:
+        '''
+        try:
+            user_id = cls._get_user_id(token)
+            assert user_id is not None
+            return cls._get_info(user_id)
+        except ValueError, e:
+            # Invalid token
+            logger.error('log false token:%s, %s', token, e)
+            return None

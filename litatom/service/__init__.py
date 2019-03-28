@@ -5,7 +5,10 @@ from .user_relation import (
     FollowService,
     BlockService
 )
-from .social_acount_service import GoogleService
+from .social_acount_service import (
+    GoogleService,
+    FacebookService
+)
 from .user_service import UserService
 from .ali_oss import AliOssService
 from .message_service import UserMessageService
