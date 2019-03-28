@@ -64,7 +64,7 @@ def unfollow(other_user_id):
 def following():
     start_ts = request.args.get('start_ts')
     num = request.args.get('num')
-    start_ts = int(start_ts) if start_ts and start_ts.isdigit() else MAX_TIME
+    start_ts = int(start_ts) if start_ts and start_ts.isdigit() else 0
     num = int(num) if num and num.isdigit() else 10
     data, status = FollowService.following(request.user_id, start_ts, num)
     if status:
@@ -75,7 +75,7 @@ def following():
 def follower():
     start_ts = request.args.get('start_ts')
     num = request.args.get('num')
-    start_ts = int(start_ts) if start_ts and start_ts.isdigit() else MAX_TIME
+    start_ts = int(start_ts) if start_ts and start_ts.isdigit() else 0
     num = int(num) if num and num.isdigit() else 10
     data, status = FollowService.follower(request.user_id, start_ts, num)
     if status:
