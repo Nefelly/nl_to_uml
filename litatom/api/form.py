@@ -24,6 +24,7 @@ class LitatomForm(Form):
         res = super(LitatomForm, self).validate(*args, **kwargs)
         if not res:
             request.form_errors = self.errors
+            print self.errors
         return res
 
 
