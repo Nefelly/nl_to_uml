@@ -24,6 +24,14 @@ class Follow(Document):
     def get_by_follow(cls, uid, followed):
         return cls.objects(uid=uid, followed=followed).first()
 
+
+    @classmethod
+    def in_follow(cls, uid, followed):
+        obj = cls.get_by_follow(uid, followed)
+        if obj:
+            return True
+        return False
+
     @classmethod
     def follow(cls, uid, followed):
         if not cls.get_by_follow(uid, followed):

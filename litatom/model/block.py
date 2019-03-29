@@ -24,7 +24,15 @@ class Blocked(Document):
         return cls.objects(uid=uid, blocked=blocked).first()
 
     @classmethod
+    def in_block(cls, uid, blocked):
+        if cls.get_by_block(uid, blocked):
+            return True
+        return False
+
+    @classmethod
     def block(cls, uid, blocked):
+        if uid == blocked:
+            return False
         if not cls.get_by_block(uid, blocked):
             obj = cls(uid=uid, blocked=blocked)
             obj.save()

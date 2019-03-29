@@ -29,7 +29,9 @@ from ..model import (
     HuanxinAccount,
     Avatar,
     SocialAccountInfo,
-    UserRecord
+    UserRecord,
+    Follow,
+    Blocked
 )
 from ..service import (
     SmsCodeService,
@@ -307,6 +309,10 @@ class UserService(object):
         basic_info = cls.get_basic_info(target_user)
         login_info = target_user.get_login_info()
         basic_info.update(login_info)
+        basic_info.update({
+            'followed': Follow.in_follow(user_id, target_user_id),
+            'blocked': Blocked.in_block(user_id, target_user_id)
+        })
         return basic_info, True
 
     @classmethod
