@@ -25,7 +25,7 @@ class UserMessageService(object):
         if not obj:
             return {}
         return {
-            'user_info': UserService.user_info_by_uid(obj.uid),
+            'user_info': UserService.user_info_by_uid(obj.related_uid),
             'message':  cls.MSG_MESSAGE_M.get(obj.m_type, ''),
             'time_info': get_time_info(obj.create_time),
             'content': obj.content if obj.content else ',',
