@@ -141,6 +141,7 @@ class AnoyMatchService(object):
         return matched fake_id, if this match info has been set up
         '''
         matched_key = REDIS_MATCHED.format(fake_id=fake_id)
+        print matched_key
         fake_id2 = redis_client.get(matched_key)
         if fake_id2:
             if cls._in_match(fake_id, fake_id2):
