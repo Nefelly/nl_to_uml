@@ -141,7 +141,6 @@ class AnoyMatchService(object):
         return matched fake_id, if this match info has been set up
         '''
         matched_key = REDIS_MATCHED.format(fake_id=fake_id)
-        print matched_key
         fake_id2 = redis_client.get(matched_key)
         if fake_id2:
             if cls._in_match(fake_id, fake_id2):
@@ -159,7 +158,7 @@ class AnoyMatchService(object):
         user_id2 = cls._uid_by_fake_id(fake_id2)
         if BlockService.get_block_msg(user_id, user_id2):
             return None, False
-        redis_client.zadd(matched_key, {fake_id2: int_time})
+        #redis_client.zadd(matched_key, {fake_id2: int_time})
         fake_id2_matched = redis_client.get(REDIS_MATCHED.format(fake_id=fake_id2))
         if not fake_id2_matched or fake_id2_matched == fake_id:
             cls._create_match(fake_id, fake_id2, gender)
