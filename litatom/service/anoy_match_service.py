@@ -45,6 +45,7 @@ class AnoyMatchService(object):
     MATCH_INT = 60 * 93
     TOTAL_WAIT = MATCH_INT + MATCH_WAIT + FIVE_MINS
     MAX_CHOOSE_NUM = 100
+    MATCH_TMS = 1000
     OTHER_GENDER_M = {BOY: GIRL, GIRL: BOY}
 
     @classmethod
@@ -170,12 +171,22 @@ class AnoyMatchService(object):
         # 匹配次数验证
         now_date = now_date_key()
         match_left_key = REDIS_USER_MATCH_LEFT.format(user_date=user_id + now_date)
-        redis_client.setnx(match_left_key, 1000)
+        redis_client.setnx(match_left_key, cls.MATCH_TMS)
         redis_client.expire(match_left_key, ONE_DAY)
         times_left = int(redis_client.get(match_left_key))
         if times_left <= 0:
             return u'Your anoymatch opportunity has run out, please try again tomorrow', False
         return times_left, True
+
+    @classmethod
+    def _decr_match_left(cls, user_id):
+        now_date = now_date_key()
+        match_left_key = REDIS_USER_MATCH_LEFT.format(user_date=user_id + now_date)
+        if not redis_client.get(match_left_key):
+            redis_client.setnx(match_left_key, cls.MATCH_TMS)
+            redis_client.expire(match_left_key, ONE_DAY)
+        redis_client.decr(match_left_key)
+
 
     @classmethod
     def create_fakeid(cls, user_id):
@@ -244,13 +255,11 @@ class AnoyMatchService(object):
 
         if not has_matched:
             # 减少今日剩余次数
-            now_date = now_date_key()
-            key = REDIS_USER_MATCH_LEFT.format(user_date=user_id + now_date)
-            redis_client.decr(key)
+            cls._decr_match_left(user_id)
 
             other_user_id = cls._uid_by_fake_id(matched_id)
             if other_user_id:
-                redis_client.decr(REDIS_USER_MATCH_LEFT.format(user_date=other_user_id + now_date))
+                cls._decr_match_left(other_user_id)
         res = {
             'matched_fake_id': matched_id
         }
