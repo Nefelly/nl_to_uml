@@ -66,7 +66,8 @@ def get_time_info(int_time):
     }
 
 def now_date_key():
-    return datetime.datetime.now().strftime('%Y-%m-%d')
+    # return (datetime.datetime.now() + datetime.timedelta(seconds=-2)).strftime('%Y-%m-%d') # for time latency reason
+    return datetime.datetime.now().strftime('%Y-%m-%d') # for time latency reason
 
 def low_high_pair(id1, id2):
     return id1 + id2 if id1 < id2 else id2 + id1
