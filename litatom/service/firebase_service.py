@@ -30,6 +30,7 @@ class FirebaseService(object):
             obj = FirebaseInfo()
         obj.user_id = user_id
         obj.user_token = token
+        obj.create_time = int(time.time())
         obj.save()
         return None, True
 
