@@ -111,7 +111,8 @@ class FeedService(object):
         if not feed:
             return 'wrong feed id', False
         feed.chg_feed_num(num)
-        UserMessage.add_message(feed.user_id, user_id, UserMessage.MSG_LIKE, feed_id)
+        if like_now:
+            UserMessage.add_message(feed.user_id, user_id, UserMessage.MSG_LIKE, feed_id)
         return {'like_now': like_now}, True
 
     @classmethod
