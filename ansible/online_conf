@@ -3,7 +3,7 @@ litatom_envvars:
   
 litatom_envvars_json:
   DB_LIT:
-    host: "mongodb://ll:11@127.0.0.1/lit?authsource=lit"
+    host: "mongodb://ll:sgfhgfjty123@127.0.0.1/lit?authsource=lit"
     port: 27017
     maxPoolSize: 80
     socketTimeoutMS: 5000
