@@ -51,7 +51,7 @@ class FirebaseService(object):
 
         headers = {
             'Content-Type':'application/json; charset=utf-8',
-            'Authorization': cls.SERVER_KEY
+            'Authorization': 'key=%s' % cls.SERVER_KEY
         }
         try:
             response = requests.post(cls.SEND_URL, verify=False, headers=headers, data=data)#.json()
