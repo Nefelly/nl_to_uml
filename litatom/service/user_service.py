@@ -286,7 +286,7 @@ class UserService(object):
             return user.bio
         feed_num = Feed.feed_num(str(user.id))
         he_or_she = 'He' if user.gender == BOY else 'She'
-        if feed_num > 3:
+        if feed_num < 3:
             return u'%s is mysterious~' % he_or_she
         return u'%s loves to share' % he_or_she
 
