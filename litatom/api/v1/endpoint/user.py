@@ -152,7 +152,7 @@ def read_message(message_id):
 
 @session_required
 def register_firebase():
-    token = request.values.get('token')
+    token = request.json.get('token')
     if not token:
         return fail()
     data, status = FirebaseService.add_token(request.user_id, token)
