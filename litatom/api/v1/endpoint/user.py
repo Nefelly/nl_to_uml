@@ -159,3 +159,13 @@ def register_firebase():
     if not status:
         return fail(data)
     return success()
+
+@session_finished_required
+def firebase_push():
+    to_user_id = request.json.get('user_id', '')
+    title = request.json.get('title', '')
+    text = request.json.get('text', '')
+    data, status = FirebaseService.send_to_user(request.user_id, title, text)
+    if not status:
+        return fail(data)
+    return success()
