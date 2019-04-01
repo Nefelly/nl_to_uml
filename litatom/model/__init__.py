@@ -31,6 +31,9 @@ from .user import (
 from .user_message import (
     UserMessage
 )
+from .firebase import (
+    FirebaseInfo
+)
 from .redis_lock import (
     RedisLock
 )

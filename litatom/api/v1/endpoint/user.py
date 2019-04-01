@@ -24,7 +24,8 @@ from ..form import (
 )
 from ....service import (
     UserService,
-    UserMessageService
+    UserMessageService,
+    FirebaseService
 )
 from  ....const import (
     MAX_TIME
@@ -145,6 +146,16 @@ def user_messages():
 @session_required
 def read_message(message_id):
     data, status = UserMessageService.read_message(request.user_id, message_id)
+    if not status:
+        return fail(data)
+    return success()
+
+@session_required
+def register_firebase():
+    token = request.values.get('token')
+    if not token:
+        return fail()
+    data, status = FirebaseService.add_token(request.user_id, token)
     if not status:
         return fail(data)
     return success()

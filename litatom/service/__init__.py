@@ -19,3 +19,4 @@ from .debug_helper_service import DebugHelperService
 from .report_service import ReportService
 from .track_action_service import TrackActionService
 from .feedback_service import FeedbackService
+from .firebase_service import FirebaseService
