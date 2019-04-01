@@ -54,7 +54,7 @@ class FirebaseService(object):
             'Authorization': 'key=%s' % cls.SERVER_KEY
         }
         try:
-            response = requests.post(cls.SEND_URL, verify=False, headers=headers, data=data)#.json()
+            response = requests.post(cls.SEND_URL, verify=False, headers=headers, json=data)#.json()
             print response
             assert response.get('data')[0]
             return True
