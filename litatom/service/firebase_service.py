@@ -1,10 +1,12 @@
 # coding: utf-8
 import time
 import requests
+import logging
 import traceback
 from ..redis import RedisClient
 from ..model import FirebaseInfo
 
+logger = logging.getLogger(__name__)
 
 redis_client = RedisClient()['lit']
 
@@ -52,7 +54,7 @@ class FirebaseService(object):
             'Authorization': cls.SERVER_KEY
         }
         try:
-            response = requests.post(cls.SEND_URL, verify=False, headers=headers, data=data).json()
+            response = requests.post(cls.SEND_URL, verify=False, headers=headers, data=data)#.json()
             print response
             assert response.get('data')[0]
             return True
