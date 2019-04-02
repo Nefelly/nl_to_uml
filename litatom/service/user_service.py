@@ -1,6 +1,7 @@
 # coding: utf-8
 import random
 import time
+import datetime
 
 from ..redis import RedisClient
 from ..util import validate_phone_number
@@ -237,6 +238,7 @@ class UserService(object):
             user = User()
             user.huanxin = cls.create_huanxin()
             user.google = SocialAccountInfo.make(google_id, idinfo)
+            user.create_time = datetime.datetime.now()
             user.save()
             cls.update_info_finished_cache(user)
         msg, status = cls.login_job(user)
@@ -261,6 +263,7 @@ class UserService(object):
             user = User()
             user.huanxin = cls.create_huanxin()
             user.facebook = SocialAccountInfo.make(facebook_id, idinfo)
+            user.create_time = datetime.datetime.now()
             user.save()
             cls.update_info_finished_cache(user)
         msg, status = cls.login_job(user)

@@ -198,6 +198,7 @@ class User(Document, UserSessionMixin):
         user.gender = gender
         user.birthdate = birthdate
         user.phone = zone_phone
+        user.create_time = datetime.datetime.now()
         user.save()
         return user
 
