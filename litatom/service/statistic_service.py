@@ -10,7 +10,8 @@ from ..const import (
     ONLINE_LIVE,
     GENDERS,
     GIRL,
-    MAX_TIME
+    MAX_TIME,
+    USER_ACTIVE
 )
 from ..service import UserService
 from ..model import (
@@ -23,7 +24,7 @@ class StatisticService(object):
 
     @classmethod
     def get_online_cnt(cls, gender=None):
-        judge_time = int(time.time()) - ONLINE_LIVE
+        judge_time = int(time.time()) - USER_ACTIVE
         if gender:
             key = REDIS_ONLINE_GENDER.format(gender=gender)
             return redis_client.zcount(key, judge_time, MAX_TIME)
@@ -40,7 +41,7 @@ class StatisticService(object):
         :param uids:
         :return:
         '''
-        judge_time = int(time.time()) - ONLINE_LIVE
+        judge_time = int(time.time()) - USER_ACTIVE
         score = redis_client.zscore(key, uid)
         if not score or int(score) < judge_time:
             return False
