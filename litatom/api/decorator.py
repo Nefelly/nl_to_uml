@@ -25,9 +25,9 @@ def _has_user_id():
         return bson.ObjectId.is_valid(request.user_id)
 
 def _has_admin_username():
-    if request.user_id is None:
+    if request.admin_user_id is None:
         return None  # 标示session验证时出现了Exception
-    return request.user_id
+    return request.admin_user_id
 
 def session_required(view):
     @functools.wraps(view)

@@ -10,6 +10,7 @@ import flask
 from . import const
 from .util import cached_property
 from .model import User
+from .service import AdminService
 
 class LitatomRequest(flask.Request):
     """
@@ -188,6 +189,19 @@ class LitatomRequest(flask.Request):
         # get_user_id_by_session这个方法不会抛exception，如果该方法返回None，说明在取Cache或数据库的时候出现了exception，
         # 如果返回空字符串，则说明真的session失效了
         user_id = User.get_user_id_by_session(sid)
+        if user_id:
+            self.has_user_session = True
+        return user_id
+
+    @cached_property
+    def admin_user_id(self):
+        sid = self.session_id
+        if not sid:
+            return
+
+        # get_user_id_by_session这个方法不会抛exception，如果该方法返回None，说明在取Cache或数据库的时候出现了exception，
+        # 如果返回空字符串，则说明真的session失效了
+        user_id = AdminService.get_user_id_by_session(sid)
         if user_id:
             self.has_user_session = True
         return user_id

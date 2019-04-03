@@ -24,6 +24,10 @@ class AdminService(object):
     }
 
     @classmethod
+    def get_user_id_by_session(cls, session):
+        return redis_client.get(REDIS_KEY_SESSION_USER.format(session=session))
+
+    @classmethod
     def gen_session(cls):
         td = datetime.datetime.now() - datetime.datetime(1980, 1, 1)
         ss = (td.microseconds + (td.seconds + td.days * 24 * 3600) * 10 ** 6) / 10 ** 6
