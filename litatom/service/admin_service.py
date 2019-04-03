@@ -37,7 +37,7 @@ class AdminService(object):
         :param user:
         :return:
         """
-        if cls.UID_PWDS.get(user_name, '') == pwd:
+        if pwd and cls.UID_PWDS.get(user_name, '') == pwd:
             session = cls.gen_session()
             key = REDIS_KEY_SESSION_USER.format(session=session)
             redis_client.set(key, user_name, ex=TWO_WEEKS)
