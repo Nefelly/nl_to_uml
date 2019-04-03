@@ -169,3 +169,11 @@ def firebase_push():
     if not status:
         return fail(data)
     return success()
+
+@session_finished_required
+def query_online():
+    uids = request.json.get('user_ids', [])
+    data, status = UserService.uids_online(uids)
+    if not status:
+        return fail(data)
+    return success(data)

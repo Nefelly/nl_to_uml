@@ -216,6 +216,16 @@ class UserService(object):
         return True
 
     @classmethod
+    def uids_online(cls, uids):
+        if not isinstance(uids, list):
+            return u'wrong user_ids', False
+        res = []
+        for _ in uids:
+            res.append([_, cls.uid_online(_)])
+        return res, True
+
+
+    @classmethod
     def phone_login(cls, zone, phone, code):
         msg, status = SmsCodeService.verify_code(zone, phone, code)
         if not status:
