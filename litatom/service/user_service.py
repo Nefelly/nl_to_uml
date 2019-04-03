@@ -219,9 +219,9 @@ class UserService(object):
     def uids_online(cls, uids):
         if not isinstance(uids, list):
             return u'wrong user_ids', False
-        res = []
+        res = {}
         for _ in uids:
-            res.append([_, cls.uid_online(_)])
+            res[_] = cls.uid_online(_)
         return res, True
 
 
