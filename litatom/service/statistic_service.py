@@ -76,7 +76,7 @@ class StatisticService(object):
         if gender == BOY:
             if len(boy_uids) == num + 1:
                 has_next = True
-                uids = boy_uids[:-1] + boy_uids
+                uids = boy_uids[:-1] + girl_uids
         else:
             if len(uids) == num + 1:
                 has_next = True
