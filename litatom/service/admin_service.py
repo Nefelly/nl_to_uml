@@ -53,5 +53,6 @@ class AdminService(object):
     @classmethod
     def is_admin(cls, username):
         if cls.UID_PWDS.get(username, ''):
+            print cls.UID_PWDS.get(username, '')
             return True
         return False
