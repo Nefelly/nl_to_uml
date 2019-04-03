@@ -7,7 +7,6 @@ from ..key import (
 )
 from flask import request
 from ..const import (
-    ONLINE_LIVE,
     GENDERS,
     GIRL,
     BOY,
@@ -36,19 +35,6 @@ class StatisticService(object):
         return res
 
     @classmethod
-    def uid_online(cls, uid, key):
-        '''
-        :return uid: online map
-        :param uids:
-        :return:
-        '''
-        judge_time = int(time.time()) - USER_ACTIVE
-        score = redis_client.zscore(key, uid)
-        if not score or int(score) < judge_time:
-            return False
-        return True
-
-    @classmethod
     def get_online_users(cls, gender=None, start_p=0, num=10):
         if gender:
             key = REDIS_ONLINE_GENDER.format(gender=gender)
@@ -57,7 +43,7 @@ class StatisticService(object):
 
         if gender == BOY and start_p == 0:
             '''girls has to have some girl'''
-            b_ratio = 0.5
+            b_ratio = 0.3
             girl_num = int(num * b_ratio)
             num = boy_num = int(num)   # set num to this for next get
             girl_start_p = int(start_p * b_ratio) + 1
@@ -87,8 +73,8 @@ class StatisticService(object):
                 ''' has to cal onlines on every person'''
                 all_online = all_not_online = False
             else:
-                all_online = cls.uid_online(key, uids[-1]) == True   # last user online
-                all_not_online = cls.uid_online(key, uids[0]) == False   # first user not online
+                all_online = UserService.uid_online(uids[-1]) == True   # last user online
+                all_not_online = UserService.uid_online(uids[0]) == False   # first user not online
             for uid in uids:
                 _ = UserService.get_basic_info(User.get_by_id(uid))
                 if all_online:
@@ -96,7 +82,7 @@ class StatisticService(object):
                 elif all_not_online:
                     online = False
                 else:
-                    online = cls.uid_online(uid, key)
+                    online = UserService.uid_online(uid)
                 _['online'] = online
                 user_infos.append(_)
             user_infos = map(UserService.get_basic_info, map(User.get_by_id, uids))

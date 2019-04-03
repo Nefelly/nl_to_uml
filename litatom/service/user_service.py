@@ -14,7 +14,7 @@ from ..const import (
     GIRL,
     GENDERS,
     ONLINE_LIVE,
-    UNKNOWN_GENDER,
+    USER_ACTIVE,
 
 )
 
@@ -202,6 +202,20 @@ class UserService(object):
         return HuanxinAccount.create(huanxin_id, pwd)
 
     @classmethod
+    def uid_online(cls, uid):
+        '''
+        :return uid: online map
+        :param uids:
+        :return:
+        '''
+        judge_time = int(time.time()) - USER_ACTIVE
+        key = REDIS_ONLINE
+        score = redis_client.zscore(key, uid)
+        if not score or int(score) < judge_time:
+            return False
+        return True
+
+    @classmethod
     def phone_login(cls, zone, phone, code):
         msg, status = SmsCodeService.verify_code(zone, phone, code)
         if not status:
@@ -307,15 +321,15 @@ class UserService(object):
         target_user = User.get_by_id(target_user_id)
         if not target_user:
             return USER_NOT_EXISTS, False
-        if user_id != target_user_id:
-            return cls.get_basic_info(target_user), True
         basic_info = cls.get_basic_info(target_user)
-        login_info = target_user.get_login_info()
-        basic_info.update(login_info)
         basic_info.update({
             'followed': Follow.in_follow(user_id, target_user_id),
             'blocked': Blocked.in_block(user_id, target_user_id)
         })
+        if user_id != target_user_id:
+            return basic_info, True
+        login_info = target_user.get_login_info()
+        basic_info.update(login_info)
         return basic_info, True
 
     @classmethod
