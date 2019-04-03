@@ -24,6 +24,10 @@ def _has_user_id():
     else:
         return bson.ObjectId.is_valid(request.user_id)
 
+def _has_admin_username():
+    if request.user_id is None:
+        return None  # 标示session验证时出现了Exception
+    return request.user_id
 
 def session_required(view):
     @functools.wraps(view)
@@ -65,7 +69,7 @@ def admin_session_required(view):
     def wrapper(*args, **kwargs):
         if current_app.debug:
             return view(*args, **kwargs)
-        has_user_id = _has_user_id()
+        has_user_id = _has_admin_username()
         if has_user_id:
             if not AdminService.is_admin(request.user_id):
                 return jsonify(error.FailedNotAdmin)
