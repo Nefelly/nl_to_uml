@@ -72,7 +72,7 @@ def admin_session_required(view):
         has_user_id = _has_admin_username()
         if has_user_id:
             print has_user_id
-            if not AdminService.is_admin(request.user_id):
+            if not AdminService.is_admin(request.admin_user_id):
                 return jsonify(error.FailedNotAdmin)
             if request.is_guest:
                 # 游客用户返回460
