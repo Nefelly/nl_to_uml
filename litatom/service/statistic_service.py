@@ -1,5 +1,6 @@
 # coding: utf-8
 import time
+import random
 from ..redis import RedisClient
 from ..key import (
     REDIS_ONLINE_GENDER,
@@ -62,7 +63,9 @@ class StatisticService(object):
         if gender == BOY:
             if len(boy_uids) == num + 1:
                 has_next = True
-                uids = boy_uids[:-1] + girl_uids
+                boy_uids = boy_uids[:-1]
+            uids = boy_uids[:-1] + girl_uids
+            random.shuffle(uids)
         else:
             if len(uids) == num + 1:
                 has_next = True

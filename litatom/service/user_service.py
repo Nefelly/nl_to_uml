@@ -224,7 +224,6 @@ class UserService(object):
             res[_] = cls.uid_online(_)
         return res, True
 
-
     @classmethod
     def phone_login(cls, zone, phone, code):
         msg, status = SmsCodeService.verify_code(zone, phone, code)

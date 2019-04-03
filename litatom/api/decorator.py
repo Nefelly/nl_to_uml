@@ -12,7 +12,10 @@ from flask import (
     jsonify,
 )
 
-from ..service import UserService
+from ..service import (
+    UserService,
+    AdminService
+)
 from ..response import guest_forbidden
 
 def _has_user_id():
@@ -57,6 +60,22 @@ def session_finished_required(view):
             return jsonify(error.FailedSession)
     return wrapper
 
+def admin_session_required(view):
+    @functools.wraps(view)
+    def wrapper(*args, **kwargs):
+        if current_app.debug:
+            return view(*args, **kwargs)
+        has_user_id = _has_user_id()
+        if has_user_id:
+            if not AdminService.is_admin(request.user_id):
+                return jsonify(error.FailedNotAdmin)
+            if request.is_guest:
+                # 游客用户返回460
+                return guest_forbidden()
+            return view(*args, **kwargs)
+        if has_user_id is None:  # 检查时发生了Exception, 报错而不登出.
+            return jsonify(error.FailedSession)
+    return wrapper
 
 def session_required_with_guest(view):
     @functools.wraps(view)

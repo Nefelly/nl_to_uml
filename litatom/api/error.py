@@ -6,3 +6,4 @@ FailedVersion = {'success': False, 'result': -9, 'msg': u'版本过低，请升�
 FailedLackOfField = {'success': False, 'result': -2, 'msg': u'缺少必填字段哦'}
 FailedSession = {'success': False, 'result': -10, 'msg': u'登录已过期, 请重新登录'}
 FailedFinishedSession = {'success': False, 'result': -11, 'msg': u'需要完善信息, 请先完善个人信息'}
+FailedNotAdmin = {'success': False, 'result': -12, 'msg': u'you are not admin'}
