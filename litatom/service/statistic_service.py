@@ -57,7 +57,7 @@ class StatisticService(object):
 
         if gender == BOY and start_p == 0:
             '''girls has to have some girl'''
-            b_ratio = 0.3
+            b_ratio = 0.5
             girl_num = int(num * b_ratio)
             num = boy_num = int(num)   # set num to this for next get
             girl_start_p = int(start_p * b_ratio) + 1
