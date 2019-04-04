@@ -127,6 +127,7 @@ class UserService(object):
             return False
         user.forbidden = True
         user.forbidden_ts = int(time.time()) + forbid_ts
+        user.clear_session()
         user.save()
         if user.huanxin and user.huanxin.user_id:
             HuanxinService.deactive_user(user.huanxin.user_id)
