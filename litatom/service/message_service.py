@@ -16,8 +16,8 @@ class UserMessageService(object):
     MSG_MESSAGE_M = {
         UserMessage.MSG_LIKE: 'like your feed',
         UserMessage.MSG_FOLLOW: 'start follow you',
-        UserMessage.MSG_COMMENT: 'comment on your feed',
-        UserMessage.MSG_REPLY: 'reply on your comment'
+        UserMessage.MSG_COMMENT: 'reply on your comment',
+        UserMessage.MSG_REPLY: 'reply on your feed'
     }
 
     @classmethod

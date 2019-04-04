@@ -308,6 +308,11 @@ class UserService(object):
 
     @classmethod
     def get_bio(cls, user):
+        '''
+        !!!! attention, cal bio is too mongo expensive should be in user
+        :param user:
+        :return:
+        '''
         if user.bio:
             return user.bio
         feed_num = Feed.feed_num(str(user.id))

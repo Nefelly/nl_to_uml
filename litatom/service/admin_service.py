@@ -57,5 +57,8 @@ class AdminService(object):
         obj.save()
 
     @classmethod
-    def query_reports(cls, start_ts, dealed=None):
+    def query_reports(cls, start_ts, num=10, dealed=None):
+        if dealed in [False, True]:
+            objs =
+
         return
