@@ -26,7 +26,7 @@ class Report(Document):
     deal_res = StringField()
     dealed  = BooleanField(required=True, default=False)
     deal_user = StringField()
-    passed = StringField()
+    #passed = StringField()
     create_ts = IntField(required=True)
     deal_ts = IntField()
 
