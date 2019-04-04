@@ -2,14 +2,13 @@
 import random
 import time
 import datetime
+from ..model import AdminUser
 
 from ..redis import RedisClient
 
 from ..key import (
     REDIS_USER_INFO_FINISHED,
-    REDIS_KEY_SESSION_USER,
-    REDIS_UID_GENDER,
-    REDIS_ONLINE
+    REDIS_ADMIN_USER
 )
 from ..const import (
     TWO_WEEKS
@@ -24,8 +23,8 @@ class AdminService(object):
     }
 
     @classmethod
-    def get_user_id_by_session(cls, session):
-        return redis_client.get(REDIS_KEY_SESSION_USER.format(session=session))
+    def get_user_name_by_session(cls, session):
+        return redis_client.get(REDIS_ADMIN_USER.format(session=session))
 
     @classmethod
     def gen_session(cls):
@@ -41,18 +40,10 @@ class AdminService(object):
         :param user:
         :return:
         """
-        if pwd and cls.UID_PWDS.get(user_name, '') == pwd:
-            session = cls.gen_session()
-            key = REDIS_KEY_SESSION_USER.format(session=session)
-            redis_client.set(key, user_name, ex=TWO_WEEKS)
+        admin_user = AdminUser.get_by_user_name(user_name)
+        if admin_user and admin_user.pwd == pwd:
+            session = admin_user.gen_session()
             return {
                 'session': session
             }, True
         return None, False
-
-    @classmethod
-    def is_admin(cls, username):
-        if cls.UID_PWDS.get(username, ''):
-            print cls.UID_PWDS.get(username, '')
-            return True
-        return False

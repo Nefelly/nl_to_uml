@@ -194,14 +194,14 @@ class LitatomRequest(flask.Request):
         return user_id
 
     @cached_property
-    def admin_user_id(self):
+    def admin_user_name(self):
         sid = self.session_id
         if not sid:
             return
 
         # get_user_id_by_session这个方法不会抛exception，如果该方法返回None，说明在取Cache或数据库的时候出现了exception，
         # 如果返回空字符串，则说明真的session失效了
-        user_id = AdminService.get_user_id_by_session(sid)
+        user_id = AdminService.get_user_name_by_session(sid)
         if user_id:
             self.has_user_session = True
         return user_id

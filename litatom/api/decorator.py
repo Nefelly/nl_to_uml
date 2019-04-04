@@ -25,9 +25,9 @@ def _has_user_id():
         return bson.ObjectId.is_valid(request.user_id)
 
 def _has_admin_username():
-    if request.admin_user_id is None:
+    if request.admin_user_name is None:
         return None  # 标示session验证时出现了Exception
-    return request.admin_user_id
+    return request.admin_user_name
 
 def session_required(view):
     @functools.wraps(view)
@@ -71,15 +71,9 @@ def admin_session_required(view):
             return view(*args, **kwargs)
         has_user_id = _has_admin_username()
         if has_user_id:
-            print has_user_id
-            if not AdminService.is_admin(request.admin_user_id):
-                return jsonify(error.FailedNotAdmin)
-            if request.is_guest:
-                # 游客用户返回460
-                return guest_forbidden()
             return view(*args, **kwargs)
         if has_user_id is None:  # 检查时发生了Exception, 报错而不登出.
-            return jsonify(error.FailedSession)
+            return jsonify(error.FailedNotAdmin)
     return wrapper
 
 def session_required_with_guest(view):

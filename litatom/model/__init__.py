@@ -38,6 +38,8 @@ from .redis_lock import (
     RedisLock
 )
 from .track import TrackChat
+from .admin import AdminUser
+
 from ..db import DBManager
 
 dbm = DBManager()
