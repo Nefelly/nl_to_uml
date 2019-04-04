@@ -38,7 +38,7 @@ class AdminUser(Document):
 
     def gen_session(self):
         if self.session:
-            redis_client.delete(REDIS_ADMIN_USER.format(session=session))
+            redis_client.delete(REDIS_ADMIN_USER.format(session=self.session))
         td = datetime.datetime.now() - datetime.datetime(1980, 1, 1)
         ss = (td.microseconds + (td.seconds + td.days * 24 * 3600) * 10 ** 6) / 10 ** 6
         rs = sys_rnd.randint(10 ** 8, 10 ** 8 * 9)

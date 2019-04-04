@@ -38,9 +38,12 @@ class Report(Document):
             return {}
         return {
             'reason': self.reason,
+            'report_id': str(self.id),
             'user_id': self.uid,
             'pics': self.pics,
             'deal_result': self.deal_res if self.deal_res else '',
             'target_user_id': self.target_uid if self.target_uid else '',
             'create_time': format_standard_time(date_from_unix_ts(self.create_ts))
         }
+
+    def
