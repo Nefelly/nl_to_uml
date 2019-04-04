@@ -72,6 +72,8 @@ class AdminService(object):
         else:
             objs = Report.objects(create_ts__lte=start_ts).order_by('-create_time').limit(num + 1)
         objs = list(objs)
+        has_next = False
+        next_start = -1
         if len(objs) == num + 1:
             has_next = True
             next_start = objs[-1].create_time
