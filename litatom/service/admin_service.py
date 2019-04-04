@@ -62,7 +62,11 @@ class AdminService(object):
         obj.save()
 
     @classmethod
-    def query_reports(cls, start_ts=MAX_TIME, num=10, dealed=None):
+    def query_reports(cls, start_ts, num=10, dealed=None):
+        if not start_ts:
+            start_ts = MAX_TIME
+        if not num:
+            num = 10
         if dealed in [False, True]:
             objs = Report.objects(create_time__lte=start_ts, dealed=dealed).order_by('-create_time').limit(num + 1)
         else:
