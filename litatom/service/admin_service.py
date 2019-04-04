@@ -68,9 +68,9 @@ class AdminService(object):
         if not num:
             num = 10
         if dealed in [False, True]:
-            objs = Report.objects(create_time__lte=start_ts, dealed=dealed).order_by('-create_time').limit(num + 1)
+            objs = Report.objects(create_ts__lte=start_ts, dealed=dealed).order_by('-create_time').limit(num + 1)
         else:
-            objs = Report.objects(create_time__lte=start_ts).order_by('-create_time').limit(num + 1)
+            objs = Report.objects(create_ts__lte=start_ts).order_by('-create_time').limit(num + 1)
         objs = list(objs)
         if len(objs) == num + 1:
             has_next = True
