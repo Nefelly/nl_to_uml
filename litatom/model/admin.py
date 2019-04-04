@@ -36,7 +36,7 @@ class AdminUser(Document):
         return cls.objects(user_name=user_name).first()
 
 
-    def gen_session(self, session):
+    def gen_session(self):
         if self.session:
             redis_client.delete(REDIS_ADMIN_USER.format(session=session))
         td = datetime.datetime.now() - datetime.datetime(1980, 1, 1)
