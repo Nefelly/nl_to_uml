@@ -113,15 +113,20 @@ class UserService(object):
         return res, True
 
     @classmethod
-    def forbid_user(cls, user_id):
+    def _forbid(cls, user_id):
         forbid_time = cls.FORBID_TIME
         if UserRecord.get_forbidden_times_user_id(user_id) > 0:
             forbid_time *= 10
+        cls.forbid_user(user_id, forbid_time)
+        return True
+
+    @classmethod
+    def forbid_user(cls, user_id, forbid_ts):
         user = User.get_by_id(user_id)
         if not user:
             return False
         user.forbidden = True
-        user.forbidden_ts = int(time.time()) + forbid_time
+        user.forbidden_ts = int(time.time()) + forbid_ts
         user.save()
         if user.huanxin and user.huanxin.user_id:
             HuanxinService.deactive_user(user.huanxin.user_id)

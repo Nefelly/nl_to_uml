@@ -1,6 +1,7 @@
 # coding: utf-8
 import datetime
 import bson
+import time
 from mongoengine import (
     BooleanField,
     DateTimeField,
@@ -46,3 +47,17 @@ class Report(Document):
             'target_user_id': self.target_uid if self.target_uid else '',
             'create_time': format_standard_time(date_from_unix_ts(self.create_ts))
         }
+    
+    def ban(self, ban_time):
+        self.dealed = True
+        self.deal_ts = int(time.time())
+        self.deal_res = str(ban_time)
+        self.save()
+        return True
+
+    def reject(self):
+        self.dealed = True
+        self.deal_ts = int(time.time())
+        self.deal_res = 'reject'
+        self.save()
+        return True

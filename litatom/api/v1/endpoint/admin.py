@@ -27,11 +27,10 @@ from ....service import (
     FirebaseService
 )
 from  ....const import (
-    MAX_TIME
+    MAX_TIME,
+    ONE_DAY
 )
 logger = logging.getLogger(__name__)
-# handler = logging.FileHandler("/data/log/litatom.log")
-# logger.addHandler(handler)
 
 def login():
     data = request.json
@@ -45,3 +44,34 @@ def login():
 @admin_session_required
 def hello():
     return jsonify('hello')
+
+@admin_session_required
+def query_reports():
+    start_ts = request.values.get('start_ts', '')
+    if start_ts:
+        start_ts = int(start_ts)
+    num = request.values.get('num', '')
+    if num:
+        num = int(num)
+    dealed = request.values.get('dealed', '')
+    data, status = AdminService.query_reports(start_ts, num, dealed)
+    if not status:
+        return fail(data)
+    return success(data)
+
+@admin_session_required
+def ban_user(report_id):
+    ban_time = request.values.get('ban_time', '')
+    ban_time = int(ban_time) if ban_time else ONE_DAY
+    data, status = AdminService.ban_user_by_report(report_id, ban_time)
+    if not status:
+        return fail(data)
+    return success(data)
+
+@admin_session_required
+def reject(report_id):
+    data, status = AdminService.reject_report(report_id)
+    if not status:
+        return fail(data)
+    return success(data)
+

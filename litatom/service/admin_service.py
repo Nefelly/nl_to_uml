@@ -2,16 +2,21 @@
 import random
 import time
 import datetime
-from ..model import AdminUser
-
+from ..model import (
+    AdminUser,
+    Report
+)
+from ..service import (
+    UserService
+)
+from ..const import (
+    MAX_TIME
+)
 from ..redis import RedisClient
 
 from ..key import (
     REDIS_USER_INFO_FINISHED,
     REDIS_ADMIN_USER
-)
-from ..const import (
-    TWO_WEEKS
 )
 
 sys_rnd = random.SystemRandom()
@@ -57,8 +62,37 @@ class AdminService(object):
         obj.save()
 
     @classmethod
-    def query_reports(cls, start_ts, num=10, dealed=None):
-        # if dealed in [False, True]:
-        #     objs =
+    def query_reports(cls, start_ts=MAX_TIME, num=10, dealed=None):
+        if dealed in [False, True]:
+            objs = Report.objects(create_time__lte=start_ts, dealed=dealed).order_by('-create_time').limit(num + 1)
+        else:
+            objs = Report.objects(create_time__lte=start_ts).order_by('-create_time').limit(num + 1)
+        objs = list(objs)
+        if len(objs) == num + 1:
+            has_next = True
+            next_start = objs[-1].create_time
+            objs = objs[:-1]
+        return {
+                   'objs': [el.to_json for el in objs],
+                   'has_next': has_next,
+                   'next_start': next_start
+               }, True
 
-        return
+    @classmethod
+    def ban_user_by_report(cls, report_id, ban_time):
+        report = Report.get_by_id(report_id)
+        if not report:
+            return u'wrong report id', False
+        res = UserService.forbid_user(report.target_uid, ban_time)
+        if res:
+            report.ban(ban_time)
+            return None, True
+        return u'forbid error false'
+
+    @classmethod
+    def reject_report(cls, report_id):
+        report = Report.get_by_id(report_id)
+        if not report:
+            return u'wrong report id', False
+        report.reject()
+        return None, True
