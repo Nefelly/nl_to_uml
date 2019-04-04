@@ -55,3 +55,7 @@ class AdminService(object):
         obj.pwd = pwd
         obj.create_time = datetime.datetime.now()
         obj.save()
+
+    @classmethod
+    def query_reports(cls, start_ts, dealed=None):
+        return

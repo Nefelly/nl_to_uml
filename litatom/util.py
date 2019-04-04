@@ -58,10 +58,10 @@ def get_time_info(int_time):
         mins = time_dis/const.ONE_MIN
         time_desc = '1 minute ago' if mins == 1 else '%d mins ago' % mins 
     elif time_dis < const.ONE_DAY:
-        hours = time_dis/const.ONE_MIN
+        hours = time_dis/const.ONE_HOUR
         time_desc = '1 hour ago' if hours == 1 else '%d hours ago' % hours
     else:
-        days = time_dis/const.ONE_MIN
+        days = time_dis/const.ONE_DAY
         time_desc = '1 day ago' if days == 1 else '%d days ago' % days
     return {
         'time': int_time,
