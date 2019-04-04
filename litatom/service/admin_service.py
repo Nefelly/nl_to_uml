@@ -79,7 +79,7 @@ class AdminService(object):
             next_start = objs[-1].create_time
             objs = objs[:-1]
         return {
-                   'objs': [el.to_json for el in objs],
+                   'objs': [el.to_json() for el in objs],
                    'has_next': has_next,
                    'next_start': next_start
                }, True
