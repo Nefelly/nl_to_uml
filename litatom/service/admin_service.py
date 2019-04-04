@@ -47,3 +47,11 @@ class AdminService(object):
                 'session': session
             }, True
         return None, False
+
+    @classmethod
+    def create(cls, user_name, pwd):
+        obj = AdminUser()
+        obj.user_name = user_name
+        obj.pwd = pwd
+        obj.create_time = datetime.datetime.now()
+        obj.save()
