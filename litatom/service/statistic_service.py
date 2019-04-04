@@ -41,8 +41,8 @@ class StatisticService(object):
             key = REDIS_ONLINE_GENDER.format(gender=gender)
         else:
             key = REDIS_ONLINE
-
-        if gender == BOY and start_p == 0:
+        girl_strategy_on = False
+        if gender == BOY and start_p == 0 and girl_strategy_on:
             '''girls has to have some girl'''
             b_ratio = 0.3
             girl_num = int(num * b_ratio)
@@ -60,7 +60,7 @@ class StatisticService(object):
             uids = [uid for uid in uids if uid != temp_uid]
         uids = uids if uids else []
         has_next = False
-        if gender == BOY:
+        if gender == BOY and girl_strategy_on:
             if len(boy_uids) == num + 1:
                 has_next = True
                 boy_uids = boy_uids[:-1]
