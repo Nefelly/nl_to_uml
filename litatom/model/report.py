@@ -45,5 +45,3 @@ class Report(Document):
             'target_user_id': self.target_uid if self.target_uid else '',
             'create_time': format_standard_time(date_from_unix_ts(self.create_ts))
         }
-
-    def
