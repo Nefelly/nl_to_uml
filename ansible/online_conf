@@ -18,7 +18,7 @@ litatom_envvars_json:
       host: 127.0.0.1
       port: 6379
   HUANXIN_ACCOUNT:
-    org_name: 1102190223222824
+    org_name: "1102190223222824"
     app_name: lit
     client_id: YXA6ALfHYDd7EemQqCO501ONvQ
     client_secret: YXA6AH1kFGkcUc67KcpClt5rWA23zv4
