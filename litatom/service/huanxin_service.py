@@ -8,6 +8,7 @@ import requests
 import time
 import datetime
 import random
+from hendrix.conf import setting
 sys_rng = random.SystemRandom()
 from ..redis import RedisClient
 from ..model import (
@@ -26,7 +27,8 @@ logger = logging.getLogger(__name__)
 redis_client = RedisClient()['lit']
 
 class HuanxinService(object):
-    ORG_NAME = '1102190223222824'
+    HUANXIN_SETTING = setting.HUANXIN_ACCOUNT
+    ORG_NAME = HUANXIN_SETTING.get('org_name', '1102190223222824')
     APP_NAME = 'lit'
     APP_KEY = '%s#%s' % (ORG_NAME, APP_NAME)
     HOST = 'https://a1.easemob.com'
