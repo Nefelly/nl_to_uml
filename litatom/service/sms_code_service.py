@@ -56,7 +56,7 @@ class SmsCodeService(object):
         if not zone_phone:
             return cls.ERR_WORONG_TELEPHONE, False
         if zone.replace('+', '') == '86':
-            code = '8888'
+            code = '1314'
         else:
             code = cls.gen_code() if not code else code
             cls._ali_send_code(zone_phone, code)
