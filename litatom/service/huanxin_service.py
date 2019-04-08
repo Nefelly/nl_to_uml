@@ -29,13 +29,13 @@ redis_client = RedisClient()['lit']
 class HuanxinService(object):
     HUANXIN_SETTING = setting.HUANXIN_ACCOUNT
     ORG_NAME = HUANXIN_SETTING.get('org_name', '1102190223222824')
-    APP_NAME = 'lit'
+    APP_NAME = HUANXIN_SETTING.get('app_name', 'lit')
     APP_KEY = '%s#%s' % (ORG_NAME, APP_NAME)
     HOST = 'https://a1.easemob.com'
     APP_URL = '%(HOST)s/%(ORG_NAME)s/%(APP_NAME)s/' % dict(HOST=HOST, ORG_NAME=ORG_NAME, APP_NAME=APP_NAME)
 
-    CLIENT_ID = 'YXA6ALfHYDd7EemQqCO501ONvQ'
-    CLIENT_SECRET = 'YXA6AH1kFGkcUc67KcpClt5rWA23zv4'
+    CLIENT_ID = HUANXIN_SETTING.get('client_id', 'YXA6ALfHYDd7EemQqCO501ONvQ')
+    CLIENT_SECRET = HUANXIN_SETTING.get('client_secret', 'YXA6AH1kFGkcUc67KcpClt5rWA23zv4')
     '''
     docs :http://docs-im.easemob.com/start/100serverintegration/20users
     '''
