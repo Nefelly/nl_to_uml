@@ -217,7 +217,7 @@ class UserService(object):
         judge_time = int(time.time()) - USER_ACTIVE
         key = REDIS_ONLINE
         score = redis_client.zscore(key, uid)
-        print 'score', score, uid, judge_time
+        print 'score', score, uid, judge_time, int(score) < judge_time
         if not score or int(score) < judge_time:
             return False
         return True

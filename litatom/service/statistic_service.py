@@ -88,9 +88,6 @@ class StatisticService(object):
                     online = UserService.uid_online(uid)
                 _['online'] = online
                 user_infos.append(_)
-            user_infos = map(UserService.get_basic_info, map(User.get_by_id, uids))
-            for el in user_infos:
-                el['online'] = True
         return {
             'has_next': has_next,
             'user_infos': user_infos,
