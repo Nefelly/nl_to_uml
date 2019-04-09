@@ -39,6 +39,7 @@ def session_required(view):
             if request.is_guest:
                 # 游客用户返回460
                 return guest_forbidden()
+            UserService.refresh_status(request.user_id)
             return view(*args, **kwargs)
         if has_user_id is None:  # 检查时发生了Exception, 报错而不登出.
             return jsonify(error.FailedSession)
