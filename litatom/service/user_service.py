@@ -128,6 +128,10 @@ class UserService(object):
         user.forbidden = True
         user.forbidden_ts = int(time.time()) + forbid_ts
         user.clear_session()
+        for gender in GENDERS:
+            key = REDIS_ONLINE_GENDER.format(gender=gender)
+            redis_client.zrem(key, user_id)
+        redis_client.zrem(REDIS_ONLINE, user_id)
         user.save()
         if user.huanxin and user.huanxin.user_id:
             HuanxinService.deactive_user(user.huanxin.user_id)
