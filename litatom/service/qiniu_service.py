@@ -28,6 +28,7 @@ class QiniuService(object):
             "params": {
                 "scenes": [
                     "pulp",
+                    "terror",
                     "politician",
                     "ads"
                 ]
@@ -42,8 +43,8 @@ class QiniuService(object):
                 print test_res
                 scenes = test_res['result']['scenes']
                 for r in scenes:
-                    details = scenes[r].get('details', {})
-                    if details and details[0]['score'] > cls.JUDGE_SCORE:
+                    details = scenes[r].get('details', [])
+                    if details and details[0]['label'] != 'normal' and details[0]['score'] > cls.JUDGE_SCORE:
                         return r
                 return ''
             except Exception, e:
