@@ -28,7 +28,6 @@ class QiniuService(object):
             "params": {
                 "scenes": [
                     "pulp",
-                    "terror",
                     "politician",
                     "ads"
                 ]
