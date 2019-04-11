@@ -39,6 +39,7 @@ class QiniuService(object):
                 ret, res = http._post_with_qiniu_mac(url, data, cls.AUTH)
                 headers = {"code": res.status_code, "reqid": res.req_id, "xlog": res.x_log}
                 print json.dumps(headers, indent=4, ensure_ascii=False)
+                print res
                 return True
             except Exception, e:
                 traceback.print_exc()
