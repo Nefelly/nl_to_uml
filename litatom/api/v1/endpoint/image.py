@@ -20,9 +20,13 @@ from ...error import (
     Failed,
     FailedLackOfField
 )
-from ....response import failure
+from ....response import (
+    failure,
+    fail
+)
 from ....service import (
-    AliOssService
+    AliOssService,
+    QiniuService
 )
 
 logger = logging.getLogger(__name__)
@@ -40,7 +44,10 @@ def upload_image_from_file():
     fileid = AliOssService.upload_from_binary(image)
     if not fileid:
         return jsonify(Failed)
-
+    url = 'http://www.litatom.com/api/sns/v1/lit/image/' + fileid
+    reason = QiniuService.should_pic_block_from_url(url)
+    if reason:
+        return fail('the pic have vialate rule of:%s please check' % reason)
     return jsonify({
         'success': True,
         'data': {
