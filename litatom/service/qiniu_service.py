@@ -21,6 +21,7 @@ class QiniuService(object):
 
     @classmethod
     def should_pic_block_from_url(cls, url):
+        '''scenes could be ads, pulp...'''
         data = {
             "data": {
                 "uri": url
@@ -29,8 +30,7 @@ class QiniuService(object):
                 "scenes": [
                     "pulp",
                     "terror",
-                    "politician",
-                    "ads"
+                    "politician"
                 ]
             }
         }

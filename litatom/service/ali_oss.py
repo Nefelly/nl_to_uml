@@ -9,7 +9,6 @@ from urllib2 import urlopen
 
 import oss2
 
-from ..const import ONE_HOUR
 
 logger = logging.getLogger(__name__)
 
