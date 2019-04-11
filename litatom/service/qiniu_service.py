@@ -39,7 +39,7 @@ class QiniuService(object):
             try:
                 ret, res = http._post_with_qiniu_mac(url, data, cls.AUTH)
                 # headers = {"code": res.status_code, "reqid": res.req_id, "xlog": res.x_log}
-                test_res = res.text_body
+                test_res = json.loads(res.text_body)
                 scenes = test_res['result']['scenes']
                 for r in scenes:
                     details = scenes[r].get('details', {})
