@@ -10,6 +10,7 @@ from .social_acount_service import (
     FacebookService
 )
 from .user_service import UserService
+from .qiniu_service import QiniuService
 from .ali_oss import AliOssService
 from .message_service import UserMessageService
 from .statistic_service import StatisticService
