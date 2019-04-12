@@ -17,7 +17,7 @@ class Ip2AddressService(object):
 
     @classmethod
     def get_ip_all_info(cls, ip):
-        response = reader.city(ip)
+        response = cls.READER.city(ip)
         # 有多种语言，我们这里主要输出英文和中文
         print("你查询的IP的地理位置是:")
 
