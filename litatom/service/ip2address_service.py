@@ -2,12 +2,12 @@
 import json
 import geoip2.database
 import logging
-from qiniu import Auth, QiniuMacAuth, http
-from ..redis import RedisClient
+import sys
 
 logger = logging.getLogger(__name__)
 
-redis_client = RedisClient()['lit']
+sys.setdefaultencoding('utf-8')
+
 
 class Ip2AddressService(object):
     READER = geoip2.database.Reader('litatom/data/GeoLite2-City.mmdb')
