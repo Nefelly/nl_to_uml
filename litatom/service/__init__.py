@@ -1,4 +1,5 @@
 # flake8: noqa
+from .ip2address_service import  Ip2AddressService
 from .sms_code_service import SmsCodeService
 from .huanxin_service import HuanxinService
 from .user_relation import (
