@@ -38,6 +38,7 @@ class HuanxinService(object):
     CLIENT_SECRET = HUANXIN_SETTING.get('client_secret', 'YXA6AH1kFGkcUc67KcpClt5rWA23zv4')
     '''
     docs :http://docs-im.easemob.com/start/100serverintegration/20users
+    download chat record:http://docs-im.easemob.com/im/server/basics/chatrecord
     '''
 
     @classmethod
