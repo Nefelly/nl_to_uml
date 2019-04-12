@@ -2,6 +2,9 @@
 import time
 import random
 import datetime
+from  flask import (
+    request
+)
 from ..redis import RedisClient
 from ..key import (
     REDIS_FEED_SQUARE
@@ -15,7 +18,8 @@ from ..const import (
 
 from ..service import (
     UserService,
-    BlockService
+    BlockService,
+    Ip2AddressService
 )
 from ..model import (
     Feed,
@@ -67,7 +71,19 @@ class FeedService(object):
         return None, True
 
     @classmethod
+    def should_filter_ip(cls):
+        if Ip2AddressService.ip_country(request.ip) in [u'United States', u'China']:
+            return True
+        return False
+
+    @classmethod
     def feeds_by_userid(cls, visitor_user_id, user_id, start_ts=MAX_TIME, num=10):
+        if cls.should_filter_ip():
+            return {
+                       'feeds': [],
+                       'has_next': False,
+                       'next_start': -1
+            }, True
         msg = BlockService.get_block_msg(visitor_user_id, user_id)
         if msg:
             return msg, False
@@ -90,6 +106,12 @@ class FeedService(object):
 
     @classmethod
     def feeds_by_square(cls, user_id, start_p=0, num=10):
+        if cls.should_filter_ip():
+            return {
+                       'feeds': [],
+                       'has_next': False,
+                       'next_start': -1
+                   }, True
         feeds = redis_client.zrevrange(REDIS_FEED_SQUARE, start_p, start_p + num)
         feeds = map(Feed.get_by_id, feeds) if feeds else []
         has_next = False
