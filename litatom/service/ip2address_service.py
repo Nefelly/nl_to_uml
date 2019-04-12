@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 redis_client = RedisClient()['lit']
 
 class Ip2AddressService(object):
-    READER = geoip2.database.Reader('../data/GeoLite2-City.mmdb')
+    READER = geoip2.database.Reader('litatom/data/GeoLite2-City.mmdb')
     '''
     docs :https://www.jianshu.com/p/eb756fc2d3b8
     '''
