@@ -72,7 +72,7 @@ class FeedService(object):
 
     @classmethod
     def should_filter_ip(cls):
-        if Ip2AddressService.ip_country(request.ip) in [u'United States']:
+        if Ip2AddressService.ip_country(request.ip) in [u'United States', u'China']:
             return True
         return False
 
