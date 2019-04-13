@@ -1,6 +1,7 @@
 # coding: utf-8
 # Redis.
 REDIS_KEY_SMS_CODE = 'sms_code:{phone}'
+REDIS_KEY_SMS_LIMIT = 'sms_limit:{phone}'
 REDIS_KEY_SESSION_USER = 'session_userid:{session}'
 REDIS_ADMIN_USER = 'admin_username:{session}'
 REDIS_ONLINE_GENDER = 'online:{gender}'

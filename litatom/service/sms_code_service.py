@@ -33,6 +33,7 @@ class SmsCodeService(object):
 
     @classmethod
     def _ali_send_code(cls, phone, code):
+        limit = 10
         request = CommonRequest()
         request.set_accept_format('json')
         request.set_domain('dysmsapi.aliyuncs.com')
@@ -47,7 +48,7 @@ class SmsCodeService(object):
         request.add_query_param('TemplateCode', 'SMS_161325322')
         request.add_query_param('TemplateParam', {"code":code})
         response = ali_client.do_action(request)
-        print(response)
+        #print(response)
 
     @classmethod
     def send_code(cls, zone, phone, code=None):
