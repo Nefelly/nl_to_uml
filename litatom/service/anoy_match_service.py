@@ -46,7 +46,7 @@ class AnoyMatchService(object):
     MATCH_INT = 60 * 93
     TOTAL_WAIT = MATCH_INT + MATCH_WAIT + FIVE_MINS
     MAX_CHOOSE_NUM = 100
-    MATCH_TMS = 1000
+    MATCH_TMS = 10
     OTHER_GENDER_M = {BOY: GIRL, GIRL: BOY}
 
     @classmethod
