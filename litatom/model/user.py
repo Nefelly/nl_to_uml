@@ -270,7 +270,7 @@ class User(Document, UserSessionMixin):
 
     @property
     def finished_info(self):
-        return self.nickname != None and self.gender != None and self.birthdate != None
+        return self.nickname != None and self.gender != None and self.birthdate != None and self.avatar != None
         return True
 
     def basic_info(self):
