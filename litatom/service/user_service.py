@@ -162,8 +162,11 @@ class UserService(object):
             if data.get(el, '') and getattr(user, el):
                 return u'%s can\'t be reset' % el, False
         gender = data.get('gender', '')
-        if gender and  gender not in GENDERS:
-            return u'gender must be one of ' + ',' . join(GENDERS), False
+        if gender:
+            if gender not in GENDERS:
+                return u'gender must be one of ' + ',' . join(GENDERS), False
+            if not Avatar.valid_avatar(data.get('avatar', '')) and not user.avatar:   # user's avatar not set random one
+                user.avatar = random.choice(Avatar.get_avatars()[gender])
         for el in data:
             setattr(user, el, data.get(el))
         status = True
