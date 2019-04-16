@@ -12,6 +12,9 @@ from ..util import get_time_info
 from ..service import (
     UserService
 )
+from flask import (
+    request
+)
 class UserMessageService(object):
     MSG_MESSAGE_M = {
         UserMessage.MSG_LIKE: 'like your feed',
@@ -20,13 +23,21 @@ class UserMessageService(object):
         UserMessage.MSG_REPLY: 'reply on your feed'
     }
 
+    MSG_MESSAGE_M_THAI = {
+        UserMessage.MSG_LIKE: 'กใจโพสต์ของคุณ',
+        UserMessage.MSG_FOLLOW: 'เริ่มติดตามคุณ',
+        UserMessage.MSG_COMMENT: 'reply on your comment',
+        UserMessage.MSG_REPLY: 'คอมเมนท์บนโพสต์ของคุณ'
+    }
+
     @classmethod
     def msg_by_message_obj(cls, obj):
         if not obj:
             return {}
+        message_m = cls.MSG_MESSAGE_M if not request.ip_thailand else cls.MSG_MESSAGE_M_THAI
         return {
             'user_info': UserService.user_info_by_uid(obj.related_uid),
-            'message':  cls.MSG_MESSAGE_M.get(obj.m_type, ''),
+            'message':  message_m.get(obj.m_type, ''),
             'time_info': get_time_info(obj.create_time),
             'content': obj.content if obj.content else '',
             'message_id': str(obj.id),

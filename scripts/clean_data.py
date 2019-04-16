@@ -1,3 +1,4 @@
+import os
 from litatom.model import *
 from litatom.redis import RedisClient
 from litatom.service import UserService
@@ -32,6 +33,10 @@ def clear_objs():
         cls.objects().delete()
 
 if __name__ == '__main__':
+    if os.getcwd().split('/')[-1] != 'devlitatom':
+        print 'not right path'
+        assert False
+        exit()
     exit()
     assert False
     clear_objs()

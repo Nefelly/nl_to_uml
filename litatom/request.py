@@ -10,7 +10,10 @@ import flask
 from . import const
 from .util import cached_property
 from .model import User
-from .service import AdminService
+from .service import (
+    AdminService,
+    Ip2AddressService
+)
 
 class LitatomRequest(flask.Request):
     """
@@ -228,6 +231,10 @@ class LitatomRequest(flask.Request):
             if ip_list:
                 ip_address = ip_list[0]
         return ip_address.split(',')[0].strip()
+
+    @cached_property
+    def ip_thailand(self):
+        return Ip2AddressService.ip_country(self.ip) == u'Thailand'
 
     @cached_property
     def ip_full_list(self):

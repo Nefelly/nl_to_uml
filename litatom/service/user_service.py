@@ -2,6 +2,7 @@
 import random
 import time
 import datetime
+from flask import request
 
 from ..redis import RedisClient
 from ..util import validate_phone_number
