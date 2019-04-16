@@ -51,6 +51,8 @@ def online_users():
 
 def get_wording():
     word_type = request.args.get('word_type')
+    if request.ip_thailand and word_type == u'match_info':
+        word_type = u'thai_wait'
     wording = Wording.get_word_type(word_type)
     return success(wording)
 
@@ -62,7 +64,7 @@ def report():
     reason = form.reason.data
     pics = form.pics.data
     target_user_id = form.target_user_id.data
-    if not reason:
+    if not reason or not pics:
         return fail()
     data, status = ReportService.report(user_id, reason, pics, target_user_id)
     if status:
