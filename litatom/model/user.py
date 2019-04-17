@@ -160,7 +160,7 @@ class User(Document, UserSessionMixin):
     nickname = StringField()
     avatar = StringField()
     gender = StringField()
-    birthdate = StringField()
+    birthdate = StringField()   # in form of 1999-12-14 now
     session = StringField()
     sessionCreateTime = DateTimeField()
     logined = BooleanField(default=False)
@@ -224,6 +224,13 @@ class User(Document, UserSessionMixin):
         if not huanxinid:
             return None
         return cls.objects(huanxin__user_id=huanxinid).first()
+
+    @property
+    def age(self):
+        if not self.birthdate:
+            return -1
+        year_now = datetime.datetime.now().year()
+        return min(year_now - int(self.birthdate.split('-')[0]), 100)
 
     @classmethod
     def get_by_social_account_id(cls, account_type, account_id):

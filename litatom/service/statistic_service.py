@@ -80,6 +80,8 @@ class StatisticService(object):
                 all_not_online = UserService.uid_online(uids[0]) == False   # first user not online
             for uid in uids:
                 _ = UserService.get_basic_info(User.get_by_id(uid))
+                if not _:
+                    continue
                 if all_online:
                     online = True
                 elif all_not_online:

@@ -233,8 +233,12 @@ class LitatomRequest(flask.Request):
         return ip_address.split(',')[0].strip()
 
     @cached_property
+    def ip_country(self):
+        return Ip2AddressService.ip_country(self.ip)
+
+    @cached_property
     def ip_thailand(self):
-        return Ip2AddressService.ip_country(self.ip) == u'Thailand'
+        return  self.ip_country == u'Thailand'
 
     @cached_property
     def ip_full_list(self):

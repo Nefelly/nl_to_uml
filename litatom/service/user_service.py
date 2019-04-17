@@ -316,6 +316,9 @@ class UserService(object):
     def get_basic_info(cls, user):
         if not user:
             return {}
+        if not request.ip_thailand:
+            if user.age < 18:
+                return {}
         basic_info = user.basic_info()
         basic_info.update({'bio': cls.get_bio(user)})
         return basic_info
