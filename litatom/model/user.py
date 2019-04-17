@@ -229,7 +229,7 @@ class User(Document, UserSessionMixin):
     def age(self):
         if not self.birthdate:
             return -1
-        year_now = datetime.datetime.now().year()
+        year_now = datetime.datetime.now().year
         return min(year_now - int(self.birthdate.split('-')[0]), 100)
 
     @classmethod
