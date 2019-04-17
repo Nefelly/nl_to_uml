@@ -238,7 +238,7 @@ class LitatomRequest(flask.Request):
 
     @cached_property
     def ip_thailand(self):
-        return  self.ip_country == u'Thailand'
+        return  self.ip_country in [u'Thailand', u'China']
 
     @cached_property
     def ip_full_list(self):
