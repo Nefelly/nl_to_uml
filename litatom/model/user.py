@@ -229,8 +229,18 @@ class User(Document, UserSessionMixin):
     def age(self):
         if not self.birthdate:
             return -1
-        year_now = datetime.datetime.now().year
-        return min(year_now - int(self.birthdate.split('-')[0]), 100)
+        date_now = datetime.datetime.now()
+        date_birth = datetime.datetime.strptime(self.birthdate, '%Y-%m-%d')
+        age = date_now.year - date_birth.year
+        try:
+            replaced_birth = date_birth.replace(year=date_now.year)
+        except ValueError:   # raised when birth date is February 29 and the current year is not a leap year
+            replaced_birth = date_birth.replace(year=date_now.year, day=date_birth-1)
+        if replaced_birth > date_now:
+            return date_now.year - date_birth.year -1
+        return date_now.year - date_birth.year
+        # year_now = datetime.datetime.now().year
+        # return min(year_now - int(self.birthdate.split('-')[0]), 100)
 
     @classmethod
     def get_by_social_account_id(cls, account_type, account_id):
