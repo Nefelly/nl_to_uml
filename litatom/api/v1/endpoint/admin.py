@@ -2,7 +2,8 @@ import logging
 
 from flask import (
     jsonify,
-    request
+    request,
+    render_template
 )
 
 from ...decorator import (
@@ -44,6 +45,9 @@ def login():
 @admin_session_required
 def hello():
     return jsonify('hello')
+
+def index():
+    return render_template('admin.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
 
 #@admin_session_required
 def query_reports():
