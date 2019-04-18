@@ -45,7 +45,7 @@ def login():
 def hello():
     return jsonify('hello')
 
-@admin_session_required
+#@admin_session_required
 def query_reports():
     start_ts = request.values.get('start_ts', '')
     if start_ts:
