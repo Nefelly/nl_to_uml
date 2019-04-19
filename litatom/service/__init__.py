@@ -3,16 +3,16 @@ from .ip2address_service import  Ip2AddressService
 from .sms_code_service import SmsCodeService
 from .firebase_service import FirebaseService
 from .huanxin_service import HuanxinService
+from .user_relation import (
+    FollowService,
+    BlockService
+)
 from .social_acount_service import (
     GoogleService,
     FacebookService
 )
 from .user_service import UserService
 from .message_service import UserMessageService
-from .user_relation import (
-    FollowService,
-    BlockService
-)
 from .qiniu_service import QiniuService
 from .ali_oss import AliOssService
 from .statistic_service import StatisticService

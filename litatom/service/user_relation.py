@@ -13,7 +13,6 @@ from ..const import (
 )
 from ..service import (
     HuanxinService,
-    UserMessageService
 )
 
 class FollowService(object):
@@ -33,6 +32,7 @@ class FollowService(object):
             if user_huanxin and followed_huanxin:
                 HuanxinService.add_friend(user_huanxin, followed_huanxin)
                 HuanxinService.add_friend(followed_huanxin, user_huanxin)
+        from ..service import UserMessageService
         UserMessageService.add_message(followed_user_id, user_id, UserMessageService.MSG_FOLLOW)
         return None, True
 
