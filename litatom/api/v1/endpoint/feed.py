@@ -72,6 +72,16 @@ def square_feeds():
         return success(data)
     return success()
 
+def hq_feeds():
+    user_id = request.user_id
+    start_pos = request.args.get('start_pos')
+    num = request.args.get('num')
+    start_pos = int(start_pos) if start_pos and start_pos.isdigit() else 0
+    num = int(num) if num and num.isdigit() else 10
+    data = FeedService.feeds_by_hq(user_id, start_pos, num)
+    if data:
+        return success(data)
+    return success()
 
 @session_finished_required
 def like_feed(feed_id):
@@ -91,6 +101,13 @@ def comment_feed(feed_id):
         return success(data)
     return fail(data)
 
+
+@session_finished_required
+def del_comment(comment_id):
+    data, status = FeedService.del_comment(request.user_id, comment_id)
+    if status:
+        return success(data)
+    return fail(data)
 
 def feed_comments(feed_id):
     user_id = None

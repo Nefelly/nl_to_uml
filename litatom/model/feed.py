@@ -34,6 +34,10 @@ class Feed(Document):
     def feed_num(cls, user_id):
         return cls.objects(user_id=user_id).count()
 
+    @property
+    def is_hq(self):
+        return self.like_num >= 2 or self.comment_num >= 2
+
     def get_info(self):
         return {
             'id': str(self.id),

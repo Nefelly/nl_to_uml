@@ -7,7 +7,8 @@ from  flask import (
 )
 from ..redis import RedisClient
 from ..key import (
-    REDIS_FEED_SQUARE
+    REDIS_FEED_SQUARE,
+    REDIS_FEED_HQ
 )
 from ..util import (
     get_time_info,
@@ -19,13 +20,13 @@ from ..const import (
 from ..service import (
     UserService,
     BlockService,
-    Ip2AddressService
+    Ip2AddressService,
+    UserMessageService
 )
 from ..model import (
     Feed,
     FeedLike,
-    FeedComment,
-    UserMessage
+    FeedComment
 )
 
 redis_client = RedisClient()['lit']
@@ -44,12 +45,25 @@ class FeedService(object):
         return res
 
     @classmethod
-    def _add_to_feed_pool(cls, feed):
+    def _add_to_feed_pool(cls,  feed):
         redis_client.zadd(REDIS_FEED_SQUARE, {str(feed.id): feed.create_time})
 
     @classmethod
-    def _del_from_feed_pool(cls, feed):
-        redis_client.zrem(REDIS_FEED_SQUARE, str(feed.id))
+    def _del_from_feed_pool(cls,feed):
+        redis_client.zrem( REDIS_FEED_SQUARE, str(feed.id))
+
+    @classmethod
+    def _add_to_feed_hq(cls, feed):
+        redis_client.zadd(REDIS_FEED_HQ, {str(feed.id): int(time.time())})
+
+    @classmethod
+    def _del_from_feed_hq(cls, feed):
+        redis_client.zrem( REDIS_FEED_HQ, str(feed.id))
+
+    @classmethod
+    def judge_add_to_feed_hq(cls, feed):
+        if feed and feed.is_hq:
+            cls._add_to_feed_hq(feed)
 
     @classmethod
     def create_feed(cls, user_id, content, pics=None):
@@ -65,10 +79,12 @@ class FeedService(object):
         if feed.user_id != user_id:
             return u'you are not authorized', False
         cls._del_from_feed_pool(feed)
+        cls._del_from_feed_hq(feed)
         FeedLike.objects(feed_id=feed_id).delete()
         FeedComment.objects(feed_id=feed_id).delete()
         feed.delete()
         return None, True
+
 
     @classmethod
     def should_filter_ip(cls):
@@ -105,14 +121,14 @@ class FeedService(object):
         }, True
 
     @classmethod
-    def feeds_by_square(cls, user_id, start_p=0, num=10):
+    def _feeds_by_pool(cls, redis_key, user_id, start_p, num):
         if cls.should_filter_ip():
             return {
                        'feeds': [],
                        'has_next': False,
                        'next_start': -1
                    }, True
-        feeds = redis_client.zrevrange(REDIS_FEED_SQUARE, start_p, start_p + num)
+        feeds = redis_client.zrevrange(redis_key, start_p, start_p + num)
         feeds = map(Feed.get_by_id, feeds) if feeds else []
         has_next = False
         if len(feeds) == num + 1:
@@ -124,7 +140,15 @@ class FeedService(object):
             'feeds': feeds,
             'next_start': start_p + num if has_next else -1
         }
-        
+
+    @classmethod
+    def feeds_by_square(cls, user_id, start_p=0, num=10):
+        return cls._feeds_by_pool(REDIS_FEED_SQUARE, user_id, start_p, num)
+
+    @classmethod
+    def feeds_by_hq(cls, user_id, start_p=0, num=10):
+        return cls._feeds_by_pool(REDIS_FEED_HQ, user_id, start_p, num)
+
     @classmethod
     def like_feed(cls, user_id, feed_id):
         like_now = FeedLike.reverse(user_id, feed_id)
@@ -134,7 +158,8 @@ class FeedService(object):
             return 'wrong feed id', False
         feed.chg_feed_num(num)
         if like_now:
-            UserMessage.add_message(feed.user_id, user_id, UserMessage.MSG_LIKE, feed_id)
+            cls.judge_add_to_feed_hq(feed)
+            UserMessageService.add_message(feed.user_id, user_id, UserMessageService.MSG_LIKE, feed_id)
         return {'like_now': like_now}, True
 
     @classmethod
@@ -153,16 +178,30 @@ class FeedService(object):
                 comment_id = father_comment.comment_id
             comment.comment_id = comment_id
             comment.content_user_id = father_comment.user_id
-            UserMessage.add_message(father_comment.user_id, user_id, UserMessage.MSG_COMMENT, feed_id, content)
+            UserMessageService.add_message(father_comment.user_id, user_id, UserMessageService.MSG_COMMENT, feed_id, content)
         else:
-            UserMessage.add_message(feed.user_id, user_id, UserMessage.MSG_REPLY, feed_id, content)
+            UserMessageService.add_message(feed.user_id, user_id, UserMessageService.MSG_REPLY, feed_id, content)
         feed.chg_comment_num(1)
+        cls.judge_add_to_feed_hq(feed)
         comment.user_id = user_id
         comment.feed_id = feed_id
         comment.content = content
         comment.create_time = int(time.time())
         comment.save()
         return {'comment_id': str(comment.id)}, True
+
+    @classmethod
+    def del_comment(cls, user_id, comment_id):
+        comment = FeedComment.get_by_id(comment_id)
+        if not comment or comment.user_id != user_id:
+            return u'not authorized', False
+        #todo  嵌套查找
+        if comment.comment_id:   # has not son comment
+            comment.delete()
+            comment.save()
+            return None, True
+        FeedComment.objects(comment_id=str(comment.id)).delete()
+        return None, True
 
     @classmethod
     def get_feed_comments(cls, user_id, feed_id):

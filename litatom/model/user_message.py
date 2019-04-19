@@ -13,10 +13,7 @@ class UserMessage(Document):
     '''
     用户登录时给用户推送的消息
     '''
-    MSG_LIKE = 'like'
-    MSG_FOLLOW = 'follow'
-    MSG_REPLY = 'reply'
-    MSG_COMMENT = 'comment'
+
 
     related_feedid = StringField()
     uid = StringField(required=True)

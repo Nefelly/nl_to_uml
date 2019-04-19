@@ -55,11 +55,19 @@ def anoy_judge():
     return success(data)
 
 
+def get_tips():
+    data, status = AnoyMatchService.get_tips()
+    if not status:
+        return fail(data)
+    return success(data)
+
+
 @session_finished_required
 def match_times_left():
     user_id = request.user_id
     words = AnoyMatchService.get_times_left(user_id)
     return success(words)
+
 
 @session_finished_required
 def quit_match():

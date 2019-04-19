@@ -7,7 +7,8 @@ from ..model import (
     Report
 )
 from ..service import (
-    UserService
+    UserService,
+    FirebaseService
 )
 from ..const import (
     MAX_TIME
@@ -92,6 +93,10 @@ class AdminService(object):
         res = UserService.forbid_user(report.target_uid, ban_time)
         if res:
             report.ban(ban_time)
+            target_user_nickname = UserService.nickname_by_uid(report.target_uid)
+            to_user_info = u"Your report on the user %s  has been settled. %s's account is disabled. Thank you for your support of the Lit community."\
+                           % (target_user_nickname, target_user_nickname)
+            FirebaseService.send_to_user(report.uid, u'your report succeed', to_user_info)
             return None, True
         return u'forbid error false'
 

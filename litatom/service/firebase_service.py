@@ -4,7 +4,9 @@ import requests
 import logging
 import traceback
 from ..redis import RedisClient
-from ..model import FirebaseInfo
+from ..model import (
+    FirebaseInfo
+)
 
 logger = logging.getLogger(__name__)
 

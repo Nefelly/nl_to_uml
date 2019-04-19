@@ -33,4 +33,5 @@ REDIS_LOCK = 'redis_lock:{key}'
 
 # feed service
 REDIS_FEED_SQUARE = 'feed_square'
+REDIS_FEED_HQ = 'feed_hq'
 

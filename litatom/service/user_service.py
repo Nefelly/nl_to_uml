@@ -5,7 +5,9 @@ import datetime
 from flask import request
 
 from ..redis import RedisClient
-from ..util import validate_phone_number
+from ..util import (
+    validate_phone_number,
+    time_str_by_ts)
 from ..const import (
     TWO_WEEKS,
     ONE_DAY,
@@ -16,6 +18,7 @@ from ..const import (
     GENDERS,
     ONLINE_LIVE,
     USER_ACTIVE,
+    FORBID_INFO
 
 )
 
@@ -62,7 +65,8 @@ class UserService(object):
                 if user.huanxin and user.huanxin.user_id:
                     HuanxinService.active_user(user.huanxin.user_id)
             else:
-                return u'you are forbidden', False
+                unforbid_time = time_str_by_ts(user.forbidden_ts)
+                return FORBID_INFO.format(unforbid_time=unforbid_time), False
         user.generate_new_session()
         user._set_session_cache(str(user.id))
         if not user.logined:
@@ -101,6 +105,13 @@ class UserService(object):
         if not user:
             return {}
         return cls.get_basic_info(user)
+
+    @classmethod
+    def nickname_by_uid(cls, user_id):
+        user = User.get_by_id(user_id)
+        if not user:
+            return ''
+        return user.nickname
 
     @classmethod
     def user_infos_by_huanxinids(cls, ids):

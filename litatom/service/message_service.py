@@ -10,31 +10,41 @@ from ..const import (
 )
 from ..util import get_time_info
 from ..service import (
-    UserService
+    UserService,
+    FirebaseService
 )
 from flask import (
     request
 )
 class UserMessageService(object):
+    MSG_LIKE = 'like'
+    MSG_FOLLOW = 'follow'
+    MSG_REPLY = 'reply'
+    MSG_COMMENT = 'comment'
+    
     MSG_MESSAGE_M = {
-        UserMessage.MSG_LIKE: 'like your feed',
-        UserMessage.MSG_FOLLOW: 'start follow you',
-        UserMessage.MSG_COMMENT: 'reply on your comment',
-        UserMessage.MSG_REPLY: 'reply on your feed'
+        MSG_LIKE: 'like your feed',
+        MSG_FOLLOW: 'start follow you',
+        MSG_COMMENT: 'reply on your comment',
+        MSG_REPLY: 'reply on your feed'
     }
 
     MSG_MESSAGE_M_THAI = {
-        UserMessage.MSG_LIKE: 'กใจโพสต์ของคุณ',
-        UserMessage.MSG_FOLLOW: 'เริ่มติดตามคุณ',
-        UserMessage.MSG_COMMENT: 'reply on your comment',
-        UserMessage.MSG_REPLY: 'คอมเมนท์บนโพสต์ของคุณ'
+        MSG_LIKE: 'กใจโพสต์ของคุณ',
+        MSG_FOLLOW: 'เริ่มติดตามคุณ',
+        MSG_COMMENT: 'ตอบกลับความเห็นของคุณ',
+        MSG_REPLY: 'คอมเมนท์บนโพสต์ของคุณ'
     }
+
+    @classmethod
+    def get_message_m(cls):
+        return cls.MSG_MESSAGE_M if not request.ip_thailand else cls.MSG_MESSAGE_M_THAI
 
     @classmethod
     def msg_by_message_obj(cls, obj):
         if not obj:
             return {}
-        message_m = cls.MSG_MESSAGE_M if not request.ip_thailand else cls.MSG_MESSAGE_M_THAI
+        message_m = cls.get_message_m()
         return {
             'user_info': UserService.user_info_by_uid(obj.related_uid),
             'message':  message_m.get(obj.m_type, ''),
@@ -42,6 +52,7 @@ class UserMessageService(object):
             'content': obj.content if obj.content else '',
             'message_id': str(obj.id),
             'feed_id': obj.related_feedid if obj.related_feedid else '',
+            'message_type': obj.m_type
         }
 
     @classmethod
@@ -80,3 +91,11 @@ class UserMessageService(object):
             return NOT_AUTHORIZED, False
         obj.delete()
         return None, True
+    
+    @classmethod
+    def add_message(cls, user_id, related_user_id, m_type, related_feed_id=None, content=None):
+        obj_id = UserMessage.add_message(user_id, related_user_id, m_type, related_feed_id, content)
+        related_nickname = UserService.nickname_by_uid(related_feed_id)
+        message = related_nickname + cls.get_message_m().get(m_type, '')
+        FirebaseService.send_to_user(user_id, m_type, message)
+        return obj_id

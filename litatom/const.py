@@ -26,6 +26,10 @@ BLOCKED_MSG = u'you have been blocked'
 BLOCK_OTHER_MSG = u'you have block the user'
 NOT_IN_MATCH = u'you are not in a match.'
 NOT_AUTHORIZED = u'you are not authorized to this action'
+FORBID_INFO = u'Our system has noticed inappropriate behavior on your account. ' \
+              u'You’ve been restricted until {unforbid_time}. In the future ' \
+              u'please keep your chats positive. If you believe you’ve been ' \
+              u'incorrectly flagged, you can contact our customer service team. '
 
 ONE_MIN = 60
 FIVE_MINS = 60 * 5

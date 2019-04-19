@@ -3,8 +3,7 @@ from ..redis import RedisClient
 from ..model import (
     Follow,
     Blocked,
-    User,
-    UserMessage
+    User
 )
 from ..const import (
     BLOCKED_MSG,
@@ -13,7 +12,8 @@ from ..const import (
     MAX_TIME
 )
 from ..service import (
-    HuanxinService
+    HuanxinService,
+    UserMessageService
 )
 
 class FollowService(object):
@@ -33,7 +33,7 @@ class FollowService(object):
             if user_huanxin and followed_huanxin:
                 HuanxinService.add_friend(user_huanxin, followed_huanxin)
                 HuanxinService.add_friend(followed_huanxin, user_huanxin)
-        UserMessage.add_message(followed_user_id, user_id, UserMessage.MSG_FOLLOW)
+        UserMessageService.add_message(followed_user_id, user_id, UserMessageService.MSG_FOLLOW)
         return None, True
 
     @classmethod
