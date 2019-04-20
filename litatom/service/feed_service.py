@@ -199,10 +199,10 @@ class FeedService(object):
         num = 1
         if not comment.comment_id:   # has not father comment
             num += FeedComment.objects(comment_id=comment_id).delete()   # delete son comments
-        comment.delete()
-        comment.save()
         feed = Feed.get_by_id(comment.feed_id)
         feed.chg_comment_num(-num)
+        comment.delete()
+        comment.save()
         return None, True
 
     @classmethod
