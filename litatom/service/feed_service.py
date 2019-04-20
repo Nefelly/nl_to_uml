@@ -199,6 +199,7 @@ class FeedService(object):
         if not comment.comment_id:   # has not son comment
             FeedComment.objects(comment_id=str(comment.id)).delete()
         comment.delete()
+        comment.save()
         return None, True
 
     @classmethod
