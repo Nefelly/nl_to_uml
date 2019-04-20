@@ -327,7 +327,7 @@ class UserService(object):
     def get_basic_info(cls, user):
         if not user:
             return {}
-        if not request.ip_thailand:
+        if not request.ip_thailand_china:
             if user.age < 18:
                 return {}
         basic_info = user.basic_info()
