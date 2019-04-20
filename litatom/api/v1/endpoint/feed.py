@@ -65,7 +65,7 @@ def feed_info(feed_id):
     data, status = FeedService.get_feed_info(request.user_id, feed_id)
     if not status:
         return fail(data)
-    return success()
+    return success(data)
 
 
 def square_feeds():
