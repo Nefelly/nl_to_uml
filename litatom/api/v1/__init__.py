@@ -82,6 +82,7 @@ b.add_url_rule('/lit/feed/delete/<feed_id>', 'feed-delete-feed', endpoint.feed.d
 b.add_url_rule('/lit/feed/comment/<feed_id>', 'feed-comment-feed', endpoint.feed.comment_feed, methods=['POST'])
 b.add_url_rule('/lit/feed/del_comment/<comment_id>', 'feed-comment-delete', endpoint.feed.del_comment)
 b.add_url_rule('/lit/feed/comment/<feed_id>', 'feed-feed-comments', endpoint.feed.feed_comments)
+b.add_url_rule('/lit/feed/info/<feed_id>', 'feed-feed-info', endpoint.feed.feed_info)
 
 # user_relations
 b.add_url_rule('/lit/block/<other_user_id>', 'block', endpoint.user_relations.block)

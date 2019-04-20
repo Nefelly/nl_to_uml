@@ -61,6 +61,13 @@ def user_feeds(other_user_id):
     return fail(data)
 
 
+def feed_info(feed_id):
+    data, status = FeedService.get_feed_info(request.user_id, feed_id)
+    if not status:
+        return fail(data)
+    return success()
+
+
 def square_feeds():
     user_id = request.user_id
     start_pos = request.args.get('start_pos')

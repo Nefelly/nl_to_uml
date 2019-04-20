@@ -45,6 +45,17 @@ class FeedService(object):
         return res
 
     @classmethod
+    def get_feed_info(cls, user_id, feed_id):
+        feed = Feed.get_by_id(feed_id)
+        if not feed:
+            return u'feed not exist!', False
+        feed_info = cls._feed_info(feed, user_id)
+        if not feed_info:
+            return u'not feed info', False
+        return feed_info, True
+
+
+    @classmethod
     def _add_to_feed_pool(cls,  feed):
         redis_client.zadd(REDIS_FEED_SQUARE, {str(feed.id): feed.create_time})
 
