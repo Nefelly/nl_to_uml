@@ -196,11 +196,9 @@ class FeedService(object):
         if not comment or comment.user_id != user_id:
             return u'not authorized', False
         #todo  嵌套查找
-        if comment.comment_id:   # has not son comment
-            comment.delete()
-            comment.save()
-            return None, True
-        FeedComment.objects(comment_id=str(comment.id)).delete()
+        if not comment.comment_id:   # has not son comment
+            FeedComment.objects(comment_id=str(comment.id)).delete()
+        comment.delete()
         return None, True
 
     @classmethod

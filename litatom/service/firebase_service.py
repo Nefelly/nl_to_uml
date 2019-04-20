@@ -39,14 +39,15 @@ class FirebaseService(object):
         return None, True
 
     @classmethod
-    def send_to_user(cls, user_id, title, text):
+    def send_to_user(cls, user_id, title, body, topic='foo-bar'):
         obj = FirebaseInfo.get_by_user_id(user_id)
         if not obj:
             return u'no firebase token', False
         data = {
+            'topic': topic,
             'notification': {
                 'title': title,
-                'text': text
+                'body': body
             },
             'to': obj.user_token
         }
