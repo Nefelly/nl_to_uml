@@ -30,7 +30,7 @@ b.add_url_rule('/lit/user/query_online', 'user-query-online', endpoint.user.quer
 
 # admin
 b.add_url_rule('/lit/admin/index', 'admin-index', endpoint.admin.index)
-b.add_url_rule('/lit/admin/feeds_square.html', 'admin-feeds_square.html', endpoint.admin.feeds_square_html)
+b.add_url_rule('/lit/admin/feeds_square_html', 'admin-feeds_square.html', endpoint.admin.feeds_square_html)
 b.add_url_rule('/lit/admin/login', 'admin-login', endpoint.admin.login, methods=['POST'])
 b.add_url_rule('/lit/admin/hello', 'admin-hello', endpoint.admin.hello)
 b.add_url_rule('/lit/admin/query_reports', 'admin-query_reports', endpoint.admin.query_reports)
