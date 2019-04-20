@@ -23,10 +23,10 @@ class UserMessageService(object):
     MSG_COMMENT = 'comment'
     
     MSG_MESSAGE_M = {
-        MSG_LIKE: 'like your feed',
+        MSG_LIKE: 'like your post',
         MSG_FOLLOW: 'start follow you',
         MSG_COMMENT: 'reply on your comment',
-        MSG_REPLY: 'reply on your feed'
+        MSG_REPLY: 'reply on your post'
     }
 
     MSG_MESSAGE_M_THAI = {
@@ -96,6 +96,6 @@ class UserMessageService(object):
     def add_message(cls, user_id, related_user_id, m_type, related_feed_id=None, content=None):
         obj_id = UserMessage.add_message(user_id, related_user_id, m_type, related_feed_id, content)
         related_nickname = UserService.nickname_by_uid(related_user_id)
-        message = related_nickname + cls.get_message_m().get(m_type, '')
+        message = related_nickname + ' ' + cls.get_message_m().get(m_type, '')
         FirebaseService.send_to_user(user_id, m_type, message)
         return obj_id
