@@ -4,31 +4,33 @@
 <div id="app-7">
 <table class="tb" border="1">
 <tr>
- <th>report user id</th>
- <th>reported user id</th>
- <th>reason</th>
+ <th>info</th>
+ <th>nickname</th>
  <th>pictures</th>
- <th>report time</th>
- <th>ban</th>
- <th>reject</th>
+    <th>comment</th>
+    <th>like</th>
+ <th>time info</th>
+ <th>is_hq</th>
+    <th>add_to_hq</th>
+ <th>delete</th>
  </tr>
-<tr v-for="item in items1">
-<td>{{item.user_id}}</td>
-<td>{{item.target_user_id}}</td>
-<td>{{item.reason}}</td>
+<tr v-for="feed in feeds">
+<td>{{feed.user_id}}</td>
+<td>{{feed.target_user_id}}</td>
+<td>{{feed.reason}}</td>
 <td
-  v-if="item.pics.length > 0"
+  v-if="feed.pics.length > 0"
    >
-  <img v-for="pic in item.pics" width= "300" height="533" :src="base_url +'image/' + pic">
+  <img v-for="pic in feed.pics" width= "300" height="533" :src="base_url +'image/' + pic">
 </td>
 
-<td v-if="item.pics.length === 0">
+<td v-if="feed.pics.length === 0">
 no pictures
 </td>
 
-<td>{{item.create_time}}</td>
-<td><button name='ban'  style="background:red" @click='ban(item.report_id)'>ban</button></td>
-<td><button name='reject' @click='reject(item.report_id)'>reject</button></td>
+<td>{{feed.create_time}}</td>
+<td><button name='ban'  style="background:red" @click='ban(feed.report_id)'>ban</button></td>
+<td><button name='reject' @click='reject(feed.report_id)'>reject</button></td>
 </tr>
 </table>
 </div>
@@ -37,16 +39,16 @@ no pictures
 var app7 = new Vue({
   el: '#app-7',
   data: {
-    items1: [],
+    feeds1: [],
     base_url: BASE_URL
   },
-created() {this.submitForm();},
+created() {this.onLoad();},
 
 methods: {
-      submitForm: function() {
+      onLoad: function() {
         this.$http.get(BASE_URL + 'feed/query_reports').then(function(result){
 	var res = result.data.data.objs;
-	this.items1 = res;
+	this.feeds1 = res;
 
 	      })
       },
@@ -55,13 +57,13 @@ methods: {
       this.$http.get(url).then(function(result){
         console.log('!!!!!!', result.data);
         if (result.data.result === 0){
-            let newItem1 = [];
-            this.items1.forEach(item => {
-                if (item.report_id !== report_id) {
-                newItem1.push(item)
+            let newfeed1 = [];
+            this.feeds1.forEach(feed => {
+                if (feed.report_id !== report_id) {
+                newfeed1.push(feed)
             }
         })
-            this.items1 = newItem1
+            this.feeds1 = newfeed1
         }
         else{alert('failed');}
       })
@@ -70,17 +72,17 @@ methods: {
     ban: function(report_id){
       var url = BASE_URL + 'admin/ban/' + report_id;
       this.$http.get(url).then(function(result){
-        console.log('!!!!!!', this.items1);
+        console.log('!!!!!!', this.feeds1);
         if (result.data.result === 0){alert('success!');}
         else{alert('failed');}
-        let newItem1 = [];
-        this.items1.forEach(item => {
-          if (item.report_id !== report_id) {
-            newItem1.push(item)
+        let newfeed1 = [];
+        this.feeds1.forEach(feed => {
+          if (feed.report_id !== report_id) {
+            newfeed1.push(feed)
           }
         })
 
-        this.items1 = newItem1
+        this.feeds1 = newfeed1
 
       })
     },

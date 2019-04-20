@@ -170,7 +170,7 @@ class FeedService(object):
     def feeds_square_for_admin(cls, user_id, start_p=0, num=10):
         res = cls.feeds_by_square(user_id, start_p, num)
         for feed in res['feeds']:
-            feed.update(in_hq=cls._in_hq(feed['feed_id']))
+            feed.update(in_hq=cls._in_hq(feed['id']))
         return res
 
     @classmethod
