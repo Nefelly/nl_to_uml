@@ -72,6 +72,7 @@ def square_feeds():
         return success(data)
     return success()
 
+
 def hq_feeds():
     user_id = request.user_id
     start_pos = request.args.get('start_pos')
@@ -82,6 +83,7 @@ def hq_feeds():
     if data:
         return success(data)
     return success()
+
 
 @session_finished_required
 def like_feed(feed_id):
@@ -108,6 +110,7 @@ def del_comment(comment_id):
     if status:
         return success(data)
     return fail(data)
+
 
 def feed_comments(feed_id):
     user_id = None
