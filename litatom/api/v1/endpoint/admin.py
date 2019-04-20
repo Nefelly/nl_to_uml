@@ -49,8 +49,14 @@ def login():
 def hello():
     return jsonify('hello')
 
+
 def index():
     return current_app.send_static_file('admin.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
+
+
+def feeds_square_html():
+    return current_app.send_static_file('feeds_square.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
+
 
 #@admin_session_required
 def query_reports():
