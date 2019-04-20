@@ -58,22 +58,15 @@ methods: {
 	      })
       },
     delete_feed: function(feed){
-        this.feeds =  this.feeds.filter(el => el.id != feed.id);
-        var url = BASE_URL + 'admin/reject/' + report_id;
+
+        var url = BASE_URL + 'admin/delete_feed/' + feed.id;
       this.$http.get(url).then(function(result){
         console.log('!!!!!!', result.data);
         if (result.data.result === 0){
-            let newfeed1 = [];
-            this.feeds1.forEach(feed => {
-                if (feed.report_id !== report_id) {
-                newfeed1.push(feed)
-            }
-        })
-            this.feeds1 = newfeed1
+            this.feeds =  this.feeds.filter(el => el.id != feed.id);
         }
         else{alert('failed');}
       })
-
     },
     add_hq: function(feed){
       var url = BASE_URL + 'admin/ban/' + report_id;

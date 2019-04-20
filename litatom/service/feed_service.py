@@ -97,6 +97,7 @@ class FeedService(object):
         feed = Feed.get_by_id(feed_id)
         if not feed:
             return None, True
+        print request.is_admin
         if not request.is_admin or feed.user_id != user_id:
             return u'you are not authorized', False
         cls._del_from_feed_pool(feed)
