@@ -65,7 +65,7 @@ class FeedService(object):
 
     @classmethod
     def _add_to_feed_hq(cls, feed_id):
-        redis_client.zadd(REDIS_FEED_HQ, {str(feed.id): int(time.time())})
+        redis_client.zadd(REDIS_FEED_HQ, {feed_id: int(time.time())})
 
     @classmethod
     def add_hq(cls, feed_id):
