@@ -56,7 +56,7 @@ created() {this.onLoad();},
 
 methods: {
       onLoad: function() {
-        this.$http.get(BASE_URL + 'admin/feeds_square', {params:{num: 1}}).then(function(result){
+        this.$http.get(BASE_URL + 'admin/feeds_square', {params:{num: 10}}).then(function(result){
 	var data = result.data.data;
 	this.feeds = data.feeds;
             this.previous_start = this.next_start;
