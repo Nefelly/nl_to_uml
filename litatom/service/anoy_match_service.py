@@ -272,8 +272,10 @@ class AnoyMatchService(object):
             other_user_id = cls._uid_by_fake_id(matched_id)
             if other_user_id:
                 cls._decr_match_left(other_user_id)
+        tips, status = cls.get_tips()
         res = {
-            'matched_fake_id': matched_id
+            'matched_fake_id': matched_id,
+            'tips': tips
         }
         res.update(cls.anoy_user_info(matched_id))
         return res, True
