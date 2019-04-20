@@ -102,6 +102,13 @@ def remove_from_hq(feed_id):
         return success()
     return fail(data)
 
+def delete_feed(feed_id):
+    request.is_admin = True
+    data, status = FeedService.delete_feed(request.user_id, feed_id)
+    if status:
+        return success()
+    return fail(data)
+
 #@admin_session_required
 def reject(report_id):
     data, status = AdminService.reject_report(report_id)
