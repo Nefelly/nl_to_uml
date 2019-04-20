@@ -8,7 +8,8 @@ from ..model import (
 )
 from ..service import (
     UserService,
-    FirebaseService
+    FirebaseService,
+    FeedService
 )
 from ..const import (
     MAX_TIME

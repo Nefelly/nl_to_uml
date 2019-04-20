@@ -27,7 +27,8 @@ from ..form import (
 from ....service import (
     AdminService,
     UserMessageService,
-    FirebaseService
+    FirebaseService,
+    FeedService
 )
 from  ....const import (
     MAX_TIME,
@@ -77,6 +78,29 @@ def ban_user(report_id):
     if not status:
         return fail(data)
     return success(data)
+
+
+def feeds_square_for_admin():
+    start_pos = request.args.get('start_pos')
+    num = request.args.get('num')
+    start_pos = int(start_pos) if start_pos and start_pos.isdigit() else 0
+    num = int(num) if num and num.isdigit() else 10
+    data = FeedService.feeds_square_for_admin(request.user_id, start_pos, num)
+    if data:
+        return success(data)
+    return fail()
+
+def add_hq(feed_id):
+    data, status = FeedService.add_hq(feed_id)
+    if status:
+        return success()
+    return fail(data)
+
+def remove_from_hq(feed_id):
+    data, status = FeedService.remove_from_hq(feed_id)
+    if status:
+        return success()
+    return fail(data)
 
 #@admin_session_required
 def reject(report_id):

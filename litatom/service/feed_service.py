@@ -64,8 +64,18 @@ class FeedService(object):
         redis_client.zrem( REDIS_FEED_SQUARE, str(feed.id))
 
     @classmethod
-    def _add_to_feed_hq(cls, feed):
+    def _add_to_feed_hq(cls, feed_id):
         redis_client.zadd(REDIS_FEED_HQ, {str(feed.id): int(time.time())})
+
+    @classmethod
+    def add_hq(cls, feed_id):
+        cls._add_to_feed_hq(feed_id)
+        return None, True
+
+    @classmethod
+    def remove_from_hq(cls, feed_id):
+        redis_client.zrem( REDIS_FEED_HQ, feed_id)
+        return None, True
 
     @classmethod
     def _del_from_feed_hq(cls, feed):
@@ -74,7 +84,7 @@ class FeedService(object):
     @classmethod
     def judge_add_to_feed_hq(cls, feed):
         if feed and feed.is_hq:
-            cls._add_to_feed_hq(feed)
+            cls._add_to_feed_hq(str(feed.id))
 
     @classmethod
     def create_feed(cls, user_id, content, pics=None):
@@ -155,6 +165,17 @@ class FeedService(object):
     @classmethod
     def feeds_by_square(cls, user_id, start_p=0, num=10):
         return cls._feeds_by_pool(REDIS_FEED_SQUARE, user_id, start_p, num)
+
+    @classmethod
+    def feeds_square_for_admin(cls, user_id, start_p=0, num=10):
+        res = cls.feeds_by_square(user_id, start_p, num)
+        for feed in res['feeds']:
+            feed.update(in_hq=cls._in_hq(feed['feed_id']))
+        return res
+
+    @classmethod
+    def _in_hq(cls, feed_id):
+        return redis_client.zscore(REDIS_FEED_HQ, feed_id) > 0
 
     @classmethod
     def feeds_by_hq(cls, user_id, start_p=0, num=10):

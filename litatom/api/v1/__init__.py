@@ -35,6 +35,9 @@ b.add_url_rule('/lit/admin/hello', 'admin-hello', endpoint.admin.hello)
 b.add_url_rule('/lit/admin/query_reports', 'admin-query_reports', endpoint.admin.query_reports)
 b.add_url_rule('/lit/admin/ban/<report_id>', 'admin-ban', endpoint.admin.ban_user)
 b.add_url_rule('/lit/admin/reject/<report_id>', 'admin-reject', endpoint.admin.reject)
+b.add_url_rule('/lit/admin/feeds_square', 'admin-feed-square', endpoint.admin.feeds_square_for_admin)
+b.add_url_rule('/lit/admin/add_hq/<feed_id>', 'admin-add-hq', endpoint.admin.add_hq)
+b.add_url_rule('/lit/admin/remove_from_hq/<feed_id>', 'admin-remove-from-hq', endpoint.admin.remove_from_hq)
 
 # 图片
 b.add_url_rule('/lit/image/upload', 'image-upload', endpoint.image.upload_image_from_file, methods=['POST'])
