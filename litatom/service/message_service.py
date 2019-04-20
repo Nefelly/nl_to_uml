@@ -97,5 +97,6 @@ class UserMessageService(object):
         obj_id = UserMessage.add_message(user_id, related_user_id, m_type, related_feed_id, content)
         related_nickname = UserService.nickname_by_uid(related_user_id)
         message = cls.get_message_m().get(m_type, '')
+        print message
         FirebaseService.send_to_user(user_id, related_nickname, message)
         return obj_id
