@@ -43,7 +43,7 @@ redis_client = RedisClient()['lit']
 class AnoyMatchService(object):
     MAX_TIME = 10 ** 13
     MATCH_WAIT = 60 * 93 + 1
-    MATCH_INT = 60 * 5  # talking time
+    MATCH_INT = 60 * 3  # talking time
     TOTAL_WAIT = MATCH_INT + MATCH_WAIT + FIVE_MINS
     MAX_CHOOSE_NUM = 100
     MATCH_TMS = 10
@@ -59,8 +59,8 @@ class AnoyMatchService(object):
     def get_tips(cls):
         data = {
             'chat_time': cls.MATCH_INT,
-            BOY: [u'understand is handsome'],
-            GIRL: [u'understand is beauty']
+            BOY: [u'ช่วงเวลา 20.00 - 22.00น. เป็นช่วงที่มีการแมทช์สูงสุด'],
+            GIRL: [u'ช่วงเวลา 20.00 - 22.00น. เป็นช่วงที่มีการแมทช์สูงสุด']
 
         }
         return data, True

@@ -64,6 +64,7 @@ def report():
     reason = form.reason.data
     pics = form.pics.data
     target_user_id = form.target_user_id.data
+    #if not reason or not pics:
     if not reason or not pics:
         return fail()
     data, status = ReportService.report(user_id, reason, pics, target_user_id)
