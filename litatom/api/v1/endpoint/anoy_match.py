@@ -73,6 +73,7 @@ def match_times_left():
 @session_finished_required
 def quit_match():
     data, status = AnoyMatchService.quit_match(request.user_id)
+    print 'quit', data
     if not status:
         return fail(data)
     return success(data)

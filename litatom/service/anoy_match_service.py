@@ -141,6 +141,9 @@ class AnoyMatchService(object):
     @classmethod
     def _delete_match(cls, fake_id):
         fake_id2 = redis_client.get(REDIS_MATCHED.format(fake_id=fake_id))
+        if not fake_id2:
+            cls._destroy_fake_id(fake_id, False)
+            return True
         pair = low_high_pair(fake_id, fake_id2)
         redis_client.delete(REDIS_MATCH_PAIR.format(low_high_fakeid=pair))
         cls._destroy_fake_id(fake_id, False)
