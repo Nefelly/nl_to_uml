@@ -32,6 +32,7 @@ def get_fakeid():
 @session_finished_required
 def anoy_match():
     data, status = AnoyMatchService.anoy_match(request.user_id)
+    print data
     if not status:
         return fail(data)
     return success(data)
