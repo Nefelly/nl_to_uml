@@ -81,7 +81,7 @@ class AnoyMatchService(object):
     def _remove_from_match_pool(cls, gender, fake_id):
         if not gender or not fake_id:
             return
-        redis_client.zrem(REDIS_ANOY_GENDER_ONLINE.format(gender=gender), fake_id)
+        return redis_client.zrem(REDIS_ANOY_GENDER_ONLINE.format(gender=gender), fake_id)
 
     @classmethod
     def _add_to_check_pool(cls, fake_id):
@@ -148,8 +148,8 @@ class AnoyMatchService(object):
             return True
         pair = low_high_pair(fake_id, fake_id2)
         redis_client.delete(REDIS_MATCH_PAIR.format(low_high_fakeid=pair))
-        cls._destroy_fake_id(fake_id, False)
-        cls._destroy_fake_id(fake_id2, False)
+        cls._destroy_fake_id(fake_id, True)
+        cls._destroy_fake_id(fake_id2, True)
         # map(cls._destroy_fake_id, [fake_id, fake_id2])
         return True
 
