@@ -3,6 +3,9 @@ import time
 import datetime
 import random
 from ..redis import RedisClient
+from flask import (
+    request
+)
 from ..key import (
     REDIS_USER_MATCH_LEFT,
     REDIS_FAKE_ID_UID,
@@ -42,7 +45,7 @@ redis_client = RedisClient()['lit']
 
 class AnoyMatchService(object):
     MAX_TIME = 10 ** 13
-    MATCH_WAIT = 60 * 93 + 1
+    MATCH_WAIT = 60 * 3 + 1
     MATCH_INT = 60 * 3  # talking time
     TOTAL_WAIT = MATCH_INT + MATCH_WAIT + FIVE_MINS
     MAX_CHOOSE_NUM = 100
@@ -59,9 +62,8 @@ class AnoyMatchService(object):
     def get_tips(cls):
         data = {
             'chat_time': cls.MATCH_INT,
-            BOY: [u'ช่วงเวลา 20.00 - 22.00น. เป็นช่วงที่มีการแมทช์สูงสุด'],
-            GIRL: [u'ช่วงเวลา 20.00 - 22.00น. เป็นช่วงที่มีการแมทช์สูงสุด']
-
+            BOY: [u'180 วินาที กดไลค์กันและกัน เพื่อคุยกันแบบไม่จำกัดเวลา'],
+            GIRL: [u'180 วินาที กดไลค์กันและกัน เพื่อคุยกันแบบไม่จำกัดเวลา']
         }
         return data, True
 
@@ -142,7 +144,7 @@ class AnoyMatchService(object):
     def _delete_match(cls, fake_id):
         fake_id2 = redis_client.get(REDIS_MATCHED.format(fake_id=fake_id))
         if not fake_id2:
-            cls._destroy_fake_id(fake_id, False)
+            cls._destroy_fake_id(fake_id, True)
             return True
         pair = low_high_pair(fake_id, fake_id2)
         redis_client.delete(REDIS_MATCH_PAIR.format(low_high_fakeid=pair))
