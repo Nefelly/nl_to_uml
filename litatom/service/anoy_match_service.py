@@ -50,7 +50,7 @@ class AnoyMatchService(object):
     MATCH_INT = 60 * 3  # talking time
     TOTAL_WAIT = MATCH_INT + MATCH_WAIT + FIVE_MINS
     MAX_CHOOSE_NUM = 100
-    MATCH_TMS = 10
+    MATCH_TMS = 10 if not setting.IS_DEV else 1000
     OTHER_GENDER_M = {BOY: GIRL, GIRL: BOY}
 
     @classmethod
@@ -136,7 +136,7 @@ class AnoyMatchService(object):
         cls._remove_from_match_pool(gender1, fake_id1)
         cls._remove_from_match_pool(cls.OTHER_GENDER_M.get(gender1), fake_id2)
         redis_client.delete(REDIS_FAKE_START.format(fake_id=fake_id1))
-        # redis_client.delete(REDIS_FAKE_START.format(fake_id=fake_id2))
+        redis_client.delete(REDIS_FAKE_START.format(fake_id=fake_id2))
         cls._add_to_check_pool(fake_id1)
         cls._add_to_check_pool(fake_id2)
         return True
