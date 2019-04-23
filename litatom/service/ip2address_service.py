@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 class Ip2AddressService(object):
-    #READER = geoip2.database.Reader('litatom/data/GeoLite2-City.mmdb')
+    READER = geoip2.database.Reader('litatom/data/GeoLite2-City.mmdb')
     READER_COUNTRY = geoip2.database.Reader('litatom/data/GeoLite2-Country.mmdb')
     '''
     docs :https://www.jianshu.com/p/eb756fc2d3b8
@@ -48,6 +48,15 @@ class Ip2AddressService(object):
         '''scenes could be ads, pulp...'''
         try:
             return cls.READER_COUNTRY.country(ip).country.name
+        except Exception, e:
+            logger.error('get ip country failed,  error:%s',  e)
+            return ''
+
+    @classmethod
+    def ip_country_city(cls, ip):
+        '''scenes could be ads, pulp...'''
+        try:
+            return cls.READER.city(ip).country.name, cls.READER.city(ip).country.name
         except Exception, e:
             logger.error('get ip country failed,  error:%s',  e)
             return ''

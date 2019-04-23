@@ -108,7 +108,6 @@ class AnoyMatchService(object):
         if need_remove_from_pool:
             redis_client.delete(REDIS_FAKE_START.format(fake_id=fake_id))
             other_fakeid = redis_client.get(REDIS_MATCHED.format(fake_id=fake_id))
-            redis_client.delete(REDIS_FAKE_START.format(fake_id=fake_id))
             if other_fakeid:
                 redis_client.delete(REDIS_FAKE_START.format(fake_id=other_fakeid))
                 redis_client.delete(REDIS_MATCHED.format(fake_id=fake_id))

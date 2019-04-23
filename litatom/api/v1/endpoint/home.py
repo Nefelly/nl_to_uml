@@ -51,7 +51,7 @@ def online_users():
 
 def get_wording():
     word_type = request.args.get('word_type')
-    if request.ip_thailand_china and word_type == u'match_info':
+    if request.ip_thailand and word_type == u'match_info':
         word_type = u'thai_wait'
     wording = Wording.get_word_type(word_type)
     return success(wording)

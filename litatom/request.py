@@ -245,6 +245,14 @@ class LitatomRequest(flask.Request):
         return  self.ip_country in [u'Thailand', u'China']
 
     @cached_property
+    def ip_should_filter(self):
+        country, city = Ip2AddressService.ip_country_city(self.ip)
+        if country in [u'United States'] or \
+                (country == u'China' and city not in [u'Beijing']):
+            return True
+        return False
+
+    @cached_property
     def ip_full_list(self):
         """combine x-forwarded-for and client's ip to get a full ip list"""
         ip = list(self.access_route)

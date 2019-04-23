@@ -108,14 +108,8 @@ class FeedService(object):
 
 
     @classmethod
-    def should_filter_ip(cls):
-        if Ip2AddressService.ip_country(request.ip) in [u'United States']:
-            return True
-        return False
-
-    @classmethod
     def feeds_by_userid(cls, visitor_user_id, user_id, start_ts=MAX_TIME, num=10):
-        if cls.should_filter_ip():
+        if request.ip_should_filter:
             return {
                        'feeds': [],
                        'has_next': False,
@@ -143,7 +137,7 @@ class FeedService(object):
 
     @classmethod
     def _feeds_by_pool(cls, redis_key, user_id, start_p, num):
-        if cls.should_filter_ip():
+        if request.ip_should_filter:
             return {
                        'feeds': [],
                        'has_next': False,
