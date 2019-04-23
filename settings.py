@@ -53,7 +53,7 @@ REDIS_SETTINGS = {
     'lit': r.get_json('REDIS_LIT', DEFAULT_REDIS_SETTING),
 
 }
-IS_DEV = r.get_json('IS_DEV', False)
+IS_DEV = r.get_bool('IS_DEV', False)
 DEFAULT_HUANXIN_SETTING = {
     'org_name': '1102190223222824',
     'app_name': 'lit',
