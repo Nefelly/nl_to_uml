@@ -248,7 +248,7 @@ class LitatomRequest(flask.Request):
     def ip_should_filter(self):
         country, city = Ip2AddressService.ip_country_city(self.ip)
         if country in [u'United States'] or \
-                (country == u'China' and city not in [u'Beijing']):
+                (country == u'China' and city not in [u'Beijing', u'Shanghai', u'Nanjing']):
             return True
         return False
 
