@@ -56,7 +56,7 @@ class Ip2AddressService(object):
     def ip_country_city(cls, ip):
         '''scenes could be ads, pulp...'''
         try:
-            return cls.READER.city(ip).country.name, cls.READER.city(ip).country.name
+            return cls.READER.city(ip).country.name, cls.READER.city(ip).city.name
         except Exception, e:
             logger.error('get ip country failed,  error:%s',  e)
             return ''
