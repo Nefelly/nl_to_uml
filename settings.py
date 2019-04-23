@@ -12,7 +12,8 @@ _envvars = [
     'HENDRIX_THRIFT_HOST',
     'HENDRIX_THRIFT_PORT',
     'REDIS_LIT',
-    'HUANXIN_ACCOUNT'
+    'HUANXIN_ACCOUNT',
+    'IS_DEV'
 ]
 
 r = EnvvarReader(*_envvars)
@@ -52,7 +53,7 @@ REDIS_SETTINGS = {
     'lit': r.get_json('REDIS_LIT', DEFAULT_REDIS_SETTING),
 
 }
-
+IS_DEV = r.get_json('IS_DEV', False)
 DEFAULT_HUANXIN_SETTING = {
     'org_name': '1102190223222824',
     'app_name': 'lit',
@@ -61,6 +62,7 @@ DEFAULT_HUANXIN_SETTING = {
 }
 
 HUANXIN_ACCOUNT = r.get_json('HUANXIN_ACCOUNT', DEFAULT_HUANXIN_SETTING)
+
 
 ELASTICSEARCH_SETTINGS = {
     'sns_poi': r.get_json('ELASTICSEARCH_SNS_POI', [{

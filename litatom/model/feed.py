@@ -63,20 +63,28 @@ class Feed(Document):
     def chg_like_num(cls, feed_id, num=1):
         feed = cls.get_by_id(feed_id)
         feed.like_num += num
+        if feed.like_num < 0:
+            feed.like_num = 0
         feed.save()
 
     @classmethod
     def cls_chg_comment_num(cls, feed_id, num=1):
         feed = cls.get_by_id(feed_id)
         feed.comment_num += num
+        if feed.comment_num < 0:
+            feed.comment_num = 0
         feed.save()
 
     def chg_comment_num(self, num=1):
         self.comment_num += num
+        if self.comment_num < 0:
+            self.comment_num = 0
         self.save()
 
     def chg_feed_num(self, num=1):
         self.like_num += num
+        if self.like_num < 0:
+            self.like_num = 0
         self.save()
 
     @classmethod

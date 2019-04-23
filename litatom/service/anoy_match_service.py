@@ -2,6 +2,7 @@
 import time
 import datetime
 import random
+from hendrix.conf import setting
 from ..redis import RedisClient
 from flask import (
     request
