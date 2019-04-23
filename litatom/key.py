@@ -12,7 +12,7 @@ REDIS_AGE_UID = 'age_uid:{age}'  # set
 REDIS_USER_SEC_ACT = 'user_sec_act:{user_id}'
 REDIS_USER_INFO_FINISHED = 'user_info_finished:{user_id}'  # 用户是否完成
 
-REDIS_FAKE_START = 'fake_start:{fake_id}'
+REDIS_FAKE_START = 'fake_start:{fake_id}'   # 开始进入匹配
 REDIS_USER_MATCH_LEFT = 'user_match_left:{user_date}'   # 过期时间一天
 REDIS_FAKE_ID_UID = 'fakeid_uid:{fake_id}'
 REDIS_UID_FAKE_ID = 'uid_fakeid:{user_id}'

@@ -108,7 +108,9 @@ class AnoyMatchService(object):
         if need_remove_from_pool:
             redis_client.delete(REDIS_FAKE_START.format(fake_id=fake_id))
             other_fakeid = redis_client.get(REDIS_MATCHED.format(fake_id=fake_id))
+            redis_client.delete(REDIS_FAKE_START.format(fake_id=fake_id))
             if other_fakeid:
+                redis_client.delete(REDIS_FAKE_START.format(fake_id=other_fakeid))
                 redis_client.delete(REDIS_MATCHED.format(fake_id=fake_id))
                 redis_client.delete(REDIS_MATCHED.format(fake_id=other_fakeid))
                 pair = low_high_pair(fake_id, other_fakeid)
@@ -135,8 +137,7 @@ class AnoyMatchService(object):
         # 将其从正在匹配队列中删除
         cls._remove_from_match_pool(gender1, fake_id1)
         cls._remove_from_match_pool(cls.OTHER_GENDER_M.get(gender1), fake_id2)
-        redis_client.delete(REDIS_FAKE_START.format(fake_id=fake_id1))
-        redis_client.delete(REDIS_FAKE_START.format(fake_id=fake_id2))
+
         cls._add_to_check_pool(fake_id1)
         cls._add_to_check_pool(fake_id2)
         return True
@@ -163,7 +164,7 @@ class AnoyMatchService(object):
         fake_id2 = redis_client.get(matched_key)
         if fake_id2:
             if cls._in_match(fake_id, fake_id2):
-                redis_client.delete(REDIS_FAKE_START.format(fake_id=fake_id))
+                # redis_client.delete(REDIS_FAKE_START.format(fake_id=fake_id))
                 return fake_id2, True
             redis_client.delete(matched_key)
         int_time = int(time.time())
