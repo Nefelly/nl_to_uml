@@ -37,6 +37,7 @@ class FaceBookBackup(Document):
         obj.fbuid = extra.get('id')
         obj.uid = str(user.id)
         obj.create_ts = int(time.time())
+        obj.save()
 
 
     @classmethod
