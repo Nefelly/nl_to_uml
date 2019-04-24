@@ -36,7 +36,8 @@ from ..model import (
     SocialAccountInfo,
     UserRecord,
     Follow,
-    Blocked
+    Blocked,
+    FaceBookBackup
 )
 from ..service import (
     SmsCodeService,
@@ -308,11 +309,20 @@ class UserService(object):
             return u'facebook login get wrong facebook id', False
         user = User.get_by_social_account_id(User.FACEBOOK_TYPE, facebook_id)
         if not user:
+            obj = FaceBookBackup.objects(nickname=idinfo.get('name'))
             user = User()
-            user.huanxin = cls.create_huanxin()
-            user.facebook = SocialAccountInfo.make(facebook_id, idinfo)
-            user.create_time = datetime.datetime.now()
-            user.save()
+            if obj:
+                oldUser = User.get_by_id(obj.uid)
+                for attr in oldUser._fields:
+                    if attr not in ['id', 'facebook_ver1']:
+                        setattr(user, attr, getattr(oldUser, attr))
+                user.save()
+            else:
+
+                user.huanxin = cls.create_huanxin()
+                user.facebook = SocialAccountInfo.make(facebook_id, idinfo)
+                user.create_time = datetime.datetime.now()
+                user.save()
             cls.update_info_finished_cache(user)
         msg, status = cls.login_job(user)
         if not status:
