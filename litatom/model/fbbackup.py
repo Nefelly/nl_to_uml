@@ -28,7 +28,11 @@ class FaceBookBackup(Document):
     def copy_from_old(cls, user):
         obj = cls()
         import json
-        extra = user.facebook.extra_data.replace('u\'', '\'').replace('\'', "\"")
+        if str(user.id) in ['5cb723023fff22429224b034', '5cb7614d3fff223bef9145a9']:
+            return
+        extra = user.facebook.extra_data.replace("u\'name':", "\"name\":").replace(": u\'", ": \"").replace(": u\"", ": \"").replace("\', u\'id", "\", \"id")\
+            .replace("\", u\'id", "\", \"id").replace("\':", "\":").replace("\'}", "\"}")
+        extra = json.loads(extra)
         obj.nickname = extra.get('name')
         obj.fbuid = extra.get('id')
         obj.uid = str(user.id)
