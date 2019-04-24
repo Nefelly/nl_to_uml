@@ -314,11 +314,11 @@ class UserService(object):
             if obj:
                 oldUser = User.get_by_id(obj.uid)
                 for attr in oldUser._fields:
-                    if attr not in ['id', 'facebook_ver1']:
+                    if attr not in ['id', 'facebook_ver1', 'facebook']:
                         setattr(user, attr, getattr(oldUser, attr))
+                user.facebook = SocialAccountInfo.make(facebook_id, idinfo)
                 user.save()
             else:
-
                 user.huanxin = cls.create_huanxin()
                 user.facebook = SocialAccountInfo.make(facebook_id, idinfo)
                 user.create_time = datetime.datetime.now()
