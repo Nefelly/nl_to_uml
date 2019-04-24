@@ -39,6 +39,7 @@ from .redis_lock import (
 )
 from .track import TrackChat
 from .admin import AdminUser
+from .fbbackup import FaceBookBackup
 
 from ..db import DBManager
 
