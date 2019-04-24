@@ -9,6 +9,7 @@ sys_rng = random.SystemRandom()
 import urlparse
 
 import re
+import json
 import bson
 from hendrix.conf import setting
 from hendrix.util import Enum
@@ -143,7 +144,7 @@ class SocialAccountInfo(EmbeddedDocument):
 
     @classmethod
     def make(cls, other_id, payload):
-        obj = cls(other_id=other_id, extra_data=str(payload))
+        obj = cls(other_id=other_id, extra_data=json.dumps(payload))
         return obj
 
 
