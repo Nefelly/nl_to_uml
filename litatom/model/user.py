@@ -175,6 +175,7 @@ class User(Document, UserSessionMixin):
     huanxin = EmbeddedDocumentField(HuanxinAccount)
     google = EmbeddedDocumentField(SocialAccountInfo)
     facebook = EmbeddedDocumentField(SocialAccountInfo)
+    facebook_ver1 = BooleanField()
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
 
     @property

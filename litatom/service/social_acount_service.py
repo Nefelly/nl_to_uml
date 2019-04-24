@@ -60,8 +60,10 @@ class FacebookService(object):
     '''
     https://blog.csdn.net/mycwq/article/details/71308186
     '''
-    APP_ID = '372877603536187'
-    APP_SECRET = '29e68240c95ceddbe0a6798400ce2f0a'
+    #APP_ID = '372877603536187'
+    #APP_SECRET = '29e68240c95ceddbe0a6798400ce2f0a'
+    APP_ID = '2249012795165840'
+    APP_SECRET = '5d59b1c43df07c9ef2441abf19d6bfe9'
     APP_TOKEN = '%s|%s' % (APP_ID, APP_SECRET)
 
     @classmethod
