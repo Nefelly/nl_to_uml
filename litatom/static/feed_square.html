@@ -43,6 +43,7 @@ no pictures
 <button v-if="next_start >= 0" name="next_page" @click="next_page()">next page</button>
 </div>
 <script>
+    console.log(document.domain)
   const BASE_URL = 'http://' + document.domain + '/api/sns/v1/lit/';
 var app7 = new Vue({
   el: '#app-7',
