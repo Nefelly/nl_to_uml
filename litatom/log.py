@@ -450,7 +450,7 @@ def _gen_online_handlers():
             'syslog': {
                 'level': 'INFO',
                 'class': 'logging.handlers.SysLogHandler',
-                'address': '/dev/log',
+                'address': '/rdata/litlog',
                 'facility': 'local6',
                 'formatter': 'syslog',
             },
@@ -619,6 +619,7 @@ def _gen_console_config(app_name):
 
 
 def gen_app_log_config(name, debug=False):
+    print 'current env', get_current_env()
     if get_current_env() != ENV_DEV:
         return _gen_online_config(name)
     else:
