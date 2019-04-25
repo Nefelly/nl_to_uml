@@ -451,7 +451,7 @@ def _gen_online_handlers():
                 'level': 'INFO',
                 #'class': 'logging.handlers.SysLogHandler',
                 'class': 'logging.FileHandler',
-                'address': '/rdata/litlog',
+                #'address': '/rdata/litlog',
                 #'facility': 'local6',
                 'formatter': 'syslog',
             },
