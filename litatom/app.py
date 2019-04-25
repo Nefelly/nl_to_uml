@@ -76,12 +76,13 @@ class LitatomAppFactory(object):
         name = app.name
         if not cls._logging_setup:
             conf = log.gen_app_log_config(name, app.debug)
-            print 'get innnnnn', conf
+            print 'get innnnnn', conf, app.name
             logging.config.dictConfig(conf)
             logging.captureWarnings(True)
             cls._logging_setup = True
         app.logger_name = name
         app._logger = logging.getLogger(name)
+        print app._logger
         # handler = logging.FileHandler("/data/log/litatom/litatom.log")
         # app._logger.addHandler(handler)
 
