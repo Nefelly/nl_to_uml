@@ -80,9 +80,9 @@ class LitatomAppFactory(object):
             logging.captureWarnings(True)
             cls._logging_setup = True
         app.logger_name = name
-        # app._logger = logging.getLogger(name)
+        app._logger = logging.getLogger(name)
         #print app._logger, dir(app._logger), app._logger.handlers
-        app._logger = logging.FileHandler("/rdata/litlog")
+        #app._logger = logging.FileHandler("/rdata/litlog")
         # app._logger.addHandler(handler)
 
     @classmethod
