@@ -452,7 +452,7 @@ def _gen_online_handlers():
                 #'class': 'logging.handlers.SysLogHandler',
                 'class': 'logging.FileHandler',
                 'address': '/rdata/litlog',
-                'facility': 'local6',
+                #'facility': 'local6',
                 'formatter': 'syslog',
             },
             'syslog_prefixed': {
