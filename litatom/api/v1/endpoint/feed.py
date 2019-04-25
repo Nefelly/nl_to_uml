@@ -28,7 +28,8 @@ from ...error import (
 )
 
 logger = logging.getLogger(__name__)
-
+loghanlder = logging.FileHandler("/rdata/devlog", encoding='utf-8')
+logger.addHandler(loghanlder)
 
 @session_finished_required
 def create_feed():
@@ -102,6 +103,7 @@ def like_feed(feed_id):
 
 @session_finished_required
 def comment_feed(feed_id):
+    logger.error('feed_id:%r, user_id:%r, request body:%r', feed_id, request.user_id, request.json)
     form = FeedCommentForm(data=request.json)
     content = form.content.data
     comment_id = form.comment_id.data
