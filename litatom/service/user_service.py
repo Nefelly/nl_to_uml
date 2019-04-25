@@ -309,7 +309,7 @@ class UserService(object):
             return u'facebook login get wrong facebook id', False
         user = User.get_by_social_account_id(User.FACEBOOK_TYPE, facebook_id)
         if not user:
-            obj = FaceBookBackup.objects(nickname=idinfo.get('name'))
+            obj = FaceBookBackup.objects(nickname=idinfo.get('name')).first()
             user = User()
             if obj:
                 oldUser = User.get_by_id(obj.uid)
