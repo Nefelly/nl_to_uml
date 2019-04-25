@@ -142,7 +142,7 @@ class FeedService(object):
                        'feeds': [],
                        'has_next': False,
                        'next_start': -1
-                   }
+                   }, True
         feeds = redis_client.zrevrange(redis_key, start_p, start_p + num)
         feeds = map(Feed.get_by_id, feeds) if feeds else []
         has_next = False
@@ -198,8 +198,8 @@ class FeedService(object):
             father_comment = FeedComment.get_by_id(comment_id)
             if not father_comment:
                 return u'comment of id:%s not exists' % comment_id, False
-            if father_comment.user_id == user_id:
-                return u'could not comment on yourself\'s comement', False
+            # if father_comment.user_id == user_id:
+            #     return u'could not comment on yourself\'s comement', False
             if father_comment.comment_id:   # 直接评论到一级目录里  不支持多级嵌套
                 comment_id = father_comment.comment_id
             comment.comment_id = comment_id

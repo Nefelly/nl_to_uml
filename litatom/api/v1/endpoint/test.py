@@ -14,12 +14,14 @@ from flask import (
 from ...error import Success
 
 logger = logging.getLogger(__name__)
-
+loghanlder = logging.FileHandler("/rdata/devlog", encoding='utf-8')
+logger.addHandler(loghanlder)
 
 def test():
     return jsonify(Success)
 
 def hello():
+
     # print logger, logger.handlers,
     # for attr in logger._fields:
     #     print attr, getattr(logger, attr)
