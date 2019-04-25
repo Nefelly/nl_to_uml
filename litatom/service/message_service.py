@@ -30,7 +30,7 @@ class UserMessageService(object):
     }
 
     MSG_MESSAGE_M_THAI = {
-        MSG_LIKE: 'กใจโพสต์ของคุณ',
+        MSG_LIKE: 'ถูกใจโพสต์ของคุณ',
         MSG_FOLLOW: 'เริ่มติดตามคุณ',
         MSG_COMMENT: 'ตอบกลับความเห็นของคุณ',
         MSG_REPLY: 'คอมเมนท์บนโพสต์ของคุณ'
