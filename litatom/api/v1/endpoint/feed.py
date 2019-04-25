@@ -108,6 +108,7 @@ def comment_feed(feed_id):
     content = form.content.data
     comment_id = form.comment_id.data
     data, status = FeedService.comment_feed(request.user_id, feed_id, content, comment_id)
+    logger.error('data:%r, status:%r', data, status)
     if status:
         return success(data)
     return fail(data)
