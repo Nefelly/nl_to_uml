@@ -142,7 +142,7 @@ class FeedService(object):
                        'feeds': [],
                        'has_next': False,
                        'next_start': -1
-                   }, True
+                   }
         feeds = redis_client.zrevrange(redis_key, start_p, start_p + num)
         feeds = map(Feed.get_by_id, feeds) if feeds else []
         has_next = False
