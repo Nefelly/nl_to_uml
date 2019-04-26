@@ -28,7 +28,9 @@ from .signal import (
 )
 
 logger = logging.getLogger(__name__)
-
+file_name = '/rdata/litatom' if not setting.IS_DEV else '/rdata/devlitatom'
+loghanlder = logging.FileHandler(file_name, encoding='utf-8')
+logger.addHandler(loghanlder)
 
 class LitatomApp(Flask):
     request_class = LitatomRequest
