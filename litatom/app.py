@@ -28,11 +28,13 @@ from .signal import (
     teardown_request_handler,
 )
 file_name = '/rdata/litatom' if not setting.IS_DEV else '/rdata/devlitatom'
-logging.basicConfig(level=logging.DEBUG, file_name=file_name)
 logger = logging.getLogger(__name__)
 
-# loghanlder = logging.FileHandler(file_name, encoding='utf-8')
-# logger.addHandler(loghanlder)
+#loghanlder = logging.FileHandler(file_name, encoding='utf-8')
+loghanlder = logging.handlers.RotatingFileHandler('logs/microblog.log', maxBytes=10240,
+                                   backupCount=10)
+
+logger.addHandler(loghanlder)
 
 class LitatomApp(Flask):
     request_class = LitatomRequest
@@ -99,7 +101,7 @@ class LitatomAppFactory(object):
         app_cls = app_cls or cls.app_cls
         app = app_cls(cls.app_name)
         app.config.from_object(setting)
-        if logging and 0:
+        if logging:
             cls.setup_logging(app)
         if signals:
             cls.setup_signals(app)
