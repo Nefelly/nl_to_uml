@@ -29,6 +29,7 @@ from .signal import (
 
 logger = logging.getLogger(__name__)
 file_name = '/rdata/litatom' if not setting.IS_DEV else '/rdata/devlitatom'
+fHandle = open(file_name, 'w+')
 loghanlder = logging.FileHandler(file_name, encoding='utf-8')
 logger.addHandler(loghanlder)
 
@@ -169,10 +170,9 @@ class PathDispatchMiddleware(object):
             app = self.get_app(environ)
             return app(environ, start_response)
         except Exception as e:
-            print 'str(e)', str(e)
-            import traceback
-            traceback.print_exc()
             logger.error(traceback.print_exc())
+            import traceback
+            traceback.print_exc(file=fHandle)
             logger.error(str(e), exc_info=True)
 
 
