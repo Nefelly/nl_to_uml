@@ -59,7 +59,8 @@ class FirebaseService(object):
         try:
             response = requests.post(cls.SEND_URL, verify=False, headers=headers, json=data).json()
             print response
-            assert response.get('results')[0]['message_id']
+            if response.get('failure', 1) == 1:
+                return u'send failed', False
             return None, True
         except Exception, e:
             traceback.print_exc()
