@@ -169,6 +169,8 @@ class PathDispatchMiddleware(object):
             app = self.get_app(environ)
             return app(environ, start_response)
         except Exception as e:
+            print 'eeeeee'
+            print str(e)
             #import traceback
             #traceback.print_exc()
             logger.error(str(e), exc_info=True)
