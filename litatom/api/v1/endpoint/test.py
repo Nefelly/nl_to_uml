@@ -22,6 +22,6 @@ def test():
     return jsonify(Success)
 
 def hello():
-    #assert False
-    #logger.error("hello, this is a mistake")
+    logger.error("hello, this is a mistake")
+    assert False
     return render_template('hello.html', name='joey')
