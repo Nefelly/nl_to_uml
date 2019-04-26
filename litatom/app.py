@@ -2,6 +2,7 @@
 import gevent.monkey
 
 gevent.monkey.patch_all()
+import sys
 import logging
 import logging.config
 
@@ -26,12 +27,12 @@ from .signal import (
     request_finished_handler,
     teardown_request_handler,
 )
-
-logger = logging.getLogger(__name__)
 file_name = '/rdata/litatom' if not setting.IS_DEV else '/rdata/devlitatom'
-fHandle=open(file_name, 'w+')
-loghanlder = logging.FileHandler(file_name, encoding='utf-8')
-logger.addHandler(loghanlder)
+logging.basicConfig(level=logging.DEBUG, file_name=file_name)
+logger = logging.getLogger(__name__)
+
+# loghanlder = logging.FileHandler(file_name, encoding='utf-8')
+# logger.addHandler(loghanlder)
 
 class LitatomApp(Flask):
     request_class = LitatomRequest
@@ -98,7 +99,7 @@ class LitatomAppFactory(object):
         app_cls = app_cls or cls.app_cls
         app = app_cls(cls.app_name)
         app.config.from_object(setting)
-        if logging:
+        if logging and 0:
             cls.setup_logging(app)
         if signals:
             cls.setup_signals(app)
@@ -172,7 +173,8 @@ class PathDispatchMiddleware(object):
         except Exception as e:
             #logger.error(traceback.print_exc())
             import traceback
-            traceback.print_exc(file=fHandle)
+            logger.error(traceback.format_exc())
+            #traceback.print_exc(file=fHandle)
             logger.error(str(e), exc_info=True)
 
 
