@@ -173,7 +173,10 @@ class PathDispatchMiddleware(object):
             print str(e)
             import traceback
             traceback.print_exc()
-            logger.error(str(e), exc_info=True)
+            try:
+                logger.error(str(e), exc_info=True)
+            except Exception as e:
+                print 'error', e
 
 
 application = PathDispatchMiddleware(None, create_app_by_prefix)
