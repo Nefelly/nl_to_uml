@@ -178,7 +178,7 @@ class PathDispatchMiddleware(object):
             res = traceback.format_exc()
             print type(res)
             try:
-                logger.error(res)
+                logger.debug(res)
                 5/0
             except Exception as e:
                 print 'innet error', e
