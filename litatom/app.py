@@ -175,6 +175,7 @@ class PathDispatchMiddleware(object):
         except Exception as e:
             #logger.error(traceback.print_exc())
             import traceback
+            print traceback.format_exc()
             logger.error(traceback.format_exc())
             #traceback.print_exc(file=fHandle)
             logger.error(str(e), exc_info=True)
