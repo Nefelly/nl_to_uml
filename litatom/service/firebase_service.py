@@ -63,5 +63,5 @@ class FirebaseService(object):
             return None, True
         except Exception, e:
             traceback.print_exc()
-            logger.error('firebase send  error, user_id: %r, err: %r', user_id, e)
+            #logger.error('firebase send  error, user_id: %r, err: %r', user_id, e)
             return u'send error', False
