@@ -175,6 +175,7 @@ class PathDispatchMiddleware(object):
             import traceback
             res = traceback.format_exc()
             print type(res)
+            print dir(logger), logger.handlers
             logger.debug(res)
             logger.error(str(e), exc_info=True)
 
