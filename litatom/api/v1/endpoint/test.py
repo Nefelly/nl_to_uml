@@ -21,10 +21,6 @@ def test():
     return jsonify(Success)
 
 def hello():
-
-    # print logger, logger.handlers,
-    # for attr in logger._fields:
-    #     print attr, getattr(logger, attr)
     assert False
     logger.info("hello, this is a mistake")
     return render_template('hello.html', name='joey')
