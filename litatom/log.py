@@ -403,7 +403,6 @@ def _get_logging_handler(need_prefix=False):
     """
     handlers = set()
     if in_container():
-        print '!!' * 100, 'in_container'
         handlers.update(['stdout_json'])
     else:
         handlers.update(['syslog_json'])

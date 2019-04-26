@@ -14,7 +14,7 @@ from flask import (
 from ...error import Success
 
 logger = logging.getLogger(__name__)
-print dir(logger)
+#print dir(logger)
 #loghanlder = logging.FileHandler("/rdata/devlog", encoding='utf-8')
 #logger.addHandler(loghanlder)
 
