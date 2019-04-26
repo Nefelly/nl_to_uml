@@ -23,5 +23,5 @@ def test():
 
 def hello():
     #assert False
-    logger.error("hello, this is a mistake")
+    #logger.error("hello, this is a mistake")
     return render_template('hello.html', name='joey')
