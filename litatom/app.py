@@ -165,10 +165,10 @@ class PathDispatchMiddleware(object):
 
     def __call__(self, environ, start_response):
         try:
+            logger.error('hello')
             app = self.get_app(environ)
             return app(environ, start_response)
         except Exception as e:
-            logger.error('hello')
             import traceback
             traceback.print_exc()
             logger.error(str(e), exc_info=True)
