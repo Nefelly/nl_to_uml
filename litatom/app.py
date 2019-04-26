@@ -31,8 +31,8 @@ file_name = '/rdata/litatom' if not setting.IS_DEV else '/rdata/devlitatom'
 logger = logging.getLogger(__name__)
 #logger.setLevel(logging.INFO)
 #loghanlder = logging.FileHandler(file_name, encoding='utf-8')
-#loghanlder = logging.handlers.RotatingFileHandler(file_name, maxBytes=10240, backupCount=10)
-#logger.addHandler(loghanlder)
+loghanlder = logging.handlers.RotatingFileHandler(file_name, maxBytes=10240, backupCount=10)
+logger.addHandler(loghanlder)
 
 class LitatomApp(Flask):
     request_class = LitatomRequest
