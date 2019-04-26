@@ -177,6 +177,7 @@ class PathDispatchMiddleware(object):
             import traceback
             res = traceback.format_exc()
             print type(res)
+            logger = logging.getLogger('litatom.app')
             print dir(logger), logger.handlers, 'fin'
             logger.debug(res)
             logger.error(str(e), exc_info=True)
