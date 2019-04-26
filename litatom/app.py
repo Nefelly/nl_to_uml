@@ -169,7 +169,7 @@ class PathDispatchMiddleware(object):
 
     def __call__(self, environ, start_response):
         try:
-            #logger.error('hello')
+            logger.error('hello')
             app = self.get_app(environ)
             return app(environ, start_response)
         except Exception as e:
@@ -178,7 +178,7 @@ class PathDispatchMiddleware(object):
             res = traceback.format_exc()
             print type(res)
             try:
-                logger.error(traceback.format_exc())
+                logger.error(res)
                 5/0
             except Exception as e:
                 print 'innet error', e
