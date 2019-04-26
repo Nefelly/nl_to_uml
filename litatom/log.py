@@ -406,7 +406,7 @@ def _get_logging_handler(need_prefix=False):
         handlers.update(['stdout_json'])
     else:
         handlers.update(['syslog_json'])
-        if on_staging():
+        if on_staging() or True:
             handlers.update(['syslog', 'stdout_json_pretty'])
 
     handlers = list(handlers)
