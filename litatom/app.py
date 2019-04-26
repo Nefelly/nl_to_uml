@@ -80,6 +80,7 @@ class LitatomAppFactory(object):
         name = app.name
         if not cls._logging_setup:
             conf = log.gen_app_log_config(name, app.debug)
+            print conf
             logging.config.dictConfig(conf)
             logging.captureWarnings(True)
             cls._logging_setup = True
