@@ -168,6 +168,7 @@ class PathDispatchMiddleware(object):
 
     def __call__(self, environ, start_response):
         try:
+            print logger.handlers
             logger.error('hello')
             app = self.get_app(environ)
             return app(environ, start_response)
