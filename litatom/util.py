@@ -448,6 +448,7 @@ def memoize(f):
 @memoize
 def on_staging():
     """查看当前是否在Staging环境"""
+    return True
     return get_hostname() in (
         'sns-litatom-staging',
         'sns-litatom-staging02',
