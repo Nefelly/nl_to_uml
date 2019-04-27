@@ -102,10 +102,10 @@ def request_finished_handler(sender, response, **extra):
     try:
         ctx = context.get_ctx()
         ctx.api_finish()
-        _send_api_metrics(response=response)
+        #_send_api_metrics(response=response)
         if not response.success:
             log_api_failure(sender.logger, response=response)
-        log_api_call(sender.logger, status_code=response.status_code)
+        #log_api_call(sender.logger, status_code=response.status_code)
     except Exception:
         logger.exception('error handling signal: `request_finished`')
 
