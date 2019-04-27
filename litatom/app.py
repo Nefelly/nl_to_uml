@@ -168,8 +168,6 @@ class PathDispatchMiddleware(object):
 
     def __call__(self, environ, start_response):
         try:
-            print logger.handlers
-            logger.error('hello')
             app = self.get_app(environ)
             return app(environ, start_response)
         except Exception as e:
@@ -178,7 +176,7 @@ class PathDispatchMiddleware(object):
             res = traceback.format_exc()
             logger1 = logging.getLogger('litatom.app')
             #print dir(logger), logger.handlers, 'fin'
-            logger1.debug(res)
+            logger1.error(res)
             #logger.error(str(e), exc_info=True)
 
 
