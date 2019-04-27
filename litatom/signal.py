@@ -89,7 +89,7 @@ def got_request_exception_handler(sender, **extra):
         if setting['CB_ENABLED'] and \
                 not g.is_circuit_broken:
             cb.inc_error(request.endpoint)
-        _send_api_metrics(exc=exc)
+        #_send_api_metrics(exc=exc)
         log_api_failure(sender.logger)
         sentry_exception_handler(request, exc_info)
     except Exception:
