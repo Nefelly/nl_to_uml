@@ -4,7 +4,7 @@ from ..model import (
     UserMessage,
 )
 import sys
-sys.setdefaultencoding('utf-8')
+#sys.setdefaultencoding('utf-8')
 from ..const import (
     DEFAULT_QUERY_LIMIT,
     MAX_TIME,
