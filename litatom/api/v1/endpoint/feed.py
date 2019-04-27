@@ -103,13 +103,10 @@ def like_feed(feed_id):
 
 @session_finished_required
 def comment_feed(feed_id):
-    logger.error('feed_id:%r, user_id:%r, request body:%r', feed_id, request.user_id, request.json)
     form = FeedCommentForm(data=request.json)
     content = form.content.data
     comment_id = form.comment_id.data
-    logger.error('content:%r commnet_id:%r', content, comment_id)
     data, status = FeedService.comment_feed(request.user_id, feed_id, content, comment_id)
-    logger.error('data:%r, status:%r', data, status)
     if status:
         return success(data)
     return fail(data)
