@@ -219,8 +219,8 @@ class UserService(object):
             key = REDIS_ONLINE_GENDER.format(gender=gender)
             redis_client.zadd(key, {user_id: int_time})
             redis_client.zadd(REDIS_ONLINE, {user_id: int_time})
-        if int_time % 100 == 0:
-            redis_client.zremrangebyscore(key, -1, int_time - ONLINE_LIVE)
+            if int_time % 100 == 0:
+                redis_client.zremrangebyscore(key, -1, int_time - ONLINE_LIVE)
 
     @classmethod
     def create_huanxin(cls):
