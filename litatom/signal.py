@@ -90,8 +90,8 @@ def got_request_exception_handler(sender, **extra):
                 not g.is_circuit_broken:
             cb.inc_error(request.endpoint)
         #_send_api_metrics(exc=exc)
-        log_api_failure(sender.logger)
-        sentry_exception_handler(request, exc_info)
+        #log_api_failure(sender.logger)
+        #sentry_exception_handler(request, exc_info)
     except Exception:
         logger.exception('error handling signal: `got_request_exception`')
     finally:

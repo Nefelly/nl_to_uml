@@ -247,7 +247,8 @@ class UserService(object):
             return u'wrong user_ids', False
         res = {}
         for _ in uids:
-            res[_] = cls.uid_online(_)
+            if _:
+                res[_] = cls.uid_online(_)
         return res, True
 
     @classmethod
