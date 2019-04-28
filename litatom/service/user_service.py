@@ -167,7 +167,7 @@ class UserService(object):
             nick_name = data.get('nickname', '')
             if cls.verify_nickname_exists(nick_name):
                 return u'nickname already exists', False
-            nick_name = nick_name.replace('\r', '').replace('\n', ''):
+            nick_name = nick_name.replace('\r', '').replace('\n', '')
             data['nickname'] = nick_name
         user = User.get_by_id(user_id)
         if not user:
