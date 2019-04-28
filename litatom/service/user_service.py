@@ -163,8 +163,12 @@ class UserService(object):
             if el not in total_fields or (not data.get(el) and data.get(el) != False):
                 return field_info, False
         has_nickname = 'nickname' in data
-        if has_nickname and cls.verify_nickname(data.get('nickname', '')):
-            return u'nickname already exists', False
+        if has_nickname:
+            nick_name = data.get('nickname', '')
+            if cls.verify_nickname_exists(nick_name):
+                return u'nickname already exists', False
+            nick_name = nick_name.replace('\r', '').replace('\n', ''):
+            data['nickname'] = nick_name
         user = User.get_by_id(user_id)
         if not user:
             return USER_NOT_EXISTS, False
@@ -361,7 +365,7 @@ class UserService(object):
         return u'%s loves to share' % he_or_she
 
     @classmethod
-    def verify_nickname(cls, nickname):   # judge if nickname exists
+    def verify_nickname_exists(cls, nickname):   # judge if nickname exists
         if not nickname or User.get_by_nickname(nickname):
             return True
         return False
