@@ -22,7 +22,7 @@ class TokenBucketService(object):
     WHITE_LIST = set(['5b3cc5544eacab7f1b28369f', '5b9b6c5a256a0c0001125678'])
 
     @classmethod
-    def get_token(cls, key, amount=1, rate=1, interval=ONE_DAY, capacity=1, key_live_time=2*ONE_DAY):
+    def get_token(cls, key, amount=1, rate=1, capacity=1, interval=ONE_DAY, key_live_time=2*ONE_DAY):
         '''
 
         :param key:
@@ -40,7 +40,7 @@ class TokenBucketService(object):
         lst_str = redis_client.get(user_key)
         now = int(time.time())
         if not lst_str:
-            tokens = cls.RATE
+            tokens = rate
             if tokens >= amount:
                 lst_str = pickle.dumps([tokens - amount, now])
                 redis_client.set(user_key, lst_str, key_live_time)
