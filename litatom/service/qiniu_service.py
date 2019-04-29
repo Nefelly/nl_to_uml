@@ -48,6 +48,6 @@ class QiniuService(object):
                         return r
                 return ''
             except Exception, e:
-                traceback.print_exc()
+                logger.error(traceback.format_exc())
                 logger.error('Error verify Qiniu, url: %r, err: %r', url, e)
         return ''
