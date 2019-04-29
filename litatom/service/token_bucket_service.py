@@ -10,7 +10,7 @@ from ..key import (
 from ..const import ONE_DAY
 
 redis_client = RedisClient()['lit']
-
+logger = logging.getLogger(__name__)
 
 class TokenBucketService(object):
     """
@@ -23,6 +23,14 @@ class TokenBucketService(object):
 
     @classmethod
     def get_token(cls, key, amount=1, rate=1, capacity=1, interval=ONE_DAY, key_live_time=2*ONE_DAY):
+        try:
+            return cls._get_token(key, amount, rate, capacity, interval, key_live_time)
+        except Exception as e:
+            logger.error('get token error:%r', e)
+            return True
+
+    @classmethod
+    def _get_token(cls, key, amount=1, rate=1, capacity=1, interval=ONE_DAY, key_live_time=2*ONE_DAY):
         '''
 
         :param key:
