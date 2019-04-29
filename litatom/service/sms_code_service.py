@@ -1,6 +1,7 @@
 # coding: utf-8
 import random
 import logging
+import json
 from flask import request
 from ..redis import RedisClient
 from ..util import validate_phone_number
@@ -58,6 +59,7 @@ class SmsCodeService(object):
         _request.add_query_param('TemplateCode', template_code)
         _request.add_query_param('TemplateParam', {"code":code})
         response = ali_client.do_action(_request)
+        response = json.loads(response)
         if response.get('Message', '') != 'OK':
             logger.error('send code failed, phone:%s, code:%s, response:%r', phone, code, response)
         return None
