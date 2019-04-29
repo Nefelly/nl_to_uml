@@ -1,6 +1,6 @@
 # coding: utf-8
 import random
-
+import logging
 from ..redis import RedisClient
 from ..util import validate_phone_number
 
@@ -10,6 +10,8 @@ from ..key import (
 from ..const import TEN_MINS
 from aliyunsdkcore.client import AcsClient
 from aliyunsdkcore.request import CommonRequest
+
+logger = logging.getLogger(__name__)
 
 ali_client = AcsClient('LTAIhvRx5OYpK5Ij', 'Bt7U4zEZzzj88vXuoYQpvmpX3TlMqV', 'cn-hangzhou')
 
@@ -50,7 +52,8 @@ class SmsCodeService(object):
         request.add_query_param('TemplateCode', template_code)
         request.add_query_param('TemplateParam', {"code":code})
         response = ali_client.do_action(request)
-        print(response)
+        if response.get('Message', '') != 'OK':
+            logger.error('send code failed, phone:%s, code:%s, response:%r', phone, code, response)
 
     @classmethod
     def send_code(cls, zone, phone, code=None):
