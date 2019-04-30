@@ -5,6 +5,7 @@ from flask import (
     request
 )
 
+from hendrix.conf import setting
 from ...decorator import (
     session_required,
     session_finished_required
@@ -24,6 +25,8 @@ logger = logging.getLogger(__name__)
 
 
 def redis_status():
+    if not setting.IS_DEV:
+        return success()
     key = request.args.get('key')
     return success(AnoyMatchService.debug_all_keys(key))
 
