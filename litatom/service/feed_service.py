@@ -87,6 +87,16 @@ class FeedService(object):
             cls._add_to_feed_hq(str(feed.id))
 
     @classmethod
+    def move_up_feed(cls, feed_id, ts):
+        score = redis_client.zscore(REDIS_FEED_SQUARE, feed_id)
+        if score > 0:
+            new_score = score + ts
+            max_ts = int(time.time()) + 50
+            if new_score > max_ts:
+                new_score = max_ts
+            redis_client.zadd(REDIS_FEED_SQUARE, {feed_id: new_score})
+
+    @classmethod
     def create_feed(cls, user_id, content, pics=None):
         feed = Feed.create_feed(user_id, content, pics)
         cls._add_to_feed_pool(feed)
@@ -184,6 +194,11 @@ class FeedService(object):
         if not feed:
             return 'wrong feed id', False
         feed.chg_feed_num(num)
+        if feed.user_id != user_id and 1:
+            chg_ts = 600
+            if not like_now:
+                chg_ts = -chg_ts
+            cls.move_up_feed(feed_id, chg_ts)
         if like_now:
             cls.judge_add_to_feed_hq(feed)
             UserMessageService.add_message(feed.user_id, user_id, UserMessageService.MSG_LIKE, feed_id)
