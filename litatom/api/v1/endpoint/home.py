@@ -3,7 +3,8 @@ import logging
 from flask import (
     jsonify,
     request,
-    render_template
+    render_template,
+    current_app
 )
 from ....model import (
     Wording
@@ -121,6 +122,9 @@ def track_action():
     if status:
         return success()
     return fail()
+
+def index():
+    return current_app.send_static_file('index.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
 
 
 def privacy():
