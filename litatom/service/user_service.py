@@ -18,7 +18,8 @@ from ..const import (
     GENDERS,
     ONLINE_LIVE,
     USER_ACTIVE,
-    FORBID_INFO
+    FORBID_INFO,
+    OPERATE_TOO_OFTEN
 
 )
 
@@ -37,7 +38,8 @@ from ..model import (
     UserRecord,
     Follow,
     Blocked,
-    FaceBookBackup
+    FaceBookBackup,
+    RedisLock
 )
 from ..service import (
     SmsCodeService,
@@ -52,6 +54,7 @@ redis_client = RedisClient()['lit']
 
 class UserService(object):
     FORBID_TIME = ONE_MIN
+    CREATE_LOCK = 'user_create'
     @classmethod
     def login_job(cls, user):
         """
@@ -265,11 +268,15 @@ class UserService(object):
             return cls.ERR_WORONG_TELEPHONE, False
         user = User.get_by_phone(zone_phone)
         if not user:
+            key = cls.CREATE_LOCK + zone_phone
+            if not RedisLock.get_mutex(key):
+                return OPERATE_TOO_OFTEN, False
             user = User()
             user.huanxin = cls.create_huanxin()
             user.phone = zone_phone
             user.save()
             cls.update_info_finished_cache(user)
+            RedisLock.release_mutex(key)
         msg, status = cls.login_job(user)
         if not status:
             return msg, False
@@ -289,12 +296,16 @@ class UserService(object):
             return u'google login get wrong google id', False
         user = User.get_by_social_account_id(User.GOOGLE_TYPE, google_id)
         if not user:
+            key = cls.CREATE_LOCK + google_id
+            if not RedisLock.get_mutex(key):
+                return OPERATE_TOO_OFTEN, False
             user = User()
             user.huanxin = cls.create_huanxin()
             user.google = SocialAccountInfo.make(google_id, idinfo)
             user.create_time = datetime.datetime.now()
             user.save()
             cls.update_info_finished_cache(user)
+            RedisLock.release_mutex(key)
         msg, status = cls.login_job(user)
         if not status:
             return msg, False
@@ -314,6 +325,9 @@ class UserService(object):
             return u'facebook login get wrong facebook id', False
         user = User.get_by_social_account_id(User.FACEBOOK_TYPE, facebook_id)
         if not user:
+            key = cls.CREATE_LOCK + google_id
+            if not RedisLock.get_mutex(key):
+                return OPERATE_TOO_OFTEN, False
             obj = FaceBookBackup.objects(nickname=idinfo.get('name')).first()
             user = User()
             if obj:
@@ -329,6 +343,7 @@ class UserService(object):
                 user.create_time = datetime.datetime.now()
                 user.save()
             cls.update_info_finished_cache(user)
+            RedisLock.release_mutex(key)
         msg, status = cls.login_job(user)
         if not status:
             return msg, False
