@@ -325,7 +325,7 @@ class UserService(object):
             return u'facebook login get wrong facebook id', False
         user = User.get_by_social_account_id(User.FACEBOOK_TYPE, facebook_id)
         if not user:
-            key = cls.CREATE_LOCK + google_id
+            key = cls.CREATE_LOCK + facebook_id
             if not RedisLock.get_mutex(key):
                 return OPERATE_TOO_OFTEN, False
             obj = FaceBookBackup.objects(nickname=idinfo.get('name')).first()
