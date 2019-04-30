@@ -9,7 +9,10 @@ from ..util import validate_phone_number
 from ..key import (
     REDIS_KEY_SMS_CODE
 )
-from ..const import TEN_MINS
+from ..const import (
+    TEN_MINS,
+    ONE_MIN
+)
 from ..service import (
     TokenBucketService
 )
@@ -70,6 +73,8 @@ class SmsCodeService(object):
         zone_phone = validate_phone_number(zone_phone)
         if not zone_phone:
             return cls.ERR_WORONG_TELEPHONE, False
+        if not TokenBucketService.get_token('send_lock' + zone_phone, 1, 1, 1, ONE_MIN, ONE_MIN):
+            return '', True
         if zone.replace('+', '') == '86':
             code = '1314'
         else:

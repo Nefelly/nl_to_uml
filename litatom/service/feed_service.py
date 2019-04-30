@@ -88,6 +88,7 @@ class FeedService(object):
 
     @classmethod
     def move_up_feed(cls, feed_id, ts):
+        return True
         score = redis_client.zscore(REDIS_FEED_SQUARE, feed_id)
         if score > 0:
             new_score = score + ts
