@@ -90,7 +90,10 @@ class FeedService(object):
     def move_up_feed(cls, feed_id, ts):
         score = redis_client.zscore(REDIS_FEED_SQUARE, feed_id)
         if score > 0:
-            new_score = max(score + ts, int(time.time()) + 50)
+            new_score = score + ts
+            max_ts = int(time.time()) + 50
+            if new_score > max_ts:
+                new_score = max_ts
             redis_client.zadd(REDIS_FEED_SQUARE, {feed_id: new_score})
 
     @classmethod
