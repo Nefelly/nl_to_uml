@@ -139,8 +139,8 @@ class FeedService(object):
         has_next = False
         if len(feeds) == num + 1:
             has_next = True
-            next_start = feeds[-1].create_time
-            feeds = feeds[:-1]
+            next_start = feeds[0].create_time
+            feeds = feeds[1:]
         return {
             'feeds': map(cls._feed_info, feeds, [visitor_user_id for el in feeds]),
             'has_next': has_next,
