@@ -39,7 +39,8 @@ from ..service import (
     UserService,
     FollowService,
     HuanxinService,
-    BlockService
+    BlockService,
+    GlobalizationService
 )
 from ..model import User
 redis_client = RedisClient()['lit']
@@ -75,14 +76,15 @@ class AnoyMatchService(object):
         if not gender or not fake_id:
             return
         int_time = int(time.time())
-        anoy_gender_key = REDIS_ANOY_GENDER_ONLINE.format(gender=gender)
+        # anoy_gender_key = REDIS_ANOY_GENDER_ONLINE.format(gender=gender)
+        anoy_gender_key = GlobalizationService.anoy_match_key_by_region_gender(gender)
         redis_client.zadd(anoy_gender_key,{fake_id: int_time} )
 
     @classmethod
     def _remove_from_match_pool(cls, gender, fake_id):
         if not gender or not fake_id:
             return
-        return redis_client.zrem(REDIS_ANOY_GENDER_ONLINE.format(gender=gender), fake_id)
+        return redis_client.zrem(GlobalizationService.anoy_match_key_by_region_gender(gender), fake_id)
 
     @classmethod
     def _add_to_check_pool(cls, fake_id):
@@ -169,7 +171,7 @@ class AnoyMatchService(object):
         int_time = int(time.time())
         judge_time = int_time - cls.MATCH_WAIT
         other_gender = cls.OTHER_GENDER_M.get(gender)
-        other_fakeids = redis_client.zrangebyscore(REDIS_ANOY_GENDER_ONLINE.format(gender=other_gender), judge_time, MAX_TIME, 0, cls.MAX_CHOOSE_NUM)
+        other_fakeids = redis_client.zrangebyscore(GlobalizationService.anoy_match_key_by_region_gender(other_gender), judge_time, MAX_TIME, 0, cls.MAX_CHOOSE_NUM)
         if not other_fakeids:
             return None, False
         fake_id2 = random.choice(other_fakeids)
@@ -330,7 +332,7 @@ class AnoyMatchService(object):
         for g in GENDERS:
             int_time = time.time()
             judge_time = int_time - cls.MATCH_WAIT
-            to_rem = redis_client.zrangebyscore(REDIS_ANOY_GENDER_ONLINE.format(gender=g), 0, judge_time - wait_buff, 0, cls.MAX_CHOOSE_NUM)
+            to_rem = redis_client.zrangebyscore(GlobalizationService.anoy_match_key_by_region_gender(g), 0, judge_time - wait_buff, 0, cls.MAX_CHOOSE_NUM)
             for el in to_rem:
                 cls._destroy_fake_id(el)
                 print "match pool fake_id: %s destoryed" % el

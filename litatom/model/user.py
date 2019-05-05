@@ -372,8 +372,32 @@ class UserSetting(Document):
         'alias': 'db_alias'
     }
 
-    user_id = StringField()
-    lang = StringField()
+    user_id = StringField(required=True, unique=True)
+    lang = StringField(required=True)
+
+    @classmethod
+    def get_by_user_id(cls, user_id):
+        return cls.objects(user_id=user_id).first()
+
+    @classmethod
+    def create_setting(cls, user_id, lang):
+        if cls.get_by_user_id(user_id):
+            return True
+        obj = cls()
+        obj.user_id = user_id
+        obj.lang = lang
+        obj.save()
+        return True
+
+    @classmethod
+    def ensure_setting(cls, user_id, lang):
+        obj = cls.get_by_user_id(user_id)
+        if not obj:
+            cls.create_setting(user_id, lang)
+        else:
+            obj.lang = lang
+            obj.save()
+        return True
 
 
 class UserAction(Document):

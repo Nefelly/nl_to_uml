@@ -161,6 +161,11 @@ class LitatomRequest(flask.Request):
         return sid
 
     @cached_property
+    def loc(self):
+        loc = self.values.get('loc', '')
+        return loc
+
+    @cached_property
     def user(self):
         pass
         # from .model import User

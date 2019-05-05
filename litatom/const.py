@@ -18,6 +18,7 @@ UNKNOWN_GENDER = 'unknown'
 INT_BOY = 1
 INT_GIRL = 0
 
+
 # 提示消息
 OPERATE_TOO_OFTEN = u'you have operate too quick, please try later~'
 USER_NOT_EXISTS = u'user not exist, please register.'

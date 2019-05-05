@@ -2,10 +2,12 @@
 import time
 import random
 from ..redis import RedisClient
-from ..key import (
-    REDIS_ONLINE_GENDER,
-    REDIS_ONLINE
-)
+# from ..key import (
+#     REDIS_ONLINE_GENDER,
+#     REDIS_ONLINE_GENDER_REGION,
+#     REDIS_ONLINE,
+#     REDIS_ONLINE_REGION
+# )
 from flask import request
 from ..const import (
     GENDERS,
@@ -14,7 +16,10 @@ from ..const import (
     MAX_TIME,
     USER_ACTIVE
 )
-from ..service import UserService
+from ..service import (
+    UserService,
+    GlobalizationService
+)
 from ..model import (
     User,
     TrackChat
@@ -28,16 +33,58 @@ class StatisticService(object):
     def get_online_cnt(cls, gender=None):
         judge_time = int(time.time()) - USER_ACTIVE
         if gender:
-            key = REDIS_ONLINE_GENDER.format(gender=gender)
+            # key = REDIS_ONLINE_GENDER.format(gender=gender)
+            key = GlobalizationService._online_key_by_region_gender(gender)
             return redis_client.zcount(key, judge_time, MAX_TIME)
         res = 0
         for _ in GENDERS:
-            key = REDIS_ONLINE_GENDER.format(gender=_)
+            # key = REDIS_ONLINE_GENDER.format(gender=_)
+            key = GlobalizationService._online_key_by_region_gender(_)
             res += redis_client.zcount(key, judge_time, MAX_TIME)
         return res
 
     @classmethod
+<<<<<<< HEAD
     def _user_infos_by_uids(cls, uids):
+=======
+    def get_online_users(cls, gender=None, start_p=0, num=10):
+        # if gender:
+        #     key = REDIS_ONLINE_GENDER.format(gender=gender)
+        # else:
+        #     key = REDIS_ONLINE
+        key = GlobalizationService._online_key_by_region_gender(gender)
+        girl_strategy_on = False
+        if gender == BOY and start_p == 0 and girl_strategy_on:
+            '''girls has to have some girl'''
+            b_ratio = 0.3
+            girl_num = int(num * b_ratio)
+            num = boy_num = int(num)   # set num to this for next get
+            girl_start_p = int(start_p * b_ratio) + 1
+            # girl_uids = redis_client.zrevrange(REDIS_ONLINE_GENDER.format(gender=GIRL), girl_start_p, girl_start_p + girl_num)
+            # boy_uids = redis_client.zrevrange(REDIS_ONLINE_GENDER.format(gender=BOY), start_p, start_p + boy_num)
+            girl_uids = redis_client.zrevrange(GlobalizationService._online_key_by_region_gender(GIRL), girl_start_p, girl_start_p + girl_num)
+            boy_uids = redis_client.zrevrange(GlobalizationService._online_key_by_region_gender(BOY), start_p, start_p + boy_num)
+            uids = girl_uids + boy_uids
+        else:
+            uids = redis_client.zrevrange(key, start_p, start_p + num)
+        temp_uid = request.user_id
+        if temp_uid and temp_uid in uids:
+            temp_num = num + 1
+            uids = redis_client.zrevrange(key, start_p, start_p + temp_num)
+            uids = [uid for uid in uids if uid != temp_uid]
+        uids = uids if uids else []
+        has_next = False
+        if gender == BOY and girl_strategy_on:
+            if len(boy_uids) == num + 1:
+                has_next = True
+                boy_uids = boy_uids[:-1]
+            uids = boy_uids[:-1] + girl_uids
+            random.shuffle(uids)
+        else:
+            if len(uids) == num + 1:
+                has_next = True
+                uids = uids[:-1]
+>>>>>>> 6054941... test
         user_infos = []
         if uids:
             all_online = UserService.uid_online(uids[-1]) == True   # last user online
