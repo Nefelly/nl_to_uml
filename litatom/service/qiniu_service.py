@@ -20,11 +20,11 @@ class QiniuService(object):
     '''
 
     @classmethod
-    def should_pic_block_from_url(cls, url):
+    def should_pic_block_from_url(cls, out_url):
         '''scenes could be ads, pulp...'''
         data = {
             "data": {
-                "uri": url
+                "uri": out_url
             },
             "params": {
                 "scenes": [
@@ -40,7 +40,7 @@ class QiniuService(object):
                 ret, res = http._post_with_qiniu_mac(url, data, cls.AUTH)
                 # headers = {"code": res.status_code, "reqid": res.req_id, "xlog": res.x_log}
                 test_res = json.loads(res.text_body)
-                print test_res
+                #print test_res
                 scenes = test_res['result']['scenes']
                 for r in scenes:
                     details = scenes[r].get('details', [])
