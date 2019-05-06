@@ -6,7 +6,7 @@ import cPickle
 from base64 import b64decode
 
 import flask
-
+from hendrix.conf import setting
 from . import const
 from .util import cached_property
 from .model import User
@@ -246,10 +246,12 @@ class LitatomRequest(flask.Request):
 
     @cached_property
     def ip_should_filter(self):
+        if setting.IS_DEV:
+            return False
         country, city = Ip2AddressService.ip_country_city(self.ip)
         if country in [u'United States'] or \
                 (country == u'China' and city and city not in [u'Beijing', u'Shanghai', u'Nanjing']):
-            print country, city
+            #print country, city
             return True
         return False
 
