@@ -24,7 +24,7 @@ class QiniuService(object):
         '''scenes could be ads, pulp...'''
         data = {
             "data": {
-                "uri": out_url
+                "urt_url
             },
             "params": {
                 "scenes": [
@@ -45,9 +45,10 @@ class QiniuService(object):
                 for r in scenes:
                     details = scenes[r].get('details', [])
                     if details and details[0]['label'] != 'normal' and details[0]['score'] > cls.JUDGE_SCORE:
+                        logger.error('pic not past, url:%r, reason:%r', out_url, r)
                         return r
                 return ''
             except Exception, e:
                 logger.error(traceback.format_exc())
-                logger.error('Error verify Qiniu, url: %r, err: %r', url, e)
+                logger.error('Error verify Qiniu, url: %r, err: %r', out_url, e)
         return ''
