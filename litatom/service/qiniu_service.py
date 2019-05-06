@@ -24,7 +24,7 @@ class QiniuService(object):
         '''scenes could be ads, pulp...'''
         data = {
             "data": {
-                "urt_url
+                "url": out_url
             },
             "params": {
                 "scenes": [
@@ -45,7 +45,7 @@ class QiniuService(object):
                 for r in scenes:
                     details = scenes[r].get('details', [])
                     if details and details[0]['label'] != 'normal' and details[0]['score'] > cls.JUDGE_SCORE:
-                        logger.error('pic not past, url:%r, reason:%r', out_url, r)
+                        logger.error('pic not past, url:%r, reason:%r', out_url)
                         return r
                 return ''
             except Exception, e:
