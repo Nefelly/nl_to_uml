@@ -60,5 +60,6 @@ def get_image(fileid):
         return jsonify(Failed)
     content = AliOssService.get_binary_from_bucket(fileid)
     if not content:
-        return jsonify(Failed)
+        return Response('', mimetype='image/jpeg')   # 返回空图片流, 兼容错误
+        #return jsonify(Failed)
     return Response(content, mimetype='image/jpeg')
