@@ -58,5 +58,5 @@ class Ip2AddressService(object):
         try:
             return cls.READER.city(ip).country.name, cls.READER.city(ip).city.name
         except Exception, e:
-            logger.error('get ip country failed,  error:%s',  e)
+            #logger.error('get ip country failed,  error:%s',  e)
             return '', ''
