@@ -18,7 +18,7 @@ def test_push():
             exchange="sms-send-msg",
             vhost=setting.DEFAULT_MQ_VHOST
         ).publish({
-            "name": "seller_category_audit",
+            "name": "seller_aaa",
             "feed_id": 'feed_id1',
             "user_id": "00000002"
         })

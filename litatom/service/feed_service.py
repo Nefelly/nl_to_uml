@@ -21,7 +21,8 @@ from ..service import (
     UserService,
     BlockService,
     Ip2AddressService,
-    UserMessageService
+    UserMessageService,
+    FollowingFeedService
 )
 from ..model import (
     Feed,
@@ -32,6 +33,14 @@ from ..model import (
 redis_client = RedisClient()['lit']
 
 class FeedService(object):
+
+    @classmethod
+    def _on_add_feed(cls, feed):
+        FollowingFeedService.add_feed(feed)
+
+    @classmethod
+    def _on_del_feed(cls, feed):
+        FollowingFeedService.remove_feed(feed)
 
     @classmethod
     def _feed_info(cls, feed, visitor_user_id=None):

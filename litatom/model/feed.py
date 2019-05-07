@@ -34,6 +34,10 @@ class Feed(Document):
     def feed_num(cls, user_id):
         return cls.objects(user_id=user_id).count()
 
+    @classmethod
+    def get_by_user_id(cls, user_id):
+        return cls.objects(user_id=user_id)
+
     @property
     def is_hq(self):
         return self.like_num >= 2 or self.comment_num >= 2
@@ -92,6 +96,46 @@ class Feed(Document):
         if not bson.ObjectId.is_valid(feed_id):
             return None
         return cls.objects(id=feed_id).first()
+
+class FollowingFeed(Document):
+    user_id = StringField(required=True)
+    followed_user_id = StringField(required=True)
+    feed_id = StringField(required=True)
+    feed_create_time = IntField(required=True)
+    create_time = IntField(required=True)
+
+    @classmethod
+    def get_by_user_id_feed_id(cls, user_id, feed_id):
+        return cls.objects(user_id=user_id, feed_id=feed_id).first()
+
+    @classmethod
+    def add_feed(cls, user_id, feed):
+        if not feed:
+            return True
+        feed_id = str(feed.id)
+        obj = cls.get_by_user_id_feed_id(user_id, feed_id)
+        if obj:
+            return True
+        obj = cls()
+        obj.user_id = user_id
+        obj.followed_user_id = feed.user_id
+        obj.feed_id = feed_id
+        obj.feed_create_time = feed.create_time
+        obj.create_time = int(time.time())
+        obj.save()
+        return True
+
+    @classmethod
+    def delete_feed(cls, user_id, feed):
+        if not feed:
+            return True
+        feed_id = str(feed.id)
+        obj = cls.get_by_user_id_feed_id(user_id, feed_id)
+        if obj:
+            obj.delete()
+            obj.save()
+        return True
+
 
 class FeedLike(Document):
     feed_id = StringField(required=True)

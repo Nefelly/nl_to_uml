@@ -204,6 +204,26 @@ class HuanxinService(object):
             return False
 
     @classmethod
+    def del_friend(cls, source_user_name, dest_user_name):
+        url = cls.APP_URL + 'users/%s/contacts/users/%s' % (source_user_name, dest_user_name)
+
+        access_token = cls.get_access_token()
+        if not access_token:
+            return False
+        headers = {
+            'Authorization':'Bearer %s' % access_token
+        }
+        try:
+            response = requests.delete(url, verify=False, headers=headers, data={}).json()
+            assert response.get('entities')[0]['username']
+            return True
+        except Exception, e:
+            traceback.print_exc()
+            logger.error('Error create huanxin  add friend, user_id: %r, err: %r', source_user_name, e)
+            return False
+
+
+    @classmethod
     def update_nickname(cls, user_name, nickname):
         url = cls.APP_URL + 'users/%s' % user_name
 

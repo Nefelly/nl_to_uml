@@ -4,6 +4,7 @@ from .ip2address_service import  Ip2AddressService
 from .sms_code_service import SmsCodeService
 from .firebase_service import FirebaseService
 from .huanxin_service import HuanxinService
+from .following_feed_service import FollowingFeedService
 from .user_relation import (
     FollowService,
     BlockService

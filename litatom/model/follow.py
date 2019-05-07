@@ -24,6 +24,12 @@ class Follow(Document):
     def get_by_follow(cls, uid, followed):
         return cls.objects(uid=uid, followed=followed).first()
 
+    @classmethod
+    def follower_uids(cls, user_id):
+        res = []
+        for _ in cls.objects(followed=user_id):
+            res.append(_.uid)
+        return res
 
     @classmethod
     def in_follow(cls, uid, followed):

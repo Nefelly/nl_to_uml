@@ -1,5 +1,4 @@
 # coding: utf-8
-from ..redis import RedisClient
 from ..model import (
     Follow,
     Blocked,
@@ -8,14 +7,22 @@ from ..model import (
 from ..const import (
     BLOCKED_MSG,
     BLOCK_OTHER_MSG,
-    DEFAULT_QUERY_LIMIT,
-    MAX_TIME
+    DEFAULT_QUERY_LIMIT
 )
 from ..service import (
     HuanxinService,
+    FollowingFeedService
 )
 
 class FollowService(object):
+
+    @classmethod
+    def _on_follow(cls, user_id, followed_user_id):
+        FollowingFeedService.add_following(user_id, followed_user_id)
+
+    @classmethod
+    def _on_unfollow(cls, user_id, followed_user_id):
+        FollowingFeedService.remove_following(user_id, followed_user_id)
 
     @classmethod
     def follow(cls, user_id, followed_user_id):
@@ -24,6 +31,7 @@ class FollowService(object):
             return block_msg, False
         status = Follow.follow(user_id, followed_user_id)
         if status:
+            cls._on_follow(user_id, followed_user_id)
             User.chg_follower(followed_user_id, 1)
             User.chg_following(user_id, 1)
         if Follow.get_by_follow(followed_user_id, user_id):
@@ -40,6 +48,7 @@ class FollowService(object):
     def unfollow(cls, user_id, followed_user_id):
         status = Follow.unfollow(user_id, followed_user_id)
         if status:
+            cls._on_unfollow(user_id, followed_user_id)
             User.chg_follower(followed_user_id, -1)
             User.chg_following(user_id, -1)
         return None, True
@@ -51,10 +60,12 @@ class FollowService(object):
             return block_msg, False
         status1 = Follow.follow(uid1, uid2)
         if status1:
+            cls._on_follow(uid1, uid2)
             User.chg_follower(uid2, 1)
             User.chg_following(uid1, 1)
         status2 = Follow.follow(uid2, uid1)
         if status2:
+            cls._on_follow(uid2, uid1)
             User.chg_follower(uid1, 1)
             User.chg_following(uid2, 1)
         user_huanxin = User.huanxin_id_by_user_id(uid1)
@@ -68,12 +79,19 @@ class FollowService(object):
     def unfollow_eachother(cls, uid1, uid2):
         status1 = Follow.unfollow(uid1, uid2)
         if status1:
+            cls._on_unfollow(uid1, uid2)
             User.chg_follower(uid2, -1)
             User.chg_following(uid1, -1)
         status2 = Follow.unfollow(uid2, uid1)
         if status2:
+            cls._on_unfollow(uid2, uid1)
             User.chg_follower(uid1, -1)
             User.chg_following(uid2, -1)
+        user_huanxin = User.huanxin_id_by_user_id(uid1)
+        followed_huanxin = User.huanxin_id_by_user_id(uid2)
+        if user_huanxin and followed_huanxin:
+            HuanxinService.del_friend(user_huanxin, followed_huanxin)
+            HuanxinService.del_friend(followed_huanxin, user_huanxin)
         return None, True
 
     @classmethod
