@@ -1,7 +1,7 @@
 import os
 import time
 from litatom.service import FollowingFeedService
-from litatom.modle import Follow
+from litatom.model import Follow
 
 def deal_followings():
     for follow in Follow.objects():
