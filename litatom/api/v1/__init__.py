@@ -81,6 +81,7 @@ b.add_url_rule('/lit/debug/batch_anoy_match_start', 'debug-batch-anoy-match-star
 # feed
 b.add_url_rule('/lit/feed/create', 'feed-create-feed', endpoint.feed.create_feed, methods=['POST'])
 b.add_url_rule('/lit/feed/view/<other_user_id>', 'feed-user-feeds', endpoint.feed.user_feeds)
+b.add_url_rule('/lit/feed/following_feeds', 'feed-following-feeds', endpoint.feed.user_following_feeds)
 b.add_url_rule('/lit/feed/square', 'feed-square-feeds', endpoint.feed.square_feeds)
 b.add_url_rule('/lit/feed/hq', 'feed-hq-feeds', endpoint.feed.hq_feeds)
 b.add_url_rule('/lit/feed/like/<feed_id>', 'feed-like-feed', endpoint.feed.like_feed)

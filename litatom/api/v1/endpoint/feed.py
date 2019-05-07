@@ -21,7 +21,8 @@ from ..form import (
     FeedCommentForm
 )
 from ....service import (
-    FeedService
+    FeedService,
+    FollowingFeedService
 )
 from ...error import (
     FailedLackOfField
@@ -57,6 +58,17 @@ def user_feeds(other_user_id):
     start_ts = int(start_ts) if start_ts and start_ts.isdigit() else MAX_TIME
     num = int(num) if num and num.isdigit() else 10
     data, status = FeedService.feeds_by_userid(visitor_user_id, other_user_id, start_ts, num)
+    if status:
+        return success(data)
+    return fail(data)
+
+@session_required
+def user_following_feeds():
+    start_ts = request.args.get('start_ts')
+    num = request.args.get('num')
+    start_ts = int(start_ts) if start_ts and start_ts.isdigit() else MAX_TIME
+    num = int(num) if num and num.isdigit() else 10
+    data, status = FollowingFeedService.following_feeds_by_userid(request.user_id, start_ts, num)
     if status:
         return success(data)
     return fail(data)
