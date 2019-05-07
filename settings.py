@@ -13,7 +13,12 @@ _envvars = [
     'HENDRIX_THRIFT_PORT',
     'REDIS_LIT',
     'HUANXIN_ACCOUNT',
-    'IS_DEV'
+    'IS_DEV',
+    'DEFAULT_MQ_PRODUCER',
+    'DEFAULT_MQ_PRODUCER_PASSWORD',
+    'DEFAULT_MQ_HOST',
+    'DEFAULT_MQ_PORT',
+    'DEFAULT_MQ_VHOST'
 ]
 
 r = EnvvarReader(*_envvars)
@@ -54,6 +59,12 @@ REDIS_SETTINGS = {
 
 }
 IS_DEV = r.get_bool('IS_DEV', False)
+DEFAULT_MQ_PRODUCER = r.get('DEFAULT_MQ_PRODUCER', 'litatom')
+DEFAULT_MQ_PRODUCER_PASSWORD = r.get('DEFAULT_MQ_PRODUCER_PASSWORD',  'julele673215')
+DEFAULT_MQ_HOST = r.get('DEFAULT_MQ_HOST',  '127.0.0.1')
+DEFAULT_MQ_PORT = r.get('DEFAULT_MQ_PORT',  '5672')
+DEFAULT_MQ_VHOST = r.get('DEFAULT_MQ_VHOST',  'test' if IS_DEV else 'online')
+
 DEFAULT_HUANXIN_SETTING = {
     'org_name': '1102190223222824',
     'app_name': 'lit',
