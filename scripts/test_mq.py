@@ -23,7 +23,7 @@ def test_push():
         })
     except Exception, e:
         print e
-        logger.exception('Publish fulishe tasks message error')
+
 
 
 if __name__ == "__main__":
