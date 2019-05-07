@@ -57,6 +57,19 @@ def get_wording():
     wording = Wording.get_word_type(word_type)
     return success(wording)
 
+def check_version():
+    version_now = '1.5.0'
+    version = request.args.get('version', None)
+    if version != version_now:
+        data = {
+            'need_update': True,
+            'message': 'Your version is too low(newest version is %s), please update!' % version_now
+        }
+    else:
+        data = {
+            'need_update': False,
+        }
+    return success(data)
 
 @session_finished_required
 def report():
