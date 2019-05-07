@@ -24,7 +24,25 @@ def test_push():
     except Exception, e:
         print e
 
+class TestConsume(MQConsumer):
+    def callback(self, msg):
+        payload = msg.get('payload', {})
+        print payload
+
+def test_consum():
+    queue_name = 'test'
+    routing_key = 'tasks'
+    TestConsume(queue_name,
+                routing_key,
+                setting.DEFAULT_MQ_HOST,
+                setting.DEFAULT_MQ_PORT,
+                setting.DEFAULT_MQ_PRODUCER,
+                setting.DEFAULT_MQ_PRODUCER_PASSWORD,
+                exchange="sms-send-msg",
+                vhost=setting.DEFAULT_MQ_VHOST
+                ).start()
 
 
 if __name__ == "__main__":
-    test_push()
+    # test_push()
+    test_consum()
