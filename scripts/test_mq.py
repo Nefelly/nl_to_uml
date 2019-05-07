@@ -1,5 +1,6 @@
 import os
 import time
+import sys
 from litatom.mq import (
     MQProducer,
     MQConsumer
@@ -44,5 +45,7 @@ def test_consum():
 
 
 if __name__ == "__main__":
-    # test_push()
-    test_consum()
+    if sys.argv[1] == 'push':
+        test_push()
+    else:
+        test_consum()
