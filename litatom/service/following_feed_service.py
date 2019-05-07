@@ -40,6 +40,7 @@ class FollowingFeedService(object):
     @classmethod
     def _add_feed(cls, feed):
         uids = cls._user_ids_by_feed(feed)
+        uids.append(feed.user_id)
         for uid in uids:
             FollowingFeed.add_feed(uid, feed)
 
@@ -50,6 +51,7 @@ class FollowingFeedService(object):
     @classmethod
     def _remove_feed(cls, feed):
         uids = cls._user_ids_by_feed(feed)
+        uids.append(feed.user_id)
         for uid in uids:
             FollowingFeed.delete_feed(uid, feed)
 
@@ -68,7 +70,7 @@ class FollowingFeedService(object):
         if start_ts < 0:
             return u'wrong start_ts', False
         next_start = -1
-        following_feeds = FollowingFeed.objects(user_id=user_id, feed_create_time__lte=start_ts).limit(num + 1)
+        following_feeds = FollowingFeed.objects(user_id=user_id, feed_create_time__lte=start_ts).order_by('-feed_create_time').limit(num + 1)
         following_feeds = list(following_feeds)
         following_feeds.reverse()   # 时间顺序错误
         has_next = False

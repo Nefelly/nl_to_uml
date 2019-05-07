@@ -13,7 +13,8 @@ indexes = {
     "user": ["phone", "huanxin.user_id", "google.other_id", "facebook.other_id", "nickname", "session"],
     "user_setting": ["user_id"],
     "user_action": ["user_id", "create_time"],
-    "user_record": ["user_id", "create_time"]
+    "user_record": ["user_id", "create_time"],
+    "FollowingFeed": ["user_id", "followed_user_id", "feed_create_time"]
 }
 
 if __name__ == "__main__":
