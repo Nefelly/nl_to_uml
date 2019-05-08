@@ -338,6 +338,7 @@ class UserAction(Document):
     user_id = StringField(required=True)
     action = StringField(required=True)
     remark = StringField()
+    create_date = DateTimeField()
     create_time = IntField(required=True)
 
     def to_json(self):

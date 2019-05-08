@@ -1,5 +1,6 @@
 # coding: utf-8
 import time
+import datetime
 from ..model import (
     UserAction
 )
@@ -14,6 +15,7 @@ class TrackActionService(object):
         if remark:
             userAction.remark = remark
         userAction.create_time = int(time.time())
+        userAction.create_date = datetime.datetime.now()
         userAction.save()
         return True
 
