@@ -57,6 +57,12 @@ def get_wording():
     wording = Wording.get_word_type(word_type)
     return success(wording)
 
+def settings():
+    data = {
+        'need_login': True
+    }
+    return success(data)
+
 def check_version():
     version_now = '1.5.0'
     version = request.args.get('version', None)

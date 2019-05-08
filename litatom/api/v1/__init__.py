@@ -60,6 +60,7 @@ b.add_url_rule('/lit/home/privacy', 'home-privacy', endpoint.home.privacy)
 b.add_url_rule('/lit/home/rules', 'home-rules', endpoint.home.rules)
 b.add_url_rule('/lit/home/index', 'home-index', endpoint.home.index)
 b.add_url_rule('/lit/home/check_version', 'home-check-version', endpoint.home.check_version)
+b.add_url_rule('/lit/home/settings', 'home-setting', endpoint.home.settings)
 
 # huanxin
 b.add_url_rule('/lit/huanxin/<target_user_id>', 'huanxin-get-info', endpoint.huanxin.get_user_info)
