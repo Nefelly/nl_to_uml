@@ -35,6 +35,7 @@ class QiniuService(object):
             }
         }
         url = 'http://ai.qiniuapi.com/v3/image/censor'
+        test_res = {}
         for i in range(3):
             try:
                 ret, res = http._post_with_qiniu_mac(url, data, cls.AUTH)
@@ -50,5 +51,5 @@ class QiniuService(object):
                 return ''
             except Exception, e:
                 logger.error(traceback.format_exc())
-                logger.error('Error verify Qiniu, url: %r, err: %r', out_url, e)
+                logger.error('Error verify Qiniu, url: %r, err: %r, test_res:%r', out_url, e, test_res)
         return ''
