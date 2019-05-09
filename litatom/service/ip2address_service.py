@@ -49,9 +49,7 @@ class Ip2AddressService(object):
         try:
             return cls.READER_COUNTRY.country(ip).country.name
         except Exception, e:
-            print "out"
             if not "is not in the database" in str(e):
-                print "in"
                 logger.error('get ip country failed,  error:%s',  e)
             return ''
 
