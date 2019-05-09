@@ -63,7 +63,7 @@ class UserService(object):
         :return:
         """
         if user.forbidden:
-            if int(time.time()) > user.forbidden_ts:
+            if False and int(time.time()) > user.forbidden_ts:
                 user.forbidden = False
                 user.save()
                 if user.huanxin and user.huanxin.user_id:
