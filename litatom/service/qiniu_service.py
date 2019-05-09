@@ -1,5 +1,6 @@
 # coding: utf-8
 import json
+import time
 import traceback
 import logging
 from qiniu import Auth, QiniuMacAuth, http
@@ -42,6 +43,9 @@ class QiniuService(object):
                 # headers = {"code": res.status_code, "reqid": res.req_id, "xlog": res.x_log}
                 test_res = json.loads(res.text_body)
                 #print test_res
+                if 'invalid URI' in test_res.get('error', ''):
+                    time.sleep(0.3)
+                    continue
                 scenes = test_res['result']['scenes']
                 for r in scenes:
                     details = scenes[r].get('details', [])
