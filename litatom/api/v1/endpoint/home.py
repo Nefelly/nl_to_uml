@@ -59,7 +59,7 @@ def get_wording():
 
 def settings():
     data = {
-        'need_login': True
+        'need_login': False
     }
     return success(data)
 
