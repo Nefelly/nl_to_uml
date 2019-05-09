@@ -59,5 +59,7 @@ class Ip2AddressService(object):
         try:
             return cls.READER.city(ip).country.name, cls.READER.city(ip).city.name
         except Exception, e:
+            if not "is not in the database" in str(e):
+                logger.error('get ip country city failed,  error:%s',  e)
             #logger.error('get ip country failed,  error:%s',  e)
             return '', ''
