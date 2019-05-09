@@ -121,4 +121,3 @@ def reject(report_id):
     if not status:
         return fail(data)
     return success(data)
-
