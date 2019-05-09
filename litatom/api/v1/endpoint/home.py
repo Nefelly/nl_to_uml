@@ -64,7 +64,7 @@ def settings():
     return success(data)
 
 def check_version():
-    version_now = '1.5.0'
+    version_now = '1.3.0'
     version = request.args.get('version', None)
     if version != version_now:
         data = {
