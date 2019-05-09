@@ -37,13 +37,14 @@ class QiniuService(object):
         }
         url = 'http://ai.qiniuapi.com/v3/image/censor'
         test_res = {}
-        for i in range(3):
+        loop_tms = 3
+        for i in range(loop_tms):
             try:
                 ret, res = http._post_with_qiniu_mac(url, data, cls.AUTH)
                 # headers = {"code": res.status_code, "reqid": res.req_id, "xlog": res.x_log}
                 test_res = json.loads(res.text_body)
                 #print test_res
-                if 'invalid URI' in test_res.get('error', ''):
+                if 'invalid URI' in test_res.get('error', '') and i < loop_tms - 1:
                     time.sleep(0.3)
                     continue
                 scenes = test_res['result']['scenes']
