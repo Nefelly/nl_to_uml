@@ -69,8 +69,7 @@ class StatisticService(object):
         if online_cnt > num:
             choose_pool = min(online_cnt, cls.MAX_SELECT_POOL)
         uids = redis_client.zrevrange(key, 0, choose_pool)
-        print choose_pool,  num, len(uids), online_cnt
-        uids = random.sample(uids, min(2 * num, choose_pool))
+        uids = random.sample(uids, min(2 * num, len(uids)))
         age = User.age_by_user_id(user_id)
 
         uid_agediffs = []
