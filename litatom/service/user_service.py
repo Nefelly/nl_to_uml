@@ -101,6 +101,7 @@ class UserService(object):
             if huanxinid:
                 huanxinid_uid[huanxinid] = uid
                 to_query.append(huanxinid)
+        print 'to_query', to_query
         query_res = HuanxinService.is_user_online(to_query)
         print 'this is query_res', query_res
         for huanxinid, status in query_res.items():
