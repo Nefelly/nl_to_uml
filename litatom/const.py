@@ -32,6 +32,7 @@ FORBID_INFO = u'Our system has noticed inappropriate behavior on your account. '
               u'please keep your chats positive. If you believe you’ve been ' \
               u'incorrectly flagged, you can contact our customer service team. '
 
+NO_SET = 'noset'
 ONE_MIN = 60
 FIVE_MINS = 60 * 5
 TEN_MINS = 60 * 10

@@ -30,12 +30,14 @@ from mongoengine import (
     ValidationError,
 )
 from ..key import (
-    REDIS_KEY_SESSION_USER
+    REDIS_KEY_SESSION_USER,
+    REDIS_KEY_USER_HUANXIN
 )
 from ..const import (
     TWO_WEEKS,
     UNKNOWN_GENDER,
-    DEFAULT_QUERY_LIMIT
+    DEFAULT_QUERY_LIMIT,
+    NO_SET
 )
 from ..redis import RedisClient
 from ..util import (
@@ -75,6 +77,7 @@ class UserSessionMixin(object):
     def _set_session_cache(self, user_id):
         key = REDIS_KEY_SESSION_USER.format(session=self.session)
         redis_client.set(key, user_id, ex=TWO_WEEKS)
+
 
     @classmethod
     def get_user_id_by_session(cls, sid):
@@ -188,6 +191,28 @@ class User(Document, UserSessionMixin):
             self.save()
             return False
         return True
+
+    def _set_huanxin_cache(self):
+        user_id = str(self.id)
+        huanxin_id = self.huanxin.user_id
+        if not huanxin_id:
+            huanxin_id = NO_SET
+        key = REDIS_KEY_USER_HUANXIN.format(user_id=user_id)
+        redis_client.set(key, huanxin_id, ex=TWO_WEEKS)
+        return huanxin_id if huanxin_id != NO_SET else ''
+
+    @classmethod
+    def huanxin_id_by_user_id(cls, user_id):
+        key = REDIS_KEY_USER_HUANXIN.format(user_id=user_id)
+        res = redis_client.get(key)
+        if res == NO_SET:
+            return ''
+        elif not res:
+            user = cls.get_by_id(user_id)
+            if not user:
+                return ''
+            res = user._set_huanxin_cache()
+        return res
 
     @classmethod
     def create_by_phone(cls, nickname, avatar, gender, birthdate, huanxin, zone_phone):

@@ -349,7 +349,6 @@ class HuanxinService(object):
             for i in range(cls.TRY_TIMES):
                 try:
                     response = requests.post(url, verify=False, headers=headers, json=data).json()
-                    print response
                     _ = response["data"]
                     for m in _:
                         for k in m:
@@ -358,7 +357,6 @@ class HuanxinService(object):
                             elif m[k] == offline_word:
                                 res[k] = False
                             else:
-                                print m, k
                                 logger.error('lst:%r, m:%r, k:%r', lst, m, k)
                     break
                 except Exception, e:

@@ -73,6 +73,7 @@ class UserService(object):
                 return FORBID_INFO.format(unforbid_time=unforbid_time), False
         user.generate_new_session()
         user._set_session_cache(str(user.id))
+        user._set_huanxin_cache()
         if not user.logined:
             user.logined = True
             user.save()
@@ -89,6 +90,26 @@ class UserService(object):
         if gender:
             key = REDIS_UID_GENDER.format(user_id=str(user.id))
             redis_client.set(key, user.gender, ONLINE_LIVE)
+
+    @classmethod
+    def uid_online_by_huanxin(cls, user_ids):
+        huanxinid_uid = {}
+        to_query = []
+        res = {}
+        for uid in user_ids:
+            huanxinid = User.huanxin_id_by_user_id(user_ids)
+            if huanxinid:
+                huanxinid_uid[huanxinid] = uid
+                to_query.append(huanxinid)
+        query_res = HuanxinService.is_user_online(to_query)
+        for huanxinid, status in query_res.items():
+            if status:
+                uid = huanxinid_uid[huanxinid]
+                res[uid] = True
+        for uid in user_ids:
+            if not res.get(uid, False):
+                res[uid] = False
+        return res
 
     @classmethod
     def query_user_info_finished(cls, user_id):
