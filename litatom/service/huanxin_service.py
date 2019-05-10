@@ -342,6 +342,7 @@ class HuanxinService(object):
         if len(user_names) > query_limits:
             for i in range((query_limits + query_limits - 1)/query_limits):
                 query_lsts.append(user_names[i * query_limits: (i + 1) * query_limits])
+        print query_lsts
         for lst in query_lsts:
             data = {"user_name": lst}
             for i in range(cls.TRY_TIMES):
