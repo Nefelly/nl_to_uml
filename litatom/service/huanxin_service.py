@@ -358,6 +358,7 @@ class HuanxinService(object):
                             elif m[k] == offline_word:
                                 res[k] = False
                             else:
+                                print m, k
                                 logger.error('lst:%r, m:%r, k:%r', lst, m, k)
                     break
                 except Exception, e:
