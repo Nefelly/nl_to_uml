@@ -107,7 +107,7 @@ class UserService(object):
                 uid = huanxinid_uid[huanxinid]
                 res[uid] = True
         for uid in user_ids:
-            if not res.get(uid, False):
+            if not query_res.get(uid, False):
                 res[uid] = False
         return res
 
