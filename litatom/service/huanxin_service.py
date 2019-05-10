@@ -342,7 +342,7 @@ class HuanxinService(object):
         for i in range((query_limits + query_limits - 1)/query_limits):
             query_lsts.append(user_names[i * query_limits: (i + 1) * query_limits])
         for lst in query_lsts:
-            data = {"user_name": lst}
+            data = {"usernames": lst}
             for i in range(cls.TRY_TIMES):
                 try:
                     response = requests.post(url, verify=False, headers=headers, json=data).json()
