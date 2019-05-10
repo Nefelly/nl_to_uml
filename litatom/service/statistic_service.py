@@ -71,6 +71,7 @@ class StatisticService(object):
         uids = redis_client.zrevrange(key, 0, choose_pool)
         uids = random.sample(uids, min(2 * num, choose_pool))
         age = User.age_by_user_id(user_id)
+
         uid_agediffs = []
         for uid in uids:
             age_diff = abs(age - User.age_by_user_id(uid))
