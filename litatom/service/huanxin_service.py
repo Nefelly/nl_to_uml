@@ -330,7 +330,7 @@ class HuanxinService(object):
         :return:
         '''
         query_limits = 100
-        url = cls.APP_URL + 'users/batchs/status'
+        url = cls.APP_URL + 'users/batch/status'
         access_token = cls.get_access_token()
         if not access_token:
             return False
