@@ -28,7 +28,7 @@ def refresh_online():
                 print 'push up:', uid
 
 def run():
-    mutex_f = '/var/run/%s.mutex' % __file__.replace('.py', '')
+    mutex_f = '/var/run/%s.mutex' % __file__.split('/')[-1].replace('.py', '')
     f = open(mutex_f, 'w')
     try:
         fcntl.flock(f,fcntl.LOCK_EX|fcntl.LOCK_NB)
