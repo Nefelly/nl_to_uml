@@ -26,6 +26,8 @@ def refresh_online():
             if status:
                 UserService.refresh_status(uid)
                 print 'push up:', uid
+            else:
+                UserService.
 
 def run():
     mutex_f = '/var/run/%s.mutex' % __file__.split('/')[-1].replace('.py', '')
