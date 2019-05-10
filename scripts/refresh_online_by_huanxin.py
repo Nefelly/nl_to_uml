@@ -21,6 +21,7 @@ def refresh_online():
         uids = redis_client.zrangebyscore(key, start_scan_time, end_scan_time)
         print 'uids to scan', uids
         uid_online_m = UserService.uid_online_by_huanxin(uids)
+        print uid_online_m, '!!!! scan res'
         for uid, status in uid_online_m.items():
             if status:
                 UserService.refresh_status(uid)
