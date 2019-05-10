@@ -235,7 +235,7 @@ class User(Document, UserSessionMixin):
             user = cls.get_by_id(user_id)
             if not user:
                 return ''
-            res = user._set_huanxin_cache()
+            res = user._set_age_cache()
         return int(res)
 
     @classmethod
