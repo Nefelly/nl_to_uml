@@ -109,6 +109,8 @@ class UserService(object):
         for uid in user_ids:
             if not query_res.get(uid, False):
                 res[uid] = False
+            else:
+                res[uid] = True
         return res
 
     @classmethod
