@@ -35,9 +35,9 @@ def run():
     except:
         print 'program already in run'
         sys.exit(0)
-    for i in range(100):
+    for i in range(10000):
         refresh_online()
-        time.sleep(1)
+        time.sleep(2)
 
 
 if __name__ == "__main__":
