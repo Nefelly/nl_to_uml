@@ -97,7 +97,7 @@ class UserService(object):
         to_query = []
         res = {}
         for uid in user_ids:
-            huanxinid = User.huanxin_id_by_user_id(user_ids)
+            huanxinid = User.huanxin_id_by_user_id(uid)
             if huanxinid:
                 huanxinid_uid[huanxinid] = uid
                 to_query.append(huanxinid)
