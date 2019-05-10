@@ -37,7 +37,7 @@ def run():
         sys.exit(0)
     for i in range(10000):
         refresh_online()
-        time.sleep(2)
+        time.sleep(3)
 
 
 if __name__ == "__main__":
