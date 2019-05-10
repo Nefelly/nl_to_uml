@@ -347,6 +347,7 @@ class HuanxinService(object):
             for i in range(cls.TRY_TIMES):
                 try:
                     response = requests.post(url, verify=False, headers=headers, json=data).json()
+                    print response
                     _ = response["data"]
                     for user in _:
                         print user
