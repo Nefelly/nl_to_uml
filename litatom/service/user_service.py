@@ -101,18 +101,14 @@ class UserService(object):
             if huanxinid:
                 huanxinid_uid[huanxinid] = uid
                 to_query.append(huanxinid)
-        print 'to_query', to_query
         query_res = HuanxinService.is_user_online(to_query)
-        print 'this is query_res', query_res
         for huanxinid, status in query_res.items():
             if status:
                 uid = huanxinid_uid[huanxinid]
                 res[uid] = True
         for uid in user_ids:
-            if not query_res.get(uid, False):
+            if not res.get(uid, False):
                 res[uid] = False
-            else:
-                res[uid] = True
         return res
 
     @classmethod
