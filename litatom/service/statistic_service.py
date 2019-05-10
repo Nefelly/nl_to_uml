@@ -76,7 +76,7 @@ class StatisticService(object):
         for uid in uids:
             age_diff = abs(age - User.age_by_user_id(uid))
             uid_agediffs.append([uid, age_diff])
-        res = sorted(uid_agediffs, lambda el: el[1])
+        res = sorted(uid_agediffs, key=lambda el: el[1])
         uids = [el[0] for el in res][:num]
         return uids
 
