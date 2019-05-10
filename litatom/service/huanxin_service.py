@@ -343,7 +343,7 @@ class HuanxinService(object):
         for i in range((query_limits + query_limits - 1)/query_limits):
             query_lsts.append(user_names[i * query_limits: (i + 1) * query_limits])
         online_word = 'online'
-        offline_word = ['offline']
+        offline_word = 'offline'
         for lst in query_lsts:
             data = {"usernames": lst}
             for i in range(cls.TRY_TIMES):
