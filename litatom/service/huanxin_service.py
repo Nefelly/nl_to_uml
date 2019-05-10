@@ -33,6 +33,7 @@ class HuanxinService(object):
     APP_KEY = '%s#%s' % (ORG_NAME, APP_NAME)
     HOST = 'https://a1.easemob.com'
     APP_URL = '%(HOST)s/%(ORG_NAME)s/%(APP_NAME)s/' % dict(HOST=HOST, ORG_NAME=ORG_NAME, APP_NAME=APP_NAME)
+    TRY_TIMES = 3
 
     CLIENT_ID = HUANXIN_SETTING.get('client_id', 'YXA6ALfHYDd7EemQqCO501ONvQ')
     CLIENT_SECRET = HUANXIN_SETTING.get('client_secret', 'YXA6AH1kFGkcUc67KcpClt5rWA23zv4')
@@ -320,6 +321,41 @@ class HuanxinService(object):
             traceback.print_exc()
             logger.error('Error active huanxin, user_id: %r, err: %r', user_name, e)
             return {}
+
+    @classmethod
+    def is_user_online(cls, user_names):
+        '''
+        user_names must be less than 100 everytime
+        :param user_names:
+        :return:
+        '''
+        query_limits = 100
+        url = cls.APP_URL + 'users/batchs/status'
+        access_token = cls.get_access_token()
+        if not access_token:
+            return False
+        headers = {
+            'Authorization':'Bearer %s' % access_token
+        }
+        res = {}
+        query_lsts = []
+        if len(user_names) > query_limits:
+            for i in range((query_limits + query_limits - 1)/query_limits):
+                query_lsts.append(user_names[i * query_limits: (i + 1) * query_limits])
+        for lst in query_lsts:
+            data = {"user_name": lst}
+            for i in range(cls.TRY_TIMES):
+                try:
+                    response = requests.post(url, verify=False, headers=headers, json=data).json()
+                    _ = response["data"]
+                    for user in _:
+                        print user
+                except Exception, e:
+                    traceback.print_exc()
+                    logger.error('Error query is user online, usernames: %r, err: %r', lst, e)
+                    continue
+        return res
+
 
     @classmethod
     def deactive_user(cls, user_name):
