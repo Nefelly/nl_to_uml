@@ -325,6 +325,7 @@ class HuanxinService(object):
     @classmethod
     def is_user_online(cls, user_names):
         '''
+        http://docs-im.easemob.com/im/server/ready/user#%E6%89%B9%E9%87%8F%E8%8E%B7%E5%8F%96%E7%94%A8%E6%88%B7%E5%9C%A8%E7%BA%BF%E7%8A%B6%E6%80%81
         user_names must be less than 100 everytime
         :param user_names:
         :return:
@@ -341,6 +342,8 @@ class HuanxinService(object):
         query_lsts = []
         for i in range((query_limits + query_limits - 1)/query_limits):
             query_lsts.append(user_names[i * query_limits: (i + 1) * query_limits])
+        online_word = 'online'
+        offline_word = ['offline']
         for lst in query_lsts:
             data = {"usernames": lst}
             for i in range(cls.TRY_TIMES):
@@ -348,8 +351,15 @@ class HuanxinService(object):
                     response = requests.post(url, verify=False, headers=headers, json=data).json()
                     print response
                     _ = response["data"]
-                    for user in _:
-                        print user
+                    for m in _:
+                        for k in m:
+                            if m[k] == online_word:
+                                res[k] = True
+                            elif m[k] == offline_word:
+                                res[k] = False
+                            else:
+                                logger.error('lst:%r, m:%r, k:%r', lst, m, k)
+                    break
                 except Exception, e:
                     traceback.print_exc()
                     logger.error('Error query is user online, usernames: %r, err: %r', lst, e)
