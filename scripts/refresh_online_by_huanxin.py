@@ -12,7 +12,7 @@ from litatom.key import (
 redis_client = RedisClient()['lit']
 
 def refresh_online():
-    scan_range = 600
+    scan_range = 1200
     time_now = int(time.time())
     for g in GENDERS:
         key = REDIS_ONLINE_GENDER.format(gender=g)
