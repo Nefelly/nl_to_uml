@@ -74,6 +74,7 @@ class UserService(object):
         user.generate_new_session()
         user._set_session_cache(str(user.id))
         user._set_huanxin_cache()
+        user._set_age_cache()
         if not user.logined:
             user.logined = True
             user.save()
@@ -90,6 +91,15 @@ class UserService(object):
         if gender:
             key = REDIS_UID_GENDER.format(user_id=str(user.id))
             redis_client.set(key, user.gender, ONLINE_LIVE)
+        if data.get('birthdate', ''):
+            User._set_age_cache(user)
+
+    @classmethod
+    def uids_age(cls, user_ids):
+        res = {}
+        for uid in user_ids:
+            res[uid] = User.age_by_user_id(uid)
+        return res
 
     @classmethod
     def uid_online_by_huanxin(cls, user_ids):

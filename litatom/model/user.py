@@ -31,7 +31,8 @@ from mongoengine import (
 )
 from ..key import (
     REDIS_KEY_SESSION_USER,
-    REDIS_KEY_USER_HUANXIN
+    REDIS_KEY_USER_HUANXIN,
+    REDIS_KEY_USER_AGE
 )
 from ..const import (
     TWO_WEEKS,
@@ -213,6 +214,29 @@ class User(Document, UserSessionMixin):
                 return ''
             res = user._set_huanxin_cache()
         return res
+
+    def _set_age_cache(self):
+        user_id = str(self.id)
+        if not self.birthdate:
+            age = NO_SET
+        else:
+            age = self.age
+        key = REDIS_KEY_USER_AGE.format(user_id=user_id)
+        redis_client.set(key, age, ex=TWO_WEEKS)
+        return age
+
+    @classmethod
+    def age_by_user_id(cls, user_id):
+        key = REDIS_KEY_USER_AGE.format(user_id=user_id)
+        res = redis_client.get(key)
+        if res == NO_SET:
+            return 0
+        elif not res:
+            user = cls.get_by_id(user_id)
+            if not user:
+                return ''
+            res = user._set_huanxin_cache()
+        return int(res)
 
     @classmethod
     def create_by_phone(cls, nickname, avatar, gender, birthdate, huanxin, zone_phone):
