@@ -129,6 +129,55 @@ class HuanxinService(object):
             return {}
 
     @classmethod
+    def batch_send_msgs(cls, msg, user_names, from_name='lit'):
+        '''
+        http://docs-im.easemob.com/start/100serverintegration/50messages
+        user_names suggest to less than 20 everytime
+        :param user_names:
+        :return:
+        '''
+        query_limits = 20
+        url = cls.APP_URL + 'messages'
+        access_token = cls.get_access_token()
+        if not access_token:
+            return False
+        headers = {
+            'Authorization':'Bearer %s' % access_token
+        }
+        res = {}
+        query_lsts = []
+        for i in range((query_limits + query_limits - 1)/query_limits):
+            query_lsts.append(user_names[i * query_limits: (i + 1) * query_limits])
+        for lst in query_lsts:
+            data = {
+               "target_type" : "users", # users 给用户发消息。chatgroups: 给群发消息，chatrooms: 给聊天室发消息
+                "target" : lst, # 注意这里需要用数组，数组长度建议不大于20，即使只有一个用户，
+                # 也要用数组 ['u1']，给用户发送时数组元素是用户名，给群组发送时
+                # 数组元素是groupid
+                "msg" : {
+                    "type" : "txt",
+                    "msg" : msg #消息内容，参考[[start:100serverintegration:30chatlog|聊天记录]]里的bodies内容
+                },
+                "from" : from_name #表示消息发送者。无此字段Server会默认设置为"from":"admin"，有from字段但值为空串("")时请求失败
+                }
+            for i in range(cls.TRY_TIMES):
+                try:
+                    response = requests.post(url, verify=False, headers=headers, json=data).json()
+                    _ = response["data"]
+                    for m in _:
+                        for k in m:
+                            if m[k] == u'success':
+                                res[k] = True
+                            else:
+                                logger.error('lst:%r, m:%r, k:%r', lst, m, k)
+                    break
+                except Exception, e:
+                    traceback.print_exc()
+                    logger.error('Error query is user online, usernames: %r, err: %r', lst, e)
+                    continue
+        return res
+
+    @classmethod
     def log_out(cls, user_name):
         url = cls.APP_URL + 'users/%s/disconnect' % user_name
 
