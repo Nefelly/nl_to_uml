@@ -51,6 +51,7 @@ class GoogleService(object):
             return idinfo
         except ValueError, e:
             # Invalid token
+            print e
             logger.error('log false token:%s, %s', token, e)
             return None
 

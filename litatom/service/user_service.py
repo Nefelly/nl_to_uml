@@ -101,7 +101,6 @@ class UserService(object):
             res[uid] = User.age_by_user_id(uid)
         return res
 
-
     @classmethod
     def msg_to_all_users(cls, msg, from_name='lit'):
         huanxin_ids = []
