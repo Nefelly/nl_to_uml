@@ -164,12 +164,11 @@ class HuanxinService(object):
                 try:
                     response = requests.post(url, verify=False, headers=headers, json=data).json()
                     _ = response["data"]
-                    for m in _:
-                        for k in m:
-                            if m[k] == u'success':
-                                res[k] = True
-                            else:
-                                logger.error('lst:%r, m:%r, k:%r', lst, m, k)
+                    for k in _:
+                        if _[k] == u'success':
+                            res[k] = True
+                        else:
+                            logger.error('lst:%r, m:%r, k:%r', lst, m, k)
                     break
                 except Exception, e:
                     traceback.print_exc()

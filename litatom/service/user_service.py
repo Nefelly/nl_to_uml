@@ -101,6 +101,16 @@ class UserService(object):
             res[uid] = User.age_by_user_id(uid)
         return res
 
+
+    @classmethod
+    def msg_to_all_users(cls, msg, from_name='lit'):
+        huanxin_ids = []
+        for _ in User.objects():
+            if _.huanxin.user_id:
+                huanxin_ids.append(_.huanxin.user_id)
+        HuanxinService.batch_send_msgs(msg, huanxin_ids, from_name)
+        return True
+
     @classmethod
     def uid_online_by_huanxin(cls, user_ids):
         huanxinid_uid = {}
