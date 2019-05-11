@@ -86,7 +86,8 @@ class StatisticService(object):
             key = REDIS_ONLINE_GENDER.format(gender=gender)
         else:
             key = REDIS_ONLINE
-        if start_p == 0 and request.user_id and gender:
+        online_cnt = cls.get_online_cnt(gender)
+        if start_p == 0 and request.user_id and gender and online_cnt >= num:
             uids = cls.choose_first_frame(request.user_id, key, gender, num)
             has_next = (len(uids) == num)
         else:
