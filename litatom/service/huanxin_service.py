@@ -146,7 +146,7 @@ class HuanxinService(object):
         }
         res = {}
         query_lsts = []
-        for i in range((query_limits + query_limits - 1)/query_limits):
+        for i in range((len(user_names) + query_limits - 1)/query_limits):
             query_lsts.append(user_names[i * query_limits: (i + 1) * query_limits])
         for lst in query_lsts:
             data = {
@@ -388,7 +388,7 @@ class HuanxinService(object):
         }
         res = {}
         query_lsts = []
-        for i in range((query_limits + query_limits - 1)/query_limits):
+        for i in range((len(user_names) + query_limits - 1)/query_limits):
             query_lsts.append(user_names[i * query_limits: (i + 1) * query_limits])
         online_word = 'online'
         offline_word = 'offline'
