@@ -267,6 +267,7 @@ class UserService(object):
     def refresh_status(cls, user_id):
         int_time = int(time.time())
         if user_id in [u'5cbc571e3fff2235defd5a65']:   # system account
+            cls.set_not_online(user_id)
             return
         gender = cls.get_gender(user_id)
         if gender:
