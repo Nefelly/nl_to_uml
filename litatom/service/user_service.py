@@ -102,12 +102,17 @@ class UserService(object):
         return res
 
     @classmethod
-    def msg_to_all_users(cls, msg, from_name='lit'):
+    def msg_to_all_users(cls, msg, from_name='Lit official'):
+        officail_user = User.get_by_nickname(from_name)
+        if not officail_user:
+            return False
         huanxin_ids = []
-        for _ in User.objects():
-            if _.huanxin.user_id:
-                huanxin_ids.append(_.huanxin.user_id)
-        HuanxinService.batch_send_msgs(msg, huanxin_ids, from_name)
+        msg = u'กรุณาอัพเดทเวอร์ชั่นล่าสุด 1.3.0 เพื่อแก้ไขปัญหาแอปไม่เสถียร.'
+        # for _ in User.objects():
+        #     if _.huanxin.user_id:
+        #         huanxin_ids.append(_.huanxin.user_id)
+        huanxin_ids = [u'5ca4b28f3fff2239491354b3']   # joey
+        HuanxinService.batch_send_msgs(msg, huanxin_ids, officail_user.huanxin.user_id)
         return True
 
     @classmethod
@@ -261,6 +266,8 @@ class UserService(object):
     @classmethod
     def refresh_status(cls, user_id):
         int_time = int(time.time())
+        if user_id in [u'5cbc571e3fff2235defd5a65']:   # system account
+            return
         gender = cls.get_gender(user_id)
         if gender:
             key = REDIS_ONLINE_GENDER.format(gender=gender)
