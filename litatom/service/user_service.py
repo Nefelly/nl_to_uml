@@ -107,12 +107,11 @@ class UserService(object):
         if not officail_user:
             return False
         huanxin_ids = []
-        msg = u'กรุณาอัพเดทเวอร์ชั่นล่าสุด 1.3.0 เพื่อแก้ไขปัญหาแอปไม่เสถียร.'
-        # for _ in User.objects():
-        #     if _.huanxin.user_id:
-        #         huanxin_ids.append(_.huanxin.user_id)
-        huanxin_ids = [u'love123879348711830']   # joey
-
+        # msg = u'กรุณาอัพเดทเวอร์ชั่นล่าสุด 1.3.0 เพื่อแก้ไขปัญหาแอปไม่เสถียร.'
+        for _ in User.objects():
+            if _.huanxin.user_id:
+                huanxin_ids.append(_.huanxin.user_id)
+        # huanxin_ids = [u'love123879348711830']   # joey
         HuanxinService.batch_send_msgs(msg, huanxin_ids, officail_user.huanxin.user_id)
         return True
 
