@@ -66,7 +66,7 @@ def settings():
 def check_version():
     version_now = '1.3.0'
     version = request.args.get('version', None)
-    if version != version_now:
+    if version <= version_now:
         data = {
             'need_update': True,
             'message': 'Your version is too low(newest version is %s), please update!' % version_now
