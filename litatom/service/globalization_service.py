@@ -24,8 +24,11 @@ from ..const import (
 redis_client = RedisClient()['lit']
 
 class GlobalizationService(object):
-    REGIONS = {'th', 'india'}
-    LOC_REGION = {'th': 'th'}
+    '''
+    https://blog.csdn.net/liuhhaiffeng/article/details/54706027
+    '''
+    REGIONS = {'th', 'india', 'vi'}
+    LOC_REGION = {'th': 'th', 'vi': 'vi'}
     '''
     todo: user loc set in redis
     '''
@@ -55,8 +58,10 @@ class GlobalizationService(object):
         cls._set_loc_cache(user_id, loc)
 
     @classmethod
-    def get_region(cls):
+    def get_region(cls, region=None):
         loc = None
+        if region:
+            return region
         user_id = request.user_id
         if user_id:
             loc_key = REDIS_USER_LOC.format(user_id=user_id)
