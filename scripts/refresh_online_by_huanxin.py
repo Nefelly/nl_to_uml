@@ -6,6 +6,7 @@ from litatom.service import (
     UserService,
     GlobalizationService
 )
+from hendrix.conf import setting
 from litatom.redis import RedisClient
 from litatom.const import (
     GENDERS,
@@ -36,6 +37,8 @@ def refresh_online():
 
 def run():
     mutex_f = '/var/run/%s.mutex' % __file__.split('/')[-1].replace('.py', '')
+    if setting.IS_DEV:
+        mutex_f += 'dev'
     f = open(mutex_f, 'w')
     try:
         fcntl.flock(f,fcntl.LOCK_EX|fcntl.LOCK_NB)
