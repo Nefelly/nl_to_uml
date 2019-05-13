@@ -46,6 +46,7 @@ class FeedService(object):
     def _on_del_feed(cls, feed):
         FollowingFeedService.remove_feed(feed)
 
+    @classmethod
     def _redis_feed_region_key(cls, key):
         region = GlobalizationService.get_region()
         return key.format(region=region)
