@@ -209,9 +209,9 @@ class FeedService(object):
             if not like_now:
                 chg_ts = -chg_ts
             cls.move_up_feed(feed_id, chg_ts)
-        if like_now:
-            cls.judge_add_to_feed_hq(feed)
-            UserMessageService.add_message(feed.user_id, user_id, UserMessageService.MSG_LIKE, feed_id)
+            if like_now:
+                cls.judge_add_to_feed_hq(feed)
+                UserMessageService.add_message(feed.user_id, user_id, UserMessageService.MSG_LIKE, feed_id)
         return {'like_now': like_now}, True
 
     @classmethod
@@ -234,7 +234,8 @@ class FeedService(object):
         else:
             UserMessageService.add_message(feed.user_id, user_id, UserMessageService.MSG_REPLY, feed_id, content)
         feed.chg_comment_num(1)
-        cls.judge_add_to_feed_hq(feed)
+        if user_id != feed.user_id:
+            cls.judge_add_to_feed_hq(feed)
         comment.user_id = user_id
         comment.feed_id = feed_id
         comment.content = content
