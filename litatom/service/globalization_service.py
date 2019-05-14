@@ -27,8 +27,13 @@ class GlobalizationService(object):
     '''
     https://blog.csdn.net/liuhhaiffeng/article/details/54706027
     '''
-    REGIONS = {'th', 'india', 'vi'}
-    LOC_REGION = {'th': 'th', 'vi': 'vi'}
+    REGIONS = {
+        'TH',   # 泰国
+        'IN',   # 印度
+        'VN',   # 越南
+        'ID'    # 印尼
+    }
+    LOC_REGION = {'TH': 'th', 'VN': 'vi', 'IN': 'india', 'ID': 'id'}
     '''
     todo: user loc set in redis
     '''

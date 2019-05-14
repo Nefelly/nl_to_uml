@@ -57,6 +57,7 @@ redis_client = RedisClient()['lit']
 class UserService(object):
     FORBID_TIME = ONE_MIN
     CREATE_LOCK = 'user_create'
+
     @classmethod
     def login_job(cls, user):
         """
@@ -354,6 +355,7 @@ class UserService(object):
         basic_info = cls.get_basic_info(user)
         login_info = user.get_login_info()
         basic_info.update(login_info)
+        basic_info.update(region=GlobalizationService.get_region())
         return basic_info, True
 
     @classmethod
