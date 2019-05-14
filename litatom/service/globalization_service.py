@@ -34,7 +34,7 @@ class GlobalizationService(object):
         'ID'    # 印尼
     }
     DEFAULT_REGION  = 'th'
-    LOC_REGION = {'TH': 'th', 'VN': 'vi', 'IN': 'india', 'ID': 'id'}
+    LOC_REGION = {'TH': 'th', 'VN': 'vi', 'IN': 'india', 'ID': 'id', 'th': 'th'}
     '''
     todo: user loc set in redis
     '''
