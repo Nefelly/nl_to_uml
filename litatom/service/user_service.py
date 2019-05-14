@@ -355,7 +355,6 @@ class UserService(object):
         basic_info = cls.get_basic_info(user)
         login_info = user.get_login_info()
         basic_info.update(login_info)
-        basic_info.update(region=GlobalizationService.get_region())
         return basic_info, True
 
     @classmethod

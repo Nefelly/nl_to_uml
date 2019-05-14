@@ -17,7 +17,8 @@ from ....response import (
 )
 from ....service import (
     DebugHelperService,
-    AnoyMatchService
+    AnoyMatchService,
+    GlobalizationService
 )
 
 logger = logging.getLogger(__name__)
@@ -35,3 +36,7 @@ def batch_create_login():
 
 def batch_anoy_match_start():
     return success(DebugHelperService.batch_anoy_match_start())
+
+@session_required
+def query_region():
+    return success({"region": GlobalizationService.get_region()})

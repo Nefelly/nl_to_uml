@@ -80,6 +80,8 @@ b.add_url_rule('/lit/anoy_match/judge', 'anoy-match-judge', endpoint.anoy_match.
 b.add_url_rule('/lit/debug/redis_status', 'debug-redis-status', endpoint.debug.redis_status)
 b.add_url_rule('/lit/debug/batch_create_login', 'debug-batch-create-login', endpoint.debug.batch_create_login)
 b.add_url_rule('/lit/debug/batch_anoy_match_start', 'debug-batch-anoy-match-start', endpoint.debug.batch_anoy_match_start)
+b.add_url_rule('/lit/debug/query_regoin', 'debug-query-regoin', endpoint.debug.query_region)
+
 
 # feed
 b.add_url_rule('/lit/feed/create', 'feed-create-feed', endpoint.feed.create_feed, methods=['POST'])
