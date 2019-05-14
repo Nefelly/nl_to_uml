@@ -24,11 +24,15 @@ from ....response import (
 from ..form import (
     PhoneLoginForm
 )
+from ....model import (
+    User
+)
 from ....service import (
     AdminService,
     UserMessageService,
     FirebaseService,
-    FeedService
+    FeedService,
+    GlobalizationService
 )
 from  ....const import (
     MAX_TIME,
@@ -121,3 +125,16 @@ def reject(report_id):
     if not status:
         return fail(data)
     return success(data)
+
+def change_loc():
+    phone = request.args.get('phone')
+    target_loc = request.loc
+    user_id = request.user_id
+    if phone and phone.startswith('86'):
+        user = User.get_by_phone(phone)
+        if user:
+            user_id = str(user.id)
+    status, msg = GlobalizationService.change_loc(user_id, target_loc)
+    if status:
+        return success()
+    return fail(msg)

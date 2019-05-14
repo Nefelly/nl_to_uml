@@ -31,6 +31,7 @@ from ..key import (
 )
 from ..model import (
     User,
+    UserSetting,
     Feed,
     HuanxinAccount,
     Avatar,
@@ -46,7 +47,8 @@ from ..service import (
     HuanxinService,
     GoogleService,
     FacebookService,
-    BlockService
+    BlockService,
+    GlobalizationService
 )
 
 sys_rnd = random.SystemRandom()
@@ -55,6 +57,7 @@ redis_client = RedisClient()['lit']
 class UserService(object):
     FORBID_TIME = ONE_MIN
     CREATE_LOCK = 'user_create'
+
     @classmethod
     def login_job(cls, user):
         """
@@ -81,6 +84,13 @@ class UserService(object):
         if user.finished_info:
             cls.refresh_status(str(user.id))
         return None, True
+
+    @classmethod
+    def _on_create_new_user(cls, user):
+        loc = request.loc
+        if loc:
+            UserSetting.create_setting(str(user.id), loc)
+        return True
 
     @classmethod
     def _on_update_info(cls, user, data):
@@ -191,9 +201,10 @@ class UserService(object):
         user.forbidden_ts = int(time.time()) + forbid_ts
         user.clear_session()
         for gender in GENDERS:
-            key = REDIS_ONLINE_GENDER.format(gender=gender)
+            # key = REDIS_ONLINE_GENDER.format(gender=gender)
+            key = GlobalizationService._online_key_by_region_gender(gender)
             redis_client.zrem(key, user_id)
-        redis_client.zrem(REDIS_ONLINE, user_id)
+        redis_client.zrem(GlobalizationService._online_key_by_region_gender(), user_id)
         user.save()
         if user.huanxin and user.huanxin.user_id:
             HuanxinService.deactive_user(user.huanxin.user_id)
@@ -272,9 +283,10 @@ class UserService(object):
             return
         gender = cls.get_gender(user_id)
         if gender:
-            key = REDIS_ONLINE_GENDER.format(gender=gender)
+            # key = REDIS_ONLINE_GENDER.format(gender=gender)
+            key = GlobalizationService._online_key_by_region_gender(gender)
             redis_client.zadd(key, {user_id: int_time})
-            redis_client.zadd(REDIS_ONLINE, {user_id: int_time})
+            redis_client.zadd(GlobalizationService._online_key_by_region_gender(), {user_id: int_time})
             if int_time % 100 == 0:
                 redis_client.zremrangebyscore(key, -1, int_time - ONLINE_LIVE)
 
@@ -299,7 +311,8 @@ class UserService(object):
         :return:
         '''
         judge_time = int(time.time()) - USER_ACTIVE
-        key = REDIS_ONLINE
+        # key = REDIS_ONLINE
+        key = GlobalizationService._online_key_by_region_gender()
         score = redis_client.zscore(key, uid)
         if not score or int(score) < judge_time:
             return False
@@ -332,6 +345,7 @@ class UserService(object):
             user.huanxin = cls.create_huanxin()
             user.phone = zone_phone
             user.save()
+            cls._on_create_new_user(user)
             cls.update_info_finished_cache(user)
             RedisLock.release_mutex(key)
         msg, status = cls.login_job(user)
@@ -361,6 +375,7 @@ class UserService(object):
             user.google = SocialAccountInfo.make(google_id, idinfo)
             user.create_time = datetime.datetime.now()
             user.save()
+            cls._on_create_new_user(user)
             cls.update_info_finished_cache(user)
             RedisLock.release_mutex(key)
         msg, status = cls.login_job(user)
@@ -393,12 +408,12 @@ class UserService(object):
                     if attr not in ['id', 'facebook_ver1', 'facebook']:
                         setattr(user, attr, getattr(oldUser, attr))
                 user.facebook = SocialAccountInfo.make(facebook_id, idinfo)
-                user.save()
             else:
                 user.huanxin = cls.create_huanxin()
                 user.facebook = SocialAccountInfo.make(facebook_id, idinfo)
                 user.create_time = datetime.datetime.now()
-                user.save()
+            user.save()
+            cls._on_create_new_user(user)
             cls.update_info_finished_cache(user)
             RedisLock.release_mutex(key)
         msg, status = cls.login_job(user)
@@ -482,7 +497,8 @@ class UserService(object):
         redis_client.delete(REDIS_USER_INFO_FINISHED.format(user_id=user_id))
         gender = cls.get_gender(user_id)
         if gender:
-            key = REDIS_ONLINE_GENDER.format(gender=gender)
+            # key = REDIS_ONLINE_GENDER.format(gender=gender)
+            key = GlobalizationService._online_key_by_region_gender(gender)
             redis_client.zrem(key, user_id)
             from ..key import REDIS_ANOY_GENDER_ONLINE
             if user.huanxin and user.huanxin.user_id:
@@ -491,7 +507,7 @@ class UserService(object):
         if user.huanxin and user.huanxin.user_id:
             HuanxinService.delete_user(user.huanxin.user_id)
         redis_client.delete(REDIS_UID_GENDER.format(user_id=user_id))
-        redis_client.zrem(REDIS_ONLINE, user_id)
+        redis_client.zrem(GlobalizationService._online_key_by_region_gender(), user_id)
         user.clear_session()
         user.delete()
         user.save()

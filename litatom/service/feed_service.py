@@ -8,7 +8,9 @@ from  flask import (
 from ..redis import RedisClient
 from ..key import (
     REDIS_FEED_SQUARE,
-    REDIS_FEED_HQ
+    REDIS_FEED_SQUARE_REGION,
+    REDIS_FEED_HQ,
+    REDIS_FEED_HQ_REGION
 )
 from ..util import (
     get_time_info,
@@ -22,7 +24,9 @@ from ..service import (
     BlockService,
     Ip2AddressService,
     UserMessageService,
-    FollowingFeedService
+    FollowingFeedService,
+    GlobalizationService,
+    UserMessageService
 )
 from ..model import (
     Feed,
@@ -41,6 +45,11 @@ class FeedService(object):
     @classmethod
     def _on_del_feed(cls, feed):
         FollowingFeedService.remove_feed(feed)
+
+    @classmethod
+    def _redis_feed_region_key(cls, key):
+        region = GlobalizationService.get_region()
+        return key.format(region=region)
 
     @classmethod
     def _feed_info(cls, feed, visitor_user_id=None):
@@ -63,18 +72,17 @@ class FeedService(object):
             return u'not feed info', False
         return feed_info, True
 
-
     @classmethod
     def _add_to_feed_pool(cls,  feed):
-        redis_client.zadd(REDIS_FEED_SQUARE, {str(feed.id): feed.create_time})
+        redis_client.zadd(cls._redis_feed_region_key(REDIS_FEED_SQUARE_REGION), {str(feed.id): feed.create_time})
 
     @classmethod
     def _del_from_feed_pool(cls,feed):
-        redis_client.zrem( REDIS_FEED_SQUARE, str(feed.id))
+        redis_client.zrem(cls._redis_feed_region_key(REDIS_FEED_SQUARE_REGION), str(feed.id))
 
     @classmethod
     def _add_to_feed_hq(cls, feed_id):
-        redis_client.zadd(REDIS_FEED_HQ, {feed_id: int(time.time())})
+        redis_client.zadd(cls._redis_feed_region_key(REDIS_FEED_HQ_REGION), {feed_id: int(time.time())})
 
     @classmethod
     def add_hq(cls, feed_id):
@@ -83,12 +91,12 @@ class FeedService(object):
 
     @classmethod
     def remove_from_hq(cls, feed_id):
-        redis_client.zrem( REDIS_FEED_HQ, feed_id)
+        redis_client.zrem(cls._redis_feed_region_key(REDIS_FEED_HQ_REGION), feed_id)
         return None, True
 
     @classmethod
     def _del_from_feed_hq(cls, feed):
-        redis_client.zrem( REDIS_FEED_HQ, str(feed.id))
+        redis_client.zrem(cls._redis_feed_region_key(REDIS_FEED_HQ_REGION), str(feed.id))
 
     @classmethod
     def judge_add_to_feed_hq(cls, feed):
@@ -98,13 +106,13 @@ class FeedService(object):
     @classmethod
     def move_up_feed(cls, feed_id, ts):
         return True
-        score = redis_client.zscore(REDIS_FEED_SQUARE, feed_id)
-        if score > 0:
-            new_score = score + ts
-            max_ts = int(time.time()) + 50
-            if new_score > max_ts:
-                new_score = max_ts
-            redis_client.zadd(REDIS_FEED_SQUARE, {feed_id: new_score})
+        # score = redis_client.zscore(REDIS_FEED_SQUARE, feed_id)
+        # if score > 0:
+        #     new_score = score + ts
+        #     max_ts = int(time.time()) + 50
+        #     if new_score > max_ts:
+        #         new_score = max_ts
+        #     redis_client.zadd(REDIS_FEED_SQUARE, {feed_id: new_score})
 
     @classmethod
     def create_feed(cls, user_id, content, pics=None):
@@ -179,7 +187,7 @@ class FeedService(object):
 
     @classmethod
     def feeds_by_square(cls, user_id, start_p=0, num=10):
-        return cls._feeds_by_pool(REDIS_FEED_SQUARE, user_id, start_p, num)
+        return cls._feeds_by_pool(cls._redis_feed_region_key(REDIS_FEED_SQUARE_REGION), user_id, start_p, num)
 
     @classmethod
     def feeds_square_for_admin(cls, user_id, start_p=0, num=10):
@@ -190,11 +198,11 @@ class FeedService(object):
 
     @classmethod
     def _in_hq(cls, feed_id):
-        return redis_client.zscore(REDIS_FEED_HQ, feed_id) > 0
+        return redis_client.zscore(cls._redis_feed_region_key(REDIS_FEED_HQ_REGION), feed_id) > 0
 
     @classmethod
     def feeds_by_hq(cls, user_id, start_p=0, num=10):
-        return cls._feeds_by_pool(REDIS_FEED_HQ, user_id, start_p, num)
+        return cls._feeds_by_pool(cls._redis_feed_region_key(REDIS_FEED_HQ_REGION), user_id, start_p, num)
 
     @classmethod
     def like_feed(cls, user_id, feed_id):
