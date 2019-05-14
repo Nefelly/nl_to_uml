@@ -67,7 +67,7 @@ class GlobalizationService(object):
     def get_region(cls, region=None):
         if region:
             return region
-        if getattr(request, 'region'):
+        if getattr(request, 'region', ''):
             return request.region
         loc = None
         user_id = request.user_id
