@@ -77,6 +77,7 @@ class GlobalizationService(object):
                 cls._set_user_loc(user_id, request.loc)
         else:
             loc = request.loc
+        print loc
         if cls.LOC_REGION.get(loc, ''):
             return cls.LOC_REGION[loc]
         return 'th'
