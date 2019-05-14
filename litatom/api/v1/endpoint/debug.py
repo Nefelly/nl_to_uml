@@ -40,3 +40,9 @@ def batch_anoy_match_start():
 @session_required
 def query_region():
     return success({"region": GlobalizationService.get_region()})
+
+def test_func():
+    if not setting.IS_DEV:
+        return fail()
+    func = request.args.get('func')
+    return success(eval(func))
