@@ -44,5 +44,5 @@ def query_region():
 def test_func():
     if not setting.IS_DEV:
         return fail()
-    func = request.args.get('func')
-    return success(eval(func))
+    from ....service import AnoyMatchService
+    return success(AnoyMatchService.get_tips())
