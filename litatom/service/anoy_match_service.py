@@ -62,10 +62,11 @@ class AnoyMatchService(object):
 
     @classmethod
     def get_tips(cls):
+        word = GlobalizationService.get_region_word('anoy_match_msg')
         data = {
             'chat_time': cls.MATCH_INT,
-            BOY: [u'180 วินาที กดไลค์กันและกัน เพื่อคุยกันแบบไม่จำกัดเวลา'],
-            GIRL: [u'180 วินาที กดไลค์กันและกัน เพื่อคุยกันแบบไม่จำกัดเวลา']
+            BOY: [word],
+            GIRL: [word]
         }
         return data, True
 
@@ -295,7 +296,7 @@ class AnoyMatchService(object):
         if status:
             times = msg
         return {
-            'wording':'%d Times left' % times,
+            'wording': GlobalizationService.get_region_word('time_left') % times,
             'times': times
             }
 

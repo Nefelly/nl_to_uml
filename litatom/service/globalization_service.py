@@ -33,6 +33,7 @@ class GlobalizationService(object):
         'VN',   # 越南
         'ID'    # 印尼
     }
+    DEFAULT_REGION  = 'th'
     LOC_REGION = {'TH': 'th', 'VN': 'vi', 'IN': 'india', 'ID': 'id'}
     '''
     todo: user loc set in redis
@@ -64,9 +65,11 @@ class GlobalizationService(object):
 
     @classmethod
     def get_region(cls, region=None):
-        loc = None
         if region:
             return region
+        if request.region:
+            return request.region
+        loc = None
         user_id = request.user_id
         if user_id:
             loc_key = REDIS_USER_LOC.format(user_id=user_id)
@@ -78,8 +81,11 @@ class GlobalizationService(object):
         else:
             loc = request.loc
         if cls.LOC_REGION.get(loc, ''):
-            return cls.LOC_REGION[loc]
-        return 'th'
+            res = cls.LOC_REGION[loc]
+        else:
+            res = cls.DEFAULT_REGION
+        request.region = res
+        return res
 
     @classmethod
     def change_loc(cls, user_id, target_loc):

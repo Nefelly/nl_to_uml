@@ -14,7 +14,8 @@ from ..const import (
 from ..util import get_time_info
 from ..service import (
     UserService,
-    FirebaseService
+    FirebaseService,
+    GlobalizationService
 )
 from flask import (
     request
@@ -44,13 +45,22 @@ class UserMessageService(object):
         return cls.MSG_MESSAGE_M if not request.ip_thailand else cls.MSG_MESSAGE_M_THAI
 
     @classmethod
+    def get_message(cls, m_type):
+        tag_word = {
+            cls.MSG_LIKE: 'like_feed',
+            cls.MSG_FOLLOW: 'start_follow',
+            cls.MSG_COMMENT: 'reply_comment',
+            cls.MSG_REPLY: 'reply_feed'
+        }.get(m_type)
+        return GlobalizationService.get_region_word(tag_word)
+
+    @classmethod
     def msg_by_message_obj(cls, obj):
         if not obj:
             return {}
-        message_m = cls.get_message_m()
         return {
             'user_info': UserService.user_info_by_uid(obj.related_uid),
-            'message':  message_m.get(obj.m_type, ''),
+            'message':  cls.get_message(obj.m_type),
             'time_info': get_time_info(obj.create_time),
             'content': obj.content if obj.content else '',
             'message_id': str(obj.id),
@@ -99,7 +109,8 @@ class UserMessageService(object):
     def add_message(cls, user_id, related_user_id, m_type, related_feed_id=None, content=None):
         obj_id = UserMessage.add_message(user_id, related_user_id, m_type, related_feed_id, content)
         related_nickname = UserService.nickname_by_uid(related_user_id)
-        message = cls.get_message_m().get(m_type, '')
+        # message = cls.get_message_m().get(m_type, '')
+        message = cls.get_message(m_type)
         if content:
             message += ': "%s"' % content
         FirebaseService.send_to_user(user_id, related_nickname, message)
