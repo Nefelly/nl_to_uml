@@ -10,12 +10,15 @@ from hendrix.conf import setting
 from litatom.redis import RedisClient
 from litatom.const import (
     GENDERS,
-    USER_ACTIVE
+    USER_ACTIVE,
+    ONE_MIN
 )
 from litatom.key import (
     REDIS_ANOY_GENDER_ONLINE_REGION
 )
 redis_client = RedisClient()['lit']
+
+USER_ACTIVE = 3 * ONE_MIN
 
 def refresh_online():
     scan_range = 30
@@ -32,6 +35,7 @@ def refresh_online():
                     UserService.refresh_status(uid)
                     print 'push up:', uid
                 else:
+                    continue
                     UserService.set_not_online(uid)
                     print 'set offline', uid
 
