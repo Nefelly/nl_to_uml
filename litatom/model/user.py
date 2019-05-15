@@ -387,6 +387,10 @@ class UserSetting(Document):
         obj.user_id = user_id
         obj.lang = lang
         obj.save()
+        user = User.get_by_id(user_id)
+        if user:
+            user.country = lang
+            user.save()
         return True
 
     @classmethod
