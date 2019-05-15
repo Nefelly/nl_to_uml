@@ -11,7 +11,7 @@ from litatom.redis import RedisClient
 from litatom.const import (
     GENDERS,
     USER_ACTIVE,
-    ONE_MIN
+    REAL_ACTIVE
 )
 from litatom.key import (
     REDIS_ANOY_GENDER_ONLINE_REGION
@@ -26,8 +26,8 @@ def refresh_online():
     for g in GENDERS:
         for region in GlobalizationService.REGIONS:
             key = REDIS_ANOY_GENDER_ONLINE_REGION.format(gender=g, region=region)
-            start_scan_time = time_now - USER_ACTIVE - scan_range
-            end_scan_time = time_now - USER_ACTIVE + scan_range
+            start_scan_time = time_now - REAL_ACTIVE - scan_range
+            end_scan_time = time_now - REAL_ACTIVE + scan_range
             uids = redis_client.zrangebyscore(key, start_scan_time, end_scan_time)
             uid_online_m = UserService.uid_online_by_huanxin(uids)
             for uid, status in uid_online_m.items():

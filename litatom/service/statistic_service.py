@@ -14,7 +14,8 @@ from ..const import (
     GIRL,
     BOY,
     MAX_TIME,
-    USER_ACTIVE
+    USER_ACTIVE,
+    REAL_ACTIVE
 )
 from ..service import (
     UserService,
@@ -71,7 +72,10 @@ class StatisticService(object):
         :param num:
         :return:
         '''
-        online_cnt = cls.get_online_cnt(gender)
+        # online_cnt = cls.get_online_cnt(gender)
+        judge_time = int(time.time()) - REAL_ACTIVE
+        key = GlobalizationService._online_key_by_region_gender(gender)
+        online_cnt = redis_client.zcount(key, judge_time, MAX_TIME)
         choose_pool = num
         if online_cnt > num:
             choose_pool = min(online_cnt, cls.MAX_SELECT_POOL)
