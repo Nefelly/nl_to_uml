@@ -95,7 +95,7 @@ class StatisticService(object):
     def get_online_users(cls, gender=None, start_p=0, num=10):
         key = GlobalizationService._online_key_by_region_gender(gender)
         online_cnt = cls.get_online_cnt(gender)
-        if start_p == 0 and request.user_id and gender and online_cnt >= num:
+        if False and start_p == 0 and request.user_id and gender and online_cnt >= num:
             uids = cls.choose_first_frame(request.user_id, key, gender, num)
             has_next = (len(uids) == num)
         else:
