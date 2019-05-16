@@ -118,10 +118,7 @@ class UserService(object):
             return False
         huanxin_ids = []
         msg = u'แอปของเราพบปัญหาระบบแชท เมื่อคุณส่งข้อความไปหาผู้อื่น บางทีอาจจะไม่สำเร็จ ตอนนี้เรารับทราบปัญหาที่เกิดขึ้นแล้ว จะเร่งแก้ไขให้เร็วที่สุด.'
-        for _ in User.objects(country='TH'):
-            if _.huanxin.user_id:
-                huanxin_ids.append(_.huanxin.user_id)
-        for _ in User.objects(country='th'):
+        for _ in User.objects():
             if _.huanxin.user_id:
                 huanxin_ids.append(_.huanxin.user_id)
         # huanxin_ids = [u'love123879348711830']   # joey
