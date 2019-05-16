@@ -117,8 +117,11 @@ class UserService(object):
         if not officail_user:
             return False
         huanxin_ids = []
-        # msg = u'กรุณาอัพเดทเวอร์ชั่นล่าสุด 1.3.0 เพื่อแก้ไขปัญหาแอปไม่เสถียร.'
-        for _ in User.objects():
+        msg = u'แอปของเราพบปัญหาระบบแชท เมื่อคุณส่งข้อความไปหาผู้อื่น บางทีอาจจะไม่สำเร็จ ตอนนี้เรารับทราบปัญหาที่เกิดขึ้นแล้ว จะเร่งแก้ไขให้เร็วที่สุด.'
+        for _ in User.objects(country='TH'):
+            if _.huanxin.user_id:
+                huanxin_ids.append(_.huanxin.user_id)
+        for _ in User.objects(country='th'):
             if _.huanxin.user_id:
                 huanxin_ids.append(_.huanxin.user_id)
         # huanxin_ids = [u'love123879348711830']   # joey
