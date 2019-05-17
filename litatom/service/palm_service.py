@@ -16,6 +16,6 @@ class PalmService(object):
         img = AliOssService.get_binary_from_bucket(pic)
         if not img:
             return u'picture not exists', False
-        img = cv2.imread(img)
+        img = cv2.imdecode(img)
         res = pbcvt.OutputFate(img)
         return {'data': res}, True
