@@ -66,6 +66,9 @@ b.add_url_rule('/lit/home/settings', 'home-setting', endpoint.home.settings)
 # huanxin
 b.add_url_rule('/lit/huanxin/<target_user_id>', 'huanxin-get-info', endpoint.huanxin.get_user_info)
 
+# activity
+b.add_url_rule('/lit/activity/palm/query', 'activity-palm-query', endpoint.activity.palm_query)
+
 # anoy_match
 b.add_url_rule('/lit/anoy_match/get_fakeid', 'anoy-match-create-fakeid', endpoint.anoy_match.get_fakeid)
 b.add_url_rule('/lit/anoy_match/anoy_match', 'anoy-match-anoy-match', endpoint.anoy_match.anoy_match)
@@ -101,7 +104,6 @@ b.add_url_rule('/lit/feed/info/<feed_id>', 'feed-feed-info', endpoint.feed.feed_
 b.add_url_rule('/lit/block/<other_user_id>', 'block', endpoint.user_relations.block)
 b.add_url_rule('/lit/unblock/<other_user_id>', 'unblock', endpoint.user_relations.unblock)
 b.add_url_rule('/lit/blocks', 'blocks', endpoint.user_relations.blocks)
-
 b.add_url_rule('/lit/follow/<other_user_id>', 'follow', endpoint.user_relations.follow)
 b.add_url_rule('/lit/unfollow/<other_user_id>', 'unfollow', endpoint.user_relations.unfollow)
 b.add_url_rule('/lit/following', 'following', endpoint.user_relations.following)

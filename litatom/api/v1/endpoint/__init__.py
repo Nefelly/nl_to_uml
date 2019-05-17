@@ -10,3 +10,4 @@ from . import anoy_match
 from . import feed
 from . import user_relations
 from . import admin
+from . import activity

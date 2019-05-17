@@ -29,8 +29,6 @@ from ...error import (
 )
 
 logger = logging.getLogger(__name__)
-loghanlder = logging.FileHandler("/rdata/dev1log", encoding='utf-8')
-logger.addHandler(loghanlder)
 
 @session_finished_required
 def create_feed():
