@@ -81,6 +81,7 @@ class PalmService(object):
         f_name = '/tmp/%s' % pic
         with open(f_name, 'w') as f:
             f.write(img)
+            f.close()
         img = cv2.imread(f_name)
         res = pbcvt.OutputFate(img)
         if res[0] not in [0, 1]:
@@ -106,12 +107,12 @@ class PalmService(object):
         region = GlobalizationService.REGION_TH
         raw_m = desc.get(region, {})
         res = {
-            palm_type: get_desc(raw_m, palm_type_ind),
-            life: get_desc(raw_m, life_ind),
-            wisdom: get_desc(raw_m, wisdom_ind),
-            emotion: get_desc(raw_m, emotion_ind),
-            fate: get_desc(raw_m, fate_ind),
-            solar: get_desc(raw_m, solar_ind)
+            palm_type: get_desc(raw_m, palm_type, palm_type_ind),
+            life: get_desc(raw_m, life, life_ind),
+            wisdom: get_desc(raw_m, wisdom, wisdom_ind),
+            emotion: get_desc(raw_m, emotion, emotion_ind),
+            fate: get_desc(raw_m, fate, fate_ind),
+            solar: get_desc(raw_m, solar, solar_ind)
         }
         return res
 
