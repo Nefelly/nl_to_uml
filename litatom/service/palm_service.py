@@ -21,4 +21,5 @@ class PalmService(object):
             f.write(img)
         img = cv2.imread(f_name)
         res = pbcvt.OutputFate(img)
+        res = [el for el in res]
         return {'data': res}, True
