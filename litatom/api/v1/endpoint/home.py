@@ -65,12 +65,16 @@ def settings():
     return success(data)
 
 def check_version():
-    version_now = '1.3.0'
+    version_now = '1.3.2'
     version = request.args.get('version', None)
+    if GlobalizationService.get_region() == GlobalizationService.REGION_TH:
+        message = u'กรุณาอัพเดทเวอร์ชั่น เราได้ทำการแก้ไขปัญหาส่งข้อความเรียบร้อยแล้ว ขอบคุณค่ะ'
+    else:
+        message = u'Please upgrade app, we have fixed the problem of losing message'
     if version < version_now:
         data = {
             'need_update': True,
-            'message': 'Your version is too low(newest version is %s), please update!' % version_now
+            'message': message
         }
     else:
         data = {
