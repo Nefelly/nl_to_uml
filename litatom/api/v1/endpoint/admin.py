@@ -138,3 +138,10 @@ def change_loc():
     if status:
         return success()
     return fail(msg)
+
+def change_avatar():
+    nickname = request.args.get('nickname')
+    user = User.get_by_nickname(nickname)
+    user.avatar = '5a6989ec-74a2-11e9-977f-00163e02deb4'
+    user.save()
+    return success()
