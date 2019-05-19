@@ -54,7 +54,7 @@ class PalmService(object):
         return 3
 
     @classmethod
-    def get_life(cls, life_obvious, life_long):
+    def tget_life(cls, life_obvious, life_long, fate_wisdom_not_together):
         return 0
 
     @classmethod
@@ -87,9 +87,9 @@ class PalmService(object):
         if res[0] not in [0, 1]:
             return u'what you upload is not a palm, please retry', False
         shorter_finger, is_palm_rectangle, solar_obvious, wisdom_obvious, wisdom_long, emotion_obvious, emotion_wind, \
-        life_obvious, life_long, fate_obvious = tuple([True if el == 0 else False for el in res])
+        life_obvious, life_long, fate_obvious, fate_wisdom_not_together = tuple([True if el == 0 else False for el in res])
         palm_type_ind = cls.get_type(is_palm_rectangle, shorter_finger)
-        life_ind = cls.get_life(life_obvious, life_long)
+        life_ind = cls.ge_life(life_obvious, life_long, fate_wisdom_not_together)
         wisdom_ind = cls.get_wisdom(wisdom_obvious, wisdom_long)
         emotion_ind = cls.get_emotion(emotion_obvious, emotion_wind)
         fate_ind = cls.get_fate(fate_obvious)
