@@ -247,12 +247,12 @@ class PalmService(object):
         # emotion_ind = cls.get_emotion(emotion_obvious, emotion_wind)
         # fate_ind = cls.get_fate(fate_obvious)
         # solar_ind = cls.get_solar(solar_obvious)
-        palm_type_ind = cls.bools_2_int(is_palm_rectangle, not shorter_finger)
-        life_ind = cls.bools_2_int(fate_wisdom_not_together, not life_obvious, not life_long)
-        wisdom_ind = cls.bools_2_int(not wisdom_obvious, not wisdom_long)
-        emotion_ind = cls.bools_2_int(not emotion_obvious, not emotion_wind)
-        fate_ind = cls.bools_2_int(not fate_obvious)
-        solar_ind = cls.bools_2_int(not solar_obvious)
+        palm_type_ind = cls.bools_2_int([is_palm_rectangle, not shorter_finger])
+        life_ind = cls.bools_2_int([fate_wisdom_not_together, not life_obvious, not life_long])
+        wisdom_ind = cls.bools_2_int([not wisdom_obvious, not wisdom_long])
+        emotion_ind = cls.bools_2_int([not emotion_obvious, not emotion_wind])
+        fate_ind = cls.bools_2_int([not fate_obvious])
+        solar_ind = cls.bools_2_int([not solar_obvious])
         res = cls.get_res_by_inds(palm_type_ind, life_ind, wisdom_ind, emotion_ind, fate_ind, solar_ind)
         return res, True
 
