@@ -331,7 +331,7 @@ class VoiceMatchService(object):
         for g in GENDERS:
             int_time = time.time()
             judge_time = int_time - cls.MATCH_WAIT
-            to_rem = redis_client.zrangebyscore(GlobalizationService.anoy_match_key_by_region_gender(g), 0, judge_time - wait_buff, 0, cls.MAX_CHOOSE_NUM)
+            to_rem = redis_client.zrangebyscore(GlobalizationService.voice_match_key_by_region_gender(g), 0, judge_time - wait_buff, 0, cls.MAX_CHOOSE_NUM)
             for el in to_rem:
                 cls._destroy_fake_id(el)
                 print "match pool fake_id: %s destoryed" % el
