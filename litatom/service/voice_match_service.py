@@ -255,7 +255,7 @@ class VoiceMatchService(object):
         return res
 
     @classmethod
-    def voice_match(cls, user_id):
+    def anoy_match(cls, user_id):
         fake_id = cls._fakeid_by_uid(user_id)
         # 匹配已过期
         fake_expire_key = REDIS_VOICE_FAKE_START.format(fake_id=fake_id)
