@@ -16,7 +16,8 @@ from ..key import (
     REDIS_ONLINE_GENDER_REGION,
     REDIS_ONLINE,
     REDIS_ONLINE_REGION,
-    REDIS_ANOY_GENDER_ONLINE_REGION
+    REDIS_ANOY_GENDER_ONLINE_REGION,
+    REDIS_VOICE_GENDER_ONLINE_REGION
 )
 from ..const import (
     ONLINE_LIVE
@@ -55,6 +56,11 @@ class GlobalizationService(object):
     def anoy_match_key_by_region_gender(cls, gender):
         region = cls.get_region()
         return REDIS_ANOY_GENDER_ONLINE_REGION.format(region=region, gender=gender)
+
+    @classmethod
+    def voice_match_key_by_region_gender(cls, gender):
+        region = cls.get_region()
+        return REDIS_VOICE_GENDER_ONLINE_REGION.format(region=region, gender=gender)
 
     @classmethod
     def _set_loc_cache(cls, user_id, loc):

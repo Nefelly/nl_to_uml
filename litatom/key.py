@@ -48,3 +48,15 @@ REDIS_FEED_SQUARE = 'feed_square'   # !!!
 REDIS_FEED_SQUARE_REGION = 'feed_square:{region}'   # !!!
 REDIS_FEED_HQ = 'feed_hq'   # !!!
 REDIS_FEED_HQ_REGION = 'feed_hq:{region}'   # !!!
+
+# voice match
+REDIS_USER_VOICE_MATCH_LEFT = 'voice_user_match_left:{user_date}'   # 过期时间一天
+REDIS_VOICE_FAKE_ID_UID = 'voice_fakeid_uid:{fake_id}'
+REDIS_VOICE_UID_FAKE_ID = 'voice_uid_fakeid:{user_id}'
+REDIS_VOICE_FAKE_START = 'voice_fake_start:{fake_id}'   # 开始进入匹配
+REDIS_VOICE_ANOY_CHECK_POOL = 'voice_anoy_check_pool'   # sorted set
+REDIS_VOICE_MATCH_PAIR = 'voice_match_start:{low_high_fakeid}'
+REDIS_VOICE_MATCHED = 'voice_matched:{fake_id}'   # 双方匹配上, 匹配动作 需要同时填写 两个键值对
+REDIS_VOICE_FAKE_LIKE = 'voice_fake_like:{fake_id}'  # value fake_id
+REDIS_VOICE_JUDGE_LOCK = 'voice_judge_lock:{fake_id}'   # 评价对方的接口, 用于防范被刷评价
+REDIS_VOICE_GENDER_ONLINE_REGION = 'voice_online:{gender}:{region}'
