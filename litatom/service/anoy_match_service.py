@@ -341,8 +341,7 @@ class AnoyMatchService(object):
                 ctx = app.request_context(EnvironBuilder('/','http://localhost/').get_environ())
                 ctx.push()
                 request.region = region
-                key = REDIS_ANOY_GENDER_ONLINE_REGION.format(region=region, gender=g)
-                to_rem = redis_client.zrangebyscore(key, 0, judge_time - wait_buff, 0, cls.MAX_CHOOSE_NUM)
+                to_rem = redis_client.zrangebyscore(GlobalizationService.anoy_match_key_by_region_gender(g), 0, judge_time - wait_buff, 0, cls.MAX_CHOOSE_NUM)
                 for el in to_rem:
                     cls._destroy_fake_id(el)
                     print "match pool fake_id: %s destoryed" % el
