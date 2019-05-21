@@ -255,7 +255,7 @@ class LitatomRequest(flask.Request):
             return False
         country, city = Ip2AddressService.ip_country_city(self.ip)
         if country in [u'United States'] or \
-                (country == u'China' and city and city not in [u'Beijing', u'Shanghai', u'Nanjing']):
+                (False and country == u'China' and city and city not in [u'Beijing', u'Shanghai', u'Nanjing']):
             #print country, city
             return True
         return False
