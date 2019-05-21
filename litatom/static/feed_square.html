@@ -87,7 +87,7 @@ methods: {
     delete_feed: function(feed){
 
         var url = BASE_URL + 'admin/delete_feed/' + feed.id;
-      this.$http.get(url).then(function(result){
+      this.$http.get(url, {params:{loc:Loc}).then(function(result){
         console.log('!!!!!!', result.data);
         if (result.data.result === 0){
             this.feeds =  this.feeds.filter(el => el.id != feed.id);
@@ -98,7 +98,7 @@ methods: {
 
     add_hq: function(feed){
       var url = BASE_URL + 'admin/add_hq/' + feed.id;
-      this.$http.get(url).then(function(result){
+      this.$http.get(url, {params:{loc:Loc}).then(function(result){
         if (result.data.result === 0){feed.in_hq=true;}
         else{alert('failed');}
       })
@@ -106,14 +106,14 @@ methods: {
 
     remove_from_hq: function(feed){
         var url = BASE_URL + 'admin/remove_from_hq/' + feed.id;
-        this.$http.get(url).then(function(result){
+        this.$http.get(url, {params:{loc:Loc}}).then(function(result){
             if (result.data.result === 0){feed.in_hq=false;}
             else{alert('failed');}
         })
     },
 
     next_page: function() {
-        this.$http.get(BASE_URL + 'admin/feeds_square', {params:{start_pos: this.next_start}}).then(function(result){
+        this.$http.get(BASE_URL + 'admin/feeds_square', {params:{start_pos: this.next_start, loc:Loc}}).then(function(result){
             var data = result.data.data;
             this.feeds = data.feeds;
             this.next_start = data.next_start;
@@ -130,7 +130,7 @@ methods: {
     },
 
     previous_page: function() {
-        this.$http.get(BASE_URL + 'admin/feeds_square', {params:{start_pos: this.previous_start}}).then(function(result){
+        this.$http.get(BASE_URL + 'admin/feeds_square', {params:{start_pos: this.previous_start, loc:Loc}}).then(function(result){
             var data = result.data.data;
             this.feeds = data.feeds;
             this.next_start = this.previous_start;
