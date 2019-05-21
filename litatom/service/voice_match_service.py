@@ -329,12 +329,17 @@ class VoiceMatchService(object):
     def clean_pools(cls):
         wait_buff = 2
         for g in GENDERS:
-            from ..key import REDIS_VOICE_GENDER_ONLINE_REGION, REDIS_VOICE_ANOY_CHECK_POOL
+            from ..key import REDIS_ANOY_GENDER_ONLINE_REGION
             int_time = time.time()
             judge_time = int_time - cls.MATCH_WAIT
             for region in GlobalizationService.LOC_REGION.values():
-                key = REDIS_VOICE_GENDER_ONLINE_REGION.format(region=region, gender=g)
-                to_rem = redis_client.zrangebyscore(key, 0, judge_time - wait_buff, 0, cls.MAX_CHOOSE_NUM)
+                from flask import current_app,request, Flask
+                app = Flask(__name__)
+                from werkzeug.test import EnvironBuilder
+                ctx = app.request_context(EnvironBuilder('/','http://localhost/').get_environ())
+                ctx.push()
+                request.region = region
+                to_rem = redis_client.zrangebyscore(GlobalizationService.voice_match_key_by_region_gender(g), 0, judge_time - wait_buff, 0, cls.MAX_CHOOSE_NUM)
                 for el in to_rem:
                     cls._destroy_fake_id(el)
                     print "match pool fake_id: %s destoryed" % el
