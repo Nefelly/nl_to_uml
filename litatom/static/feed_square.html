@@ -87,7 +87,7 @@ methods: {
     delete_feed: function(feed){
 
         var url = BASE_URL + 'admin/delete_feed/' + feed.id;
-      this.$http.get(url, {params:{loc:Loc}).then(function(result){
+      this.$http.get(url, {params:{loc:Loc}}).then(function(result){
         console.log('!!!!!!', result.data);
         if (result.data.result === 0){
             this.feeds =  this.feeds.filter(el => el.id != feed.id);
@@ -98,7 +98,7 @@ methods: {
 
     add_hq: function(feed){
       var url = BASE_URL + 'admin/add_hq/' + feed.id;
-      this.$http.get(url, {params:{loc:Loc}).then(function(result){
+      this.$http.get(url, {params:{loc:Loc}}).then(function(result){
         if (result.data.result === 0){feed.in_hq=true;}
         else{alert('failed');}
       })
