@@ -329,16 +329,19 @@ class VoiceMatchService(object):
     def clean_pools(cls):
         wait_buff = 2
         for g in GENDERS:
+            from ..key import REDIS_VOICE_GENDER_ONLINE_REGION, REDIS_VOICE_ANOY_CHECK_POOL
             int_time = time.time()
             judge_time = int_time - cls.MATCH_WAIT
-            to_rem = redis_client.zrangebyscore(GlobalizationService.voice_match_key_by_region_gender(g), 0, judge_time - wait_buff, 0, cls.MAX_CHOOSE_NUM)
-            for el in to_rem:
-                cls._destroy_fake_id(el)
-                print "match pool fake_id: %s destoryed" % el
-            to_rem_check = redis_client.zrangebyscore(REDIS_VOICE_ANOY_CHECK_POOL.format(gender=g), 0,  int_time - cls.MATCH_INT - wait_buff, 0, cls.MAX_CHOOSE_NUM)
-            for el in to_rem:
-                cls._destroy_fake_id(el, False)
-                print "check pool fake_id: %s destoryed" % el
+            for region in GlobalizationService.LOC_REGION.values():
+                key = REDIS_VOICE_GENDER_ONLINE_REGION.format(region=region, gender=g)
+                to_rem = redis_client.zrangebyscore(key, 0, judge_time - wait_buff, 0, cls.MAX_CHOOSE_NUM)
+                for el in to_rem:
+                    cls._destroy_fake_id(el)
+                    print "match pool fake_id: %s destoryed" % el
+                to_rem_check = redis_client.zrangebyscore(REDIS_VOICE_ANOY_CHECK_POOL.format(gender=g), 0,  int_time - cls.MATCH_INT - wait_buff, 0, cls.MAX_CHOOSE_NUM)
+                for el in to_rem:
+                    cls._destroy_fake_id(el, False)
+                    print "check pool fake_id: %s destoryed" % el
 
     @classmethod
     def judge(cls, user_id, judge):
