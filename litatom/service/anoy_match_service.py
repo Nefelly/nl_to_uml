@@ -335,10 +335,11 @@ class AnoyMatchService(object):
             int_time = time.time()
             judge_time = int_time - cls.MATCH_WAIT
             for region in GlobalizationService.LOC_REGION.values():
-                from flask import Flask, request
+                from flask import current_app,request, Flask
                 app = Flask(__name__)
                 from werkzeug.test import EnvironBuilder
                 ctx = app.request_context(EnvironBuilder('/','http://localhost/').get_environ())
+                ctx.push()
                 request.region = region
                 key = REDIS_ANOY_GENDER_ONLINE_REGION.format(region=region, gender=g)
                 to_rem = redis_client.zrangebyscore(key, 0, judge_time - wait_buff, 0, cls.MAX_CHOOSE_NUM)
