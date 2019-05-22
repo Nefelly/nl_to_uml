@@ -34,9 +34,9 @@ class RegionWord(Document):
             'en': u'180s chat time，Like each other unlock unlimited chats'
         },
         'voice_match_msg': {
-            'vi': u'Trò chuyện 180 giây, thích nhau mở khóa giới hạn trò chuyện',
-            'th': u'180 วินาที กดไลค์กันและกัน เพื่อคุยกันแบบไม่จำกัดเวลา',
-            'en': u'180s chat time，Like each other unlock unlimited chats'
+            'vi': u'Trò chuyện 420 giây, thích nhau mở khóa giới hạn trò chuyện',
+            'th': u'420 วินาที กดไลค์กันและกัน เพื่อคุยกันแบบไม่จำกัดเวลา',
+            'en': u'420s chat time，Like each other unlock unlimited chats'
         },
         'like_feed': {
             'vi': u'Thích bài viết của bạn',

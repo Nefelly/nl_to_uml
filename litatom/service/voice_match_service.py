@@ -45,8 +45,8 @@ redis_client = RedisClient()['lit']
 
 class VoiceMatchService(object):
     MAX_TIME = 10 ** 13
-    MATCH_WAIT = 60 * 3 + 1
-    MATCH_INT = 60 * 3  # talking time
+    MATCH_WAIT = 60 * 7 + 1
+    MATCH_INT = 60 * 7  # talking time
     TOTAL_WAIT = MATCH_INT + MATCH_WAIT + FIVE_MINS
     MAX_CHOOSE_NUM = 100
     MATCH_TMS = 10 if not setting.IS_DEV else 1000
