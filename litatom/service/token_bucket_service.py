@@ -30,6 +30,11 @@ class TokenBucketService(object):
             return True
 
     @classmethod
+    def destroy_token(cls, key):
+        user_key = TOKEN_BUCKET_KEY.format(key=key)
+        redis_client.delete(user_key)
+
+    @classmethod
     def _get_token(cls, key, amount=1, rate=1, capacity=1, interval=ONE_DAY, key_live_time=2*ONE_DAY):
         '''
 
