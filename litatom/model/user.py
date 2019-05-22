@@ -366,6 +366,15 @@ class User(Document, UserSessionMixin):
         }
 
 
+class OnlineLimit(EmbeddedDocument):
+    meta = {
+        'strict': False
+    }
+    age_low = IntField()
+    age_high = IntField()
+    gender = StringField()
+
+
 class UserSetting(Document):
     meta = {
         'strict': False,
@@ -374,6 +383,7 @@ class UserSetting(Document):
 
     user_id = StringField(required=True, unique=True)
     lang = StringField(required=True)
+    online_limit = EmbeddedDocumentField(OnlineLimit)
 
     @classmethod
     def get_by_user_id(cls, user_id):

@@ -52,6 +52,16 @@ def online_users():
     data = StatisticService.get_online_users(gender, star_p, num)
     return success(data)
 
+def online_filter():
+    limits = request.json
+    age_limit = limits.get('age', [])
+    gender_limit = limits.get('gender', '')
+    data, status = StatisticService.online_filter(age_limit, gender_limit)
+    if status:
+        return success(data)
+    return fail(data)
+
+
 def get_wording():
     word_type = request.args.get('word_type')
     if request.ip_thailand and word_type == u'match_info':

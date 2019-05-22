@@ -23,7 +23,8 @@ from ..service import (
 )
 from ..model import (
     User,
-    TrackChat
+    TrackChat,
+    OnlineLimit
 )
 redis_client = RedisClient()['lit']
 
@@ -43,6 +44,12 @@ class StatisticService(object):
             key = GlobalizationService._online_key_by_region_gender(_)
             res += redis_client.zcount(key, judge_time, MAX_TIME)
         return res
+
+    @classmethod
+    def online_filter(cls, age_limit, gender_limit):
+
+        return None, True
+
 
     @classmethod
     def _user_infos_by_uids(cls, uids):

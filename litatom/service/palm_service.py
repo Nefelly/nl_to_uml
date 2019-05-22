@@ -219,7 +219,7 @@ class PalmService(object):
         solar_ind = cls.bools_2_int([not solar_obvious])
         res = cls.get_res_by_inds(palm_type_ind, life_ind, wisdom_ind, emotion_ind, fate_ind, solar_ind)
         user_id = request.user_id
-        if not user_id or not TokenBucketService.get_token('palm_limit' + user_id, 1, 2, 2):
+        if not user_id or not TokenBucketService.get_token('palm_limit' + user_id, 1, 1000, 1000):
             return u'Your palmitry test oppurtunity has run out today, you can try it tomorrow ~', False
         return res, True
 
