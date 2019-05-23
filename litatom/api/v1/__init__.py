@@ -64,6 +64,7 @@ b.add_url_rule('/lit/home/index', 'home-index', endpoint.home.index)
 b.add_url_rule('/lit/home/check_version', 'home-check-version', endpoint.home.check_version)
 b.add_url_rule('/lit/home/settings', 'home-setting', endpoint.home.settings)
 b.add_url_rule('/lit/home/user_filters', 'home-user-filter', endpoint.home.online_filter, methods=['POST'])
+b.add_url_rule('/lit/home/get_filters', 'home-get-filter', endpoint.home.get_online_filter)
 
 # huanxin
 b.add_url_rule('/lit/huanxin/<target_user_id>', 'huanxin-get-info', endpoint.huanxin.get_user_info)
