@@ -38,7 +38,8 @@ from ..service import (
     UserService,
     FollowService,
     BlockService,
-    GlobalizationService
+    GlobalizationService,
+    UserFilterService
 )
 from ..model import User
 redis_client = RedisClient()['lit']
