@@ -374,6 +374,16 @@ class OnlineLimit(EmbeddedDocument):
     age_high = IntField()
     gender = StringField()
 
+    @classmethod
+    def make(cls, age_low, age_high, gender):
+        obj = cls()
+        if age_low:
+            cls.age_low = age_low
+        if age_high:
+            cls.age_high = age_high
+        if gender:
+            cls.gender = gender
+        return obj
 
 class UserSetting(Document):
     meta = {
@@ -382,7 +392,7 @@ class UserSetting(Document):
     }
 
     user_id = StringField(required=True, unique=True)
-    lang = StringField(required=True)
+    lang = StringField(required=True, default='')
     online_limit = EmbeddedDocumentField(OnlineLimit)
 
     @classmethod

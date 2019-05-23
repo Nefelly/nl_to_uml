@@ -40,7 +40,8 @@ from ..service import (
     FollowService,
     HuanxinService,
     BlockService,
-    GlobalizationService
+    GlobalizationService,
+    UserFilterService
 )
 from ..model import User
 redis_client = RedisClient()['lit']
@@ -175,9 +176,15 @@ class AnoyMatchService(object):
         other_fakeids = redis_client.zrangebyscore(GlobalizationService.anoy_match_key_by_region_gender(other_gender), judge_time, MAX_TIME, 0, cls.MAX_CHOOSE_NUM)
         if not other_fakeids:
             return None, False
-        fake_id2 = random.choice(other_fakeids)
-        user_id = cls._uid_by_fake_id(fake_id)
-        user_id2 = cls._uid_by_fake_id(fake_id2)
+        try_tms = 3
+        for i in range(try_tms):
+            fake_id2 = random.choice(other_fakeids)
+            user_id2 = cls._uid_by_fake_id(fake_id2)
+            user_id = cls._uid_by_fake_id(fake_id)
+            if not UserFilterService.filter_by_age_gender(user_id, user_id2) or not UserFilterService.filter_by_age_gender(user_id2, user_id):
+                if i == try_tms - 1:
+                    return None, False
+                continue
         if BlockService.get_block_msg(user_id, user_id2):
             return None, False
         #redis_client.zadd(matched_key, {fake_id2: int_time})

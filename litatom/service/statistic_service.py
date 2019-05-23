@@ -19,7 +19,8 @@ from ..const import (
 )
 from ..service import (
     UserService,
-    GlobalizationService
+    GlobalizationService,
+    UserFilterService
 )
 from ..model import (
     User,
@@ -44,12 +45,6 @@ class StatisticService(object):
             key = GlobalizationService._online_key_by_region_gender(_)
             res += redis_client.zcount(key, judge_time, MAX_TIME)
         return res
-
-    @classmethod
-    def online_filter(cls, age_limit, gender_limit):
-
-        return None, True
-
 
     @classmethod
     def _user_infos_by_uids(cls, uids):
@@ -124,6 +119,8 @@ class StatisticService(object):
                 uids = redis_client.zrevrange(key, start_p, start_p + temp_num)
                 uids = [uid for uid in uids if uid != temp_uid]
             uids = uids if uids else []
+            if temp_uid:
+                uids = [el for el in uids if UserFilterService.filter_by_age_gender(temp_uid, el)]
             has_next = False
             if gender == BOY and girl_strategy_on:
                 if len(boy_uids) == num + 1:

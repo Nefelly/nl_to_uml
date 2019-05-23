@@ -14,6 +14,7 @@ from .social_acount_service import (
     GoogleService,
     FacebookService
 )
+from .user_filter_service import UserFilterService
 from .user_service import UserService
 from .message_service import UserMessageService
 from .qiniu_service import QiniuService

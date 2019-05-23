@@ -30,7 +30,8 @@ from ....service import (
     ReportService,
     TrackActionService,
     FeedbackService,
-    GlobalizationService
+    GlobalizationService,
+    UserFilterService
 )
 
 logger = logging.getLogger(__name__)
@@ -52,11 +53,14 @@ def online_users():
     data = StatisticService.get_online_users(gender, star_p, num)
     return success(data)
 
+
+@session_required
 def online_filter():
     limits = request.json
-    age_limit = limits.get('age', [])
+    age_low = limits.get('age_low', None)
+    age_high = limits.get('age_high', None)
     gender_limit = limits.get('gender', '')
-    data, status = StatisticService.online_filter(age_limit, gender_limit)
+    data, status = UserFilterService.online_filter(request.user_id, age_low, age_high, gender_limit)
     if status:
         return success(data)
     return fail(data)
