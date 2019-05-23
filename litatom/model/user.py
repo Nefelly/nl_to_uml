@@ -385,6 +385,13 @@ class OnlineLimit(EmbeddedDocument):
             cls.gender = gender
         return obj
 
+    def to_json(self):
+        return {
+            'age_low': self.age_low,
+            'age_high': self.age_high,
+            'gender': self.gender
+        }
+
 class UserSetting(Document):
     meta = {
         'strict': False,

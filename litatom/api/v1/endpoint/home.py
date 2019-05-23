@@ -65,6 +65,12 @@ def online_filter():
         return success(data)
     return fail(data)
 
+@session_required
+def get_online_filter():
+    data, status = UserFilterService.get_filter_by_user_id(request.user_id)
+    if status:
+        return success(data)
+    return fail(data)
 
 def get_wording():
     word_type = request.args.get('word_type')

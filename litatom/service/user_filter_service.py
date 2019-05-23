@@ -28,6 +28,13 @@ class UserFilterService(object):
             return None, True
 
     @classmethod
+    def get_filter_by_user_id(cls, user_id):
+        user_setting = UserSetting.get_by_user_id(user_id)
+        if not user_setting or not user_setting.online_limit:
+            return {},  True
+        return user_setting.online_limit.to_json(), True
+
+    @classmethod
     def filter_by_age_gender(cls, user_id, target_uid):
         target_gender = None
         target_age = User.age_by_user_id(target_uid)
