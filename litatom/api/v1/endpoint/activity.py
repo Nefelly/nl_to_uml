@@ -39,4 +39,4 @@ def palm_query():
     return fail(data)
 
 def share_info():
-    return render_template("share_palm.html"), 200, {'Content-Type': 'text/html; charset=utf-8'}
+    return render_template('ppAndTos.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
