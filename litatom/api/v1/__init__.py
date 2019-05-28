@@ -71,6 +71,7 @@ b.add_url_rule('/lit/huanxin/<target_user_id>', 'huanxin-get-info', endpoint.hua
 
 # activity
 b.add_url_rule('/lit/activity/palm/query', 'activity-palm-query', endpoint.activity.palm_query)
+b.add_url_rule('/lit/activity/palm/share', 'activity-palm-share', endpoint.activity.share_info)
 
 # anoy_match
 b.add_url_rule('/lit/anoy_match/get_fakeid', 'anoy-match-create-fakeid', endpoint.anoy_match.get_fakeid)

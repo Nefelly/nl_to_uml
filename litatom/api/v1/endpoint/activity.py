@@ -37,3 +37,6 @@ def palm_query():
     if status:
         return success(data)
     return fail(data)
+
+def share_info():
+    return render_template("share_palm.html"), 200, {'Content-Type': 'text/html; charset=utf-8'}
