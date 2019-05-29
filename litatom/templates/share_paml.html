@@ -9,8 +9,6 @@
     background-color：rgb(71, 36, 122);
     }
     #d1{
-        width: 500px;
-        height: 500px;
         margin: 10% auto;
         border:2px solid #000;
         border-radius:50%;
@@ -18,7 +16,7 @@
         background-size:151px 150px;
         box-shadow:0px 0px 20px rgb(124,28,255);
     }
-    .dom2 { position: absolute; left: 10%; bottom: 5%; right: 10%; width: 80%; height: 300px; background-color: rgb(124,28,255); }
+    .dom2 { position: absolute; left: 10%; bottom: 5%; right: 10%; width: 80%; height: 300px; background-color: rgb(124,28,255); border-radius:30px; }
     #fixedLayer {
         position:fixed;
         left: 40px;
@@ -35,7 +33,9 @@
         float:right;
         width:80%;
     }
+    #download {position: absolute; bottom: 5%; right: 10%;}
 </style>
+
 <!-- 124, 28, 255 -->
 <body style="background-color: rgb(71,36,122)">
 <div id="d1" align="center" ></div>
@@ -43,6 +43,25 @@
     <div class="photo"><img src="http://www.litatom.com/api/sns/v1/lit/image/5a6989ec-74a2-11e9-977f-00163e02deb4", height="200px", width="200px"></div>
     <div class="intro">
             <p>高尔夫球运动是一项健康、绿色、快乐、回归自然的体育运动，打高尔夫球能让人体验挑战与激情，实现人与自然的和谐。</p></div>
+    <div id="download">
+    <a  href="https://play.google.com/store/apps/details?id=com.litatom.app" download="lit.apk">Download</a>
+        </div>
 </div>
+<script>
+    var obj = document.getElementById('d1');
+    var width = screen.width;
+
+
+    var style = '';
+    style += ';width:' + width + 'px;';
+    style += 'height:' + width  + 'px;';
+    obj.style.backgroundImage ="url(http://www.litatom.com/api/sns/v1/lit/image/3ff63f44-8099-11e9-a1b3-00163e02deb4)";
+    obj.style += style;
+
+//    obj.style.height = width/2;
+
+    obj.style.backgroundSize=`${width}px ${width}px`;
+    console.log(obj.style);
+</script>
 </body>
 </html>
