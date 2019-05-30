@@ -9,6 +9,7 @@ from litatom.const import (
 )
 
 def up_wording():
+    pass
     Wording.create('wait 3 mins to match', 'match_info')
 
 
