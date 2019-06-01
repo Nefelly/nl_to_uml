@@ -134,7 +134,7 @@ def change_loc():
         user = User.get_by_phone(phone)
         if user:
             user_id = str(user.id)
-    status, msg = GlobalizationService.change_loc(user_id, target_loc)
+    msg, status = GlobalizationService.change_loc(user_id, target_loc)
     if status:
         return success()
     return fail(msg)
