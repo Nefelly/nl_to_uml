@@ -123,7 +123,7 @@ class GlobalizationService(object):
             return u'your loc must be in one of [%s]' % (','.join(cls.REGIONS)), False
         UserSetting.ensure_setting(user_id, target_loc)
         cls._set_loc_cache(user_id, target_loc)
-        return True, None
+        return  None, True
 
     @classmethod
     def _region_tag_key(cls, region, tag):
