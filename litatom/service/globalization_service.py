@@ -20,7 +20,8 @@ from ..key import (
     REDIS_VOICE_GENDER_ONLINE_REGION
 )
 from ..const import (
-    ONLINE_LIVE
+    ONLINE_LIVE,
+    GENDERS
 )
 redis_client = RedisClient()['lit']
 
@@ -72,7 +73,19 @@ class GlobalizationService(object):
         user_setting = UserSetting.get_by_user_id(user_id)
         if not user_setting:
             UserSetting.create_setting(user_id, loc)
+        else:
+            old_loc = redis_client.get(REDIS_USER_LOC.format(user_id=user_id))
+            cls._purge_loc_cache(user_id, old_loc)
         cls._set_loc_cache(user_id, loc)
+
+    @classmethod
+    def _purge_loc_cache(cls, user_id, loc):
+        for g in GENDERS + [None]:
+            key = GlobalizationService._online_key_by_region_gender(g)
+            redis_client.zrem(key, user_id)
+        loc_key = REDIS_USER_LOC.format(user_id=user_id)
+        redis_client.delete(loc_key)   # delete old loc_key
+        return True
 
     @classmethod
     def get_region(cls, region=None):
