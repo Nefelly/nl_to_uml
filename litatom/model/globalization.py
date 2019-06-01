@@ -24,8 +24,8 @@ class RegionWord(Document):
 
     TAG_REGION_WORD = {
         'time_left': {
-            'vi': u'Còn lại %s lần',
-            'th': u'เหลือ %s ครั้ง',
+            'vi': u'%sCòn lại %s lần',
+            'th': u'%sเหลือ %s ครั้ง',
             'en': u'%s times left',
             'id': u'%s kali lagi'
         },
@@ -74,8 +74,8 @@ class RegionWord(Document):
         'other_ban_inform': {
             'vi': u'Báo cáo của bạn về người dùng %s đã được giải quyết. Tài khoản của %s đã bị vô hiệu hóa. Cảm ơn bạn đã ủng hộ cộng đồng Lit',
             'th': u'รายงานของคุณเกี่ยวกับผู้ใช้ %s ได้รับการพิจารณา บัญชีของ %s ถูกปิดการใช้งาน ขอบคุณสำหรับการรายงาน',
-            'en': u"Your report on the user xxx  has been settled. %s's account is disabled. Thank you for your support of the Lit community",
-            'id': u'Laporan Anda terhadap akun xxx telah selesai. Akun xxx telah kami nonaktifkan. Terima kasih atas dukungan Anda terhadap Lit community.'
+            'en': u"Your report on the user %s  has been settled. %s's account is disabled. Thank you for your support of the Lit community",
+            'id': u'Laporan Anda terhadap akun %s telah selesai. Akun %s telah kami nonaktifkan. Terima kasih atas dukungan Anda terhadap Lit community.'
         }
     }
 
