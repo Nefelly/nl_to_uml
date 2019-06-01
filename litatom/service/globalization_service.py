@@ -66,6 +66,9 @@ class GlobalizationService(object):
     @classmethod
     def _set_loc_cache(cls, user_id, loc):
         loc_key = REDIS_USER_LOC.format(user_id=user_id)
+        old_loc = redis_client.get(REDIS_USER_LOC.format(user_id=user_id))
+        if old_loc:
+            cls._purge_loc_cache(user_id, old_loc)
         redis_client.set(loc_key, loc, ONLINE_LIVE)
 
     @classmethod
@@ -73,9 +76,6 @@ class GlobalizationService(object):
         user_setting = UserSetting.get_by_user_id(user_id)
         if not user_setting:
             UserSetting.create_setting(user_id, loc)
-        else:
-            old_loc = redis_client.get(REDIS_USER_LOC.format(user_id=user_id))
-            cls._purge_loc_cache(user_id, old_loc)
         cls._set_loc_cache(user_id, loc)
 
     @classmethod
