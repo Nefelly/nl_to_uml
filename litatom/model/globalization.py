@@ -24,8 +24,8 @@ class RegionWord(Document):
 
     TAG_REGION_WORD = {
         'time_left': {
-            'vi': u'%sCòn lại %s lần',
-            'th': u'%sเหลือ %s ครั้ง',
+            'vi': u'Còn lại %s lần',
+            'th': u'เหลือ %s ครั้ง',
             'en': u'%s times left',
             'id': u'%s kali lagi'
         },
