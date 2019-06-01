@@ -11,6 +11,8 @@ from ...decorator import (
     session_finished_required
 )
 
+from ....model import User
+
 from ....response import (
     fail,
     success
@@ -37,8 +39,15 @@ def batch_create_login():
 def batch_anoy_match_start():
     return success(DebugHelperService.batch_anoy_match_start())
 
-@session_required
+#@session_required
 def query_region():
+    phone = request.args.get('phone')
+    user_id = request.user_id
+    if not user_id:
+        if phone and phone.startswith('86'):
+            user = User.get_by_phone(phone)
+            if user:
+                request.user_id = str(user.id)
     return success({"region": GlobalizationService.get_region()})
 
 def test_func():
