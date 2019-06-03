@@ -12,7 +12,8 @@ from .util import cached_property
 from .model import User
 from .service import (
     AdminService,
-    Ip2AddressService
+    Ip2AddressService,
+    GlobalizationService
 )
 
 class LitatomRequest(flask.Request):
@@ -163,7 +164,8 @@ class LitatomRequest(flask.Request):
     @cached_property
     def loc(self):
         loc = self.values.get('loc', '')
-        return loc
+        return GlobalizationService.get_real_loc(loc)
+        # return loc
 
     @cached_property
     def user(self):

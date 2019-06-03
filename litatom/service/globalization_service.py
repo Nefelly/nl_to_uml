@@ -23,6 +23,9 @@ from ..const import (
     ONLINE_LIVE,
     GENDERS
 )
+from ..service import (
+    Ip2AddressService
+)
 redis_client = RedisClient()['lit']
 
 class GlobalizationService(object):
@@ -34,14 +37,47 @@ class GlobalizationService(object):
     REGION_ID = 'id'
     REGION_VN = 'vi'
     REGION_EN = 'en'
+
+
+    LOC_TH = 'TH'   # 泰国
+    LOC_IN = 'IN'   # 印度
+    LOC_VN = 'VN'   # 越南
+    LOC_ID = 'ID'   # 印尼
+    LOC_CN = 'CN'   # 中国
+
     REGIONS = {
-        'TH',   # 泰国
-        'IN',   # 印度
-        'VN',   # 越南
-        'ID'    # 印尼
+        LOC_TH,
+        LOC_IN,
+        LOC_VN,
+        LOC_ID,
+        LOC_CN
     }
-    DEFAULT_REGION  = 'th'
-    LOC_REGION = {'TH': REGION_TH, 'VN': REGION_VN, 'IN': REGION_IN, 'ID': REGION_ID, 'th': REGION_TH, 'CN': REGION_TH}
+
+    COUNTRY_LOC = {
+        'Indonesia': LOC_ID,
+        'Thailand': LOC_TH,
+        'Vietnam': LOC_VN,
+        'China': LOC_CN,
+        'India': LOC_IN
+    }
+
+    # REGIONS = {
+    #     'TH',
+    #     'IN',
+    #     'VN',   # 越南
+    #     'ID'    # 印尼
+    # }
+
+    DEFAULT_REGION  = REGION_TH
+
+    LOC_REGION = {
+        'TH': REGION_TH,
+        'VN': REGION_VN,
+        'IN': REGION_IN,
+        'ID': REGION_ID,
+        'th': REGION_TH,
+        'CN': REGION_TH
+    }
     '''
     todo: user loc set in redis
     '''
@@ -52,6 +88,12 @@ class GlobalizationService(object):
             return REDIS_ONLINE_GENDER_REGION.format(region=region, gender=gender)
         else:
             return REDIS_ONLINE_REGION.format(region=region)
+
+    @classmethod
+    def get_real_loc(cls, loc):
+        if loc in cls.REGIONs:
+            return loc
+        return cls.COUNTRY_LOC.get(request.ip_country, loc)
 
     @classmethod
     def anoy_match_key_by_region_gender(cls, gender):
