@@ -76,7 +76,7 @@ class GlobalizationService(object):
         'IN': REGION_IN,
         'ID': REGION_ID,
         'th': REGION_TH,
-        'CN': REGION_TH
+        'CN': REGION_ID
     }
     '''
     todo: user loc set in redis
