@@ -91,7 +91,7 @@ class GlobalizationService(object):
 
     @classmethod
     def get_real_loc(cls, loc):
-        if loc in cls.REGIONs:
+        if loc in cls.REGIONS:
             return loc
         return cls.COUNTRY_LOC.get(request.ip_country, loc)
 
