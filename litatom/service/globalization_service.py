@@ -45,7 +45,7 @@ class GlobalizationService(object):
     LOC_ID = 'ID'   # 印尼
     LOC_CN = 'CN'   # 中国
 
-    REGIONS = {
+    LOCS = {
         LOC_TH,
         LOC_IN,
         LOC_VN,
@@ -61,7 +61,7 @@ class GlobalizationService(object):
         'India': LOC_IN
     }
 
-    # REGIONS = {
+    # LOCS = {
     #     'TH',
     #     'IN',
     #     'VN',   # 越南
@@ -76,7 +76,7 @@ class GlobalizationService(object):
         'IN': REGION_IN,
         'ID': REGION_ID,
         'th': REGION_TH,
-        'CN': REGION_ID
+        'CN': REGION_TH
     }
     '''
     todo: user loc set in redis
@@ -91,7 +91,7 @@ class GlobalizationService(object):
 
     @classmethod
     def get_real_loc(cls, loc):
-        if loc in cls.REGIONS:
+        if loc in cls.LOCS:
             return loc
         return cls.COUNTRY_LOC.get(request.ip_country, loc)
 
@@ -140,7 +140,7 @@ class GlobalizationService(object):
         if user_id:
             loc_key = REDIS_USER_LOC.format(user_id=user_id)
             tmp_loc = redis_client.get(loc_key)
-            if tmp_loc:
+            if tmp_loc and tmp_loc in cls.LOCS:
                 loc = tmp_loc
             else:
                 cls._set_user_loc(user_id, request.loc)
@@ -161,8 +161,8 @@ class GlobalizationService(object):
         :param target_loc:
         :return:
         '''
-        if target_loc not in cls.REGIONS:
-            return u'your loc must be in one of [%s]' % (','.join(cls.REGIONS)), False
+        if target_loc not in cls.LOCS:
+            return u'your loc must be in one of [%s]' % (','.join(cls.LOCS)), False
         UserSetting.ensure_setting(user_id, target_loc)
         cls._set_loc_cache(user_id, target_loc)
         return  None, True
