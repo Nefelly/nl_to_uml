@@ -378,11 +378,11 @@ class OnlineLimit(EmbeddedDocument):
     def make(cls, age_low, age_high, gender):
         obj = cls()
         if age_low:
-            cls.age_low = age_low
+            obj.age_low = age_low
         if age_high:
-            cls.age_high = age_high
+            obj.age_high = age_high
         if gender:
-            cls.gender = gender
+            obj.gender = gender
         return obj
 
     def to_json(self):
