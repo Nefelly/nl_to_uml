@@ -14,6 +14,7 @@ class UserFilterService(object):
 
     @classmethod
     def online_filter(cls, user_id, age_low, age_high, gender):
+        print "*" * 100, user_id, age_low, age_high, gender
         obj = OnlineLimit.make(age_low, age_high, gender)
         user_setting = UserSetting.get_by_user_id(user_id)
         if user_setting:
