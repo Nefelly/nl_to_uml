@@ -68,7 +68,7 @@ class GlobalizationService(object):
     #     'ID'    # 印尼
     # }
 
-    DEFAULT_REGION  = REGION_TH
+    DEFAULT_REGION  = REGION_EN
 
     LOC_REGION = {
         'TH': REGION_TH,
@@ -118,7 +118,11 @@ class GlobalizationService(object):
         user_setting = UserSetting.get_by_user_id(user_id)
         if not user_setting:
             UserSetting.create_setting(user_id, loc)
+        else:
+            if user_setting.lang != loc and user_setting.lang in cls.LOCS:   #
+                return False
         cls._set_loc_cache(user_id, loc)
+        return True
 
     @classmethod
     def _purge_loc_cache(cls, user_id, loc):

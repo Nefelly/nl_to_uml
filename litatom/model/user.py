@@ -392,6 +392,7 @@ class OnlineLimit(EmbeddedDocument):
             'gender': self.gender
         }
 
+
 class UserSetting(Document):
     meta = {
         'strict': False,
