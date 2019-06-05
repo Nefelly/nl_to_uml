@@ -88,6 +88,7 @@ class HuanxinService(object):
             RedisLock.release_mutex(lock_name)
             return access_token
         except Exception, e:
+            logger.error(traceback.format_exc())
             logger.error('Error getting huanxin access_token, err: %r', e)
             return
 
@@ -105,7 +106,7 @@ class HuanxinService(object):
             response = requests.get(url, verify=False, headers=headers).json()
             return response.get('data')
         except Exception, e:
-            traceback.print_exc()
+            logger.error(traceback.format_exc())
             logger.error('Error create huanxin  add friend, user_id: %r, err: %r', source_user_name, e)
             return {}
 
@@ -124,7 +125,7 @@ class HuanxinService(object):
             response = requests.get(url, verify=False, headers=headers).json()
             return response.get('data')
         except Exception, e:
-            traceback.print_exc()
+            logger.error(traceback.format_exc())
             logger.error('Error create huanxin  add friend, user_id: %r, err: %r', user_name, e)
             return {}
 
@@ -171,7 +172,7 @@ class HuanxinService(object):
                             logger.error('lst:%r, m:%r, k:%r', lst, m, k)
                     break
                 except Exception, e:
-                    traceback.print_exc()
+                    logger.error(traceback.format_exc())
                     logger.error('Error query is user online, usernames: %r, err: %r', lst, e)
                     continue
         return res
@@ -191,7 +192,7 @@ class HuanxinService(object):
             response = requests.get(url, verify=False, headers=headers).json()
             return response.get('data')['result']
         except Exception, e:
-            traceback.print_exc()
+            logger.error(traceback.format_exc())
             logger.error('Error create huanxin  add friend, user_id: %r, err: %r', user_name, e)
             return {}
 
@@ -210,7 +211,7 @@ class HuanxinService(object):
             assert response.get('data')[0]
             return True
         except Exception, e:
-            traceback.print_exc()
+            logger.error(traceback.format_exc())
             logger.error('Error block huanxin, user_id: %r, err: %r', source_user_name, e)
             return {}
 
@@ -229,7 +230,7 @@ class HuanxinService(object):
             assert response.get('entities')[0]['username']
             return True
         except Exception, e:
-            traceback.print_exc()
+            logger.error(traceback.format_exc())
             logger.error('Error create huanxin  add friend, user_id: %r, err: %r', source_user_name, e)
             return {}
 
@@ -248,7 +249,7 @@ class HuanxinService(object):
             assert response.get('entities')[0]['username']
             return True
         except Exception, e:
-            traceback.print_exc()
+            logger.error(traceback.format_exc())
             logger.error('Error create huanxin  add friend, user_id: %r, err: %r', source_user_name, e)
             return False
 
@@ -267,7 +268,7 @@ class HuanxinService(object):
             assert response.get('entities')[0]['username']
             return True
         except Exception, e:
-            traceback.print_exc()
+            logger.error(traceback.format_exc())
             logger.error('Error create huanxin  add friend, user_id: %r, err: %r', source_user_name, e)
             return False
 
@@ -287,7 +288,8 @@ class HuanxinService(object):
             assert response.get('entities')[0]['nickname']
             return True
         except Exception, e:
-            traceback.print_exc()
+            # traceback.print_exc()
+            logger.error(traceback.format_exc())
             logger.error('Error create huanxin update_nickname user, user_id: %r, err: %r', user_name, e)
             return {}
 
@@ -305,7 +307,7 @@ class HuanxinService(object):
             response = requests.get(url, verify=False, headers=headers).json()
             return response.get('entities')[0]
         except Exception, e:
-            traceback.print_exc()
+            logger.error(traceback.format_exc())
             logger.error('Error create huanxin get user, user_id: %r, err: %r', user_name, e)
             return {}
 
@@ -327,7 +329,7 @@ class HuanxinService(object):
             assert response.get('entities')[0]['username']
             return True
         except Exception, e:
-            traceback.print_exc()
+            logger.error(traceback.format_exc())
             logger.error('Error create huanxin user, user_name: %r, err: %r', user_name, e)
             return False
 
@@ -347,7 +349,7 @@ class HuanxinService(object):
             assert response.get('entities')[0]['username']
             return True
         except Exception, e:
-            traceback.print_exc()
+            logger.error(traceback.format_exc())
             logger.error('Error create huanxin get user, user_id: %r, err: %r', user_name, e)
             return False
 
@@ -366,7 +368,7 @@ class HuanxinService(object):
             assert response.get('action')
             return True
         except Exception, e:
-            traceback.print_exc()
+            logger.error(traceback.format_exc())
             logger.error('Error active huanxin, user_id: %r, err: %r', user_name, e)
             return {}
 
@@ -408,7 +410,7 @@ class HuanxinService(object):
                                 logger.error('lst:%r, m:%r, k:%r', lst, m, k)
                     break
                 except Exception, e:
-                    traceback.print_exc()
+                    logger.error(traceback.format_exc())
                     logger.error('Error query is user online, usernames: %r, err: %r', lst, e)
                     continue
         return res
@@ -429,7 +431,7 @@ class HuanxinService(object):
             assert response.get('entities')[0]['username']
             return True
         except Exception, e:
-            traceback.print_exc()
+            logger.error(traceback.format_exc())
             logger.error('Error deactive huanxin  add friend, user_id: %r, err: %r', user_name, e)
             return {}
     
