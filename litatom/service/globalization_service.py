@@ -92,6 +92,10 @@ class GlobalizationService(object):
             return REDIS_ONLINE_REGION.format(region=region)
 
     @classmethod
+    def region_by_loc(cls, loc):
+        return cls.LOC_REGION.get(loc, '')
+
+    @classmethod
     def get_real_loc(cls, loc):
         if loc in cls.LOCS:
             return loc
@@ -136,7 +140,7 @@ class GlobalizationService(object):
     def _set_loc_cache(cls, user_id, loc):
         loc_key = REDIS_USER_LOC.format(user_id=user_id)
         old_loc = redis_client.get(REDIS_USER_LOC.format(user_id=user_id))
-        if old_loc:
+        if old_loc and old_loc != loc:
             cls._purge_loc_cache(user_id, old_loc)
         redis_client.set(loc_key, loc, ONLINE_LIVE)
 
@@ -153,9 +157,11 @@ class GlobalizationService(object):
 
     @classmethod
     def _purge_loc_cache(cls, user_id, loc):
-        for g in GENDERS + [None]:
-            key = GlobalizationService._online_key_by_region_gender(g)
-            redis_client.zrem(key, user_id)
+        request.region = cls.region_by_loc(loc)
+        if request.region:
+            for g in GENDERS + [None]:
+                key = GlobalizationService._online_key_by_region_gender(g)
+                redis_client.zrem(key, user_id)
         loc_key = REDIS_USER_LOC.format(user_id=user_id)
         redis_client.delete(loc_key)   # delete old loc_key
         return True
