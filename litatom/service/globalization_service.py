@@ -44,13 +44,15 @@ class GlobalizationService(object):
     LOC_VN = 'VN'   # 越南
     LOC_ID = 'ID'   # 印尼
     LOC_CN = 'CN'   # 中国
+    LOC_TE = 'TEST' # 测试,混杂区
 
     LOCS = {
         LOC_TH,
         LOC_IN,
         LOC_VN,
         LOC_ID,
-        LOC_CN
+        LOC_CN,
+        LOC_TE
     }
 
     COUNTRY_LOC = {
