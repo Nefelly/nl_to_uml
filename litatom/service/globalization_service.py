@@ -106,6 +106,31 @@ class GlobalizationService(object):
         return REDIS_VOICE_GENDER_ONLINE_REGION.format(region=region, gender=gender)
 
     @classmethod
+    def set_current_region_for_script(cls, region):
+        from flask import current_app,request, Flask
+        app = Flask(__name__)
+        from werkzeug.test import EnvironBuilder
+        ctx = app.request_context(EnvironBuilder('/','http://localhost/').get_environ())
+        ctx.push()
+        request.region = region
+
+    @classmethod
+    def rem_from_region(cls, user_id, region):
+        cls.set_current_region_for_script(region)
+        for g in GENDERS + [None]:
+            key = GlobalizationService._online_key_by_region_gender(g)
+            redis_client.zrem(key, user_id)
+        from ..model import Feed
+        keys = []
+        from ..key import REDIS_FEED_HQ_REGION, REDIS_FEED_SQUARE_REGION
+        keys.append(REDIS_FEED_HQ_REGION.format(region=region))
+        keys.append(REDIS_FEED_SQUARE_REGION.format(region=region))
+        feedids = [str(el.id) for el in Feed.get_by_user_id(user_id)]
+        for _ in keys:
+            for el in feedids:
+                redis_client.zrem(_, el)
+
+    @classmethod
     def _set_loc_cache(cls, user_id, loc):
         loc_key = REDIS_USER_LOC.format(user_id=user_id)
         old_loc = redis_client.get(REDIS_USER_LOC.format(user_id=user_id))
