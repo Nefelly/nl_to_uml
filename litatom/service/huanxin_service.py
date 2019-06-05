@@ -290,7 +290,7 @@ class HuanxinService(object):
         except Exception, e:
             # traceback.print_exc()
             logger.error(traceback.format_exc())
-            logger.error('Error create huanxin update_nickname user, user_id: %r, err: %r', user_name, e)
+            logger.error('Error create huanxin update_nickname user, user_id: %r, response:%r, err: %r', user_name, response, e)
             return {}
 
     @classmethod
@@ -330,7 +330,7 @@ class HuanxinService(object):
             return True
         except Exception, e:
             logger.error(traceback.format_exc())
-            logger.error('Error create huanxin user, user_name: %r, err: %r', user_name, e)
+            logger.error('Error create huanxin user, user_name: %r, , response:%r, err: %r', user_name, response, e)
             return False
 
     @classmethod
