@@ -330,7 +330,7 @@ class HuanxinService(object):
             return True
         except Exception, e:
             logger.error(traceback.format_exc())
-            logger.error('Error create huanxin user, user_name: %r, , response:%r, err: %r', user_name, response, e)
+            logger.error('Error create huanxin user, user_name: %r, , response:%r, err: %r', user_name, requests.post(url, verify=False, headers=headers, json=data), e)
             return False
 
     @classmethod
