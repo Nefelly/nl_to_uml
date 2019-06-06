@@ -72,7 +72,7 @@ def upload_apk():
         if not version.replace('.', '').isdigit() or '.' in [version[0], version[-1]]:
             return fail('wrong version')
         f_name = '%s.apk' % version
-    apk.save(os.apth.join(APP_PATH, f_name))
+    apk.save(os.path.join(APP_PATH, f_name))
 
 #@admin_session_required
 def query_reports():
