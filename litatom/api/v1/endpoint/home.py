@@ -74,6 +74,10 @@ def get_online_filter():
         return success(data)
     return fail(data)
 
+def download_app():
+    from flask import send_from_directory
+    return send_from_directory('/data/apps/', 'lit.apk', as_attachment=True)
+
 def get_wording():
     word_type = request.args.get('word_type')
     if request.ip_thailand and word_type == u'match_info':
