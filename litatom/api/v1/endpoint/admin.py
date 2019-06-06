@@ -73,6 +73,7 @@ def upload_apk():
             return fail('wrong version')
         f_name = '%s.apk' % version
     apk.save(os.path.join(APP_PATH, f_name))
+    return success()
 
 #@admin_session_required
 def query_reports():
