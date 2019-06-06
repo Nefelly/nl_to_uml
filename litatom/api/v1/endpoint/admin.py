@@ -1,3 +1,4 @@
+import os
 import logging
 
 from flask import (
@@ -36,7 +37,8 @@ from ....service import (
 )
 from  ....const import (
     MAX_TIME,
-    ONE_DAY
+    ONE_DAY,
+    APP_PATH
 )
 logger = logging.getLogger(__name__)
 
@@ -61,6 +63,16 @@ def index():
 def feeds_square_html():
     return current_app.send_static_file('feed_square.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
 
+
+def upload_apk():
+    apk = request.files.get('apk')
+    f_name = 'lit.apk'
+    version = request.values.get('version')
+    if version:
+        if not version.replace('.', '').isdigit() or '.' in [version[0], version[-1]]:
+            return fail('wrong version')
+        f_name = '%s.apk' % version
+    apk.save(os.apth.join(APP_PATH, f_name))
 
 #@admin_session_required
 def query_reports():

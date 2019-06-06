@@ -25,6 +25,9 @@ from ....response import (
     fail,
     success
 )
+from ....const import (
+    APP_PATH
+)
 from ....service import (
     StatisticService,
     ReportService,
@@ -76,7 +79,13 @@ def get_online_filter():
 
 def download_app():
     from flask import send_from_directory
-    return send_from_directory('/data/apps/', 'lit.apk', as_attachment=True)
+    version = request.values.get('version')
+    f_name = 'lit.apk'
+    if version:
+        if not version.replace('.', '').isdigit() or '.' in [version[0], version[-1]]:
+            return fail('wrong version')
+        f_name = '%s.apk' % version
+    return send_from_directory(APP_PATH, f_name, as_attachment=True)
 
 def get_wording():
     word_type = request.args.get('word_type')

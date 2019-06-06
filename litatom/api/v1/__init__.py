@@ -42,6 +42,7 @@ b.add_url_rule('/lit/admin/remove_from_hq/<feed_id>', 'admin-remove-from-hq', en
 b.add_url_rule('/lit/admin/delete_feed/<feed_id>', 'admin-delete-feed', endpoint.admin.delete_feed)
 b.add_url_rule('/lit/admin/change_loc', 'admin-change-loc', endpoint.admin.change_loc)
 b.add_url_rule('/lit/admin/change_avatar', 'admin-change-avatar', endpoint.admin.change_avatar)
+b.add_url_rule('/lit/admin/upload_apk', 'admin-upload_apk', endpoint.admin.upload_apk)
 
 # 图片
 b.add_url_rule('/lit/image/upload', 'image-upload', endpoint.image.upload_image_from_file, methods=['POST'])
