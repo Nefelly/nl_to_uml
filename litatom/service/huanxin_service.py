@@ -434,4 +434,22 @@ class HuanxinService(object):
             logger.error(traceback.format_exc())
             logger.error('Error deactive huanxin  add friend, user_id: %r, err: %r', user_name, e)
             return {}
-    
+
+    @classmethod
+    def chat_msgs_by_date(cls, user_name, YYMMDD):
+        url = cls.APP_URL + 'chatmessages/%s' % YYMMDD
+
+        access_token = cls.get_access_token()
+        if not access_token:
+            return {}
+        headers = {
+            'Content-Type':'application/json',
+            'Authorization':'Bearer %s' % access_token
+        }
+        try:
+            response = requests.get(url, verify=False, headers=headers).json()
+            return response.get('data')['uri']
+        except Exception, e:
+            logger.error(traceback.format_exc())
+            logger.error('Error create huanxin get user, user_id: %r, err: %r', user_name, e)
+            return {}
