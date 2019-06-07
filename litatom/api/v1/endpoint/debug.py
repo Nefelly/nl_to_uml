@@ -20,7 +20,8 @@ from ....response import (
 from ....service import (
     DebugHelperService,
     AnoyMatchService,
-    GlobalizationService
+    GlobalizationService,
+    HuanxinService
 )
 
 logger = logging.getLogger(__name__)
@@ -55,3 +56,8 @@ def test_func():
         return fail()
     from ....service import AnoyMatchService
     return success(AnoyMatchService.get_tips())
+
+def chat_msg():
+    time_str = request.values.get('time')
+    url = HuanxinService.chat_msgs_by_date(time_str)
+    return success(url)

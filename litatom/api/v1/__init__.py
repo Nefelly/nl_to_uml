@@ -91,6 +91,7 @@ b.add_url_rule('/lit/debug/batch_create_login', 'debug-batch-create-login', endp
 b.add_url_rule('/lit/debug/batch_anoy_match_start', 'debug-batch-anoy-match-start', endpoint.debug.batch_anoy_match_start)
 b.add_url_rule('/lit/debug/query_region', 'debug-query-region', endpoint.debug.query_region)
 b.add_url_rule('/lit/debug/test_func', 'debug-test_func', endpoint.debug.test_func)
+b.add_url_rule('/lit/debug/chat_msg', 'debug-chat-msg', endpoint.debug.chat_msg)
 
 
 # feed

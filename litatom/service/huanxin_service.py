@@ -449,8 +449,8 @@ class HuanxinService(object):
         try:
             response = requests.get(url, verify=False, headers=headers).json()
             print response
-            return response.get('data')['uri']
+            return response.get('data')['url']
         except Exception, e:
             logger.error(traceback.format_exc())
             logger.error('Error create huanxin get user,  err: %r', e)
-            return {}
+            return ''
