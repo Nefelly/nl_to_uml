@@ -181,10 +181,10 @@ class AnoyMatchService(object):
             fake_id2 = random.choice(other_fakeids)
             user_id2 = cls._uid_by_fake_id(fake_id2)
             user_id = cls._uid_by_fake_id(fake_id)
-            if not UserFilterService.filter_by_age_gender(user_id, user_id2) or not UserFilterService.filter_by_age_gender(user_id2, user_id):
-                if i == try_tms - 1:
-                    return None, False
-                continue
+            # if not UserFilterService.filter_by_age_gender(user_id, user_id2) or not UserFilterService.filter_by_age_gender(user_id2, user_id):
+            #     if i == try_tms - 1:
+            #         return None, False
+            #     continue
         if BlockService.get_block_msg(user_id, user_id2):
             return None, False
         #redis_client.zadd(matched_key, {fake_id2: int_time})
