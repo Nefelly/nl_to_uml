@@ -238,7 +238,7 @@ class PalmService(object):
             f.close()
         img = cv2.imread(f_name)
         res = pbcvt.OutputFate(img)
-        res = res[:10]
+        res = res[:11]
         for el in res:
             print el
         for _ in res:
