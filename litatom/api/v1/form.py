@@ -65,3 +65,5 @@ class TrackChatForm(LitatomForm):
 class TrackActionForm(LitatomForm):
     action = StringField(validators=[DataRequired()])
     remark = StringField(validators=[Optional()])
+    other_user_id = StringField(validators=[Optional()])
+    amount = IntegerField(validators=[Optional()])

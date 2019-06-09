@@ -178,7 +178,9 @@ def track_action():
     form = TrackActionForm(data=request.json)
     action = form.action.data
     remark = form.remark.data
-    status = TrackActionService.create_action(request.user_id, action, remark)
+    other_user_id = form.other_user_id.data
+    amount = form.amount.data
+    status = TrackActionService.create_action(request.user_id, action, other_user_id, amount, remark)
     if status:
         return success()
     return fail()

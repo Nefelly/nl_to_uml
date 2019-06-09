@@ -442,6 +442,8 @@ class UserAction(Document):
     }
     user_id = StringField(required=True)
     action = StringField(required=True)
+    other_user_id = StringField()
+    amount = IntField()
     remark = StringField()
     create_date = DateTimeField()
     create_time = IntField(required=True)
