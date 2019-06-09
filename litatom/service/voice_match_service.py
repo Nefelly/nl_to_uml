@@ -65,7 +65,8 @@ class VoiceMatchService(object):
         data = {
             'chat_time': cls.MATCH_INT,
             BOY: [word],
-            GIRL: [word]
+            GIRL: [word],
+            top_wording: GlobalizationService.get_region_word('voice_top_wording')
         }
         return data, True
 

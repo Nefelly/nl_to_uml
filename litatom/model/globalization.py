@@ -41,6 +41,12 @@ class RegionWord(Document):
             'en': u'420s chat time，Like each other unlock unlimited chats',
             'id': u'waktu mengobrol 420 detik, Sukai satu sama lain untuk mengobrol tanpa batasan waktu.'
         },
+        'voice_top_wording': {
+            'vi': u'Trò chuyện 420 giây, thích nhau mở khóa giới hạn trò chuyện',
+            'th': u'420 วินาที กดไลค์กันและกัน เพื่อคุยกันแบบไม่จำกัดเวลา',
+            'en': u'you are friends now, enjoy unlimited chats.',
+            'id': u'waktu mengobrol 420 detik, Sukai satu sama lain untuk mengobrol tanpa batasan waktu.'
+        },
         'like_feed': {
             'vi': u'Thích bài viết của bạn',
             'th': u'ถูกใจโพสของคุณ',
