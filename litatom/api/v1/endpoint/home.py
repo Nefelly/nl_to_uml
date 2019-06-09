@@ -127,7 +127,7 @@ def report():
     target_user_id = form.target_user_id.data
     #if not reason or not pics:
     if not reason or not pics:
-        return fail()
+        return fail('lack of reason or picture')
     data, status = ReportService.report(user_id, reason, pics, target_user_id)
     if status:
         return success(data)
