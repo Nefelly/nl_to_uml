@@ -30,6 +30,9 @@
         float:left;
         width:20%;
     }
+    .main{
+        padding-bottom: 100px;
+    }
     .intro{
         position: relative;
         left: 10%;
@@ -43,7 +46,7 @@
 <!-- 124, 28, 255 -->
 <body style="background-color: rgb(71,36,122)">
 <div id="d1" align="center" ></div>
-<div align="center" >
+<div align="center" class="main">
     {% for res in analys_result %}
     <font size="6"  color="#FFF">
         <p>{{ res }}</p>
