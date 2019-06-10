@@ -36,6 +36,9 @@ from .user_message import (
 from .firebase import (
     FirebaseInfo
 )
+from .palm import (
+    PalmResult
+)
 from .redis_lock import (
     RedisLock
 )

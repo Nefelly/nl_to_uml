@@ -7,6 +7,9 @@ from ..service import (
     GlobalizationService,
     TokenBucketService
 )
+from ..model import (
+    PalmResult
+)
 sys.path.append('/data/opencv-3.3.0/build/palmprint_classification/pyboostcvconverter/build/')
 import cv2
 import pbcvt
@@ -259,6 +262,8 @@ class PalmService(object):
         fate_ind = cls.bools_2_int([not fate_obvious])
         solar_ind = cls.bools_2_int([not solar_obvious])
         res = cls.get_res_by_inds(palm_type_ind, life_ind, wisdom_ind, emotion_ind, fate_ind, solar_ind)
+        palm_id = PalmResult.create(res)
+        res.update({'result_id': palm_id})
         user_id = request.user_id
         if not user_id or not TokenBucketService.get_token('palm_limit' + user_id, 1, 1000, 1000):
             return u'Your palmitry test oppurtunity has run out today, you can try it tomorrow ~', False
@@ -271,7 +276,7 @@ class PalmService(object):
             if len(lst) > ind:
                 return lst[ind]
             return u'not set yet'
-        region = GlobalizationService.REGION_TH
+        region = GlobalizationService.get_region()
         raw_m = desc.get(region, {})
         res = {
             palm_type: get_desc(raw_m, palm_type, palm_type_ind),
