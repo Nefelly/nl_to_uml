@@ -22,7 +22,8 @@ from flask import (
 )
 
 from ....service import (
-    PalmService
+    PalmService,
+    GlobalizationService
 )
 
 
@@ -39,4 +40,4 @@ def palm_query():
     return fail(data)
 
 def share_info():
-    return render_template('share_paml.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
+    return render_template('share_paml.html', introduce=GlobalizationService.get_region_word('app_introduce')), 200, {'Content-Type': 'text/html; charset=utf-8'}

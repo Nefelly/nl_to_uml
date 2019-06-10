@@ -82,6 +82,12 @@ class RegionWord(Document):
             'th': u'รายงานของคุณเกี่ยวกับผู้ใช้ %s ได้รับการพิจารณา บัญชีของ %s ถูกปิดการใช้งาน ขอบคุณสำหรับการรายงาน',
             'en': u"Your report on the user %s  has been settled. %s's account is disabled. Thank you for your support of the Lit community",
             'id': u'Laporan Anda terhadap akun %s telah selesai. Akun %s telah kami nonaktifkan. Terima kasih atas dukungan Anda terhadap Lit community.'
+        },
+        'app_introduce': {
+            'vi': u'Litmatch là ứng dụng kết bạn.',
+            'th': u'Lit Match แอพหรเพื่อนรูปแบบใหม่.',
+            'en': u"Litmatch is an an app for making new friends",
+            'id': u'Litmatch adalah aplikasi untuk bertemu dengan teman baru.'
         }
     }
 

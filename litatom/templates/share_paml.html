@@ -13,6 +13,7 @@
         border:2px solid #000;
         border-radius:50%;
         background:url("http://www.litatom.com/api/sns/v1/lit/image/5a6989ec-74a2-11e9-977f-00163e02deb4") no-repeat center top;
+        background-position: 0px -180px;
         background-size:151px 150px;
         box-shadow:0px 0px 20px rgb(124,28,255);
     }
@@ -42,11 +43,11 @@
 <!-- 124, 28, 255 -->
 <body style="background-color: rgb(71,36,122)">
 <div id="d1" align="center" ></div>
-<div class="dom2">
+<div class="dom2", onclick="window.open('https://play.google.com/store/apps/details?id=com.litatom.app')">
     <div class="photo"><img src="http://www.litatom.com/api/sns/v1/lit/image/5a6989ec-74a2-11e9-977f-00163e02deb4", height="200px", width="200px"></div>
     <div class="intro">
         <font size="6"  color="#FFF">
-            高尔夫球运动是一项健康、绿色、快乐、回归自然的体育运动，打高尔夫球能让人体验挑战与激情，实现人与自然的和谐.</font></div>
+            {{ introduce }}Litmatch is an app for making new friends.</font></div>
     <div id="download">
     <a  href="https://play.google.com/store/apps/details?id=com.litatom.app" download="lit.apk"><font size="8" color="#FFF">Download</font></a>
         </div>
