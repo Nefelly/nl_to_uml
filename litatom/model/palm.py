@@ -19,12 +19,14 @@ class PalmResult(Document):
     }
 
     result = StringField(required=True)
+    user_id = StringField(required=True)
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
 
     @classmethod
-    def create(cls, result):
+    def create(cls, result, user_id):
         obj = cls()
         obj.result = json.dumps(result)
+        obj.user_id = user_id
         obj.save()
         return str(obj.id)
 

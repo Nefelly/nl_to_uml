@@ -232,6 +232,9 @@ class PalmService(object):
 
     @classmethod
     def output_res(cls, pic):
+        user_id = request.user_id
+        if not user_id or not TokenBucketService.get_token('palm_limit' + user_id, 1, 1000, 1000):
+            return u'Your palmitry test oppurtunity has run out today, you can try it tomorrow ~', False
         img = AliOssService.get_binary_from_bucket(pic)
         if not img:
             return u'picture not exists', False
@@ -262,11 +265,8 @@ class PalmService(object):
         fate_ind = cls.bools_2_int([not fate_obvious])
         solar_ind = cls.bools_2_int([not solar_obvious])
         res = cls.get_res_by_inds(palm_type_ind, life_ind, wisdom_ind, emotion_ind, fate_ind, solar_ind)
-        palm_id = PalmResult.create(res)
+        palm_id = PalmResult.create(res, user_id)
         res.update({'result_id': palm_id})
-        user_id = request.user_id
-        if not user_id or not TokenBucketService.get_token('palm_limit' + user_id, 1, 1000, 1000):
-            return u'Your palmitry test oppurtunity has run out today, you can try it tomorrow ~', False
         return res, True
 
     @classmethod
@@ -287,4 +287,8 @@ class PalmService(object):
             solar: get_desc(raw_m, solar, solar_ind)
         }
         return res
+
+    @classmethod
+    def get_res_by_result_id(cls, result_id):
+        return PalmResult.get_by_id(result_id)
 

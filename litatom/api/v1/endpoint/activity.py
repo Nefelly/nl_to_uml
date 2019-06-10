@@ -40,5 +40,6 @@ def palm_query():
     return fail(data)
 
 def share_info():
-
-    return render_template('share_paml.html', analys_result=['Im analysis result', '2', '3'] ,introduce=GlobalizationService.get_region_word('app_introduce')), 200, {'Content-Type': 'text/html; charset=utf-8'}
+    result_id = request.values.get('result_id')
+    analys_results = PalmService.get_res_by_result_id(result_id)
+    return render_template('share_paml.html', analys_result=analys_results.values(), introduce=GlobalizationService.get_region_word('app_introduce')), 200, {'Content-Type': 'text/html; charset=utf-8'}
