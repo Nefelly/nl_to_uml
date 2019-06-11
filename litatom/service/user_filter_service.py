@@ -28,6 +28,17 @@ class UserFilterService(object):
             return None, True
 
     @classmethod
+    def is_gender_filtered(cls, user_id):
+        user_setting = UserSetting.get_by_user_id(user_id)
+        if not user_setting:
+            return False
+        limits = user_setting.online_limit
+        if not limits:
+            return False
+        if limits.gender:
+            return True
+
+    @classmethod
     def get_filter_by_user_id(cls, user_id):
         user_setting = UserSetting.get_by_user_id(user_id)
         if not user_setting or not user_setting.online_limit:
