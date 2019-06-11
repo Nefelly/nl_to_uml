@@ -44,7 +44,7 @@ METRICS_SCHEMAS = {'litatom':{'a': {'a':'a'}}}   # no use
 
 DB_SETTINGS = {
     'DB_LIT': _get_db_setting('DB_LIT', 'lit', 'lit'),
-    'DB_HUANXIN_MESSAGE': _get_db_setting('DB_HUANXIN_MESSAGE', 'huanxin_message', 'huanxin_message')
+    'huanxin_message': _get_db_setting('DB_HUANXIN_MESSAGE', 'huanxin_message', 'huanxin_message')
 }
 
 
