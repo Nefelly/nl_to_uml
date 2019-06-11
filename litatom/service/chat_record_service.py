@@ -28,14 +28,14 @@ class ChatRecordService(object):
         url = HuanxinService.chat_msgs_by_hour(hour)
         if not url:
             return []
-        return requests.get(url).content
-
-
-    @classmethod
-    def records_by_content(cls, content):
+        content = requests.get(url).content
         compressedstream = StringIO.StringIO(content)
         gz = gzip.GzipFile(fileobj=compressedstream)
         data = gz.read()
+        return data
+
+    @classmethod
+    def records_by_content(cls, data):
         lines = data.split('\n')[:-1]
         res = [json.loads(line) for line in lines]
         return res
