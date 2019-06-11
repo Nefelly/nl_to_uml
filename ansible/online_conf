@@ -12,6 +12,16 @@ litatom_envvars_json:
     waitQueueTimeoutMS: 1100
     waitQueueMultiple: 5
     maxIdleTimeMS: 600000
+  DB_HUANXIN_MESSAGE:
+      host: "mongodb://msg_record:ads123@127.0.0.1/huanxin_message?authsource=huanxin_message"
+      port: 27017
+      maxPoolSize: 80
+      socketTimeoutMS: 5000
+      connectTimeoutMS: 3000
+      serverSelectionTimeoutMS: 3000
+      waitQueueTimeoutMS: 1100
+      waitQueueMultiple: 5
+      maxIdleTimeMS: 600000
   REDIS_LIT:
       password: 4567abc
       db: 0

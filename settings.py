@@ -6,6 +6,7 @@ _envvars = [
     'HENDRIX_ENV',
     'SENTRY_DSN',
     'DB_LIT',
+    'DB_HUANXIN_MESSAGE',
     'REDIS_SNS_TAG_LIKE',
     'ELASTICSEARCH_SNS_POI',
     'HENDRIX_IDL_MODULE',
@@ -43,6 +44,7 @@ METRICS_SCHEMAS = {'litatom':{'a': {'a':'a'}}}   # no use
 
 DB_SETTINGS = {
     'DB_LIT': _get_db_setting('DB_LIT', 'lit', 'lit'),
+    'DB_HUANXIN_MESSAGE': _get_db_setting('DB_HUANXIN_MESSAGE', 'huanxin_message', 'huanxin_message')
 }
 
 
