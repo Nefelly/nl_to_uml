@@ -40,13 +40,18 @@
         margin: 5% auto;
         width:60%;
     }
+    .mosaic {
+        padding-bottom: 800px;
+        color: transparent;
+        text-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
     #download {position: absolute; bottom: 5%; right: 10%;}
 </style>
 
 <!-- 124, 28, 255 -->
 <body style="background-color: rgb(71,36,122)">
 <div id="d1" align="center" ></div>
-<div align="center" class="main">
+<div align="center" class="mosaic">
     {% for res in analys_result %}
     <font size="6"  color="#FFF">
         <p>{{ res }}</p>
