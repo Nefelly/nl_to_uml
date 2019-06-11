@@ -28,11 +28,11 @@ def insert_records():
         f.close()
     msgs = ChatRecordService.records_by_content(content)
     for msg in msgs:
-        #try:
+        try:
             ChatRecordService.save_to_db(msg)
-        # except Exception as e:
-        #     print e
-        #     continue
+        except Exception as e:
+            print e
+            continue
 
 
 if __name__ == "__main__":

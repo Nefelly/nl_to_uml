@@ -53,8 +53,8 @@ class HuanxinMessage(Document):
 
     @classmethod
     def create(cls, data, user_id, to_user_id):
-        if cls.objects(msg_id=data.get('msg_id')).first():
-            return
+        # if cls.objects(msg_id=data.get('msg_id')).first():
+        #     return
         obj = cls()
         obj.msg_id = data.get('msg_id')
         obj.user_id = user_id
