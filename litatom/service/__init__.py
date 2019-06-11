@@ -29,3 +29,4 @@ from .track_action_service import TrackActionService
 from .feedback_service import FeedbackService
 from .admin_service import AdminService
 from .palm_service import PalmService
+from .chat_record_service import ChatRecordService
