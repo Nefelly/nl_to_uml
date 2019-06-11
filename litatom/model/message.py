@@ -15,7 +15,7 @@ from mongoengine import (
 class HuanxinMessage(Document):
     meta = {
         'strict': False,
-        'alias': 'huanxin_message'
+        'db_alias': 'huanxin_message'
     }
 
     result = StringField(required=True)
