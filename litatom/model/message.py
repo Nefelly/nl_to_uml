@@ -66,6 +66,8 @@ class HuanxinMessage(Document):
         if msg_type == 'txt':
             msg = body['msg']
         else:
+            if not body.get('url'):
+                print data
             msg = body['url']
         obj.msg = msg
         obj.msg_type = msg_type
