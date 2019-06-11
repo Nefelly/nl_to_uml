@@ -86,6 +86,13 @@ class UserService(object):
         return None, True
 
     @classmethod
+    def uid_by_huanxin_id(cls, huanxin_id):
+        user = User.get_by_huanxin_id(huanxin_id)
+        if user:
+            return str(user.id)
+        return None
+
+    @classmethod
     def _on_create_new_user(cls, user):
         loc = request.loc
         if loc:
