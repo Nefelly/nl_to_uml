@@ -452,5 +452,5 @@ class HuanxinService(object):
             return response.get('data')[0]['url']
         except Exception, e:
             logger.error(traceback.format_exc())
-            logger.error('Error create huanxin get user,  err: %r', e)
+            logger.error('Error create huanxin get user, response:%r,  err: %r', response, e)
             return ''
