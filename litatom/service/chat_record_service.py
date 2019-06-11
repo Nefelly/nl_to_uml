@@ -24,16 +24,25 @@ redis_client = RedisClient()['lit']
 class ChatRecordService(object):
 
     @classmethod
-    def records_by_hour(cls, hour):
+    def get_source_content(cls, hour):
         url = HuanxinService.chat_msgs_by_hour(hour)
         if not url:
             return []
-        compressedstream = StringIO.StringIO(requests.get(url).content)
+        return requests.get(url).content
+
+
+    @classmethod
+    def records_by_content(cls, content):
+        compressedstream = StringIO.StringIO(content)
         gz = gzip.GzipFile(fileobj=compressedstream)
         data = gz.read()
-        lines = data.split('\n')
+        lines = data.split('\n')[:-1]
         res = [json.loads(line) for line in lines]
         return res
+
+    @classmethod
+    def get_hour_str(cls, ts):
+        return time.strftime("%Y%m%d%H", time.localtime(ts))
 
     @classmethod
     def uid_by_huanxinid(cls, huanxin_id):
@@ -45,7 +54,6 @@ class ChatRecordService(object):
         if uid:
             redis_client.set(key, uid, 300)
         return uid
-
 
     @classmethod
     def save_to_db(cls, data):
