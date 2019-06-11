@@ -67,10 +67,13 @@ class HuanxinMessage(Document):
         msg_type = body['type']
         if msg_type == 'txt':
             msg = body['msg']
+        elif msg_type == 'cmd':
+            msg = body['action']
         else:
             if not body.get('url'):
-                print data
-            msg = body['url']
+                msg = json.dumps(body)
+            else:
+                msg = body['url']
         obj.msg = msg
         obj.msg_type = msg_type
         obj.create_time = data['timestamp']
