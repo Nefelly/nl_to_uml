@@ -39,6 +39,9 @@ from .firebase import (
 from .palm import (
     PalmResult
 )
+from .message import (
+    HuanxinMessage
+)
 from .redis_lock import (
     RedisLock
 )
