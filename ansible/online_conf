@@ -15,6 +15,7 @@ litatom_envvars_json:
   DB_HUANXIN_MESSAGE:
       host: "mongodb://msg_record:ads123@127.0.0.1/huanxin_message?authsource=huanxin_message"
       port: 27017
+      alias: huanxin_message
       maxPoolSize: 80
       socketTimeoutMS: 5000
       connectTimeoutMS: 3000
