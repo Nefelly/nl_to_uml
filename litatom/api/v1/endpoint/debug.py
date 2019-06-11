@@ -59,5 +59,5 @@ def test_func():
 
 def chat_msg():
     time_str = request.values.get('time')
-    url = HuanxinService.chat_msgs_by_date(time_str)
+    url = HuanxinService.chat_msgs_by_hour(time_str)
     return success(url)

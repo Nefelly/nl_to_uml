@@ -436,8 +436,8 @@ class HuanxinService(object):
             return {}
 
     @classmethod
-    def chat_msgs_by_date(cls, YYMMDD):
-        url = cls.APP_URL + 'chatmessages/%s' % YYMMDD
+    def chat_msgs_by_hour(cls, YYMMDDHH):
+        url = cls.APP_URL + 'chatmessages/%s' % YYMMDDHH
 
         access_token = cls.get_access_token()
         if not access_token:

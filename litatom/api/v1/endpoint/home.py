@@ -50,7 +50,7 @@ def online_user_count():
 def online_users():
     gender = request.args.get('gender', None)
     if GlobalizationService.get_region() in [GlobalizationService.REGION_VN, GlobalizationService.REGION_ID]:
-        if not UserFilterService.is_gender_filtered():
+        if not UserFilterService.is_gender_filtered(request.user_id):
             gender = None
     star_p = int(request.args.get('start_pos', 0))
     num = int(request.args.get('num', 1))
