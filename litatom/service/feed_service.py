@@ -150,9 +150,9 @@ class FeedService(object):
         if start_ts < 0:
             return u'wrong start_ts', False
         next_start = -1
-        feeds = Feed.objects(user_id=user_id, create_time__lte=start_ts).limit(num + 1)
+        feeds = Feed.objects(user_id=user_id, create_time__lte=start_ts).order_by('-create_time').limit(num + 1)
         feeds = list(feeds)
-        feeds.reverse()   # 时间顺序错误
+        #feeds.reverse()   # 时间顺序错误
         has_next = False
         if len(feeds) == num + 1:
             has_next = True
