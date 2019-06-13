@@ -139,6 +139,17 @@ def reject(report_id):
         return fail(data)
     return success(data)
 
+def get_user_id():
+    phone = request.args.get('phone')
+    target_loc = request.loc
+    user_id = request.user_id
+    if phone and phone.startswith('86'):
+        user = User.get_by_phone(phone)
+        if user:
+            user_id = str(user.id)
+            request.user_id = user_id
+    return user_id
+
 def change_loc():
     phone = request.args.get('phone')
     target_loc = request.loc
@@ -152,6 +163,11 @@ def change_loc():
     if status:
         return success()
     return fail(msg)
+
+def unban():
+    from ....service import UserService
+    UserService.unban_user(get_user_id())
+    return success()
 
 def change_avatar():
     nickname = request.args.get('nickname')

@@ -86,6 +86,15 @@ class UserService(object):
         return None, True
 
     @classmethod
+    def unban_user(cls, user_id):
+        user = User.get_by_id(user_id)
+        if user:
+            user.forbidden = False
+            user.save()
+            if user.huanxin and user.huanxin.user_id:
+                HuanxinService.active_user(user.huanxin.user_id)
+
+    @classmethod
     def uid_by_huanxin_id(cls, huanxin_id):
         user = User.get_by_huanxin_id(huanxin_id)
         if user:
