@@ -8,9 +8,11 @@ from ..model import (
     UserSetting,
     User
 )
+
 redis_client = RedisClient()['lit']
 
 class UserFilterService(object):
+    HIGHEST_AGE = 25
 
     @classmethod
     def online_filter(cls, user_id, age_low, age_high, gender):
@@ -59,6 +61,6 @@ class UserFilterService(object):
             return False
         if limits.age_low and target_age < limits.age_low:
             return False
-        if limits.age_high and target_age > limits.age_high:
+        if limits.age_high and limits.age_high != cls.HIGHEST_AGE and target_age > limits.age_high:
             return False
         return True
