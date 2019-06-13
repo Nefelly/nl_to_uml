@@ -76,9 +76,9 @@ class UserMessageService(object):
         :return:
         '''
         res = []
-        objs = UserMessage.objects(uid=user_id, create_time__lte=start_ts).limit(num + 1)
+        objs = UserMessage.objects(uid=user_id, create_time__lte=start_ts).order_by('-create_time').limit(num + 1)
         objs = list(objs)
-        objs.reverse()   # 时间顺序错误
+        #objs.reverse()   # 时间顺序错误
         has_next = False
         next_start = -1
         if len(objs) == num + 1:
