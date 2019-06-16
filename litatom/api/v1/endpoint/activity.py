@@ -39,6 +39,10 @@ def palm_query():
         return success(data)
     return fail(data)
 
+@session_finished_required
+def  times_left():
+     return success({'times_left': PalmService.times_left(request.user_id)})
+
 def share_info():
     result_id = request.values.get('result_id')
     analys_results = PalmService.get_res_by_result_id(result_id)

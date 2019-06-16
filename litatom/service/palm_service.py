@@ -1,5 +1,6 @@
 # coding: utf-8
 import time
+import datetime
 import sys
 from flask import request
 from ..service import (
@@ -194,6 +195,15 @@ class PalmService(object):
         return res
 
     @classmethod
+    def times_left(cls, user_id):
+        total_times = 10
+        if  request.IS_DEV:
+            total_times = 1000
+        used = PalmResult.objects(user_id=user_id, create_time__gt=(datetime.datetime.now() - datetime.timedelta(days=1))).counts()
+        return total_times - used
+
+
+    @classmethod
     def get_type(cls, is_palm_rectangle, shorter_finger):
         if not is_palm_rectangle:
             if shorter_finger:
@@ -234,6 +244,8 @@ class PalmService(object):
 
     @classmethod
     def output_res(cls, pic):
+        if cls.times_left(request.user_id) < 1:
+            return u'you have run out of opportunity, please retry one day latter ~', False
         user_id = request.user_id
         if not user_id or not TokenBucketService.get_token('palm_limit' + user_id, 1, 1000, 1000):
             return u'Your palmitry test oppurtunity has run out today, you can try it tomorrow ~', False
