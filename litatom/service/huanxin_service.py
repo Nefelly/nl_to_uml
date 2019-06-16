@@ -283,15 +283,18 @@ class HuanxinService(object):
         headers = {
             'Authorization':'Bearer %s' % access_token
         }
-        try:
-            response = requests.put(url, verify=False, headers=headers, data=json.dumps({'nickname': nickname})).json()
-            assert response.get('entities')[0]['nickname']
-            return True
-        except Exception, e:
-            # traceback.print_exc()
-            logger.error(traceback.format_exc())
-            logger.error('Error create huanxin update_nickname user, user_id: %r, response:%r, err: %r', user_name, response, e)
-            return {}
+        for i in range(cls.TRY_TIMES):
+            try:
+                response = requests.put(url, verify=False, headers=headers, data=json.dumps({'nickname': nickname})).json()
+                print response
+                assert response.get('entities')[0]['nickname']
+                return True
+            except Exception, e:
+                # traceback.print_exc()
+                logger.error(traceback.format_exc())
+                logger.error('Error create huanxin update_nickname user, user_id: %r, response:%r, err: %r', user_name, response, e)
+                # return {}
+        return False
 
     @classmethod
     def get_user(cls, user_name):
