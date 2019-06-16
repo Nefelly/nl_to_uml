@@ -85,7 +85,7 @@ class RegionWord(Document):
         },
         'app_introduce': {
             'vi': u'Litmatch là ứng dụng kết bạn.',
-            'th': u'Lit Match แอพหรเพื่อนรูปแบบใหม่.',
+            'th': u'Litmatch แอพหรเพื่อนรูปแบบใหม่.',
             'en': u"Litmatch is an an app for making new friends",
             'id': u'Litmatch adalah aplikasi untuk bertemu dengan teman baru.'
         }
