@@ -200,7 +200,7 @@ class PalmService(object):
         total_times = 10
         if setting.IS_DEV:
             total_times = 1000
-        used = PalmResult.objects(user_id=user_id, create_time__gt=(datetime.datetime.now() - datetime.timedelta(days=1))).counts()
+        used = PalmResult.objects(user_id=user_id, create_time__gt=(datetime.datetime.now() - datetime.timedelta(days=1))).count()
         return total_times - used
 
 
