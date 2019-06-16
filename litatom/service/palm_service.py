@@ -3,6 +3,7 @@ import time
 import datetime
 import sys
 from flask import request
+from hendrix.conf import setting
 from ..service import (
     AliOssService,
     GlobalizationService,
@@ -197,7 +198,7 @@ class PalmService(object):
     @classmethod
     def times_left(cls, user_id):
         total_times = 10
-        if  request.IS_DEV:
+        if setting.IS_DEV:
             total_times = 1000
         used = PalmResult.objects(user_id=user_id, create_time__gt=(datetime.datetime.now() - datetime.timedelta(days=1))).counts()
         return total_times - used
