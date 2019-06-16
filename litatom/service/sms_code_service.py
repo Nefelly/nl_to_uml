@@ -14,7 +14,8 @@ from ..const import (
     ONE_MIN
 )
 from ..service import (
-    TokenBucketService
+    TokenBucketService,
+    GlobalizationService
 )
 from aliyunsdkcore.client import AcsClient
 from aliyunsdkcore.request import CommonRequest
@@ -35,6 +36,12 @@ class SmsCodeService(object):
     DAY_SEND_RATE = 8
     ERR_WORONG_TELEPHONE = u'wrong telephone number'
 
+    REGION_TEMPLATE = {
+        GlobalizationService.REGION_VN: 'SMS_167973788',
+        GlobalizationService.REGION_EN: 'SMS_164510648',
+        GlobalizationService.REGION_TH: 'SMS_164506012',
+        GlobalizationService.REGION_ID: 'SMS_167963840'
+    }
     @classmethod
     def gen_code(cls):
         res = ''
@@ -58,7 +65,8 @@ class SmsCodeService(object):
         _request.add_query_param('RegionId', 'cn-hangzhou')
         _request.add_query_param('PhoneNumbers', phone)
         _request.add_query_param('SignName', '肯斯爪特')
-        template_code = 'SMS_164506012' if request.ip_thailand else 'SMS_164510648'
+        # template_code = 'SMS_164506012' if request.ip_thailand else 'SMS_164510648'
+        template_code = cls.REGION_TEMPLATE.get(GlobalizationService.get_region(), 'SMS_164510648')
         _request.add_query_param('TemplateCode', template_code)
         _request.add_query_param('TemplateParam', {"code":code})
         response = ali_client.do_action(_request)
@@ -70,7 +78,7 @@ class SmsCodeService(object):
     @classmethod
     def send_code(cls, zone, phone, code=None):
         zone_phone = zone + phone
-        zone_phone = validate_phone_number(zone_phone)
+        zone_phone = validate_phone_number(zone_phone, zone)
         if not zone_phone:
             return cls.ERR_WORONG_TELEPHONE, False
         if not TokenBucketService.get_token('send_lock' + zone_phone, 1, 1, 1, ONE_MIN, ONE_MIN):

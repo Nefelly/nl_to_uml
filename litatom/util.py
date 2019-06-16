@@ -398,7 +398,7 @@ def remove_continuous_blanks(s):
     return re.sub(r'\s+', ' ', s, flags=re.UNICODE)
 
 
-def validate_phone_number(phone):
+def validate_phone_number(phone, zone=None):
     '''
     验证是不是一个合法的中国手机号码.
     '''
@@ -410,7 +410,7 @@ def validate_phone_number(phone):
     if not phone.isdigit():
         return None
 
-    if len(phone) == 11 and phone.startswith('1'):
+    if len(phone) == 11 and phone.startswith('1') and zone == 86:
         phone = '86' + phone
 
     if len(phone) == 13:
