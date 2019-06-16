@@ -97,6 +97,7 @@ class AdminService(object):
             target_user_nickname = UserService.nickname_by_uid(report.target_uid)
             to_user_info = u"Your report on the user %s  has been settled. %s's account is disabled. Thank you for your support of the Lit community."\
                            % (target_user_nickname, target_user_nickname)
+            UserService.msg_to_user(to_user_info, report.uid)
             FirebaseService.send_to_user(report.uid, u'your report succeed', to_user_info)
             return None, True
         return u'forbid error false'

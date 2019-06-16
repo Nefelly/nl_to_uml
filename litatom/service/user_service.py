@@ -143,6 +143,20 @@ class UserService(object):
         return True
 
     @classmethod
+    def msg_to_user(cls, msg, target_user_id):
+        from_name='Lit official'
+        officail_user = User.get_by_nickname(from_name)
+        if not officail_user:
+            return False
+        user = User.get_by_id(target_user_id)
+        if not user:
+            return False
+        huanxin_ids = [user.huanxin.user_id]
+        res = HuanxinService.batch_send_msgs(msg, huanxin_ids, officail_user.huanxin.user_id)
+        return True
+
+
+    @classmethod
     def uid_online_by_huanxin(cls, user_ids):
         huanxinid_uid = {}
         to_query = []
