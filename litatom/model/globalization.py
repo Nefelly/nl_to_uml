@@ -109,4 +109,3 @@ class RegionWord(Document):
         if obj:
             return obj.word
         return ''
-
