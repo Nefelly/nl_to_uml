@@ -280,7 +280,7 @@ class UserService(object):
         if has_nickname:
             huanxin_id = user.huanxin.user_id
             status = HuanxinService.update_nickname(huanxin_id, data.get('nickname'))
-        if status:
+        if status or True:
             cls._on_update_info(user, data)
             user.save()
             return None, True
