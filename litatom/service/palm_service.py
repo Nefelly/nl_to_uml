@@ -21,6 +21,7 @@ wisdom = 'wisdom'
 emotion = 'emotion'
 fate = 'fate'
 solar = 'solar'
+
 desc = {
 
     GlobalizationService.REGION_TH: {
@@ -182,6 +183,7 @@ class PalmService(object):
     结果生成逻辑 https://shimo.im/mindmaps/NGIxXtpddR8F6eOb/
     代码: https://github.com/xuqingwenkk/palmprint_classification/tree/master/pyboostcvconverter
     '''
+    ORDER = [palm_type, life, wisdom, emotion, fate, solar]
     @classmethod
     def bools_2_int(cls, bool_lst):
         res = 0

@@ -42,4 +42,8 @@ def palm_query():
 def share_info():
     result_id = request.values.get('result_id')
     analys_results = PalmService.get_res_by_result_id(result_id)
-    return render_template('share_paml.html', analys_result=analys_results.values(), introduce=GlobalizationService.get_region_word('app_introduce')), 200, {'Content-Type': 'text/html; charset=utf-8'}
+    res = []
+    for _ in PalmService.ORDER:
+        if analys_results.get(_):
+            res.append(analys_results[_])
+    return render_template('share_paml.html', analys_result=res, introduce=GlobalizationService.get_region_word('app_introduce')), 200, {'Content-Type': 'text/html; charset=utf-8'}
