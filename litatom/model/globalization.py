@@ -42,10 +42,10 @@ class RegionWord(Document):
             'id': u'waktu mengobrol 420 detik, Sukai satu sama lain untuk mengobrol tanpa batasan waktu.'
         },
         'voice_top_wording': {
-            'vi': u'Bây giờ chúng ta là bạn, thưởng thức cuộc trò chuyện không giới hạn',
-            'th': u'เป็นเพื่อนกันแล้ว ขอให้สนุกไปกับการคุยแบบไม่จำกัดเวลา',
-            'en': u'you are friends now, enjoy unlimited chats.',
-            'id': u'kini Anda telah berteman, nikmati chat tanpa batasan waktu'
+            'vi': u'7 phút trò chuyện, thích nhau mở khóa trò chuyện không giới hạn.',
+            'th': u'7 นาทีแชท กดไลค์กันและกัน เพื่อคุยแบบไม่จำกัดเวลา',
+            'en': u'7mins to chat，Like each other unlock unlimited chats.',
+            'id': u'waktu 7 menit untuk mengobrol, Sukai satu sama lain untuk ngobrol tanpa batasan waktu'
         },
         'like_feed': {
             'vi': u'Thích bài viết của bạn',
