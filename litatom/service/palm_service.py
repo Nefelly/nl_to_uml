@@ -197,7 +197,7 @@ class PalmService(object):
 
     @classmethod
     def times_left(cls, user_id):
-        total_times = 10
+        total_times = 2
         if setting.IS_DEV:
             total_times = 1000
         used = PalmResult.objects(user_id=user_id, create_time__gt=(datetime.datetime.now() - datetime.timedelta(days=1))).count()
