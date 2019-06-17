@@ -100,7 +100,7 @@ class AdminService(object):
             UserService.msg_to_user(to_user_info, report.uid)
             FirebaseService.send_to_user(report.uid, u'your report succeed', to_user_info)
             return None, True
-        return u'forbid error false'
+        return u'forbid error', False
 
     @classmethod
     def reject_report(cls, report_id):
