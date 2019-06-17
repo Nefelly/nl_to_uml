@@ -31,7 +31,8 @@ def get_sms_code():
         return failure(FailedLackOfField)
     zone = form.zone.data
     phone = form.phone.data
-
+    if phone[0] == '0':
+        phone = phone[1:]
     msg, status = SmsCodeService.send_code(zone, phone)
     if status:
         return jsonify(Success)

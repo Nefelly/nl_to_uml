@@ -360,6 +360,8 @@ class UserService(object):
 
     @classmethod
     def phone_login(cls, zone, phone, code):
+        if phone[0] == '0':
+            phone = phone[1:]
         msg, status = SmsCodeService.verify_code(zone, phone, code)
         if not status:
             return msg, status
