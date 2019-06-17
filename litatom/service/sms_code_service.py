@@ -77,6 +77,8 @@ class SmsCodeService(object):
 
     @classmethod
     def send_code(cls, zone, phone, code=None):
+        if phone[0] == '0':
+            phone = phone[1:]
         zone_phone = zone + phone
         zone_phone = validate_phone_number(zone_phone, zone)
         if not zone_phone:
