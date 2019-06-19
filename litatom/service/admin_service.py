@@ -104,7 +104,7 @@ class AdminService(object):
         return u'forbid error', False
 
     @classmethod
-    def ban_user_by_feed(cls, feed_id, ban_time):
+    def ban_user_by_feed_id(cls, feed_id, ban_time):
         feed = Feed.get_by_id(feed_id)
         if not feed:
             return u'wrong feed id', False

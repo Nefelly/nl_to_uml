@@ -41,7 +41,7 @@ b.add_url_rule('/lit/admin/reject/<report_id>', 'admin-reject', endpoint.admin.r
 b.add_url_rule('/lit/admin/feeds_square', 'admin-feed-square', endpoint.admin.feeds_square_for_admin)
 b.add_url_rule('/lit/admin/add_hq/<feed_id>', 'admin-add-hq', endpoint.admin.add_hq)
 b.add_url_rule('/lit/admin/remove_from_hq/<feed_id>', 'admin-remove-from-hq', endpoint.admin.remove_from_hq)
-b.add_url_rule('/lit/admin/delete_feed/<feed_id>', 'admin-delete-feed', endpoint.admin.delete_feed)
+b.add_url_rule('/lit/admin/delete_feed/<feed_id>', 'admin-delete-feed', endpoint.admin.delete_ feed)
 b.add_url_rule('/lit/admin/change_loc', 'admin-change-loc', endpoint.admin.change_loc)
 b.add_url_rule('/lit/admin/change_avatar', 'admin-change-avatar', endpoint.admin.change_avatar)
 b.add_url_rule('/lit/admin/upload_apk', 'admin-upload_apk', endpoint.admin.upload_apk, methods=['POST'])
