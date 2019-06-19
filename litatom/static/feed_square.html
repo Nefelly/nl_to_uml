@@ -37,6 +37,7 @@ no pictures
     <button name='remove_from_hq'  style="background:skyblue" @click='remove_from_hq(feed)'>remove_from_hq</button>
 </td>
 <td><button name='delete_feed' @click='delete_feed(feed)'>delete_feed</button></td>
+    <td><button name='ban_user' @click='ban_user(feed)'>ban_user</button></td>
 </tr>
 </table>
 <button v-if="previous_start >= 0" name="previous_page" @click="previous_page()">previous page</button>
@@ -84,16 +85,28 @@ methods: {
 	      })
       },
 
-    delete_feed: function(feed){
+       delete_feed: function(feed){
 
         var url = BASE_URL + 'admin/delete_feed/' + feed.id;
-      this.$http.get(url, {params:{loc:Loc}}).then(function(result){
-        console.log('!!!!!!', result.data);
-        if (result.data.result === 0){
-            this.feeds =  this.feeds.filter(el => el.id != feed.id);
-        }
-        else{alert('failed');}
-      })
+        this.$http.get(url, {params:{loc:Loc}}).then(function(result){
+            console.log('!!!!!!', result.data);
+            if (result.data.result === 0){
+                this.feeds =  this.feeds.filter(el => el.id != feed.id);
+            }
+            else{alert('failed');}
+        })
+    },
+
+    ban_user: function(feed){
+
+        var url = BASE_URL + 'admin/ban_user_by_feed/' + feed.id;
+        this.$http.get(url, {params:{loc:Loc}}).then(function(result){
+            console.log('!!!!!!', result.data);
+            if (result.data.result === 0){
+                this.feeds =  this.feeds.filter(el => el.id != feed.id);
+            }
+            else{alert('failed');}
+        })
     },
 
     add_hq: function(feed){

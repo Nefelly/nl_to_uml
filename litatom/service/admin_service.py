@@ -110,6 +110,7 @@ class AdminService(object):
             return u'wrong feed id', False
         res = UserService.forbid_user(feed.user_id, ban_time)
         if res:
+            FeedService.delete_feed('', feed_id)
             return None, True
         return u'forbid error', False
 
