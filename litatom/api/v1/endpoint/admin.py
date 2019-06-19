@@ -102,6 +102,14 @@ def ban_user(report_id):
         return fail(data)
     return success(data)
 
+def ban_user_by_feed(feed_id):
+    ban_time = request.values.get('ban_time', '')
+    ban_time = int(ban_time) if ban_time else ONE_DAY
+    data, status = AdminService.ban_user_by_feed_id(feed_id, ban_time)
+    if not status:
+        return fail(data)
+    return success(data)
+
 
 def feeds_square_for_admin():
     start_pos = request.args.get('start_pos')

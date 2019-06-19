@@ -4,7 +4,8 @@ import time
 import datetime
 from ..model import (
     AdminUser,
-    Report
+    Report,
+    Feed
 )
 from ..service import (
     UserService,
@@ -99,6 +100,16 @@ class AdminService(object):
                            % (target_user_nickname, target_user_nickname)
             UserService.msg_to_user(to_user_info, report.uid)
             FirebaseService.send_to_user(report.uid, u'your report succeed', to_user_info)
+            return None, True
+        return u'forbid error', False
+
+    @classmethod
+    def ban_user_by_feed(cls, feed_id, ban_time):
+        feed = Feed.get_by_id(feed_id)
+        if not feed:
+            return u'wrong feed id', False
+        res = UserService.forbid_user(feed.user_id, ban_time)
+        if res:
             return None, True
         return u'forbid error', False
 
