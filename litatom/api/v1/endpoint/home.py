@@ -102,12 +102,12 @@ def settings():
     return success(data)
 
 def check_version():
-    version_now = '1.3.2'
+    version_now = '1.5.1'
     version = request.args.get('version', None)
-    if GlobalizationService.get_region() == GlobalizationService.REGION_TH:
+    if 0 and GlobalizationService.get_region() == GlobalizationService.REGION_TH:
         message = u'กรุณาอัพเดทเวอร์ชั่น เราได้ทำการแก้ไขปัญหาส่งข้อความเรียบร้อยแล้ว ขอบคุณค่ะ'
     else:
-        message = u'Please upgrade app, we have fixed the problem of losing message'
+        message = u'new function： voice match and palmistry'
     if version < version_now:
         data = {
             'need_update': True,
