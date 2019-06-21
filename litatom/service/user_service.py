@@ -136,12 +136,12 @@ class UserService(object):
         user_age = cls.uid_age(user_id)
         interval = 5
         if user_age >= 25:
-            if age >= 25 - interval:
+            if age >= min(25 - interval, 25):
                 return True
         elif user_age <= 13 + interval:
-            if age <= user_age + interval:
+            if age <= max(13, user_age + interval):
                 return True
-        elif user_age >= age - interval and user_age <= age - interval:
+        elif user_age >= age - interval and user_age <= age + interval:
             return True
         return False
 
