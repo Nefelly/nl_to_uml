@@ -44,11 +44,11 @@ def batch_anoy_match_start():
 def query_region():
     phone = request.args.get('phone')
     user_id = request.user_id
-    # if not user_id:
-    #     if phone and phone.startswith('86'):
-    #         user = User.get_by_phone(phone)
-    #         if user:
-    #             request.user_id = str(user.id)
+    if not user_id:
+        if phone and phone.startswith('86'):
+            user = User.get_by_phone(phone)
+            if user:
+                request.user_id = str(user.id)
     return success({"region": GlobalizationService.get_region()})
 
 def test_func():
