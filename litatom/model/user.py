@@ -353,7 +353,8 @@ class User(Document, UserSessionMixin):
             'judged_boring': self.judge[1],
             'judged_like': self.judge[2],
             'follower': self.follower,
-            'following': self.following
+            'following': self.following,
+            'age': self.age_by_user_id(str(self.id))
 
         }
 
