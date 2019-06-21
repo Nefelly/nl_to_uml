@@ -10,6 +10,8 @@ REDIS_ADMIN_USER = 'admin_username:{session}'
 REDIS_REGION_TAG_WORD = 'region_tag:{region_tag}'
 REDIS_USER_LOC = 'user_loc:{user_id}'
 REDIS_HUANXIN_USER = 'huanxin_user:{huanxin_id}'
+REDIS_FEED_ID_AGE = 'feed_id_age:{feed_id}'
+
 
 REDIS_ONLINE_GENDER = 'online:{gender}'   # !!!
 REDIS_ONLINE_GENDER_REGION = 'online:{gender}:{region}'

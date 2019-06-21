@@ -85,6 +85,8 @@ class UserService(object):
             cls.refresh_status(str(user.id))
         return None, True
 
+
+
     @classmethod
     def unban_user(cls, user_id):
         user = User.get_by_id(user_id)
@@ -124,8 +126,28 @@ class UserService(object):
     def uids_age(cls, user_ids):
         res = {}
         for uid in user_ids:
-            res[uid] = User.age_by_user_id(uid)
+            res[uid] = cls.uid_age(uid)
         return res
+
+    @classmethod
+    def age_in_user_range(cls, user_id, age):
+        if not user_id:
+            return True
+        user_age = cls.uid_age(user_id)
+        interval = 5
+        if user_age >= 25:
+            if age >= 25 - interval:
+                return True
+        elif user_age <= 13 + interval:
+            if age <= user_age + interval:
+                return True
+        elif user_age >= age - interval and user_age <= age - interval:
+            return True
+        return False
+
+    @classmethod
+    def uid_age(cls, user_id):
+        return User.age_by_user_id(user_id)
 
     @classmethod
     def msg_to_all_users(cls, msg, from_name='Lit official'):

@@ -10,13 +10,15 @@ from ..key import (
     REDIS_FEED_SQUARE,
     REDIS_FEED_SQUARE_REGION,
     REDIS_FEED_HQ,
-    REDIS_FEED_HQ_REGION
+    REDIS_FEED_HQ_REGION,
+    REDIS_FEED_ID_AGE
 )
 from ..util import (
     get_time_info,
 )
 from ..const import (
-    MAX_TIME
+    MAX_TIME,
+    ONE_DAY
 )
 
 from ..service import (
@@ -172,23 +174,48 @@ class FeedService(object):
                        'has_next': False,
                        'next_start': -1
                    }, True
-        feeds = redis_client.zrevrange(redis_key, start_p, start_p + num)
+        feeds = []
+        max_loop_tms = 5
+        has_next = False
+        next_start = -1
+        for i in range(max_loop_tms):
+            tmp_feeds = redis_client.zrevrange(redis_key, start_p, start_p + num)
+            has_next = False
+            if len(tmp_feeds) == num + 1:
+                has_next = True
+                tmp_feeds = tmp_feeds[:-1]
+            next_start = start_p + num if has_next else -1
+            feeds += [el for el in tmp_feeds if UserService.age_in_user_range(user_id, cls.age_by_feed_id(el))]
+            if len(feeds) >= max(num - 3, 1) or not has_next:
+                break
+            start_p = start_p + num
         feeds = map(Feed.get_by_id, feeds) if feeds else []
         feeds = [el for el in feeds if el]
-        has_next = False
-        if len(feeds) == num + 1:
-            has_next = True
-            feeds = feeds[:-1]
+
         feeds = map(cls._feed_info, feeds, [user_id for el in feeds])
         return {
             'has_next': has_next,
             'feeds': feeds,
-            'next_start': start_p + num if has_next else -1
+            'next_start': next_start
         }
 
     @classmethod
     def feeds_by_square(cls, user_id, start_p=0, num=10):
         return cls._feeds_by_pool(cls._redis_feed_region_key(REDIS_FEED_SQUARE_REGION), user_id, start_p, num)
+
+
+    @classmethod
+    def age_by_feed_id(cls, feed_id):
+        key = REDIS_FEED_ID_AGE.format(feed_id=feed_id)
+        age = redis_client.get(key)
+        if age:
+            return age
+        age = 0
+        feed = Feed.get_by_id(feed_id)
+        if feed:
+            age = UserService.uid_age(feed.user_id)
+        redis_client.set(key, age, ONE_DAY)
+        return age
 
     @classmethod
     def feeds_square_for_admin(cls, user_id, start_p=0, num=10):
