@@ -209,7 +209,7 @@ class FeedService(object):
         key = REDIS_FEED_ID_AGE.format(feed_id=feed_id)
         age = redis_client.get(key)
         if age:
-            return age
+            return int(age)
         age = 0
         feed = Feed.get_by_id(feed_id)
         if feed:

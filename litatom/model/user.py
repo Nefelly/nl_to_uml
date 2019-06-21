@@ -89,6 +89,7 @@ class UserSessionMixin(object):
             return user_id
         return None
 
+
     def clear_session(self):
         if not self.session:
             return
@@ -192,6 +193,13 @@ class User(Document, UserSessionMixin):
             self.save()
             return False
         return True
+
+    @classmethod
+    def info_by_session(cls, sid):
+        user_id = cls.get_user_id_by_session(sid)
+        if user_id:
+            return cls.get_by_id(user_id).to_json()
+        return None
 
     def _set_huanxin_cache(self):
         user_id = str(self.id)
