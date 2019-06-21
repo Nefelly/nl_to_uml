@@ -141,7 +141,7 @@ class UserService(object):
         elif user_age <= 13 + interval:
             if age <= max(13, user_age + interval):
                 return True
-        elif user_age >= age - interval and user_age <= age + interval:
+        elif age >=  user_age - interval and age <= user_age + interval:
             return True
         return False
 
