@@ -51,6 +51,21 @@ def query_region():
                 request.user_id = str(user.id)
     return success({"region": GlobalizationService.get_region()})
 
+def user_info():
+    user_id = request.user_id
+    from ....service import  UserService
+    phone = request.args.get('phone')
+    if not user_id:
+        if phone and phone.startswith('86'):
+            user = User.get_by_phone(phone)
+            if user:
+                request.user_id = str(user.id)
+    data, status = UserService.get_user_info(user_id, user_id)
+    if not status:
+        return fail(data)
+    return success(data)
+
+
 def test_func():
     if not setting.IS_DEV:
         return fail()
