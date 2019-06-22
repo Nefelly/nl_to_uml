@@ -190,6 +190,7 @@ def msg_to_region():
     data = request.json
     region = data.get('region')
     msg = data.get('message')
+    print region, msg
     res = UserService.msg_to_region_users(region, msg)
     if res:
         return success()
