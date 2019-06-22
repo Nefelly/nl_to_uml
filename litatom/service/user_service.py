@@ -196,7 +196,7 @@ class UserService(object):
         if locs:
             real_locs = []
             if not isinstance(locs, list):
-                real_locs = [locs]
+                real_locs = locs
             for loc in real_locs:
                 for _ in User.objects(country=loc):
                     if _.huanxin.user_id:
