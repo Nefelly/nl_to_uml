@@ -221,7 +221,7 @@ class UserService(object):
             logger.error('you have too many users, you need to redesign this func')
             return False
         huanxin_ids = cls._huanxin_ids_by_region(region)
-        huanxin_ids = [u'love123879348711830']   # joey
+        #huanxin_ids = [u'love123879348711830']   # joey
         res = HuanxinService.batch_send_msgs(msg, huanxin_ids, officail_user.huanxin.user_id)
         # print res
         return True
