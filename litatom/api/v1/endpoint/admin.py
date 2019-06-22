@@ -195,5 +195,5 @@ def msg_to_region():
         return success()
     return fail()
 
-def send_htm():
-    return current_app.send_static_file('send.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
+def send_message_html():
+    return render_template('send.html', regions=GlobalizationService.REGIONS), 200, {'Content-Type': 'text/html; charset=utf-8'}

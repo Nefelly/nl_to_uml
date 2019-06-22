@@ -1,0 +1,42 @@
+<html>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://cdn.bootcss.com/vue-resource/1.5.1/vue-resource.js"></script>
+<div id="app-7">
+    {% for region in regions %}
+    <select id="region" name="region" size="10" multiple="multiple">
+        <option value="{{region}}">{{region}} </option>
+    </select>
+
+    <font size="6"  color="#FFF">
+        <p>{{ res }}</p>
+        <br>
+    </font>
+    {% endfor %}
+    <textarea name="message"></textarea>
+    <button name='send_message' @click='send_message()'>send_message</button></td>
+    </div>
+
+</div>
+<script>
+  const BASE_URL = 'http://' + document.domain + '/api/sns/v1/lit/';
+var app7 = new Vue({
+  el: '#app-7',
+  data: {
+    items1: [],
+    base_url: BASE_URL
+  },
+created() {this.submitForm();},
+
+methods: {
+    send_message: function() {
+        region = document.getElementById('region').value;
+        message = document.getElementById('region').value;
+        this.$http.post(BASE_URL + 'admin/msg_to_region', {"region":region, "message":message}).then(function(result){
+            if (result.data.result === 0){alert('success!');}
+            else{alert('failed');}
+        })
+    },
+    }
+})
+</script>
+</html>

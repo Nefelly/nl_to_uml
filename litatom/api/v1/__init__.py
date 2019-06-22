@@ -46,6 +46,7 @@ b.add_url_rule('/lit/admin/change_loc', 'admin-change-loc', endpoint.admin.chang
 b.add_url_rule('/lit/admin/change_avatar', 'admin-change-avatar', endpoint.admin.change_avatar)
 b.add_url_rule('/lit/admin/upload_apk', 'admin-upload_apk', endpoint.admin.upload_apk, methods=['POST'])
 b.add_url_rule('/lit/admin/msg_to_region', 'admin-to-region', endpoint.admin.msg_to_region, methods=['POST'])
+b.add_url_rule('/lit/admin/send_message', 'admin-send_message', endpoint.admin.send_message_html)
 
 # 图片
 b.add_url_rule('/lit/image/upload', 'image-upload', endpoint.image.upload_image_from_file, methods=['POST'])

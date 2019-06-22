@@ -71,6 +71,7 @@ class GlobalizationService(object):
         'India': LOC_IN
     }
 
+
     # LOCS = {
     #     'TH',
     #     'IN',
@@ -88,6 +89,8 @@ class GlobalizationService(object):
         'th': REGION_TH,
         'CN': REGION_TH
     }
+    REGIONS = list(set(LOC_REGION.values()))
+    REGIONS.append(REGION_EN)
     '''
     todo: user loc set in redis
     '''
