@@ -45,6 +45,7 @@ class GlobalizationService(object):
     LOC_ID = 'ID'   # 印尼
     LOC_CN = 'CN'   # 中国
     LOC_TE = 'TEST' # 测试,混杂区
+    LOC_TH2 = 'th'
 
     LOCS = {
         LOC_TH,
@@ -53,6 +54,13 @@ class GlobalizationService(object):
         LOC_ID,
         LOC_CN,
         LOC_TE
+    }
+
+    KOWN_REGION_LOC = {
+        REGION_VN: LOC_VN,
+        REGION_TH: [LOC_TH, LOC_CN, LOC_TH2],
+        REGION_ID: LOC_ID,
+        REGION_IN: LOC_ID
     }
 
     COUNTRY_LOC = {
@@ -93,7 +101,7 @@ class GlobalizationService(object):
 
     @classmethod
     def region_by_loc(cls, loc):
-        return cls.LOC_REGION.get(loc, '')
+        return cls.LOC_REGION.get(loc, cls.REGION_EN)
 
     @classmethod
     def get_real_loc(cls, loc):
@@ -147,6 +155,8 @@ class GlobalizationService(object):
     @classmethod
     def _set_user_loc(cls, user_id, loc):
         user_setting = UserSetting.get_by_user_id(user_id)
+        if loc == 'th':
+            loc = 'TH'
         if not user_setting:
             UserSetting.create_setting(user_id, loc)
         else:

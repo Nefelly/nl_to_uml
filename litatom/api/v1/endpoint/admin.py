@@ -33,7 +33,8 @@ from ....service import (
     UserMessageService,
     FirebaseService,
     FeedService,
-    GlobalizationService
+    GlobalizationService,
+    UserService
 )
 from  ....const import (
     MAX_TIME,
@@ -173,7 +174,6 @@ def change_loc():
     return fail(msg)
 
 def unban():
-    from ....service import UserService
     UserService.unban_user(get_user_id())
     return success()
 
@@ -185,3 +185,15 @@ def change_avatar():
     user.avatar = '5a6989ec-74a2-11e9-977f-00163e02deb4'
     user.save()
     return success()
+
+def msg_to_region():
+    data = request.json
+    region = data.get('region')
+    msg = data.get('message')
+    res = UserService.msg_to_region_users(region, msg)
+    if res:
+        return success()
+    return fail()
+
+def send_htm():
+    return current_app.send_static_file('send.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}

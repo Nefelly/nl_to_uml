@@ -36,10 +36,14 @@ class RegionWord(Document):
             'id': u'waktu mengobrol 180 detik, Sukai satu sama lain untuk mengobrol tanpa batasan waktu.'
         },
         'voice_match_msg': {
-            'vi': u'7 phút trò chuyện, thích nhau mở khóa trò chuyện không giới hạn.',
-            'th': u'7 นาทีแชท กดไลค์กันและกัน เพื่อคุยแบบไม่จำกัดเวลา',
-            'en': u'7mins to chat，Like each other unlock unlimited chats.',
-            'id': u'waktu 7 menit untuk mengobrol, Sukai satu sama lain untuk ngobrol tanpa batasan waktu'
+            # 'vi': u'7 phút trò chuyện, thích nhau mở khóa trò chuyện không giới hạn.',
+            # 'th': u'7 นาทีแชท กดไลค์กันและกัน เพื่อคุยแบบไม่จำกัดเวลา',
+            # 'en': u'7mins to chat，Like each other unlock unlimited chats.',
+            # 'id': u'waktu 7 menit untuk mengobrol, Sukai satu sama lain untuk ngobrol tanpa batasan waktu'
+              'vi': u'It’s more easier for you to have a voice match at night (9.pm~12.pm)',
+              'th': u'ช่วงเวลาสุดสนุกของการสุ่มโทร ระหว่างเวลา 21.00 - 00.00 น. ทุกวัน',
+              'en': u'It’s more easier for you to have a voice match at night (9.pm~12.pm)',
+              'id': u'pada jam 9-12 malam akan lebih mudah bagi Anda untuk melakukan voice match'
         },
         'voice_top_wording': {
             'vi': u'Bây giờ chúng ta là bạn, thưởng thức cuộc trò chuyện không giới hạn',

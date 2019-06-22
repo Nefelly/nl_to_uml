@@ -247,6 +247,11 @@ class User(Document, UserSessionMixin):
         return int(res)
 
     @classmethod
+    def change_age(cls, user_id):
+        key = REDIS_KEY_USER_AGE.format(user_id=user_id)
+        redis_client.delete(key)
+
+    @classmethod
     def create_by_phone(cls, nickname, avatar, gender, birthdate, huanxin, zone_phone):
         user = cls.get_by_phone(zone_phone)
         if not user:

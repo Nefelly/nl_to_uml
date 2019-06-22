@@ -2,7 +2,9 @@
 import random
 import time
 import datetime
+import logging
 from flask import request
+logger = logging.getLogger(__name__)
 
 from ..redis import RedisClient
 from ..util import (
@@ -155,7 +157,11 @@ class UserService(object):
         if not officail_user:
             return False
         huanxin_ids = []
-        msg = u'แอปของเราพบปัญหาระบบแชท เมื่อคุณส่งข้อความไปหาผู้อื่น บางทีอาจจะไม่สำเร็จ ตอนนี้เรารับทราบปัญหาที่เกิดขึ้นแล้ว จะเร่งแก้ไขให้เร็วที่สุด.'
+        # msg = u'แอปของเราพบปัญหาระบบแชท เมื่อคุณส่งข้อความไปหาผู้อื่น บางทีอาจจะไม่สำเร็จ ตอนนี้เรารับทราบปัญหาที่เกิดขึ้นแล้ว จะเร่งแก้ไขให้เร็วที่สุด.'
+        num = User.objects().count()
+        if num >= 200000:
+            logger.error('you have too many users, you need to redesign this func')
+            return False
         for _ in User.objects():
             if _.huanxin.user_id:
                 huanxin_ids.append(_.huanxin.user_id)
@@ -177,6 +183,46 @@ class UserService(object):
         res = HuanxinService.batch_send_msgs(msg, huanxin_ids, officail_user.huanxin.user_id)
         return True
 
+    @classmethod
+    def _huanxin_ids_by_region(cls, region):
+        locs = GlobalizationService.KOWN_REGION_LOC.get(region, '')
+        all_known_locs = []
+        for _ in GlobalizationService.KOWN_REGION_LOC.values():
+            if isinstance(_, list):
+                all_known_locs += _
+            else:
+                all_known_locs.append(_)
+        huanxin_ids = []
+        if locs:
+            real_locs = []
+            if not isinstance(locs, list):
+                real_locs = [locs]
+            for loc in real_locs:
+                for _ in User.objects(country=loc):
+                    if _.huanxin.user_id:
+                        huanxin_ids.append(_.huanxin.user_id)
+        else:
+            for _ in User.objects():
+                if _.country and _.country not in all_known_locs and _.huanxin.user_id:
+                    huanxin_ids.append(_.huanxin.user_id)
+        return huanxin_ids
+
+    @classmethod
+    def msg_to_region_users(cls, region, msg):
+        # todo  when user gets big  need to redesign
+        from_name='Lit official'
+        officail_user = User.get_by_nickname(from_name)
+        if not officail_user:
+            return False
+        num = User.objects().count()
+        if num >= 200000:
+            logger.error('you have too many users, you need to redesign this func')
+            return False
+        huanxin_ids = cls._huanxin_ids_by_region(region)
+        huanxin_ids = [u'love123879348711830']   # joey
+        res = HuanxinService.batch_send_msgs(msg, huanxin_ids, officail_user.huanxin.user_id)
+        # print res
+        return True
 
     @classmethod
     def uid_online_by_huanxin(cls, user_ids):
@@ -287,6 +333,8 @@ class UserService(object):
         if data.get('avatar', ''):
             if not Avatar.valid_avatar(data.get('avatar')):
                 data.pop('avatar')
+        if data.get('birthdate', ''):
+            User.change_age(user_id)
         for el in once:
             if data.get(el, '') and getattr(user, el):
                 return u'%s can\'t be reset' % el, False
