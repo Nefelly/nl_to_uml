@@ -40,12 +40,13 @@ from ..model import (
 redis_client = RedisClient()['lit']
 
 class FeedService(object):
-    EXCHANGE = 'add_feed'
+    ADD_EXCHANGE = 'add_feed'
+    REMOVE_EXCHANGE = 'remove_feed'
 
 
     @classmethod
     def _on_add_feed(cls, feed):
-        MqService.push(cls.EXCHANGE, {"feed_id":str(feed.id)})
+        MqService.push(cls.ADD_EXCHANGE, {"feed_id":str(feed.id)})
         # FollowingFeedService.add_feed(feed)
 
     @classmethod
@@ -55,8 +56,15 @@ class FeedService(object):
             FollowingFeedService.add_feed(feed)
 
     @classmethod
+    def consume_feed_removed(cls, feed_id):
+        feed = Feed.get_by_id(feed_id)
+        if feed:
+            FollowingFeedService.remove_feed(feed)
+
+    @classmethod
     def _on_del_feed(cls, feed):
-        FollowingFeedService.remove_feed(feed)
+        MqService.push(cls.REMOVE_EXCHANGE, {"feed_id":str(feed.id)})
+        # FollowingFeedService.remove_feed(feed)
 
     @classmethod
     def _redis_feed_region_key(cls, key):

@@ -16,7 +16,7 @@ class ConsumeFeed(MQConsumer):
     def callback(self, msg):
         payload = msg.get('payload', {})
         feed_id = payload.get('feed_id')
-        FeedService.consume_feed_added(feed_id)
+        FeedService.consume_feed_removed(feed_id)
         print payload
 
 def feed_consum():
@@ -28,7 +28,7 @@ def feed_consum():
                 setting.DEFAULT_MQ_PORT,
                 setting.DEFAULT_MQ_PRODUCER,
                 setting.DEFAULT_MQ_PRODUCER_PASSWORD,
-                exchange=FeedService.ADD_EXCHANGE,
+                exchange=FeedService.REMOVE_EXCHANGE,
                 vhost=setting.DEFAULT_MQ_VHOST
                 ).start()
 
