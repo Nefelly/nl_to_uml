@@ -28,7 +28,8 @@ from ..service import (
     UserMessageService,
     FollowingFeedService,
     GlobalizationService,
-    UserMessageService
+    UserMessageService,
+    MqService
 )
 from ..model import (
     Feed,
@@ -39,10 +40,19 @@ from ..model import (
 redis_client = RedisClient()['lit']
 
 class FeedService(object):
+    EXCHANGE = 'add_feed'
+
 
     @classmethod
     def _on_add_feed(cls, feed):
-        FollowingFeedService.add_feed(feed)
+        MqService.push(cls.EXCHANGE, {"feed_id":str(feed.id)})
+        # FollowingFeedService.add_feed(feed)
+
+    @classmethod
+    def consume_feed_added(cls, feed_id):
+        feed = Feed.get_by_id(feed_id)
+        if feed:
+            FollowingFeedService.add_feed(feed)
 
     @classmethod
     def _on_del_feed(cls, feed):
@@ -119,7 +129,7 @@ class FeedService(object):
     @classmethod
     def create_feed(cls, user_id, content, pics=None):
         feed = Feed.create_feed(user_id, content, pics)
-        #cls._on_add_feed(feed)
+        cls._on_add_feed(feed)
         cls._add_to_feed_pool(feed)
         return str(feed.id)
 
