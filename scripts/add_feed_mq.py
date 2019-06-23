@@ -46,4 +46,4 @@ def run():
     feed_consum()
 
 if __name__ == "__main__":
-   feed_consum()
+    run()
