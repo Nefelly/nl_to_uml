@@ -119,6 +119,7 @@ class FeedService(object):
     @classmethod
     def create_feed(cls, user_id, content, pics=None):
         feed = Feed.create_feed(user_id, content, pics)
+        cls._on_add_feed(feed)
         cls._add_to_feed_pool(feed)
         return str(feed.id)
 
