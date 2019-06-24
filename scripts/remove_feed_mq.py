@@ -20,7 +20,7 @@ class ConsumeFeed(MQConsumer):
         print payload
 
 def feed_consum():
-    queue_name = 'feed_added'
+    queue_name = 'feed_consumed'
     routing_key = 'tasks'
     ConsumeFeed(queue_name,
                 routing_key,
