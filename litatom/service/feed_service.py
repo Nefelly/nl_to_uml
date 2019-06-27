@@ -121,6 +121,9 @@ class FeedService(object):
     @classmethod
     def judge_add_to_feed_hq(cls, feed):
         if feed and feed.is_hq:
+            time_now = int(time.time())
+            if time_now - feed.create_time >= 2 * ONE_DAY:
+                return
             cls._add_to_feed_hq(str(feed.id))
 
     @classmethod

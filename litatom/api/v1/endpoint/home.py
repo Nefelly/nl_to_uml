@@ -108,7 +108,7 @@ def check_version():
         message = u'กรุณาอัพเดทเวอร์ชั่น เราได้ทำการแก้ไขปัญหาส่งข้อความเรียบร้อยแล้ว ขอบคุณค่ะ'
     else:
         message = u'New Update: voice match and palmistry'
-    if version < version_now:
+    if version < version_now and 0:
         data = {
             'need_update': True,
             'message': message
