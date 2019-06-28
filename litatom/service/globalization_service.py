@@ -60,7 +60,7 @@ class GlobalizationService(object):
         REGION_VN: LOC_VN,
         REGION_TH: [LOC_TH, LOC_CN, LOC_TH2],
         REGION_ID: LOC_ID,
-        REGION_IN: LOC_ID
+        REGION_IN: LOC_IN
     }
 
     COUNTRY_LOC = {
@@ -239,6 +239,8 @@ class GlobalizationService(object):
             region = cls.get_region()
         # word = redis_client.get(cls._region_tag_key(region, tag))
         word = ''
+        if region == cls.REGION_IN:
+            region = cls.REGION_EN
         if not word:
             word = RegionWord.word_by_region_tag(region, tag)
             # if word:

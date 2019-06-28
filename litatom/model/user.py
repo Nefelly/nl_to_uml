@@ -36,6 +36,7 @@ from ..key import (
 )
 from ..const import (
     TWO_WEEKS,
+    ONE_DAY,
     UNKNOWN_GENDER,
     DEFAULT_QUERY_LIMIT,
     NO_SET
@@ -77,7 +78,8 @@ class UserSessionMixin(object):
 
     def _set_session_cache(self, user_id):
         key = REDIS_KEY_SESSION_USER.format(session=self.session)
-        redis_client.set(key, user_id, ex=TWO_WEEKS)
+        expire_time = 60 * ONE_DAY if self.phone else TWO_WEEKS
+        redis_client.set(key, user_id, ex=expire_time)
 
 
     @classmethod
