@@ -64,7 +64,7 @@ class SmsCodeService(object):
 
         _request.add_query_param('RegionId', 'cn-hangzhou')
         _request.add_query_param('PhoneNumbers', phone)
-        _request.add_query_param('SignName', '肯斯爪特')
+        _request.add_query_param('SignName', 'Litmatch')
         # template_code = 'SMS_164506012' if request.ip_thailand else 'SMS_164510648'
         # template_code = cls.REGION_TEMPLATE.get(GlobalizationService.get_region(), 'SMS_164510648')
         template_code = 'SMS_169112439'
