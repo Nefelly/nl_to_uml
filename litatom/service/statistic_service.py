@@ -97,6 +97,8 @@ class StatisticService(object):
     def get_online_users(cls, gender=None, start_p=0, num=10):
         key = GlobalizationService._online_key_by_region_gender(gender)
         online_cnt = cls.get_online_cnt(gender)
+        has_next = False
+        next_start = -1
         if False and start_p == 0 and request.user_id and gender and online_cnt >= num:
             uids = cls.choose_first_frame(request.user_id, key, gender, num)
             has_next = (len(uids) == num)
@@ -112,7 +114,23 @@ class StatisticService(object):
                 boy_uids = redis_client.zrevrange(GlobalizationService._online_key_by_region_gender(BOY), start_p, start_p + boy_num)
                 uids = girl_uids + boy_uids
             else:
-                uids = redis_client.zrevrange(key, start_p, start_p + num)
+                uids = []
+                max_loop_tms = 5
+                temp_uid = request.user_id
+                if temp_uid:
+                    for i in range(max_loop_tms):
+                        temp_uids = redis_client.zrevrange(key, start_p, start_p + num)
+                        has_next = False
+                        if len(temp_uids) == num + 1:
+                            has_next = True
+                            tmp_feeds = tmp_feeds[:-1]
+                        next_start = start_p + num if has_next else -1
+                        uids += [el for el in temp_uids if UserFilterService.filter_by_age_gender(temp_uid, el)]
+                        if len(uids) >= max(num - 3, 1) or not has_next:
+                            break
+                        start_p = start_p + num
+                else:
+                    uids = redis_client.zrevrange(key, start_p, start_p + num)
             temp_uid = request.user_id
             if temp_uid and temp_uid in uids:
                 temp_num = num + 1
@@ -126,12 +144,10 @@ class StatisticService(object):
                     boy_uids = boy_uids[:-1]
                 uids = boy_uids[:-1] + girl_uids
                 random.shuffle(uids)
-            else:
-                if len(uids) == num + 1:
-                    has_next = True
-                    uids = uids[:-1]
-        if temp_uid:
-            uids = [el for el in uids if UserFilterService.filter_by_age_gender(temp_uid, el)]
+            # else:
+            #     if len(uids) == num + 1:
+            #         has_next = True
+            #         uids = uids[:-1]
         user_infos = cls._user_infos_by_uids(uids)
         return {
             'has_next': has_next,
