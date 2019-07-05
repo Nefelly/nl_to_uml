@@ -123,7 +123,7 @@ class StatisticService(object):
                         has_next = False
                         if len(temp_uids) == num + 1:
                             has_next = True
-                            tmp_feeds = tmp_feeds[:-1]
+                            temp_uids = temp_uids[:-1]
                         next_start = start_p + num if has_next else -1
                         uids += [el for el in temp_uids if UserFilterService.filter_by_age_gender(temp_uid, el)]
                         if len(uids) >= max(num - 3, 1) or not has_next:
