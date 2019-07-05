@@ -152,7 +152,7 @@ class StatisticService(object):
         return {
             'has_next': has_next,
             'user_infos': user_infos,
-            'next_start': start_p + num if has_next else -1
+            'next_start': next_start
         }
 
     @classmethod
