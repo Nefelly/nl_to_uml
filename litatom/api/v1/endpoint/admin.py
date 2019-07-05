@@ -64,6 +64,8 @@ def index():
 def feeds_square_html():
     return current_app.send_static_file('feed_square.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
 
+def feeds_hq_html():
+    return current_app.send_static_file('feed_hq.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
 
 def upload_apk():
     apk = request.files.get('apk')
