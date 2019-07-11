@@ -25,6 +25,7 @@ from ..service import (
 from ..model import (
     User,
     TrackChat,
+    UserSetting,
     OnlineLimit
 )
 redis_client = RedisClient()['lit']
@@ -132,6 +133,13 @@ class StatisticService(object):
                     uids = uids[:-1]
         if temp_uid:
             uids = [el for el in uids if UserFilterService.filter_by_age_gender(temp_uid, el)]
+
+            user_setting = UserSetting.get_by_user_id(temp_uid)
+            if not user_setting or not user_setting.online_limit:
+                if start_p == 0:
+                    user_age = User.age_by_user_id(temp_uid)
+                    uids = [el for el in redis_client.zrevrange(key, start_p, start_p + 2 * num) if abs(User.age_by_user_id(el) - user_age) <= 4]
+
         user_infos = cls._user_infos_by_uids(uids)
         return {
             'has_next': has_next,
