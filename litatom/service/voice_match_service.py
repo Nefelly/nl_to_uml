@@ -184,6 +184,8 @@ class VoiceMatchService(object):
             user_id = cls._uid_by_fake_id(fake_id)
             if not redis_client.get(REDIS_VOICE_MATCHED_BEFORE.format(low_high_fakeid=low_high_pair(fake_id, fake_id2))):
                 break
+            elif i == try_tms - 1:
+                return None,False
             # if not UserFilterService.filter_by_age_gender(user_id, user_id2) or not UserFilterService.filter_by_age_gender(user_id2, user_id):
             #     if i == try_tms - 1:
             #         return None, False
