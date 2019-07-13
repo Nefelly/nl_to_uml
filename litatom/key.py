@@ -37,6 +37,7 @@ REDIS_FAKE_ID_GENDER = 'fakeid_gender:{fake_id}'
 REDIS_FAKE_ID_AGE = 'fakeid_age:{fake_id}'
 REDIS_FAKE_LIKE = 'fake_like:{fake_id}'  # value fake_id
 REDIS_MATCH_PAIR = 'match_start:{low_high_fakeid}'
+REDIS_MATCH_BEFORE = 'match_before:{low_high_fakeid}'
 REDIS_MATCHED = 'matched:{fake_id}'   # 双方匹配上, 匹配动作 需要同时填写 两个键值对
 REDIS_JUDGE_LOCK = 'judge_lock:{fake_id}'   # 评价对方的接口, 用于防范被刷评价
 
@@ -59,6 +60,7 @@ REDIS_VOICE_UID_FAKE_ID = 'voice_uid_fakeid:{user_id}'
 REDIS_VOICE_FAKE_START = 'voice_fake_start:{fake_id}'   # 开始进入匹配
 REDIS_VOICE_ANOY_CHECK_POOL = 'voice_anoy_check_pool'   # sorted set
 REDIS_VOICE_MATCH_PAIR = 'voice_match_start:{low_high_fakeid}'
+REDIS_VOICE_MATCHED_BEFORE = 'voice_match_before:{low_high_fakeid}'
 REDIS_VOICE_MATCHED = 'voice_matched:{fake_id}'   # 双方匹配上, 匹配动作 需要同时填写 两个键值对
 REDIS_VOICE_FAKE_LIKE = 'voice_fake_like:{fake_id}'  # value fake_id
 REDIS_VOICE_JUDGE_LOCK = 'voice_judge_lock:{fake_id}'   # 评价对方的接口, 用于防范被刷评价

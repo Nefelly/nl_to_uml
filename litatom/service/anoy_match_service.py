@@ -15,6 +15,7 @@ from ..key import (
     REDIS_ANOY_GENDER_ONLINE,
     REDIS_ANOY_CHECK_POOL,
     REDIS_MATCH_PAIR,
+    REDIS_MATCH_BEFORE,
     REDIS_MATCHED,
     REDIS_FAKE_LIKE,
     REDIS_JUDGE_LOCK
@@ -136,7 +137,7 @@ class AnoyMatchService(object):
         redis_client.set(REDIS_MATCHED.format(fake_id=fake_id2), fake_id1, cls.MATCH_INT)
         redis_client.set(REDIS_MATCHED.format(fake_id=fake_id1), fake_id2, cls.MATCH_INT)
         redis_client.set(REDIS_MATCH_PAIR.format(low_high_fakeid=pair), 1, cls.MATCH_INT)
-
+        redis_client.set(REDIS_MATCH_BEFORE.format(low_high_fakeid=pair), 1, ONE_DAY)
         # 将其从正在匹配队列中删除
         cls._remove_from_match_pool(gender1, fake_id1)
         cls._remove_from_match_pool(cls.OTHER_GENDER_M.get(gender1), fake_id2)
@@ -181,6 +182,8 @@ class AnoyMatchService(object):
             fake_id2 = random.choice(other_fakeids)
             user_id2 = cls._uid_by_fake_id(fake_id2)
             user_id = cls._uid_by_fake_id(fake_id)
+            if not redis_client.get(REDIS_MATCH_BEFORE.format(fake_id=low_high_pair(fake_id, fake_id2))):
+                break
             # if not UserFilterService.filter_by_age_gender(user_id, user_id2) or not UserFilterService.filter_by_age_gender(user_id2, user_id):
             #     if i == try_tms - 1:
             #         return None, False
