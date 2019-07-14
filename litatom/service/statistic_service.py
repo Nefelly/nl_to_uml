@@ -139,6 +139,8 @@ class StatisticService(object):
                 if start_p == 0:
                     user_age = User.age_by_user_id(temp_uid)
                     uids = [el for el in redis_client.zrevrange(key, start_p, start_p + 2 * num) if abs(User.age_by_user_id(el) - user_age) <= 4]
+                if not uids:
+                    uids =  redis_client.zrevrange(key, start_p, start_p + num)
             uids = [el for el in uids if el != temp_uid]
 
         user_infos = cls._user_infos_by_uids(uids)
