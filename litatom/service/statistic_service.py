@@ -140,7 +140,7 @@ class StatisticService(object):
                 if start_p == 0:
                     user_age = User.age_by_user_id(temp_uid)
                     time_now = int(time.time())
-                    uids = [el for el in redis_client.redis_client.zrangebyscore(key, time_now - FIVE_MINS, time_now) if abs(User.age_by_user_id(el) - user_age) <= 4]
+                    uids = [el for el in redis_client.zrangebyscore(key, time_now - FIVE_MINS, time_now) if abs(User.age_by_user_id(el) - user_age) <= 4]
             uids = [el for el in uids if el != temp_uid]
             if not uids:
                 uids =  [el for el in redis_client.zrevrange(key, start_p, start_p + num) if el != temp_uid]
