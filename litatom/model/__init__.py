@@ -28,7 +28,8 @@ from .user import (
     HuanxinAccount,
     SocialAccountInfo,
     UserRecord,
-    OnlineLimit
+    OnlineLimit,
+    UserAddressList
 )
 from .user_message import (
     UserMessage

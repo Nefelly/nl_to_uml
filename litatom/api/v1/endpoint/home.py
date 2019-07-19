@@ -1,5 +1,6 @@
 # coding: utf-8
 import logging
+import json
 
 from flask import (
     jsonify,
@@ -8,7 +9,8 @@ from flask import (
     current_app
 )
 from ....model import (
-    Wording
+    Wording,
+    UserAddressList
 )
 from ..form import (
     ReportForm,
@@ -59,6 +61,19 @@ def online_users():
     data = StatisticService.get_online_users(gender, star_p, num)
     return success(data)
 
+@session_required
+def upload_address_list():
+    data = request.json
+    phones = data.get("phones", {})
+    phones = json.dumps(phones)
+    user_phone = data.get("user_phone", "")
+    UserAddressList.upsert(request.user_id, phones, user_phone)
+    return success()
+
+@session_required
+def get_address_list():
+    data = UserAddressList.get_by_user_id(request.user_id)
+    return success(data)
 
 @session_required
 def online_filter():

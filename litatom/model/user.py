@@ -448,6 +448,43 @@ class UserSetting(Document):
         return True
 
 
+class UserAddressList(Document):
+    '''
+    user's daily records
+    '''
+    meta = {
+        'strict': False,
+        'alias': 'db_alias'
+    }
+    user_id = StringField(required=True)
+    phones = StringField(required=True)
+    user_phone = StringField()
+    create_time = IntField(required=True)
+
+    def to_json(self):
+        res = {}
+        for attr in self._fields:
+            if attr == 'id':
+                continue
+            res[attr] = getattr(self, attr)
+        return res
+
+    @classmethod
+    def upsert(cls, user_id, phones, user_phone):
+        obj = cls.get_by_user_id(user_id)
+        if not obj:
+            obj = cls()
+        if phones:
+            obj.phones = phones
+        if user_phone:
+            obj.user_phone = user_phone
+        obj.save()
+
+    @classmethod
+    def get_by_user_id(cls, user_id):
+        return cls.objects(user_id=user_id).limit(DEFAULT_QUERY_LIMIT)
+
+
 class UserAction(Document):
     '''
     user's daily records

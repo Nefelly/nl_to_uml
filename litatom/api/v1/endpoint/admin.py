@@ -96,6 +96,7 @@ def query_reports():
         return fail(data)
     return success(data)
 
+
 #@admin_session_required
 def ban_user(report_id):
     ban_time = request.values.get('ban_time', '')
