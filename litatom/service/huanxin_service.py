@@ -435,8 +435,8 @@ class HuanxinService(object):
             return True
         except Exception, e:
             logger.error(traceback.format_exc())
-            logger.error('Error deactive huanxin  add friend, user_id: %r, err: %r', user_name, e)
-            return {}
+            logger.error('Error deactive huanxin response:%r , user_id: %r, err: %r', response, user_name, e)
+            return True
 
     @classmethod
     def chat_msgs_by_hour(cls, YYMMDDHH):
