@@ -484,7 +484,7 @@ class UserAddressList(Document):
 
     @classmethod
     def get_by_user_id(cls, user_id):
-        return cls.objects(user_id=user_id).limit(DEFAULT_QUERY_LIMIT)
+        return cls.objects(user_id=user_id).first()
 
 
 class UserAction(Document):

@@ -72,7 +72,7 @@ def upload_address_list():
 
 @session_required
 def get_address_list():
-    data = UserAddressList.get_by_user_id(request.user_id)
+    data = UserAddressList.get_by_user_id(request.user_id).to_json()
     return success(data)
 
 @session_required
