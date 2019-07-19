@@ -5,7 +5,8 @@ import datetime
 from ..model import (
     AdminUser,
     Report,
-    Feed
+    Feed,
+    User
 )
 from ..service import (
     UserService,
@@ -92,6 +93,10 @@ class AdminService(object):
         report = Report.get_by_id(report_id)
         if not report:
             return u'wrong report id', False
+        user = User.get_by_id(report.target_uid)
+        if not user:
+            feed = Feed.get_by_id(report.target_uid)
+            report.target_uid = feed.user_id
         res = UserService.forbid_user(report.target_uid, ban_time)
         if res:
             report.ban(ban_time)
