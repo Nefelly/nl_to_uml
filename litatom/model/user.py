@@ -474,10 +474,12 @@ class UserAddressList(Document):
         obj = cls.get_by_user_id(user_id)
         if not obj:
             obj = cls()
+            obj.user_id = user_id
         if phones:
             obj.phones = phones
         if user_phone:
             obj.user_phone = user_phone
+        obj.create_time = int(time.time())
         obj.save()
 
     @classmethod
