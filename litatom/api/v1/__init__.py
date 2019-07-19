@@ -73,7 +73,7 @@ b.add_url_rule('/lit/home/user_filters', 'home-user-filter', endpoint.home.onlin
 b.add_url_rule('/lit/home/get_filters', 'home-get-filter', endpoint.home.get_online_filter)
 b.add_url_rule('/lit/home/download', 'home-download', endpoint.home.download_app)
 b.add_url_rule('/lit/home/upload_address_list', 'home-upload_address_list', endpoint.home.upload_address_list, methods=['POST'])
-b.add_url_rule('/lit/home/addrres_list', 'home-get_address_list', endpoint.home.get_address_list)
+b.add_url_rule('/lit/home/addrress_list', 'home-get_address_list', endpoint.home.get_address_list)
 
 # huanxin
 b.add_url_rule('/lit/huanxin/<target_user_id>', 'huanxin-get-info', endpoint.huanxin.get_user_info)
