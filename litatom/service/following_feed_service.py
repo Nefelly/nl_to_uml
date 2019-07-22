@@ -70,9 +70,9 @@ class FollowingFeedService(object):
         if start_ts < 0:
             return u'wrong start_ts', False
         next_start = -1
-        following_feeds = FollowingFeed.objects(user_id=user_id, feed_create_time__lte=start_ts).order_by('feed_create_time').limit(num + 1)
+        following_feeds = FollowingFeed.objects(user_id=user_id, feed_create_time__lte=start_ts).order_by('-feed_create_time').limit(num + 1)
         following_feeds = list(following_feeds)
-        following_feeds.reverse()   # 时间顺序错误
+        # following_feeds.reverse()   # 时间顺序错误
         has_next = False
         if len(following_feeds) == num + 1:
             has_next = True
