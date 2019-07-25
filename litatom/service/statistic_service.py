@@ -133,9 +133,24 @@ class StatisticService(object):
                     has_next = True
                     uids = uids[:-1]
         if temp_uid:
-            uids = [el for el in uids if UserFilterService.filter_by_age_gender(temp_uid, el)]
-
+            # uids = [el for el in uids if UserFilterService.filter_by_age_gender(temp_uid, el)]
+            uids = []
             user_setting = UserSetting.get_by_user_id(temp_uid)
+            max_loop_tms = 5
+            if user_setting and user_setting.online_limit:
+                for i in range(max_loop_tms):
+                    temp_uids = redis_client.zrevrange(key, start_p, start_p + num)
+                    has_next = False
+                    if len(temp_uids) == num + 1:
+                        has_next = True
+                        temp_uids = temp_uids[:-1]
+                    next_start = start_p + num if has_next else -1
+                    uids += [el for el in temp_uids if UserFilterService.filter_by_age_gender(temp_uid, el)]
+                    if len(uids) >= max(num - 3, 1) or not has_next:
+                        break
+                    start_p = start_p + num
+
+
             if not user_setting or not user_setting.online_limit:
                 if start_p == 0:
                     user_age = User.age_by_user_id(temp_uid)
