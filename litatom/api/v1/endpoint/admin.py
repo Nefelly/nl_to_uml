@@ -1,17 +1,21 @@
 import os
+import json
 import logging
 
 from flask import (
     jsonify,
     request,
     render_template,
-    current_app
+    current_app,
+    send_file
 
 )
 
 from ...decorator import (
     admin_session_required
 )
+
+from ....util import write_data_to_xls
 
 from ...error import (
     Success,
@@ -26,7 +30,8 @@ from ..form import (
     PhoneLoginForm
 )
 from ....model import (
-    User
+    User,
+    UserAddressList
 )
 from ....service import (
     AdminService,
@@ -191,6 +196,12 @@ def change_avatar():
 
 def download_phone():
     user_id = request.args.get('user_id')
+    name = '/data/tmp/%s.xls'
+    data = UserAddressList.get_by_user_id(request.user_id).to_json()
+    if data:
+        phones = json.loads(data["phones"])
+        write_data_to_xls(name, ['name', 'phone'], [[k, phones[k]] for k in phones])
+    return send_file(name, as_attachment=True)
 
 
 def msg_to_region():
