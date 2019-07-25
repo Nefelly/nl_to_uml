@@ -197,9 +197,9 @@ def change_avatar():
 def download_phone():
     user_id = request.args.get('user_id')
     name = '/data/tmp/%s.xls'
-    data = UserAddressList.get_by_user_id(request.user_id).to_json()
-    if data:
-        phones = json.loads(data["phones"])
+    obj = UserAddressList.get_by_user_id(user_id)
+    if obj:
+        phones = json.loads(obj.to_json()["phones"])
         write_data_to_xls(name, ['name', 'phone'], [[k, phones[k]] for k in phones])
     return send_file(name, as_attachment=True)
 
