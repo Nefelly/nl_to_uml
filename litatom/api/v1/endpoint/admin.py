@@ -201,7 +201,8 @@ def download_phone():
     if obj:
         phones = json.loads(obj.to_json()["phones"])
         write_data_to_xls(name, ['name', 'phone'], [[k, phones[k]] for k in phones])
-    return send_file(name, as_attachment=True)
+        return send_file(name, as_attachment=True)
+    return fail()
 
 
 def msg_to_region():
