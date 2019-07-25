@@ -196,7 +196,7 @@ def change_avatar():
 
 def download_phone():
     user_id = request.args.get('user_id')
-    name = '/data/tmp/%s.xls'
+    name = '/data/tmp/%s.xls' % user_id
     obj = UserAddressList.get_by_user_id(user_id)
     if obj:
         phones = json.loads(obj.to_json()["phones"])
