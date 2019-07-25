@@ -189,6 +189,10 @@ def change_avatar():
     user.save()
     return success()
 
+def download_phone():
+    user_id = request.args.get('user_id')
+
+
 def msg_to_region():
     data = request.json
     region = data.get('region')

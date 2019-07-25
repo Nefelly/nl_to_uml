@@ -123,6 +123,20 @@ def is_emoji(schar):
     return False
 
 
+def write_data_to_xls(name, tb_heads, datas):
+    import xlwt
+    f = xlwt.Workbook()
+    sheet1 = f.add_sheet(name.split('/')[-1], cell_overwrite_ok=True)
+    for i in range(len(tb_heads)):
+        sheet1.write(0, i, tb_heads[i])
+    if not isinstance(datas[0], list):
+        datas = [datas]
+    for i in range(len(datas)):
+        for j in range(len(datas[i])):
+            sheet1.write(i + 1, j, datas[i][j])
+    f.save(name)
+
+
 def remove_emoji_ending(raw_string):
     formated_string = '\n'.join([x.strip() for x in raw_string.replace('\r', '\n').split('\n') if x])
     while len(formated_string) > 0 and is_emoji(formated_string[-1]):
