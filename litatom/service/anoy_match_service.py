@@ -34,7 +34,8 @@ from ..const import (
     MAX_TIME,
     USER_NOT_EXISTS,
     PROFILE_NOT_COMPLETE,
-    NOT_IN_MATCH
+    NOT_IN_MATCH,
+    ONE_MIN
 )
 from ..service import (
     UserService,
@@ -42,7 +43,8 @@ from ..service import (
     HuanxinService,
     BlockService,
     GlobalizationService,
-    UserFilterService
+    UserFilterService,
+    StatisticService
 )
 from ..model import User
 redis_client = RedisClient()['lit']
@@ -53,7 +55,7 @@ class AnoyMatchService(object):
     MATCH_INT = 60 * 3  # talking time
     TOTAL_WAIT = MATCH_INT + MATCH_WAIT + FIVE_MINS
     MAX_CHOOSE_NUM = 100
-    MATCH_TMS = 10 if not setting.IS_DEV else 1000
+    MATCH_TMS = 20 if not setting.IS_DEV else 1000
     OTHER_GENDER_M = {BOY: GIRL, GIRL: BOY}
 
     @classmethod
@@ -220,6 +222,18 @@ class AnoyMatchService(object):
             redis_client.expire(match_left_key, ONE_DAY)
         redis_client.decr(match_left_key)
 
+    @classmethod
+    def pure_get_fake_id(cls, user_id):
+        user = User.get_by_id(user_id)
+        if not user:
+            return USER_NOT_EXISTS, False
+
+
+        gender = UserService.get_gender(user_id)
+        if not gender:
+            return PROFILE_NOT_COMPLETE, False
+        fake_id, pwd = cls._get_anoy_id(user)
+        return fake_id
 
     @classmethod
     def create_fakeid(cls, user_id):
@@ -255,7 +269,7 @@ class AnoyMatchService(object):
         cls._add_to_match_pool(gender, fake_id)
 
         # 进入匹配过期
-        redis_client.set(REDIS_FAKE_START.format(fake_id=fake_id), 1, cls.MATCH_WAIT)
+        redis_client.set(REDIS_FAKE_START.format(fake_id=fake_id), int(time.time()), cls.MATCH_WAIT)
         return res, True
 
     @classmethod
@@ -268,30 +282,74 @@ class AnoyMatchService(object):
         res['avatar'] = user.avatar
         return res
 
+
+    @classmethod
+    def _in_match_out(cls, user_id, fake_id, gender, out_uid):
+        '''
+        匹配中用户匹配非匹配中用户
+        :param user_id:
+        :param fake_id:
+        :param gender:
+        :param out_uid:
+        :return:
+        '''
+        matched_key = REDIS_MATCHED.format(fake_id=fake_id)
+        fake_id2 = redis_client.get(matched_key)
+        if fake_id2:
+            if cls._in_match(fake_id, fake_id2):
+                return fake_id2, True
+            redis_client.delete(matched_key)
+        fake_id2 = cls.pure_get_fake_id(out_uid)
+        if redis_client.get(REDIS_MATCH_BEFORE.format(low_high_fakeid=low_high_pair(fake_id, fake_id2))):
+            return None, False
+        if BlockService.get_block_msg(user_id, out_uid):
+            return None, False
+        fake_id2_matched = redis_client.get(REDIS_MATCHED.format(fake_id=fake_id2))
+        if not fake_id2_matched or fake_id2_matched == fake_id:
+            cls._create_match(fake_id, fake_id2, gender)
+            return fake_id2, False
+        return None, False
+
+    @classmethod
+    def _match_online(cls, fake_id, gender):
+        other_gender = cls.OTHER_GENDER_M.get(gender)
+        user_id = cls._uid_by_fake_id(fake_id)
+        user_ids = StatisticService.get_online_users(other_gender, 3 * ONE_MIN)
+        nearest_uid = UserService.nearest_age_uid(user_id, user_ids)
+        if not nearest_uid:
+            return None, False
+        return cls._in_match_out(user_id, fake_id, gender, nearest_uid)
+
+
     @classmethod
     def anoy_match(cls, user_id):
         fake_id = cls._fakeid_by_uid(user_id)
         # 匹配已过期
         fake_expire_key = REDIS_FAKE_START.format(fake_id=fake_id)
-        if not fake_id or not redis_client.get(fake_expire_key):
+        start_tm = redis_client.get(fake_expire_key) if fake_id else None
+        if not fake_id or not start_tm:
             return u'fakeid: %s time out, please try another one' % fake_expire_key, False
 
-        # msg = cls._match_left_verify(user_id)
-        # if msg:
-        #     return msg, False
         gender = UserService.get_gender(user_id)
         if not gender:
             return PROFILE_NOT_COMPLETE, False
         matched_id, has_matched = cls._match(fake_id, gender)
+
+        other_should_decr = True
+        if not matched_id:
+            time_now = int(time.time())
+            if time_now - start_tm >= 10:
+                other_should_decr = False
+                matched_id, has_matched = cls._match_online(fake_id, gender)
         if not matched_id:
             return u'please try again', False
 
-        if not has_matched:
+        if not has_matched:  # has_matched 上次已经匹配过 重复调用接口
             # 减少今日剩余次数
             cls._decr_match_left(user_id)
 
             other_user_id = cls._uid_by_fake_id(matched_id)
-            if other_user_id:
+            if other_user_id and other_should_decr:
                 cls._decr_match_left(other_user_id)
         tips, status = cls.get_tips()
         res = {

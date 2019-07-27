@@ -132,6 +132,20 @@ class UserService(object):
         return res
 
     @classmethod
+    def nearest_age_uid(cls, user_id, uids):
+        if not uids:
+            return None
+        res = uids[0]
+        user_age = cls.uid_age(user_id)
+        min_dis = abs(cls.uid_age(res), user_age)
+        for uid in uids[1:]:
+            age_dis = abs(cls.uid_age(res), user_age)
+            if age_dis < min_dis:
+                res = uid
+                min_dis = age_dis
+        return res
+
+    @classmethod
     def age_in_user_range(cls, user_id, age):
         if not user_id:
             return True

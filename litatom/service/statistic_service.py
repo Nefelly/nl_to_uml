@@ -96,9 +96,19 @@ class StatisticService(object):
         return uids
 
     @classmethod
+    def online_users_by_interval(cls, gender, interval, user_id=None):
+        GlobalizationService.set_current_region_for_script(GlobalizationService.REGION_TH)
+        key = GlobalizationService._online_key_by_region_gender(gender)
+        time_now = int(time.time())
+        raw_uids = redis_client.zrangebyscore(key, time_now - interval, time_now)
+        return raw_uids
+
+    @classmethod
     def get_online_users(cls, gender=None, start_p=0, num=10):
         key = GlobalizationService._online_key_by_region_gender(gender)
         online_cnt = cls.get_online_cnt(gender)
+        has_next = False
+        next_start = -1
         if False and start_p == 0 and request.user_id and gender and online_cnt >= num:
             uids = cls.choose_first_frame(request.user_id, key, gender, num)
             has_next = (len(uids) == num)
@@ -149,21 +159,24 @@ class StatisticService(object):
                     if len(uids) >= max(num - 3, 1) or not has_next:
                         break
                     start_p = start_p + num
-
-
-            if not user_setting or not user_setting.online_limit:
+            else:
                 if start_p == 0:
                     user_age = User.age_by_user_id(temp_uid)
                     time_now = int(time.time())
-                    uids = [el for el in redis_client.zrangebyscore(key, time_now - FIVE_MINS, time_now) if abs(User.age_by_user_id(el) - user_age) <= 4]
+                    raw_uids = redis_client.zrangebyscore(key, time_now - FIVE_MINS, time_now)
+                    uids = [el for el in raw_uids if abs(User.age_by_user_id(el) - user_age) <= 4]
+                    has_next = True
+                    next_start = len(raw_uids) + 1
             uids = [el for el in uids if el != temp_uid]
             if not uids:
                 uids =  [el for el in redis_client.zrevrange(key, start_p, start_p + num) if el != temp_uid]
+                has_next = len(uids) == num + 1
+                next_start = start_p + num if has_next else -1
         user_infos = cls._user_infos_by_uids(uids)
         return {
             'has_next': has_next,
             'user_infos': user_infos,
-            'next_start': start_p + num if has_next else -1
+            'next_start': next_start
         }
 
     # @classmethod
