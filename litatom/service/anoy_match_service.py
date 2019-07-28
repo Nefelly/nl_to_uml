@@ -322,7 +322,7 @@ class AnoyMatchService(object):
     def _match_online(cls, fake_id, gender):
         other_gender = cls.OTHER_GENDER_M.get(gender)
         user_id = cls._uid_by_fake_id(fake_id)
-        user_ids = StatisticService.get_online_users(other_gender, 3 * ONE_MIN)
+        user_ids = StatisticService.online_users_by_interval(other_gender, 3 * ONE_MIN)
         nearest_uid = UserService.nearest_age_uid(user_id, user_ids)
         if not nearest_uid:
             return None, False
