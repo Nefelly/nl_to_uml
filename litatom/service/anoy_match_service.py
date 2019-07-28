@@ -328,6 +328,18 @@ class AnoyMatchService(object):
             return None, False
         return cls._in_match_out(user_id, fake_id, gender, nearest_uid)
 
+    @classmethod
+    def _match_yesterday(cls, fake_id, gender):
+        other_gender = cls.OTHER_GENDER_M.get(gender)
+        user_id = cls._uid_by_fake_id(fake_id)
+        user = User.get_by_id(user_id)
+        users = User.user_register_yesterday(gender, user.country)
+        user_ids = [str(el.id) for el in users]
+        nearest_uid = UserService.nearest_age_uid(user_id, user_ids)
+        if not nearest_uid:
+            return None, False
+        return cls._in_match_out(user_id, fake_id, gender, nearest_uid)
+
 
     @classmethod
     def anoy_match(cls, user_id):
@@ -341,14 +353,19 @@ class AnoyMatchService(object):
         gender = UserService.get_gender(user_id)
         if not gender:
             return PROFILE_NOT_COMPLETE, False
-        matched_id, has_matched = cls._match(fake_id, gender)
 
-        other_should_decr = True
-        if not matched_id:
-            time_now = int(time.time())
-            if time_now - int(start_tm) >= 10:
-                other_should_decr = False
-                matched_id, has_matched = cls._match_online(fake_id, gender)
+        times_left, status = cls._match_left_verify(user_id)
+        if status and (cls.MATCH_TMS - times_left) % 5 == 0 and  cls.MATCH_TMS != times_left:
+            matched_id, has_matched = cls._match_yesterday(fake_id, gender)
+        else:
+            matched_id, has_matched = cls._match(fake_id, gender)
+
+            other_should_decr = True
+            if not matched_id:
+                time_now = int(time.time())
+                if time_now - int(start_tm) >= 10:
+                    other_should_decr = False
+                    matched_id, has_matched = cls._match_online(fake_id, gender)
         if not matched_id:
             return u'please try again', False
 

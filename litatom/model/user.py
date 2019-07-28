@@ -196,6 +196,13 @@ class User(Document, UserSessionMixin):
             return False
         return True
 
+    @classmetod
+    def user_register_yesterday(cls, gender, country):
+        now = datetime.datetime.now()
+        zeroToday = now - datetime.timedelta(hours=now.hour, minutes=now.minute, seconds=now.second,microseconds=now.microsecond)
+        zeroYestoday = zeroToday - datetime.timedelta(days=1)
+        return list(User.objects(create_time__gte=zeroYestoday, create_time__lte=zeroToday, gender=gender, country=country))
+
     @classmethod
     def info_by_session(cls, sid):
         user_id = cls.get_user_id_by_session(sid)

@@ -133,6 +133,7 @@ class UserService(object):
 
     @classmethod
     def nearest_age_uid(cls, user_id, uids):
+        uids = [el for el in uids if el != user_id]
         if not uids:
             return None
         res = uids[0]
