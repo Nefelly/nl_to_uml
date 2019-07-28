@@ -1,4 +1,5 @@
 import logging
+import datetime
 
 from flask import (
     jsonify,
@@ -26,7 +27,12 @@ from ....service import (
 
 logger = logging.getLogger(__name__)
 
-
+@session_required
+def change_register_to_yes():
+    user = User.get_by_id(request.user_id)
+    user.create_time = datetime.datetime.now() - datetime.timedelta(days=1)
+    user.save()
+    return success(user.to_json())
 
 def redis_status():
     if not setting.IS_DEV:

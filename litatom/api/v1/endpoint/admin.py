@@ -194,6 +194,8 @@ def change_avatar():
     user.save()
     return success()
 
+
+
 def download_phone():
     user_id = request.args.get('user_id')
     name = '/data/tmp/%s.xls' % user_id
