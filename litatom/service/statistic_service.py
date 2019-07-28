@@ -97,7 +97,7 @@ class StatisticService(object):
 
     @classmethod
     def online_users_by_interval(cls, gender, interval, user_id=None):
-        GlobalizationService.set_current_region_for_script(GlobalizationService.REGION_TH)
+        #GlobalizationService.set_current_region_for_script(GlobalizationService.REGION_TH)
         key = GlobalizationService._online_key_by_region_gender(gender)
         time_now = int(time.time())
         raw_uids = redis_client.zrangebyscore(key, time_now - interval, time_now)
