@@ -196,7 +196,7 @@ class User(Document, UserSessionMixin):
             return False
         return True
 
-    @classmetod
+    @classmethod
     def user_register_yesterday(cls, gender, country):
         now = datetime.datetime.now()
         zeroToday = now - datetime.timedelta(hours=now.hour, minutes=now.minute, seconds=now.second,microseconds=now.microsecond)
