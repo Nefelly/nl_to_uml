@@ -1,6 +1,7 @@
 import os
 import json
 import logging
+import time
 
 from flask import (
     jsonify,
@@ -197,15 +198,22 @@ def change_avatar():
 
 
 def download_phone():
-    user_id = request.args.get('user_id')
-    name = '/data/tmp/%s.xls' % user_id
-    obj = UserAddressList.get_by_user_id(user_id)
-    if obj:
+    date = request.args.get('date')
+    time_low = int(time.mktime(time.strptime(date, '%Y%m%d')))
+    time_high = time_low + 3600 * 24
+    name = '/data/tmp/%s.xls' % (date + request.loc)
+    objs = UserAddressList.objects(create_time__gte=time_low, create_time__lte=time_high)
+    res = []
+    for obj in objs:
+        user = User.get_by_id(obj.user_id)
+        if user.country != request.loc:
+            continue
         phones = json.loads(obj.to_json()["phones"])
-        write_data_to_xls(name, ['name', 'phone'], [[k, phones[k]] for k in phones])
-        return send_file(name, as_attachment=True)
-    return fail()
-
+        res += [[k, phones[k]] for k in phones]
+    if not res:
+        return fail('no data')
+    write_data_to_xls(name, ['name', 'phone'], res)
+    return send_file(name, as_attachment=True)
 
 def msg_to_region():
     data = request.json
