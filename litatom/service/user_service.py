@@ -137,9 +137,9 @@ class UserService(object):
             return None
         res = uids[0]
         user_age = cls.uid_age(user_id)
-        min_dis = abs(cls.uid_age(res), user_age)
+        min_dis = abs(cls.uid_age(res) - user_age)
         for uid in uids[1:]:
-            age_dis = abs(cls.uid_age(res), user_age)
+            age_dis = abs(cls.uid_age(res) - user_age)
             if age_dis < min_dis:
                 res = uid
                 min_dis = age_dis
