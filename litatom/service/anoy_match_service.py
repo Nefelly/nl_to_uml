@@ -55,7 +55,7 @@ class AnoyMatchService(object):
     MATCH_INT = 60 * 3  # talking time
     TOTAL_WAIT = MATCH_INT + MATCH_WAIT + FIVE_MINS
     MAX_CHOOSE_NUM = 100
-    MATCH_TMS = 11 if not setting.IS_DEV else 11
+    MATCH_TMS = 20 if not setting.IS_DEV else 1000
     OTHER_GENDER_M = {BOY: GIRL, GIRL: BOY}
 
     @classmethod
@@ -355,6 +355,7 @@ class AnoyMatchService(object):
             return PROFILE_NOT_COMPLETE, False
 
         times_left, status = cls._match_left_verify(user_id)
+        matched_id = None
         if status and (cls.MATCH_TMS - times_left) % 5 == 0 and  cls.MATCH_TMS != times_left:
             matched_id, has_matched = cls._match_yesterday(fake_id, gender)
         if not matched_id:
