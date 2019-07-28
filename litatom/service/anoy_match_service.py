@@ -55,7 +55,7 @@ class AnoyMatchService(object):
     MATCH_INT = 60 * 3  # talking time
     TOTAL_WAIT = MATCH_INT + MATCH_WAIT + FIVE_MINS
     MAX_CHOOSE_NUM = 100
-    MATCH_TMS = 20 if not setting.IS_DEV else 1000
+    MATCH_TMS = 11 if not setting.IS_DEV else 11
     OTHER_GENDER_M = {BOY: GIRL, GIRL: BOY}
 
     @classmethod
@@ -236,6 +236,12 @@ class AnoyMatchService(object):
         return fake_id
 
     @classmethod
+    def match_settings(cls):
+        return {
+            'wording': ""
+        }
+
+    @classmethod
     def create_fakeid(cls, user_id):
         user = User.get_by_id(user_id)
         if not user:
@@ -257,7 +263,9 @@ class AnoyMatchService(object):
             return CREATE_HUANXIN_ERROR, False
         res = {
             'fake_id': fake_id,
-            'password': pwd
+            'password': pwd,
+            'can_match_online': True
+
         }
         # cls._add_to_check_pool(fake_id)
         # 建立fakeid:uid索引
@@ -338,7 +346,7 @@ class AnoyMatchService(object):
         other_should_decr = True
         if not matched_id:
             time_now = int(time.time())
-            if time_now - start_tm >= 10:
+            if time_now - int(start_tm) >= 10:
                 other_should_decr = False
                 matched_id, has_matched = cls._match_online(fake_id, gender)
         if not matched_id:
