@@ -425,6 +425,7 @@ class UserSetting(Document):
     user_id = StringField(required=True, unique=True)
     lang = StringField(required=True, default='')
     online_limit = EmbeddedDocumentField(OnlineLimit)
+    create_time = DateTimeField(required=True, default=datetime.datetime.now)
 
     @classmethod
     def get_by_user_id(cls, user_id):
