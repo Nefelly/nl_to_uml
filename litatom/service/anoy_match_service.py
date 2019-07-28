@@ -333,7 +333,7 @@ class AnoyMatchService(object):
         other_gender = cls.OTHER_GENDER_M.get(gender)
         user_id = cls._uid_by_fake_id(fake_id)
         user = User.get_by_id(user_id)
-        users = User.user_register_yesterday(gender, user.country)
+        users = User.user_register_yesterday(other_gender, user.country)
         user_ids = [str(el.id) for el in users]
         nearest_uid = UserService.nearest_age_uid(user_id, user_ids)
         if not nearest_uid:
