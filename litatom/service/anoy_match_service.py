@@ -355,7 +355,7 @@ class AnoyMatchService(object):
             return PROFILE_NOT_COMPLETE, False
 
         times_left, status = cls._match_left_verify(user_id)
-        if status and (cls.MATCH_TMS - times_left) % 5 == 0 and  cls.MATCH_TMS != times_left:
+        if 1 or status and (cls.MATCH_TMS - times_left) % 5 == 0 and  cls.MATCH_TMS != times_left:
             matched_id, has_matched = cls._match_yesterday(fake_id, gender)
         else:
             matched_id, has_matched = cls._match(fake_id, gender)
