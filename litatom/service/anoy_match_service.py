@@ -35,7 +35,8 @@ from ..const import (
     USER_NOT_EXISTS,
     PROFILE_NOT_COMPLETE,
     NOT_IN_MATCH,
-    ONE_MIN
+    ONE_MIN,
+    CAN_MATCH_ONLINE
 )
 from ..service import (
     UserService,
@@ -315,6 +316,7 @@ class AnoyMatchService(object):
         fake_id2_matched = redis_client.get(REDIS_MATCHED.format(fake_id=fake_id2))
         if not fake_id2_matched or fake_id2_matched == fake_id:
             cls._create_match(fake_id, fake_id2, gender)
+            cls._delete_match(fake_id)
             return fake_id2, False
         return None, False
 
@@ -354,18 +356,17 @@ class AnoyMatchService(object):
         if not gender:
             return PROFILE_NOT_COMPLETE, False
 
-        times_left, status = cls._match_left_verify(user_id)
         matched_id = None
-        if status and (cls.MATCH_TMS - times_left) % 5 == 0 and  cls.MATCH_TMS != times_left:
-            matched_id, has_matched = cls._match_yesterday(fake_id, gender)
+        if CAN_MATCH_ONLINE:
+            times_left, status = cls._match_left_verify(user_id)
+            if status and (cls.MATCH_TMS - times_left) % 5 == 0 and  cls.MATCH_TMS != times_left:
+                matched_id, has_matched = cls._match_yesterday(fake_id, gender)
         if not matched_id:
             matched_id, has_matched = cls._match(fake_id, gender)
 
-            other_should_decr = True
-            if not matched_id:
+            if CAN_MATCH_ONLINE and not matched_id:
                 time_now = int(time.time())
                 if time_now - int(start_tm) >= 10:
-                    other_should_decr = False
                     matched_id, has_matched = cls._match_online(fake_id, gender)
         if not matched_id:
             return u'please try again', False
@@ -375,7 +376,7 @@ class AnoyMatchService(object):
             cls._decr_match_left(user_id)
 
             other_user_id = cls._uid_by_fake_id(matched_id)
-            if other_user_id and other_should_decr:
+            if other_user_id and not CAN_MATCH_ONLINE:
                 cls._decr_match_left(other_user_id)
         tips, status = cls.get_tips()
         res = {
