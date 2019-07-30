@@ -24,6 +24,9 @@ from ....service import (
     GlobalizationService,
     HuanxinService
 )
+from  ....key import (
+    REDIS_MATCH_BEFORE
+)
 
 logger = logging.getLogger(__name__)
 
@@ -45,6 +48,12 @@ def batch_create_login():
 
 def batch_anoy_match_start():
     return success(DebugHelperService.batch_anoy_match_start())
+
+def del_match_before():
+    if not setting.IS_DEV:
+        return fail()
+    DebugHelperService.del_match_before(request.user_id)
+    return success(AnoyMatchService.debug_all_keys(REDIS_MATCH_BEFORE))
 
 #@session_required
 def query_region():

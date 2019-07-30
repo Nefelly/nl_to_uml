@@ -103,6 +103,7 @@ b.add_url_rule('/lit/debug/test_func', 'debug-test_func', endpoint.debug.test_fu
 b.add_url_rule('/lit/debug/chat_msg', 'debug-chat-msg', endpoint.debug.chat_msg)
 b.add_url_rule('/lit/debug/user_info', 'debug-user_info', endpoint.debug.user_info)
 b.add_url_rule('/lit/debug/register_yesterday', 'debug-register_yesterday', endpoint.debug.change_register_to_yes)
+b.add_url_rule('/lit/debug/delete_matched_record', 'debug-del_match_before', endpoint.debug.del_match_before)
 
 
 # feed

@@ -14,6 +14,15 @@ from ..const import (
     GIRL,
     BOY
 )
+from ..key import (
+    REDIS_MATCH_BEFORE,
+)
+
+from hendrix.conf import setting
+from ..redis import RedisClient
+
+
+redis_client = RedisClient()['lit']
 
 class DebugHelperService(object):
     BASE_PHONE = 8618189180000
@@ -59,6 +68,16 @@ class DebugHelperService(object):
             user = User.get_by_phone(zone_phone)
             res.append(AnoyMatchService.create_fakeid(str(user.id)))
         return res
+
+    @classmethod
+    def del_match_before(cls, user_id=None):
+        for k in redis_client.keys():
+            if REDIS_MATCH_BEFORE in k:
+                if not user_id:
+                    redis_client.delete(k)
+                else:
+                    if user_id in k:
+                        redis_client.delete(k)
 
     @classmethod
     def feed_num(cls, user_id):
