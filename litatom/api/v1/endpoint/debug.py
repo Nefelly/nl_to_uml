@@ -25,7 +25,7 @@ from ....service import (
     HuanxinService
 )
 from  ....key import (
-    REDIS_MATCH_BEFORE
+    REDIS_MATCH_BEFORE_PREFIX
 )
 
 logger = logging.getLogger(__name__)
@@ -53,7 +53,7 @@ def del_match_before():
     if not setting.IS_DEV:
         return fail()
     DebugHelperService.del_match_before(request.user_id)
-    return success(AnoyMatchService.debug_all_keys(REDIS_MATCH_BEFORE))
+    return success(AnoyMatchService.debug_all_keys(REDIS_MATCH_BEFORE_PREFIX))
 
 #@session_required
 def query_region():

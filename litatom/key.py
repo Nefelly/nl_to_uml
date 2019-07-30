@@ -38,6 +38,7 @@ REDIS_FAKE_ID_AGE = 'fakeid_age:{fake_id}'
 REDIS_FAKE_LIKE = 'fake_like:{fake_id}'  # value fake_id
 REDIS_MATCH_PAIR = 'match_start:{low_high_fakeid}'
 REDIS_MATCH_BEFORE = 'match_before:{low_high_fakeid}'
+REDIS_MATCH_BEFORE_PREFIX = 'match_before:'
 REDIS_MATCHED = 'matched:{fake_id}'   # 双方匹配上, 匹配动作 需要同时填写 两个键值对
 REDIS_JUDGE_LOCK = 'judge_lock:{fake_id}'   # 评价对方的接口, 用于防范被刷评价
 

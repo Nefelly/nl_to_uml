@@ -15,7 +15,7 @@ from ..const import (
     BOY
 )
 from ..key import (
-    REDIS_MATCH_BEFORE,
+    REDIS_MATCH_BEFORE_PREFIX,
 )
 
 from hendrix.conf import setting
@@ -72,7 +72,7 @@ class DebugHelperService(object):
     @classmethod
     def del_match_before(cls, user_id=None):
         for k in redis_client.keys():
-            if REDIS_MATCH_BEFORE in k:
+            if REDIS_MATCH_BEFORE_PREFIX in k:
                 if not user_id:
                     redis_client.delete(k)
                 else:
