@@ -265,7 +265,7 @@ class AnoyMatchService(object):
         res = {
             'fake_id': fake_id,
             'password': pwd,
-            'can_match_online': True
+            'can_match_online': CAN_MATCH_ONLINE
 
         }
         # cls._add_to_check_pool(fake_id)
