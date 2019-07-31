@@ -253,7 +253,7 @@ class User(Document, UserSessionMixin):
             if not user:
                 return ''
             res = user._set_age_cache()
-        return int(res)
+        return int(res) if res != NO_SET else 0
 
     @classmethod
     def change_age(cls, user_id):

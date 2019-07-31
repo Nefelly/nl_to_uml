@@ -358,7 +358,7 @@ class UserService(object):
         for el in once:
             if data.get(el, '') and getattr(user, el):
                 return u'%s can\'t be reset' % el, False
-        gender = data.get('gender', '')
+        gender = data.get('gender', '').strip().replace('\n', '')
         if gender:
             if gender not in GENDERS:
                 return u'gender must be one of ' + ',' . join(GENDERS), False
