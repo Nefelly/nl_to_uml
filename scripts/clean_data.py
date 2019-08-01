@@ -1,11 +1,13 @@
 import os
 from litatom.model import *
 from litatom.redis import RedisClient
-from litatom.service import UserService
+from litatom.service import UserService, GlobalizationService
 import datetime
 import time
 
 redis_client = RedisClient()['lit']
+
+GlobalizationService.set_current_region_for_script("TH")
 
 def clear_redis():
     for k in redis_client.keys():
@@ -37,7 +39,5 @@ if __name__ == '__main__':
         print 'not right path'
         assert False
         exit()
-    exit()
-    assert False
     clear_objs()
     clear_redis()
