@@ -70,7 +70,7 @@ class VoiceChatService(object):
 
     @classmethod
     def accept(cls, user_id, target_user_id):
-        self_called = REDIS_VOICE_CHAT_CALLED.format(user_id)
+        self_called = REDIS_VOICE_CHAT_CALLED.format(user_id=user_id)
         calling = redis_client.get(self_called)
         if not calling or calling != target_user_id:
             return u'you are not called', False
