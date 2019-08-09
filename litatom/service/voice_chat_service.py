@@ -74,8 +74,8 @@ class VoiceChatService(object):
         calling = redis_client.get(self_called)
         if not calling or calling != target_user_id:
             return u'you are not called', False
-        redis_client.setex(REDIS_VOICE_CHAT_IN_CHAT.format(user_id), ONE_DAY, target_user_id)
-        redis_client.setex(REDIS_VOICE_CHAT_IN_CHAT.format(target_user_id), ONE_DAY, user_id)
+        redis_client.setex(REDIS_VOICE_CHAT_IN_CHAT.format(user_id=user_id), ONE_DAY, target_user_id)
+        redis_client.setex(REDIS_VOICE_CHAT_IN_CHAT.format(user_id=target_user_id), ONE_DAY, user_id)
         redis_client.delete(self_called)
         redis_client.delete(REDIS_VOICE_CHAT_WAIT.format(user_id=target_user_id))
         return None, True
