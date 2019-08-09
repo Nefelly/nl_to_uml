@@ -88,7 +88,7 @@ class VoiceChatService(object):
 
     @classmethod
     def cancel(cls, user_id):
-        self_wait = REDIS_VOICE_CHAT_WAIT(user_id=user_id)
+        self_wait = REDIS_VOICE_CHAT_WAIT.format(user_id=user_id)
         other_user_id = redis_client.get(self_wait)
         redis_client.delete(self_wait)
         if other_user_id:
