@@ -65,7 +65,7 @@ class VoiceChatService(object):
         if redis_client.get(REDIS_VOICE_CHAT_WAIT.format(user_id=target_user_id)):
             return u'He/She is calling others', False
         redis_client.setex(self_wait, ONE_MIN, target_user_id)
-        redis_client.setex(target_called, ONE_MIN + 3, user_id)
+        redis_client.setex(REDIS_VOICE_CHAT_CALLED.format(user_id=target_user_id), ONE_MIN + 3, user_id)
         return None, True
 
     @classmethod
