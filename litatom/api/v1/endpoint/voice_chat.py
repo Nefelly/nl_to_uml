@@ -43,7 +43,7 @@ def cancel():
 
 @session_required
 def reject(target_user_id):
-    data, status = VoiceChatService.reject(request.user_id)
+    data, status = VoiceChatService.reject(request.user_id, target_user_id)
     if not status:
         return fail(data)
     return success(data)
