@@ -53,11 +53,11 @@ def time_str_by_ts(ts):
 def date_to_int_time(d):
     return int(time.mktime(d.timetuple()))
 
-def get_time_info(int_time):
+def get_time_info(int_time, user_mode=False):
     time_now = int(time.time())
     time_dis = time_now - int_time
     if time_dis < const.ONE_MIN:
-        time_desc = 'now'
+        time_desc = 'now' if not user_mode else 'active'
     elif time_dis < const.ONE_HOUR:
         mins = time_dis/const.ONE_MIN
         time_desc = '1 minute ago' if mins == 1 else '%d mins ago' % mins 
@@ -71,6 +71,7 @@ def get_time_info(int_time):
         'time': int_time,
         'time_desc': time_desc
     }
+
 
 def now_date_key():
     # return (datetime.datetime.now() + datetime.timedelta(seconds=-2)).strftime('%Y-%m-%d') # for time latency reason

@@ -25,7 +25,7 @@ class QiniuService(object):
         '''scenes could be ads, pulp...'''
         data = {
             "data": {
-                "url": out_url
+                "uri": out_url
             },
             "params": {
                 "scenes": [

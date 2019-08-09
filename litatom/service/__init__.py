@@ -17,6 +17,7 @@ from .social_acount_service import (
 )
 from .user_filter_service import UserFilterService
 from .user_service import UserService
+from .voice_chat_service import VoiceChatService
 from .message_service import UserMessageService
 from .qiniu_service import QiniuService
 from .ali_oss import AliOssService

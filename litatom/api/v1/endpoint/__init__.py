@@ -11,3 +11,4 @@ from . import feed
 from . import user_relations
 from . import admin
 from . import activity
+from . import voice_chat

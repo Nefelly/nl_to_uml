@@ -9,6 +9,7 @@ logger = logging.getLogger(__name__)
 from ..redis import RedisClient
 from ..util import (
     validate_phone_number,
+    get_time_info,
     time_str_by_ts)
 from ..const import (
     TWO_WEEKS,
@@ -424,6 +425,11 @@ class UserService(object):
         return HuanxinAccount.create(huanxin_id, pwd)
 
     @classmethod
+    def uid_online_time(cls, uid):
+        key = GlobalizationService._online_key_by_region_gender()
+        return int(redis_client.zscore(key, uid))
+
+    @classmethod
     def uid_online(cls, uid):
         '''
         :return uid: online map
@@ -590,8 +596,13 @@ class UserService(object):
         basic_info = cls.get_basic_info(target_user)
         basic_info.update({
             'followed': Follow.in_follow(user_id, target_user_id),
-            'blocked': Blocked.in_block(user_id, target_user_id)
+            'blocked': Blocked.in_block(user_id, target_user_id),
+            # 'is_blocked': Blocked.in_block(target_user_id, user_id),
+            # 'is_followed': Follow.in_follow(target_user_id, user_id)
         })
+        basic_info.update(
+            {'active_info': get_time_info(cls.uid_online_time(target_user_id), user_mode=True)}
+        )
         if user_id != target_user_id:
             return basic_info, True
         login_info = target_user.get_login_info()
