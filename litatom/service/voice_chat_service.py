@@ -82,7 +82,8 @@ class VoiceChatService(object):
 
     @classmethod
     def reject(cls, user_id, target_user_id):
-        redis_client.delete(REDIS_VOICE_CHAT_IN_CHAT.format(user_id=target_user_id))
+        redis_client.delete(REDIS_VOICE_CHAT_CALLED.format(user_id=user_id))
+        redis_client.delete(REDIS_VOICE_CHAT_WAIT.format(user_id=target_user_id))
         return None, True
 
     @classmethod
