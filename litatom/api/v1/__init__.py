@@ -129,8 +129,8 @@ b.add_url_rule('/lit/following', 'following', endpoint.user_relations.following)
 b.add_url_rule('/lit/follower', 'follower', endpoint.user_relations.follower)
 
 # voice_chat
-b.add_url_rule('/lit/voice_chat/invite/<other_user_id>', 'voice_chat-invite', endpoint.voice_chat.invite)
+b.add_url_rule('/lit/voice_chat/invite/<target_user_id>', 'voice_chat-invite', endpoint.voice_chat.invite)
 b.add_url_rule('/lit/voice_chat/finish', 'finish_chat', endpoint.voice_chat.finish_chat)
-b.add_url_rule('/lit/voice_chat/accept/<other_user_id>', 'voice_chat-accept', endpoint.voice_chat.accept)
+b.add_url_rule('/lit/voice_chat/accept/<target_user_id>', 'voice_chat-accept', endpoint.voice_chat.accept)
 b.add_url_rule('/lit/voice_chat/cancel', 'cancel_chat', endpoint.voice_chat.cancel)
-b.add_url_rule('/lit/voice_chat/reject/<other_user_id>', 'voice_chat-reject', endpoint.voice_chat.reject)
+b.add_url_rule('/lit/voice_chat/reject/<target_user_id>', 'voice_chat-reject', endpoint.voice_chat.reject)
