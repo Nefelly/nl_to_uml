@@ -27,16 +27,16 @@ class VoiceChatService(object):
 
     @classmethod
     def finish_chat(cls, user_id):
-        self_key = REDIS_VOICE_CHAT_IN_CHAT.formate(user_id=user_id)
+        self_key = REDIS_VOICE_CHAT_IN_CHAT.format(user_id=user_id)
         other_user_id = redis_client.get(self_key)
         if other_user_id:
-            redis_client.delete(REDIS_VOICE_CHAT_IN_CHAT.formate(user_id=other_user_id))
+            redis_client.delete(REDIS_VOICE_CHAT_IN_CHAT.format(user_id=other_user_id))
         redis_client.delete(self_key)
         return None, True
 
     @classmethod
     def invite(cls, user_id, target_user_id):
-        self_in_chat_key = REDIS_VOICE_CHAT_IN_CHAT.formate(user_id=user_id)
+        self_in_chat_key = REDIS_VOICE_CHAT_IN_CHAT.format(user_id=user_id)
         self_wait = REDIS_VOICE_CHAT_WAIT.format(user_id=user_id)
         self_called = REDIS_VOICE_CHAT_WAIT.format(user_id=user_id)
         other_in_chat = redis_client.get(self_in_chat_key)
