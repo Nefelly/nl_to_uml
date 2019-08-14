@@ -66,7 +66,10 @@ def get_time_info(int_time, user_mode=False):
         time_desc = '1 hour ago' if hours == 1 else '%d hours ago' % hours
     else:
         days = time_dis/const.ONE_DAY
-        time_desc = '1 day ago' if days == 1 else '%d days ago' % days
+        if not user_mode:
+            time_desc = '1 day ago' if days == 1 else '%d days ago' % days
+        else:
+            time_desc = '%d day ago' % days if days <= 3 else '%d days ago' % 3
     return {
         'time': int_time,
         'time_desc': time_desc
