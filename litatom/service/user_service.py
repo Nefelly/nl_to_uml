@@ -30,7 +30,8 @@ from ..key import (
     REDIS_USER_INFO_FINISHED,
     REDIS_ONLINE_GENDER,
     REDIS_UID_GENDER,
-    REDIS_ONLINE
+    REDIS_ONLINE,
+    REDIS_HUANXIN_ONLINE
 )
 from ..model import (
     User,
@@ -407,6 +408,7 @@ class UserService(object):
             # key = REDIS_ONLINE_GENDER.format(gender=gender)
             key = GlobalizationService._online_key_by_region_gender(gender)
             redis_client.zadd(key, {user_id: int_time})
+            redis_client.zadd(REDIS_HUANXIN_ONLINE, {user_id: int_time})
             redis_client.zadd(GlobalizationService._online_key_by_region_gender(), {user_id: int_time})
             if int_time % 100 == 0:
                 redis_client.zremrangebyscore(key, -1, int_time - ONLINE_LIVE)
@@ -586,6 +588,10 @@ class UserService(object):
         return False
 
     @classmethod
+    def uid_online_time_with_huanxin(cls, target_user_id):
+        return max(cls.uid_online_time(target_user_id), int(redis_client.zscore(REDIS_HUANXIN_ONLINE, target_user_id)))
+
+    @classmethod
     def get_user_info(cls, user_id, target_user_id):
         # msg =  BlockService.get_block_msg(user_id, target_user_id)
         # if msg:
@@ -600,8 +606,9 @@ class UserService(object):
             # 'is_blocked': Blocked.in_block(target_user_id, user_id),
             # 'is_followed': Follow.in_follow(target_user_id, user_id)
         })
+
         basic_info.update(
-            {'active_info': get_time_info(cls.uid_online_time(target_user_id), user_mode=True)}
+            {'active_info': get_time_info(cls.uid_online_time_with_huanxin(target_user_id), user_mode=True)}
         )
         if user_id != target_user_id:
             return basic_info, True

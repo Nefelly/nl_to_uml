@@ -14,6 +14,7 @@ REDIS_FEED_ID_AGE = 'feed_id_age:{feed_id}'
 
 
 REDIS_ONLINE_GENDER = 'online:{gender}'   # !!!
+REDIS_HUANXIN_ONLINE = 'huanxin_online'
 REDIS_ONLINE_GENDER_REGION = 'online:{gender}:{region}'
 REDIS_ONLINE = 'online'   # !!!
 REDIS_ONLINE_REGION = 'online:{region}'   # !!!
