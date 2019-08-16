@@ -589,7 +589,8 @@ class UserService(object):
 
     @classmethod
     def uid_online_time_with_huanxin(cls, target_user_id):
-        return max(cls.uid_online_time(target_user_id), int(redis_client.zscore(REDIS_HUANXIN_ONLINE, target_user_id)))
+        huanxin_time = redis_client.zscore(REDIS_HUANXIN_ONLINE, target_user_id)
+        return max(cls.uid_online_time(target_user_id), int(huanxin_time) if huanxin_time else 0 )
 
     @classmethod
     def get_user_info(cls, user_id, target_user_id):
