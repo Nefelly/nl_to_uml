@@ -2,10 +2,11 @@
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 <script src="https://cdn.bootcss.com/vue-resource/1.5.1/vue-resource.js"></script>
 
-<span>111</span>
-<input id="app-7">
+<div>111</div>
+<div class="ç">
+    <input id="app-7">
     <select id="region" name="region" size="10" multiple="multiple">
-    {% for region in regions %}
+        {% for region in regions %}
         <option value="{{region}}">{{region}} </option>
         {% endfor %}
     </select>
@@ -13,9 +14,8 @@
     <textarea id="message_area" name="message"></textarea>
     <span>数量<text id="num_area" type="text" name="num" οninput="value=value.replace(/[^\d]/g,'')"></text></span>
     <button name='send_message' @click='send_message()'>send_message</button></td>
-    </div>
-
 </div>
+
 <script>
   const BASE_URL = 'http://' + document.domain + '/api/sns/v1/lit/';
 var app7 = new Vue({
@@ -38,5 +38,10 @@ methods: {
     },
     }
 })
+</script>
+<script lang="stylus">
+    .column-direction
+        display flex
+        flex-direction column
 </script>
 </html>
