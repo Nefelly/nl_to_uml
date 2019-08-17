@@ -2,7 +2,7 @@
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 <script src="https://cdn.bootcss.com/vue-resource/1.5.1/vue-resource.js"></script>
 
-    <div><input id="app-7"></div>
+    <div id="app-7">
     <div>region:<select id="region" name="region" size="10" multiple="multiple">
         {% for region in regions %}
         <option value="{{region}}">{{region}} </option>
@@ -13,7 +13,7 @@
     <div>message:<textarea id="message_area" name="message"></textarea></div>
     <div>数量:<textarea id="num_area" name="num"></textarea></div>
     <div><button name='send_message' @click='send_message()'>send_message</button></div>>
-
+    </div>
 <script>
   const BASE_URL = 'http://' + document.domain + '/api/sns/v1/lit/';
 var app7 = new Vue({
