@@ -241,7 +241,6 @@ class UserService(object):
         if number and number >0:
             huanxin_ids = random.sample(huanxin_ids, number)
         #huanxin_ids = [u'love123879348711830']   # joey
-        print huanxin_ids
         res = HuanxinService.batch_send_msgs(msg, huanxin_ids, officail_user.huanxin.user_id)
         # print res
         return True
