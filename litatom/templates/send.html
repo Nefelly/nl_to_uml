@@ -9,6 +9,7 @@
     </select>
 
     <textarea id="message_area" name="message"></textarea>
+    <textarea id="num_area" name="num"></textarea>
     <button name='send_message' @click='send_message()'>send_message</button></td>
     </div>
 
@@ -27,7 +28,8 @@ methods: {
     send_message: function() {
         region = document.getElementById('region').value;
         message = document.getElementById('message_area').value;
-        this.$http.post(BASE_URL + 'admin/msg_to_region', {"region":region, "message":message}).then(function(result){
+        num = document.getElementById('num_area').value;
+        this.$http.post(BASE_URL + 'admin/msg_to_region', {"region":region, "message":message, "num":num}).then(function(result){
             if (result.data.result === 0){alert('success!');}
             else{alert('failed');}
         })

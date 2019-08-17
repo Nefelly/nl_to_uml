@@ -219,9 +219,12 @@ def msg_to_region():
     data = request.json
     region = data.get('region')
     msg = data.get('message')
+    num = data.get('num', None)
+    if num:
+        num = int(num)
     if not region or not msg:
         return  fail('lake of field')
-    res = UserService.msg_to_region_users(region, msg)
+    res = UserService.msg_to_region_users(region, msg, num)
     if res:
         return success()
     return fail()

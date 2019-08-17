@@ -227,7 +227,7 @@ class UserService(object):
         return huanxin_ids
 
     @classmethod
-    def msg_to_region_users(cls, region, msg):
+    def msg_to_region_users(cls, region, msg, num=None):
         # todo  when user gets big  need to redesign
         from_name='Lit official'
         officail_user = User.get_by_nickname(from_name)
@@ -238,6 +238,8 @@ class UserService(object):
             logger.error('you have too many users, you need to redesign this func')
             return False
         huanxin_ids = cls._huanxin_ids_by_region(region)
+        if num and num >0:
+            huanxin_ids = random.sample(huanxin_ids, num)
         #huanxin_ids = [u'love123879348711830']   # joey
         res = HuanxinService.batch_send_msgs(msg, huanxin_ids, officail_user.huanxin.user_id)
         # print res
