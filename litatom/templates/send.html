@@ -3,15 +3,16 @@
 <script src="https://cdn.bootcss.com/vue-resource/1.5.1/vue-resource.js"></script>
 
     <input id="app-7">
-    <select id="region" name="region" size="10" multiple="multiple">
+    <div>region:<select id="region" name="region" size="10" multiple="multiple">
         {% for region in regions %}
         <option value="{{region}}">{{region}} </option>
         {% endfor %}
     </select>
+        </div>
 
     <div>message:<textarea id="message_area" name="message"></textarea></div>
     <div>数量:<text id="num_area" type="text" name="num" οninput="value=value.replace(/[^\d]/g,'')"></text></div>
-    <button name='send_message' @click='send_message()'>send_message</button></td>
+    <div><button name='send_message' @click='send_message()'>send_message</button></td></div>>
 
 <script>
   const BASE_URL = 'http://' + document.domain + '/api/sns/v1/lit/';
