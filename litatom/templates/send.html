@@ -1,15 +1,15 @@
 <html>
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 <script src="https://cdn.bootcss.com/vue-resource/1.5.1/vue-resource.js"></script>
-<div id="app-7">
+<input id="app-7">
     <select id="region" name="region" size="10" multiple="multiple">
     {% for region in regions %}
         <option value="{{region}}">{{region}} </option>
         {% endfor %}
     </select>
 
-    <textarea id="message_area" name="message"></textarea>
-    <textarea id="num_area" name="num"></textarea>
+    <textarea id="message_area" name="message">message content</textarea>
+    <input id="num_area" type="text" name="num" οninput="value=value.replace(/[^\d]/g,'')"> 数量</input>
     <button name='send_message' @click='send_message()'>send_message</button></td>
     </div>
 
