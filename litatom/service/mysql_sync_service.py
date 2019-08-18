@@ -254,5 +254,5 @@ class MysqlSyncService(object):
     def c(cls):
         print dir(model)
 
-# print MysqlSyncService.create_table(UserAddressList)
-# print MysqlSyncService.update_tb(UserAddressList)
+print MysqlSyncService.create_table(UserAddressList)
+print MysqlSyncService.update_tb(UserAddressList)
