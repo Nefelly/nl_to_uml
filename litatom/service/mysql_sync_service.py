@@ -138,7 +138,7 @@ class MysqlSyncService(object):
         db = get_dbcnn()
         for tb in cls.get_tables().values():
             ddl = cls.gen_ddl(tb)
-            db.cursor.execute(ddl)
+            db.cursor().execute(ddl)
             db.commit()
             break
 
