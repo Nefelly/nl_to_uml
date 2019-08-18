@@ -169,11 +169,11 @@ class MysqlSyncService(object):
         if not value:
             return {
                 StringField: "''",
-                IntField: "''",
+                IntField: "",
                 ListField: "''" ,
                 EmbeddedDocumentField:  "''",
                 DateTimeField: "'0:0:0 00:00:00'",
-                BooleanField: "''"
+                BooleanField: ""
             }.get(t)
         if t == StringField:
             return  "'%s'" % value[:cls.STRING_MAX]
