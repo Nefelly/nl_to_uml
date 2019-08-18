@@ -42,8 +42,8 @@ class MysqlSyncService(object):
             try:
                 if globals().get(_, None)  and issubclass(globals()[_], Document):
                     res[_] = globals()[_]
-            except:
-                print _
+            except Exception as e:
+                print _, e
                 continue
         return res
 
