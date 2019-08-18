@@ -52,7 +52,7 @@ class MysqlSyncService(object):
 
     LIMIT_ROWS = 2000
     QUERY_AMOUNT = 100
-    UPSERT_MAX = 3
+    UPSERT_MAX = 10
     MONGO_MYSQL = {
         StringField: 'VARCHAR (%d)' % STRING_MAX,
         IntField: 'int(13)',
@@ -165,7 +165,7 @@ class MysqlSyncService(object):
         db.commit()
 
     @classmethod
-    def _mongo_val_2_sql(cls, value, t):
+    def mongo_val_2_sql(cls, value, t):
         def trunc(v, length):
             if len(v) > length:
                 return "'%s'" % v.decode('utf-8')[:length].encode('utf-8')
@@ -198,7 +198,7 @@ class MysqlSyncService(object):
             return "''"
 
     @classmethod
-    def mongo_val_2_sql(cls, value, t):
+    def _mongo_val_2_sql(cls, value, t):
         db =get_dbcnn()
         return db.escape(cls._mongo_val_2_sql(value, t))
 
@@ -251,15 +251,20 @@ class MysqlSyncService(object):
     @classmethod
     def run_all(cls):
         for tb in cls.get_tables().values():
-            cls.create_table(tb)
-            cls.update_tb(tb)
-            print '*' * 100
-            print 'table: %s updated' % tb.__name__
+            try:
+                cls.create_table(tb)
+                cls.update_tb(tb)
+                print '*' * 100
+                print 'table: %s updated' % tb.__name__
+            except Exception as e:
+                print '!' * 100
+                print 'table: %s Error' % tb.__name__, e
+                continue
 
 
     @classmethod
     def c(cls):
         print dir(model)
 
-print MysqlSyncService.create_table(UserAddressList)
-print MysqlSyncService.update_tb(UserAddressList)
+# print MysqlSyncService.create_table(UserAddressList)
+# print MysqlSyncService.update_tb(UserAddressList)
