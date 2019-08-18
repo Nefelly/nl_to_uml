@@ -173,7 +173,7 @@ class MysqlSyncService(object):
                 IntField: '0',
                 ListField: "''" ,
                 EmbeddedDocumentField:  "''",
-                DateTimeField: '0:0:0 00:00:00',
+                DateTimeField: "'0:0:0 00:00:00'",
                 BooleanField: '0'
             }.get(t)
         if t == StringField:
@@ -214,10 +214,10 @@ class MysqlSyncService(object):
             j = 1   # 用以多条合并成一个语句
             sqls = []
             obj = mongo_res[i]
-            values = [str(obj.id)]
+            values = ["'%s'" % str(obj.id)]
             for k in colums:
                 values.append(cls.mongo_val_2_sql(getattr(obj, k), fields[k]))
-            upsert_sql = 'INSERT IGNORE INTO %s (%s) VALUES (%s);' % (tb_name, 'id, ' + ','.join(colums), ','.join(values))
+            upsert_sql = 'INSERT IGNORE INTO %s (%s) VALUES (%s);' % (tb_name, 'id, ' + ', '.join(colums), ', '.join(values))
             print upsert_sql
             sqls.append(upsert_sql)
             # print tb_name, colums, values
