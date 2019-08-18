@@ -2,7 +2,7 @@
 import random
 import time
 import datetime
-import ..model
+from .. import model
 from ..model import *
 from ..service import (
     UserService,
