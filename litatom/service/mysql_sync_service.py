@@ -169,6 +169,7 @@ class MysqlSyncService(object):
         tb_name = c.__name__
         name, t = cls._get_time_field(c)
         max_sql = 'SELECT MAX(%s) FROM %s;' % (name, tb_name)
+        print max_sql
         res = cls.fetch_one(max_sql)
         print res
 
