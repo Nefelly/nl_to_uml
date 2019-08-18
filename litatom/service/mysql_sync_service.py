@@ -201,9 +201,6 @@ class MysqlSyncService(object):
         if t == DateTimeField:
             if not cond:
                 d = datetime.datetime(1, 1, 1,0,0,0)
-            else:
-                print cond
-                d = datetime.datetime(cond)
             cond = d
 
         elif not cond:
