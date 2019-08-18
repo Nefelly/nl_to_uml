@@ -52,7 +52,7 @@ class MysqlSyncService(object):
 
     LIMIT_ROWS = 2000
     QUERY_AMOUNT = 100
-    UPSERT_MAX = 10
+    UPSERT_MAX = 5
     MONGO_MYSQL = {
         StringField: 'VARCHAR (%d)' % STRING_MAX,
         IntField: 'int(13)',
