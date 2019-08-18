@@ -169,11 +169,11 @@ class MysqlSyncService(object):
         if not value:
             return {
                 StringField: "''",
-                IntField: '0',
+                IntField: "''",
                 ListField: "''" ,
                 EmbeddedDocumentField:  "''",
                 DateTimeField: "'0:0:0 00:00:00'",
-                BooleanField: '0'
+                BooleanField: "''"
             }.get(t)
         if t == StringField:
             return  "'%s'" % value[:cls.STRING_MAX]
@@ -209,9 +209,10 @@ class MysqlSyncService(object):
         mongo_res = [el for el in mongo_res]
         res_len = len(mongo_res)
         colums = fields.keys()
+
+        j = 1   # 用以多条合并成一个语句
+        sqls = []
         for i in range(res_len):
-            j = 1   # 用以多条合并成一个语句
-            sqls = []
             obj = mongo_res[i]
             values = ["'%s'" % str(obj.id)]
             for k in colums:
@@ -225,6 +226,7 @@ class MysqlSyncService(object):
                 print sql
                 cls.execute(sql)
                 j = 1
+                sqls = []
                 break
 
 
