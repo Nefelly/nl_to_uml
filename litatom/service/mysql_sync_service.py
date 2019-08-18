@@ -169,10 +169,10 @@ class MysqlSyncService(object):
     def mongo_val_2_sql(cls, value, t):
         if not value:
             return {
-                StringField: '',
+                StringField: "''",
                 IntField: 0,
-                ListField: '' ,
-                EmbeddedDocumentField:  '',
+                ListField: "''" ,
+                EmbeddedDocumentField:  "''",
                 DateTimeField: '0:0:0 00:00:00',
                 BooleanField: False
             }.get(t)
@@ -213,9 +213,9 @@ class MysqlSyncService(object):
         for i in range(res_len):
             j = 1   # 用以多条合并成一个语句
             sqls = []
+            obj = mongo_res[i]
+            values = [str(obj.id)]
             for k in colums:
-                obj = mongo_res[i]
-                values = [str(obj.id)]
                 values.append(cls.mongo_val_2_sql(getattr(obj, k), fields[k]))
                 print tb_name, colums, values
                 upsert_sql = 'INSERT IGNORE INTO %s (%s) VALUES (%s);' % (tb_name, 'id, ' + ','.join(colums), ','.join(values))
