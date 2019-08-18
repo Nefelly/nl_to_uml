@@ -46,11 +46,12 @@ def get_dbcnn():
     return db
 
 class MysqlSyncService(object):
-    BIGGEST_LIST = 1024
-    BIGGEST_EMBEDDED = 1024
+    LIST_MAX = 1023
+    EMBEDDED_MAX = 1023
+    STRING_MAX = 255
+
     LIMIT_ROWS = 2000
     QUERY_AMOUNT = 100
-    STRING_MAX = 255
     UPSERT_MAX = 10
     MONGO_MYSQL = {
         StringField: 'VARCHAR (%d)' % STRING_MAX,
@@ -60,6 +61,7 @@ class MysqlSyncService(object):
         DateTimeField: 'datetime',
         BooleanField: 'tinyint(1)'
     }
+
 
     @classmethod
     def get_tables(cls):
@@ -165,7 +167,7 @@ class MysqlSyncService(object):
 
     @classmethod
     def mongo_val_2_sql(cls, value, t):
-        if value == None:
+        if not value:
             return {
                 StringField: '',
                 IntField: 0,
@@ -174,7 +176,20 @@ class MysqlSyncService(object):
                 DateTimeField: '0:0:0 00:00:00',
                 BooleanField: False
             }.get(t)
-
+        if t == StringField:
+            return  "'%s'" % value[:cls.STRING_MAX]
+        elif t == DateTimeField:
+            return "'%s'" % value.strftime('%Y-%m-%d %H:%M:%S')
+        elif t == IntField:
+            return value
+        elif t == ListField:
+            return "'%s'" % ','.join([str(el) for el in value])[:cls.LIST_MAX]
+        elif t == EmbeddedDocumentField:
+            return "'%s'" % str(value)[:cls.EMBEDDED_MAX]
+        elif t == BooleanField:
+            return int(t)
+        else:
+            return "''"
 
     @classmethod
     def update_tb(cls, c):
@@ -194,13 +209,13 @@ class MysqlSyncService(object):
         mongo_res = eval(mongo_get)
         mongo_res = [el for el in mongo_res]
         res_len = len(mongo_res)
-        colums = fields.keys()
+        colums = ['id'] + fields.keys()
         for i in range(res_len):
             j = 1   # 用以多条合并成一个语句
             sqls = []
-            values = []
             for k in colums:
                 obj = mongo_res[i]
+                values = [str(obj.id)]
                 values.append(cls.mongo_val_2_sql(getattr(obj, k), fields[k]))
                 upsert_sql = 'INSERT IGNORE INTO %s (%s) VALUES (%s);' % (tb_name, ','.join(colums), ','.join(values))
                 j += 1
