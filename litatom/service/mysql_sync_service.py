@@ -118,7 +118,7 @@ class MysqlSyncService(object):
             return "`%s` %s," % (name, cls.MONGO_MYSQL[t])
 
         mode = '''
-          CREATE TABLE `%s` (
+          CREATE TABLE IF NOT EXISTS `%s` (
           `id` bigint(18) NOT NULL,
           `mid` VARCHAR (64) NOT NULL,
           %s
@@ -132,6 +132,26 @@ class MysqlSyncService(object):
         fields = '\n'.join([gen_filed(name, t) for name, t in cls.table_fields(c).items()])
         ctime_name = cls._get_time_field(c)
         return mode % (tb_name, fields, ctime_name[0])
+
+    @classmethod
+    def execute(cls, sql):
+        db = get_dbcnn()
+        db.cursor().execute(sql)
+        db.commit()
+
+    @classmethod
+    def get_one_row(cls, sql):
+        db = get_dbcnn()
+        cursor = db.cursor()
+        cursor.execute(sql)
+        return cursor.fetchone()
+
+    @classmethod
+    def get_multi(cls, sql):
+        db = get_dbcnn()
+        cursor = db.cursor()
+        cursor.execute(sql)
+        return cursor.fetchall()
 
     @classmethod
     def create_tables(cls):
