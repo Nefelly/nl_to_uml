@@ -165,7 +165,15 @@ class MysqlSyncService(object):
 
     @classmethod
     def mongo_val_2_sql(cls, value, t):
-        if value ==
+        if value == None:
+            return {
+                StringField: '',
+                IntField: 0,
+                ListField: '' ,
+                EmbeddedDocumentField:  '',
+                DateTimeField: '0:0:0 00:00:00',
+                BooleanField: False
+            }.get(t)
 
 
     @classmethod
