@@ -172,11 +172,11 @@ class MysqlSyncService(object):
                 IntField: "0",
                 ListField: "''" ,
                 EmbeddedDocumentField:  "''",
-                DateTimeField: "'0:0:0 00:00:00'",
+                DateTimeField: "'1:1:1 00:00:00'",
                 BooleanField: "0"
             }.get(t)
         if t == StringField:
-            return  "'%s'" % value[:cls.STRING_MAX]
+            return  "'%s'" % value
         elif t == DateTimeField:
             return "'%s'" % value.strftime('%Y-%m-%d %H:%M:%S')
         elif t == IntField:
@@ -228,7 +228,7 @@ class MysqlSyncService(object):
             obj = mongo_res[i]
             values = ["'%s'" % str(obj.id)]
             for k in colums:
-                values.append(cls.mongo_val_2_sql(getattr(obj, k).decode(), fields[k]))
+                values.append(cls.mongo_val_2_sql(getattr(obj, k), fields[k]))
             upsert_sql = 'INSERT IGNORE INTO %s (%s) VALUES (%s);' % (tb_name, 'id, ' + ', '.join(colums), ', '.join(values))
             sqls.append(upsert_sql)
             # print tb_name, colums, values
