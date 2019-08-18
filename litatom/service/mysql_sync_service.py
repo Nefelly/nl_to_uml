@@ -59,6 +59,6 @@ class MysqlSyncService(object):
     def c(cls):
         print dir(model)
 
-print MysqlSyncService.get_tables()
+#print MysqlSyncService.get_tables()
 print MysqlSyncService.table_fields('Avatar', Avatar)
 
