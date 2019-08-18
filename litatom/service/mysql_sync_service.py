@@ -222,7 +222,7 @@ class MysqlSyncService(object):
             # print tb_name, colums, values
             j += 1
             if j == cls.UPSERT_MAX or i == res_len - 1:
-                sql = '\n'.join(sqls[:2])
+                sql = '\n'.join(sqls)
                 print sql
                 cls.execute(sql)
                 j = 1
