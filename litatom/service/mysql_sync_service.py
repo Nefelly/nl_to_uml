@@ -145,7 +145,8 @@ class MysqlSyncService(object):
         db = get_dbcnn()
         cursor = db.cursor()
         cursor.execute(sql)
-        return cursor.fetchone()[0]
+        res = cursor.fetchone()
+        return res[0]
 
     @classmethod
     def fetch_all(cls, sql):
