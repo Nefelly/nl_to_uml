@@ -40,7 +40,7 @@ class MysqlSyncService(object):
         res = {}
         for _ in dir(model):
             try:
-                if globals().get(_, None) and type(_) == type(Avatar) and issubclass(globals()[_], Document):
+                if globals().get(_, None)  and issubclass(globals()[_], Document):
                     res[_] = globals()[_]
             except:
                 print _
