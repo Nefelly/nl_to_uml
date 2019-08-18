@@ -125,7 +125,6 @@ class MysqlSyncService(object):
           `id` VARCHAR(64) NOT NULL,
           %s
           PRIMARY KEY (`id`),
-          UNIQUE KEY `indmid` (`mid`),
           INDEX `ctime` (`%s`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;'''
 
