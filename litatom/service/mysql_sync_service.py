@@ -49,6 +49,7 @@ class MysqlSyncService(object):
     BIGGEST_LIST = 1024
     BIGGEST_EMBEDDED = 1024
     LIMIT_ROWS = 2000
+    QUERY_AMOUNT = 100
     UPSERT_MAX = 10
     MONGO_MYSQL = {
         StringField: 'VARCHAR (255)',
@@ -140,14 +141,14 @@ class MysqlSyncService(object):
         db.commit()
 
     @classmethod
-    def get_one_row(cls, sql):
+    def fetch_one(cls, sql):
         db = get_dbcnn()
         cursor = db.cursor()
         cursor.execute(sql)
         return cursor.fetchone()
 
     @classmethod
-    def get_multi(cls, sql):
+    def fetch_all(cls, sql):
         db = get_dbcnn()
         cursor = db.cursor()
         cursor.execute(sql)
@@ -158,18 +159,23 @@ class MysqlSyncService(object):
         db = get_dbcnn()
         for tb in cls.get_tables().values():
             ddl = cls.gen_ddl(tb)
-            print ddl
+            # print ddl
             db.cursor().execute(ddl)
             db.commit()
             break
+
+    @classmethod
+    def update_tb(cls, c):
+        tb_name = c.__name__
+        name, t = cls._get_time_field(c)
+        max_sql = 'SELECT MAX(%s) FROM %s;' % (name, t)
+        res = cls.fetch_one(max_sql)
+        print res
 
 
     @classmethod
     def c(cls):
         print dir(model)
 
-#print MysqlSyncService.get_tables()
-#print MysqlSyncService.table_fields(Avatar)
-#print MysqlSyncService.all_field_type()
-#print MysqlSyncService.check_has_time()
-print MysqlSyncService.create_tables()
+
+print MysqlSyncService.update_tb(UserAction)
