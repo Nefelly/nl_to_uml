@@ -58,7 +58,7 @@ class MysqlSyncService(object):
         IntField: 'int(13)',
         ListField: 'VARCHAR(%d)' % LIST_MAX,
         EmbeddedDocumentField:  'VARCHAR(%d)' % EMBEDDED_MAX,
-        DateTimeField: 'datetime',
+        DateTimeField: 'timestamp NOT NULL DEFAULT \'0000-00-00 00:00:00\'',
         BooleanField: 'tinyint(1)'
     }
 
@@ -146,6 +146,7 @@ class MysqlSyncService(object):
         cursor = db.cursor()
         cursor.execute(sql)
         res = cursor.fetchone()
+        print res
         return res[0]
 
     @classmethod
