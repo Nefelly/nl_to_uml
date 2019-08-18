@@ -184,7 +184,7 @@ class MysqlSyncService(object):
         print max_sql
 
         cond = cls.fetch_one(max_sql)
-        if not cond:
+        if not cond[0]:
             cond = 0 if t == IntField else '0-0-0 00:00:00'
 
         mongo_get = '%s.objects(%s__gte=%r).order_by(\'%s\').limit(%d)' % (tb_name, create_name, cond, create_name, cls.QUERY_AMOUNT)
