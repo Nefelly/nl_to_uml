@@ -50,16 +50,16 @@ class MysqlSyncService(object):
     BIGGEST_EMBEDDED = 1024
     LIMIT_ROWS = 2000
     QUERY_AMOUNT = 100
+    STRING_MAX = 255
     UPSERT_MAX = 10
     MONGO_MYSQL = {
-        StringField: 'VARCHAR (255)',
+        StringField: 'VARCHAR (%d)' % STRING_MAX,
         IntField: 'int(13)',
         ListField: 'VARCHAR(%d)' % BIGGEST_LIST,
         EmbeddedDocumentField:  'VARCHAR(%d)' % BIGGEST_EMBEDDED,
         DateTimeField: 'datetime',
         BooleanField: 'tinyint(1)'
     }
-
 
     @classmethod
     def get_tables(cls):
@@ -187,13 +187,32 @@ class MysqlSyncService(object):
         if not cond[0]:
             cond = 0 if t == IntField else '0-0-0 00:00:00'
 
-        mongo_get = '%s.objects(%s__gte=%r).order_by(\'%s\').limit(%d)' % (tb_name, create_name, cond, create_name, cls.QUERY_AMOUNT)
+        fields = cls.table_fields(c)
+
+        mongo_get = '%s.objects(%s__gte=%r).order_by(\'%s\').limit(%d)' % (tb_name, create_name, cond, create_name, cls.LIMIT_ROWS)
         print mongo_get
         mongo_res = eval(mongo_get)
-        print mongo_res
-        colums = []
-        valuse = []
-        upsert_sql = 'INSERT IGNORE INTO %s (%s) VALUES (%s);' % (tb_name, )
+        mongo_res = [el for el in mongo_res]
+        res_len = len(mongo_res)
+        colums = fields.keys()
+        for i in range(res_len):
+            j = 1   # 用以多条合并成一个语句
+            sqls = []
+            values = []
+            for k in colums:
+                obj = mongo_res[i]
+                values.append(cls.mongo_val_2_sql(getattr(obj, k), fields[k]))
+                upsert_sql = 'INSERT IGNORE INTO %s (%s) VALUES (%s);' % (tb_name, ','.join(colums), ','.join(values))
+                j += 1
+            if j == cls.UPSERT_MAX or i == res_len - 1:
+                sql = 'n'.join(sqls)
+                print sql
+                #cls.execute(sql)
+                j = 1
+                break
+
+
+
 
     @classmethod
     def c(cls):
