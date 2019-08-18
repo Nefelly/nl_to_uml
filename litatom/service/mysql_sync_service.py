@@ -50,7 +50,7 @@ class MysqlSyncService(object):
     EMBEDDED_MAX = 1023
     STRING_MAX = 255
 
-    LIMIT_ROWS = 20
+    LIMIT_ROWS = 2000
     QUERY_AMOUNT = 100
     UPSERT_MAX = 10
     MONGO_MYSQL = {
