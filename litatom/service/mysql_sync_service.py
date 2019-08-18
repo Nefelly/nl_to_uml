@@ -233,7 +233,7 @@ class MysqlSyncService(object):
                 cls.execute(sql)
                 j = 1
                 sqls = []
-                break
+                #break
 
     @classmethod
     def run_all(cls):
