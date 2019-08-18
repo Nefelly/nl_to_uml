@@ -165,7 +165,7 @@ class MysqlSyncService(object):
         db.commit()
 
     @classmethod
-    def mongo_val_2_sql(cls, value, t):
+    def _mongo_val_2_sql(cls, value, t):
         def trunc(v, length):
             if len(v) > length:
                 return "'%s'" % v.decode('utf-8')[:length].encode('utf-8')
@@ -198,7 +198,7 @@ class MysqlSyncService(object):
             return "''"
 
     @classmethod
-    def _mongo_val_2_sql(cls, value, t):
+    def mongo_val_2_sql(cls, value, t):
         db =get_dbcnn()
         return db.escape(cls._mongo_val_2_sql(value, t))
 
