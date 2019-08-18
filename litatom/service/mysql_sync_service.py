@@ -165,7 +165,7 @@ class MysqlSyncService(object):
         db.commit()
 
     @classmethod
-    def _mongo_val_2_sql(cls, value, t):
+    def mongo_val_2_sql(cls, value, t):
         if not value:
             return {
                 StringField: "''",
@@ -191,7 +191,7 @@ class MysqlSyncService(object):
             return "''"
 
     @classmethod
-    def mongo_val_2_sql(cls, value, t):
+    def _mongo_val_2_sql(cls, value, t):
         db =get_dbcnn()
         return db.escape(cls._mongo_val_2_sql(value, t))
 
