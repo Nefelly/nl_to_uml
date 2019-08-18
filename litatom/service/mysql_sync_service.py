@@ -145,7 +145,7 @@ class MysqlSyncService(object):
         db = get_dbcnn()
         cursor = db.cursor()
         cursor.execute(sql)
-        return cursor.fetchone()
+        return cursor.fetchone()[0]
 
     @classmethod
     def fetch_all(cls, sql):
@@ -198,7 +198,7 @@ class MysqlSyncService(object):
         print max_sql
 
         cond = cls.fetch_one(max_sql)
-        if not cond[0]:
+        if not cond:
             cond = 0 if t == IntField else '0-0-0 00:00:00'
 
         fields = cls.table_fields(c)
