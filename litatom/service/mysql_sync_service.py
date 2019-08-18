@@ -97,7 +97,7 @@ class MysqlSyncService(object):
             if fs.get(_):
                 return _ , fs.get(_)
         assert False
-
+UserAction
     @classmethod
     def check_has_time(cls):
         check_fs = ['create_time', 'create_ts']
@@ -138,6 +138,7 @@ class MysqlSyncService(object):
         db = get_dbcnn()
         for tb in cls.get_tables().values():
             ddl = cls.gen_ddl(tb)
+            print ddl
             db.cursor().execute(ddl)
             db.commit()
             break
