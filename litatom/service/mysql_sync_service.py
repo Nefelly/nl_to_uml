@@ -48,7 +48,7 @@ class MysqlSyncService(object):
         return res
 
     @classmethod
-    def table_fields(cls, name, c):
+    def table_fields(cls, c):
         res = {}
         for _ in dir(c):
             if 'mongoengine.fields.' in str(type(getattr(c, _))):
@@ -56,9 +56,20 @@ class MysqlSyncService(object):
         return res
 
     @classmethod
+    def all_field_type(cls):
+        res = {}
+        for c in cls.get_tables().values():
+            for f in cls.table_fields(c).values():
+                if not res.get(f, None):
+                    res[f] = 1
+        return res.keys()
+
+
+    @classmethod
     def c(cls):
         print dir(model)
 
 #print MysqlSyncService.get_tables()
-print MysqlSyncService.table_fields('Avatar', Avatar)
+#print MysqlSyncService.table_fields(Avatar)
+print MysqlSyncService.all_field_type()
 
