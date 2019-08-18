@@ -155,25 +155,23 @@ class MysqlSyncService(object):
         return cursor.fetchall()
 
     @classmethod
-    def create_tables(cls):
+    def create_table(cls, tb):
         db = get_dbcnn()
-        for tb in cls.get_tables().values():
-            ddl = cls.gen_ddl(tb)
-            # print ddl
-            db.cursor().execute(ddl)
-            db.commit()
-            break
+        ddl = cls.gen_ddl(tb)
+        # print ddl
+        db.cursor().execute(ddl)
+        db.commit()
 
     @classmethod
     def mongo_val_2_sql(cls, value, t):
         if not value:
             return {
                 StringField: "''",
-                IntField: "",
+                IntField: "0",
                 ListField: "''" ,
                 EmbeddedDocumentField:  "''",
                 DateTimeField: "'0:0:0 00:00:00'",
-                BooleanField: ""
+                BooleanField: "0"
             }.get(t)
         if t == StringField:
             return  "'%s'" % value[:cls.STRING_MAX]
@@ -222,14 +220,20 @@ class MysqlSyncService(object):
             # print tb_name, colums, values
             j += 1
             if j == cls.UPSERT_MAX or i == res_len - 1:
-                sql = '\n'.join(sqls[:1])
+                sql = '\n'.join(sqls[:2])
                 print sql
                 cls.execute(sql)
                 j = 1
                 sqls = []
                 break
 
-
+    @classmethod
+    def run_all(cls):
+        for tb in cls.get_tables().values():
+            cls.create_table(tb)
+            cls.update_tb(tb)
+            print '*' * 100
+            print 'table: %s updated' % tb.__name__
 
 
     @classmethod
