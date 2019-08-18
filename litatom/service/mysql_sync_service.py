@@ -56,7 +56,7 @@ class MysqlSyncService(object):
         IntField: 'int(13)',
         ListField: 'VARCHAR(%d)' % BIGGEST_LIST,
         EmbeddedDocumentField:  'VARCHAR(%d)' % BIGGEST_EMBEDDED,
-        DateTimeField: 'timestamp',
+        DateTimeField: 'datetime',
         BooleanField: 'tinyint(1)'
     }
 
@@ -120,8 +120,7 @@ class MysqlSyncService(object):
 
         mode = '''
           CREATE TABLE IF NOT EXISTS `%s` (
-          `id` bigint(18) NOT NULL,
-          `mid` VARCHAR (64) NOT NULL,
+          `id` VARCHAR(64) NOT NULL,
           %s
           PRIMARY KEY (`id`),
           UNIQUE KEY `indmid` (`mid`),
@@ -165,14 +164,28 @@ class MysqlSyncService(object):
             break
 
     @classmethod
+    def mongo_val_2_sql(cls, value, t):
+        if value ==
+
+
+    @classmethod
     def update_tb(cls, c):
         tb_name = c.__name__
-        name, t = cls._get_time_field(c)
-        max_sql = 'SELECT MAX(%s) FROM %s;' % (name, tb_name)
+        create_name, t = cls._get_time_field(c)
+        max_sql = 'SELECT MAX(%s) FROM %s;' % (create_name, tb_name)
         print max_sql
-        res = cls.fetch_one(max_sql)
-        print res
 
+        cond = cls.fetch_one(max_sql)
+        if not cond:
+            cond = 0 if t == IntField else '0-0-0 00:00:00'
+
+        mongo_get = '%s.objects(%s__gte=%r).order_by(\'%s\').limit(%d)' % (tb_name, create_name, cond, create_name, cls.QUERY_AMOUNT)
+        print mongo_get
+        mongo_res = eval(mongo_get)
+        print mongo_res
+        colums = []
+        valuse = []
+        upsert_sql = 'INSERT IGNORE INTO %s (%s) VALUES (%s);' % (tb_name, )
 
     @classmethod
     def c(cls):
