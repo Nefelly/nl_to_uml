@@ -51,7 +51,7 @@ class MysqlSyncService(object):
     def table_fields(cls, name, c):
         res = {}
         for _ in dir(c):
-            if type(getattr(c, _)).startswith('mongoengine.fields.'):
+            if 'mongoengine.fields.' in str(type(getattr(c, _))):
                 res[_] = type(getattr(c, _))
         return res
 
