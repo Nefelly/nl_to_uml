@@ -97,7 +97,7 @@ class MysqlSyncService(object):
             if fs.get(_):
                 return _ , fs.get(_)
         assert False
-UserAction
+
     @classmethod
     def check_has_time(cls):
         check_fs = ['create_time', 'create_ts']
