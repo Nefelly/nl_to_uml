@@ -9,6 +9,7 @@ from mongoengine import (
     IntField,
     ListField,
     StringField,
+    EmbeddedDocumentField
 )
 from .. import model
 from ..model import *
@@ -27,12 +28,28 @@ from ..key import (
     REDIS_ADMIN_USER
 )
 
+'''
+<class 'mongoengine.fields.StringField'>,
+<class 'mongoengine.fields.IntField'>,
+<class 'mongoengine.fields.ListField'>,
+<class 'mongoengine.fields.EmbeddedDocumentField'>,
+<class 'mongoengine.fields.DateTimeField'>,
+<class 'mongoengine.fields.BooleanField'>
+'''
+
 sys_rnd = random.SystemRandom()
 redis_client = RedisClient()['lit']
 
 class MysqlSyncService(object):
-    UID_PWDS = {
-        'joey': 'hypercycle'
+    BIGGEST_LIST = 1024
+    BIGGEST_EMBEDDED = 1024
+    MONGO_MYSQL = {
+        StringField: 'VARCHAR (255)',
+        IntField: 'int(13)',
+        ListField: 'VARCHAR(%d)' % BIGGEST_LIST,
+        EmbeddedDocumentField:  'VARCHAR(%d)' % BIGGEST_EMBEDDED,
+        DateTimeField: 'timestamp',
+        BooleanField: 'tinyint(1)'
     }
 
     @classmethod
@@ -65,6 +82,15 @@ class MysqlSyncService(object):
         return res.keys()
 
     @classmethod
+    def _get_time_field(cls, c):
+        check_fs = ['create_time', 'create_ts']
+        fs = cls.table_fields(c)
+        for _ in check_fs:
+            if fs.get(_):
+                return _ , fs.get(_)
+        assert False
+
+    @classmethod
     def check_has_time(cls):
         check_fs = ['create_time', 'create_ts']
         for n,v in cls.get_tables().items():
@@ -79,10 +105,34 @@ class MysqlSyncService(object):
                 print n , fs
 
     @classmethod
+    def gen_ddl(cls, c):
+        def gen_filed(name, t):
+            return "`%s` %s," % (name, cls.MONGO_MYSQL[t])
+
+        mode = '''
+          CREATE TABLE `%s` (
+          `id` bigint(18) NOT NULL,
+          `mid` VARCHAR (64) NOT NULL,
+          %s
+          PRIMARY KEY (`id`),
+          UNIQUE KEY `indmid` (`mid`),
+          INDEX `ctime` (`%s`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;'''
+
+        tb_name = c.__name__
+
+        fields = '\n'.join([gen_filed(name, t) for name, t in cls.table_fields(c)])
+        ctime_name = cls._get_time_field(c)
+        return mode % (tb_name, fields, ctime_name)
+
+
+
+    @classmethod
     def c(cls):
         print dir(model)
 
 #print MysqlSyncService.get_tables()
 #print MysqlSyncService.table_fields(Avatar)
 #print MysqlSyncService.all_field_type()
-print MysqlSyncService.check_has_time()
+#print MysqlSyncService.check_has_time()
+print MysqlSyncService.gen_ddl(Avatar)
