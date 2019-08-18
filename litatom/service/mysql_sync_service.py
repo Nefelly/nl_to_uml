@@ -2,6 +2,14 @@
 import random
 import time
 import datetime
+from mongoengine import (
+    BooleanField,
+    DateTimeField,
+    Document,
+    IntField,
+    ListField,
+    StringField,
+)
 from .. import model
 from ..model import *
 from ..service import (
@@ -22,12 +30,26 @@ from ..key import (
 sys_rnd = random.SystemRandom()
 redis_client = RedisClient()['lit']
 
-class AdminService(object):
+class MysqlSyncService(object):
     UID_PWDS = {
         'joey': 'hypercycle'
     }
 
     @classmethod
+    def get_tables(cls):
+        res = {}
+        for _ in dir(model):
+            if globals().get(_, None) and issubclass(globals()[_], Document):
+                res[_] = globals()[_]
+        return res
+
+    @classmethod
+    def table_fields(cls, name, c):
+        return {}
+
+    @classmethod
     def c(cls):
         print dir(model)
+
+print MysqlSyncService.get_tables()
 
