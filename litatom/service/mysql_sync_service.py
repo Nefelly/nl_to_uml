@@ -70,6 +70,7 @@ class MysqlSyncService(object):
         for n,v in cls.get_tables().items():
             fs = cls.table_fields(v)
             r = False
+            print n, fs
             for _ in check_fs:
                 if fs.get(_):
                     r = True
