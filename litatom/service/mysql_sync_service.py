@@ -50,7 +50,7 @@ class MysqlSyncService(object):
     EMBEDDED_MAX = 1023
     STRING_MAX = 255
 
-    LIMIT_ROWS = 2000
+    LIMIT_ROWS = 20
     QUERY_AMOUNT = 100
     UPSERT_MAX = 10
     MONGO_MYSQL = {
@@ -242,7 +242,7 @@ class MysqlSyncService(object):
             j += 1
             if j == cls.UPSERT_MAX or i == res_len - 1:
                 sql = '\n'.join(sqls)
-                print sql
+                # print sql
                 cls.execute(sql)
                 j = 1
                 sqls = []
