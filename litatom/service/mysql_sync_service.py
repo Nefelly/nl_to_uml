@@ -146,7 +146,7 @@ class MysqlSyncService(object):
         cursor = db.cursor()
         cursor.execute(sql)
         res = cursor.fetchone()
-        print res
+        # print res
         return res[0]
 
     @classmethod
@@ -195,7 +195,7 @@ class MysqlSyncService(object):
         tb_name = c.__name__
         create_name, t = cls._get_time_field(c)
         max_sql = 'SELECT MAX(%s) FROM %s;' % (create_name, tb_name)
-        print max_sql
+        # print max_sql
 
         cond = cls.fetch_one(max_sql)
         if t == DateTimeField:
@@ -230,7 +230,7 @@ class MysqlSyncService(object):
             j += 1
             if j == cls.UPSERT_MAX or i == res_len - 1:
                 sql = '\n'.join(sqls)
-                print sql
+                #print sql
                 cls.execute(sql)
                 j = 1
                 sqls = []
@@ -249,5 +249,5 @@ class MysqlSyncService(object):
     def c(cls):
         print dir(model)
 
-print MysqlSyncService.create_table(UserSetting)
-print MysqlSyncService.update_tb(UserSetting)
+# print MysqlSyncService.create_table(UserSetting)
+# print MysqlSyncService.update_tb(UserSetting)
