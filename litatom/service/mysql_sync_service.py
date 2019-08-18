@@ -121,7 +121,7 @@ class MysqlSyncService(object):
 
         tb_name = c.__name__
 
-        fields = '\n'.join([gen_filed(name, t) for name, t in cls.table_fields(c)])
+        fields = '\n'.join([gen_filed(name, t) for name, t in cls.table_fields(c).items()])
         ctime_name = cls._get_time_field(c)
         return mode % (tb_name, fields, ctime_name)
 
