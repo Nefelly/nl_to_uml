@@ -204,7 +204,7 @@ class MysqlSyncService(object):
             else:
                 print cond
                 d = datetime.datetime(cond)
-            cond = 'd'
+            cond = d
 
         elif not cond:
             if t == IntField:
