@@ -39,7 +39,7 @@ class MysqlSyncService(object):
     def get_tables(cls):
         res = {}
         for _ in dir(model):
-            if globals().get(_, None) and issubclass(globals()[_], Document):
+            if globals().get(_, None) and type(_) == type(Avatar) and issubclass(globals()[_], Document):
                 res[_] = globals()[_]
         return res
 
