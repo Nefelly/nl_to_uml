@@ -168,7 +168,7 @@ class MysqlSyncService(object):
     def mongo_val_2_sql(cls, value, t):
         def trunc(v, length):
             if len(v) > length:
-                return v.decode('utf-8')[length].encode('utf-8')
+                return "'%s'" % v.decode('utf-8')[:length].encode('utf-8')
             return v
         if not value:
             return {
