@@ -2,6 +2,7 @@
 import random
 import time
 import datetime
+import MySQLdb
 from mongoengine import (
     BooleanField,
     DateTimeField,
@@ -40,9 +41,15 @@ from ..key import (
 sys_rnd = random.SystemRandom()
 redis_client = RedisClient()['lit']
 
+def get_dbcnn():
+    db = MySQLdb.connect("120.24.201.118", "lit", "asd1559", "lit", charset='utf8')
+    return db
+
 class MysqlSyncService(object):
     BIGGEST_LIST = 1024
     BIGGEST_EMBEDDED = 1024
+    LIMIT_ROWS = 2000
+    UPSERT_MAX = 10
     MONGO_MYSQL = {
         StringField: 'VARCHAR (255)',
         IntField: 'int(13)',
@@ -51,6 +58,7 @@ class MysqlSyncService(object):
         DateTimeField: 'timestamp',
         BooleanField: 'tinyint(1)'
     }
+
 
     @classmethod
     def get_tables(cls):
@@ -125,6 +133,14 @@ class MysqlSyncService(object):
         ctime_name = cls._get_time_field(c)
         return mode % (tb_name, fields, ctime_name[0])
 
+    @classmethod
+    def create_tables(cls):
+        db = get_dbcnn()
+        for tb in cls.get_tables().values():
+            ddl = cls.gen_ddl(tb)
+            db.cursor.execute(ddl)
+            db.commit()
+            break
 
 
     @classmethod
@@ -135,4 +151,4 @@ class MysqlSyncService(object):
 #print MysqlSyncService.table_fields(Avatar)
 #print MysqlSyncService.all_field_type()
 #print MysqlSyncService.check_has_time()
-print MysqlSyncService.gen_ddl(Avatar)
+print MysqlSyncService.create_tables()
