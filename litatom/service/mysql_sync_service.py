@@ -166,6 +166,10 @@ class MysqlSyncService(object):
 
     @classmethod
     def mongo_val_2_sql(cls, value, t):
+        def trunc(v, length):
+            if len(v) > length:
+                return v.decode('utf-8')[length].encode('utf-8')
+            return v
         if not value:
             return {
                 StringField: "''",
@@ -176,15 +180,18 @@ class MysqlSyncService(object):
                 BooleanField: "0"
             }.get(t)
         if t == StringField:
-            return  "'%s'" % value
+            tmp_res =  "'%s'" % value
+            return trunc(tmp_res, cls.STRING_MAX)
         elif t == DateTimeField:
             return "'%s'" % value.strftime('%Y-%m-%d %H:%M:%S')
         elif t == IntField:
             return str(value)
         elif t == ListField:
-            return "'%s'" % ','.join([str(el) for el in value])[:cls.LIST_MAX]
+            temp_res = "'%s'" % ','.join([str(el) for el in value])
+            return trunc(temp_res, cls.LIST_MAX)
         elif t == EmbeddedDocumentField:
-            return "'%s'" % str(value)[:cls.EMBEDDED_MAX]
+            temp_res =  "'%s'" % str(value)
+            return trunc(temp_res, cls.EMBEDDED_MAX)
         elif t == BooleanField:
             return str(int(t))
         else:
