@@ -218,6 +218,7 @@ class MysqlSyncService(object):
 
         j = 1   # 用以多条合并成一个语句
         sqls = []
+        print res_len
         for i in range(res_len):
             obj = mongo_res[i]
             values = ["'%s'" % str(obj.id)]
