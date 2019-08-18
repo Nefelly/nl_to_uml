@@ -198,8 +198,17 @@ class MysqlSyncService(object):
         print max_sql
 
         cond = cls.fetch_one(max_sql)
-        if not cond:
-            cond = 0 if t == IntField else '0-0-0 00:00:00'
+        if t == DateTimeField:
+            if not cond:
+                d = datetime.datetime(1, 1, 1,0,0,0)
+            else:
+                print cond
+                d = datetime.datetime(cond)
+            cond = 'd'
+
+        elif not cond:
+            if t == IntField:
+                cond = 0
 
         fields = cls.table_fields(c)
 
