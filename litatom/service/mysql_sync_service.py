@@ -56,8 +56,8 @@ class MysqlSyncService(object):
     MONGO_MYSQL = {
         StringField: 'VARCHAR (%d)' % STRING_MAX,
         IntField: 'int(13)',
-        ListField: 'VARCHAR(%d)' % BIGGEST_LIST,
-        EmbeddedDocumentField:  'VARCHAR(%d)' % BIGGEST_EMBEDDED,
+        ListField: 'VARCHAR(%d)' % LIST_MAX,
+        EmbeddedDocumentField:  'VARCHAR(%d)' % EMBEDDED_MAX,
         DateTimeField: 'datetime',
         BooleanField: 'tinyint(1)'
     }
