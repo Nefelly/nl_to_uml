@@ -170,24 +170,24 @@ class MysqlSyncService(object):
         if not value:
             return {
                 StringField: "''",
-                IntField: 0,
+                IntField: '0',
                 ListField: "''" ,
                 EmbeddedDocumentField:  "''",
                 DateTimeField: '0:0:0 00:00:00',
-                BooleanField: False
+                BooleanField: '0'
             }.get(t)
         if t == StringField:
             return  "'%s'" % value[:cls.STRING_MAX]
         elif t == DateTimeField:
             return "'%s'" % value.strftime('%Y-%m-%d %H:%M:%S')
         elif t == IntField:
-            return value
+            return str(value)
         elif t == ListField:
             return "'%s'" % ','.join([str(el) for el in value])[:cls.LIST_MAX]
         elif t == EmbeddedDocumentField:
             return "'%s'" % str(value)[:cls.EMBEDDED_MAX]
         elif t == BooleanField:
-            return int(t)
+            return str(int(t))
         else:
             return "''"
 
