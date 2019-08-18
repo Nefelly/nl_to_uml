@@ -40,20 +40,25 @@ class MysqlSyncService(object):
         res = {}
         for _ in dir(model):
             try:
-                if globals().get(_, None)  and issubclass(globals()[_], Document):
+                if globals().get(_, None) and issubclass(globals()[_], Document):
                     res[_] = globals()[_]
             except Exception as e:
-                print _, e
+                # print _, e
                 continue
         return res
 
     @classmethod
     def table_fields(cls, name, c):
-        return {}
+        res = {}
+        for _ in dir(c):
+            if type(getattr(c, _)).startswith('mongoengine.fields.'):
+                res[_] = type(getattr(c, _))
+        return res
 
     @classmethod
     def c(cls):
         print dir(model)
 
 print MysqlSyncService.get_tables()
+print MysqlSyncService.table_fields('Avatar', Avatar)
 
