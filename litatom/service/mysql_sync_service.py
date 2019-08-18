@@ -209,7 +209,7 @@ class MysqlSyncService(object):
         mongo_res = eval(mongo_get)
         mongo_res = [el for el in mongo_res]
         res_len = len(mongo_res)
-        colums = ['id'] + fields.keys()
+        colums = fields.keys()
         for i in range(res_len):
             j = 1   # 用以多条合并成一个语句
             sqls = []
@@ -218,7 +218,7 @@ class MysqlSyncService(object):
                 values = [str(obj.id)]
                 values.append(cls.mongo_val_2_sql(getattr(obj, k), fields[k]))
                 print tb_name, colums, values
-                upsert_sql = 'INSERT IGNORE INTO %s (%s) VALUES (%s);' % (tb_name, ','.join(colums), ','.join(values))
+                upsert_sql = 'INSERT IGNORE INTO %s (%s) VALUES (%s);' % (tb_name, 'id, ' + ','.join(colums), ','.join(values))
                 j += 1
             if j == cls.UPSERT_MAX or i == res_len - 1:
                 sql = 'n'.join(sqls)
