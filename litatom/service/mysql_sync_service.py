@@ -64,6 +64,18 @@ class MysqlSyncService(object):
                     res[f] = 1
         return res.keys()
 
+    @classmethod
+    def check_has_time(cls):
+        check_fs = ['create_time', 'create_ts']
+        for n,v in cls.get_tables().items():
+            fs = cls.table_fields(v)
+            r = False
+            for _ in check_fs:
+                if fs.get(_):
+                    r = True
+                    break
+            if not r:
+                print n , fs
 
     @classmethod
     def c(cls):
@@ -71,5 +83,5 @@ class MysqlSyncService(object):
 
 #print MysqlSyncService.get_tables()
 #print MysqlSyncService.table_fields(Avatar)
-print MysqlSyncService.all_field_type()
-
+#print MysqlSyncService.all_field_type()
+print MysqlSyncService.check_has_time()
