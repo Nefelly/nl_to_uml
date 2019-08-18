@@ -1,5 +1,7 @@
 import os
 import time
+import sys
+import fcntl
 from litatom.service.mysql_sync_service import *
 from hendrix.conf import setting
 
