@@ -230,7 +230,7 @@ class MysqlSyncService(object):
             j += 1
             if j == cls.UPSERT_MAX or i == res_len - 1:
                 sql = '\n'.join(sqls)
-                #print sql
+                print sql
                 cls.execute(sql)
                 j = 1
                 sqls = []
@@ -249,5 +249,5 @@ class MysqlSyncService(object):
     def c(cls):
         print dir(model)
 
-# print MysqlSyncService.create_table(UserSetting)
-# print MysqlSyncService.update_tb(UserSetting)
+print MysqlSyncService.create_table(UserAddressList)
+print MysqlSyncService.update_tb(UserAddressList)
