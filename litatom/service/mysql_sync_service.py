@@ -224,51 +224,53 @@ class MysqlSyncService(object):
         cls.execute(upsert_sql)
 
     @classmethod
-    def update_tb(cls, c):
+    def update_tb(cls, c, num=10):
         tb_name = c.__name__
         create_name, t = cls._get_time_field(c)
         max_sql = 'SELECT MAX(%s) FROM %s;' % (create_name, tb_name)
         # print max_sql
-        HuanxinMessage
-        cond = cls.fetch_one(max_sql)
-        if t == DateTimeField:
-            if not cond:
-                d = datetime.datetime(1, 1, 1, 0, 0, 0)
-                cond = d
+        for lp in range(num):
+            cond = cls.fetch_one(max_sql)
+            if t == DateTimeField:
+                if not cond:
+                    d = datetime.datetime(1, 1, 1, 0, 0, 0)
+                    cond = d
 
-        elif not cond:
-            if t == IntField:
-                cond = 0
+            elif not cond:
+                if t == IntField:
+                    cond = 0
 
-        fields = cls.table_fields(c)
+            fields = cls.table_fields(c)
 
-        mongo_get = '%s.objects(%s__gte=%r).order_by(\'%s\').limit(%d)' % (tb_name, create_name, cond, create_name, cls.LIMIT_ROWS)
-        mongo_get = '%s.objects(%s__gte=%r).count()' % (tb_name, create_name, cond)
-        print mongo_get
-        try:
-            mongo_res = eval(mongo_get)
-            print mongo_res
-            return
-            # mongo_res = [el for el in mongo_res]
-        except:
-            time.sleep(1)
-            mongo_res = eval(mongo_get)
+            mongo_get = '%s.objects(%s__gte=%r).order_by(\'%s\').limit(%d)' % (tb_name, create_name, cond, create_name, cls.LIMIT_ROWS)
+            # mongo_get = '%s.objects(%s__gte=%r).count()' % (tb_name, create_name, cond)
+            print mongo_get
+            try:
+                mongo_res = eval(mongo_get)
+                # print mongo_res
+                # return
+                # mongo_res = [el for el in mongo_res]
+            except:
+                time.sleep(100)
+                mongo_res = eval(mongo_get)
 
-        j = 1   # 用以多条合并成一个语句
-        for obj in mongo_res:
-
-            cls.update_one(tb_name, fields, obj)
-            # sqls.append(upsert_sql)
-            # # print tb_name, colums, values
-            # j += 1
-            # if j == cls.UPSERT_MAX or i == res_len - 1:
-            #     print sqls
-            #     sql = '\n'.join(sqls)
-            #     print sql
-            #     cls.execute(sql)
+            j = 1   # 用以多条合并成一个语句
+            for obj in mongo_res:
+                cls.update_one(tb_name, fields, obj)
+                j += 1
+                # sqls.append(upsert_sql)
+                # # print tb_name, colums, values
+                # j += 1
+                # if j == cls.UPSERT_MAX or i == res_len - 1:
+                #     print sqls
+                #     sql = '\n'.join(sqls)
+                #     print sql
+                #     cls.execute(sql)
             #     j = 1
             #     sqls = []
             #     #break
+            if j <= 3:
+                break
 
     @classmethod
     def run_all(cls):
