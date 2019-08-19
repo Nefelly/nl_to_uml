@@ -140,6 +140,7 @@ class MysqlSyncService(object):
     def execute(cls, sql):
         # db = get_dbcnn()
         cls.db.query(sql)
+        cls.db.commit()
         # db = cls.db
         # db.cursor().execute(sql)
         # db.commit()
