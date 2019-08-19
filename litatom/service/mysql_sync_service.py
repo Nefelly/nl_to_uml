@@ -227,9 +227,9 @@ class MysqlSyncService(object):
     def update_tb(cls, c, num=10):
         tb_name = c.__name__
         create_name, t = cls._get_time_field(c)
-        max_sql = 'SELECT MAX(%s) FROM %s;' % (create_name, tb_name)
         # print max_sql
         for lp in range(num):
+            max_sql = 'SELECT MAX(%s) FROM %s;' % (create_name, tb_name)
             cond = cls.fetch_one(max_sql)
             if t == DateTimeField:
                 if not cond:

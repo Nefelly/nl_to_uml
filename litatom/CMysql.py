@@ -37,18 +37,18 @@ class CMysql:
             print("Mysql Error %d: %s" % (e.args[0], e.args[1]))
 
     def query(self,sql):
-        # try:
+        try:
            n=self.cur.execute(sql)
            return n
-        # except MySQLdb.Error as e:
-        #    print("Mysql Error:%s\nSQL:%s" %(e ,sql.encode("utf8")))
-	   # try:
-	   #    self.connect()
-	   #    n=self.cur.execute(sql)
-	   #    return n
-	   # except MySQLdb.Error as e:
-        #        print("seccond test, Mysql Error:%s\nSQL:%s" %(e,sql.encode("utf8")))
-        #        return None
+        except MySQLdb.Error as e:
+           print("Mysql Error:%s\nSQL:%s" %(e ,sql.encode("utf8")))
+	   try:
+	      self.connect()
+	      n=self.cur.execute(sql)
+	      return n
+	   except MySQLdb.Error as e:
+               print("seccond test, Mysql Error:%s\nSQL:%s" %(e,sql.encode("utf8")))
+               return None
 
     def queryRow(self,sql):
         self.query(sql)
