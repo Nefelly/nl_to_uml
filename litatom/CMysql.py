@@ -41,7 +41,7 @@ class CMysql:
            n=self.cur.execute(sql)
            return n
         except MySQLdb.Error as e:
-           print("Mysql Error:%s\nSQL:%s" %(e,sql.encode("utf8")))
+           print("Mysql Error:%s\nSQL:%s" %(e ,sql.encode("utf8")))
 	   try:
 	      self.connect()
 	      n=self.cur.execute(sql)

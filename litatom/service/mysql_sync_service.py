@@ -50,7 +50,7 @@ class MysqlSyncService(object):
     EMBEDDED_MAX = 1023
     STRING_MAX = 255
 
-    LIMIT_ROWS = 2000
+    LIMIT_ROWS = 200
     QUERY_AMOUNT = 100
     UPSERT_MAX = 1
     MONGO_MYSQL = {
@@ -215,6 +215,14 @@ class MysqlSyncService(object):
         return db.escape(cls._mongo_val_2_sql(value, t))
 
     @classmethod
+    def update_one(cls, tb_name, colums, obj):
+        values = ["'%s'" % str(obj.id)]
+        for k in colums:
+            values.append(cls.mongo_val_2_sql(getattr(obj, k), fields[k]))
+        upsert_sql = 'INSERT IGNORE INTO %s (%s) VALUES (%s);' % (tb_name, 'id, ' + ', '.join(colums), ', '.join(values))
+        cls.execute(upsert_sql)
+
+    @classmethod
     def update_tb(cls, c):
         tb_name = c.__name__
         create_name, t = cls._get_time_field(c)
@@ -224,7 +232,7 @@ class MysqlSyncService(object):
         cond = cls.fetch_one(max_sql)
         if t == DateTimeField:
             if not cond:
-                d = datetime.datetime(1, 1, 1,0,0,0)
+                d = datetime.datetime(1, 1, 1, 0, 0, 0)
                 cond = d
 
         elif not cond:
@@ -237,24 +245,16 @@ class MysqlSyncService(object):
         print mongo_get
         try:
             mongo_res = eval(mongo_get)
-            mongo_res = [el for el in mongo_res]
+            # mongo_res = [el for el in mongo_res]
         except:
             time.sleep(1)
             mongo_res = eval(mongo_get)
-            mongo_res = [el for el in mongo_res]
-        res_len = len(mongo_res)
         colums = fields.keys()
 
         j = 1   # 用以多条合并成一个语句
         sqls = []
-        print res_len
-        for i in range(res_len):
-            obj = mongo_res[i]
-            values = ["'%s'" % str(obj.id)]
-            for k in colums:
-                values.append(cls.mongo_val_2_sql(getattr(obj, k), fields[k]))
-            upsert_sql = 'INSERT IGNORE INTO %s (%s) VALUES (%s);' % (tb_name, 'id, ' + ', '.join(colums), ', '.join(values))
-            cls.execute(upsert_sql)
+        for obj in mongo_res:
+            cls.update_one(tb_name, colums, obj)
             # sqls.append(upsert_sql)
             # # print tb_name, colums, values
             # j += 1
@@ -269,9 +269,11 @@ class MysqlSyncService(object):
 
     @classmethod
     def run_all(cls):
-        UserMessage
         escape_tbs = ['TrackChat', 'UserMessage']
         for tb in cls.get_tables().values():
+            tb_name = tb.__name__
+            if tb_name in escape_tbs:
+                continue
             try:
                 cls.create_table(tb)
                 cls.update_tb(tb)
