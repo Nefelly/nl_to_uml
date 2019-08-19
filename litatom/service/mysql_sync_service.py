@@ -183,7 +183,7 @@ class MysqlSyncService(object):
             v = str(v)
             # if len(v) > length:
             #     return "'%s'" % cls.db.escape_string(v.decode('utf-8')[:length].encode('utf-8'))
-            return "'%s'" % cls.db.escape_string(v)
+            return  "'" + cls.db.escape_string(v) + "'"
         if not value:
             return {
                 StringField: "''",
