@@ -177,6 +177,7 @@ class MysqlSyncService(object):
     @classmethod
     def mongo_val_2_sql(cls, value, t):
         if isinstance(value, str):
+            print 'get in escape str', value
             value = cls.db.escape_string(value)
         def trunc(v, length):
             if len(v) > length:
