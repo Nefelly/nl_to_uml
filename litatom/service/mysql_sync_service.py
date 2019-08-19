@@ -210,7 +210,7 @@ class MysqlSyncService(object):
 
     @classmethod
     def _mongo_val_2_sql(cls, value, t):
-        db =get_dbcnn()
+        db = get_dbcnn()
         return db.escape(cls._mongo_val_2_sql(value, t))
 
     @classmethod
@@ -243,17 +243,20 @@ class MysqlSyncService(object):
         fields = cls.table_fields(c)
 
         mongo_get = '%s.objects(%s__gte=%r).order_by(\'%s\').limit(%d)' % (tb_name, create_name, cond, create_name, cls.LIMIT_ROWS)
+        mongo_get = '%s.objects(%s__gte=%r).counts()' % (tb_name, create_name, cond, create_name, cls.LIMIT_ROWS)
         print mongo_get
         try:
             mongo_res = eval(mongo_get)
+            print mongo_res
+            return
             # mongo_res = [el for el in mongo_res]
         except:
             time.sleep(1)
             mongo_res = eval(mongo_get)
 
         j = 1   # 用以多条合并成一个语句
-        sqls = []
         for obj in mongo_res:
+
             cls.update_one(tb_name, fields, obj)
             # sqls.append(upsert_sql)
             # # print tb_name, colums, values
@@ -283,7 +286,6 @@ class MysqlSyncService(object):
                 print '!' * 100
                 print 'table: %s Error' % tb.__name__, e
                 continue
-
 
     @classmethod
     def c(cls):
