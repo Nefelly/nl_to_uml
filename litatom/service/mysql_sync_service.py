@@ -176,13 +176,13 @@ class MysqlSyncService(object):
 
     @classmethod
     def mongo_val_2_sql(cls, value, t):
-        if isinstance(value, str):
-            print 'get in escape str', value
-            value = cls.db.escape_string(value)
+        # if isinstance(value, str):
+        #     print 'get in escape str', value
+        #     value = cls.db.escape_string(value)
         def trunc(v, length):
             if len(v) > length:
-                return "'%s'" % v.decode('utf-8')[:length].encode('utf-8')
-            return v
+                return "'%s'" % cls.db.escape_string(v.decode('utf-8')[:length].encode('utf-8'))
+            return "'%s'" % cls.db.escape_string(v)
         if not value:
             return {
                 StringField: "''",
@@ -193,18 +193,15 @@ class MysqlSyncService(object):
                 BooleanField: "0"
             }.get(t)
         if t == StringField:
-            tmp_res =  "'%s'" % value
-            return trunc(tmp_res, cls.STRING_MAX)
+            return trunc(value, cls.STRING_MAX)
         elif t == DateTimeField:
             return "'%s'" % value.strftime('%Y-%m-%d %H:%M:%S')
         elif t == IntField:
             return str(value)
         elif t == ListField:
-            temp_res = "'%s'" % ','.join([str(el) for el in value])
-            return trunc(temp_res, cls.LIST_MAX)
+            return trunc(','.join([str(el) for el in value]), cls.LIST_MAX)
         elif t == EmbeddedDocumentField:
-            temp_res =  "'%s'" % str(value)
-            return trunc(temp_res, cls.EMBEDDED_MAX)
+            return trunc(str(value), cls.EMBEDDED_MAX)
         elif t == BooleanField:
             return str(int(t))
         else:
