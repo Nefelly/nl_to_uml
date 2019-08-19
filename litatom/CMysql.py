@@ -47,8 +47,8 @@ class CMysql:
 	      n=self.cur.execute(sql)
 	      return n
 	   except MySQLdb.Error as e:
-	      print("seccond test, Mysql Error:%s\nSQL:%s" %(e,sql.encode("utf8")))
-           return None
+               print("seccond test, Mysql Error:%s\nSQL:%s" %(e,sql.encode("utf8")))
+               return None
 
     def queryRow(self,sql):
         self.query(sql)

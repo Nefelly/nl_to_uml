@@ -235,8 +235,13 @@ class MysqlSyncService(object):
 
         mongo_get = '%s.objects(%s__gte=%r).order_by(\'%s\').limit(%d)' % (tb_name, create_name, cond, create_name, cls.LIMIT_ROWS)
         print mongo_get
-        mongo_res = eval(mongo_get)
-        mongo_res = [el for el in mongo_res]
+        try:
+            mongo_res = eval(mongo_get)
+            mongo_res = [el for el in mongo_res]
+        except:
+            time.sleep(1)
+            mongo_res = eval(mongo_get)
+            mongo_res = [el for el in mongo_res]
         res_len = len(mongo_res)
         colums = fields.keys()
 
@@ -249,19 +254,23 @@ class MysqlSyncService(object):
             for k in colums:
                 values.append(cls.mongo_val_2_sql(getattr(obj, k), fields[k]))
             upsert_sql = 'INSERT IGNORE INTO %s (%s) VALUES (%s);' % (tb_name, 'id, ' + ', '.join(colums), ', '.join(values))
-            sqls.append(upsert_sql)
-            # print tb_name, colums, values
-            j += 1
-            if j == cls.UPSERT_MAX or i == res_len - 1:
-                sql = '\n'.join(sqls)
-                print sql
-                cls.execute(sql)
-                j = 1
-                sqls = []
-                #break
+            cls.execute(upsert_sql)
+            # sqls.append(upsert_sql)
+            # # print tb_name, colums, values
+            # j += 1
+            # if j == cls.UPSERT_MAX or i == res_len - 1:
+            #     print sqls
+            #     sql = '\n'.join(sqls)
+            #     print sql
+            #     cls.execute(sql)
+            #     j = 1
+            #     sqls = []
+            #     #break
 
     @classmethod
     def run_all(cls):
+        UserMessage
+        escape_tbs = ['TrackChat', 'UserMessage']
         for tb in cls.get_tables().values():
             try:
                 cls.create_table(tb)
