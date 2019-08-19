@@ -52,7 +52,7 @@ class MysqlSyncService(object):
 
     LIMIT_ROWS = 2000
     QUERY_AMOUNT = 100
-    UPSERT_MAX = 10
+    UPSERT_MAX = 1
     MONGO_MYSQL = {
         StringField: 'VARCHAR (%d)' % STRING_MAX,
         IntField: 'int(13)',
@@ -61,6 +61,7 @@ class MysqlSyncService(object):
         DateTimeField: 'timestamp NOT NULL DEFAULT \'0000-00-00 00:00:00\'',
         BooleanField: 'tinyint(1)'
     }
+    db = MySQLdb.connect("120.24.201.118", "lit", "asd1559", "lit", charset='utf8')
 
 
     @classmethod
@@ -136,13 +137,15 @@ class MysqlSyncService(object):
 
     @classmethod
     def execute(cls, sql):
-        db = get_dbcnn()
+        # db = get_dbcnn()
+        db = cls.db
         db.cursor().execute(sql)
         db.commit()
 
     @classmethod
     def fetch_one(cls, sql):
-        db = get_dbcnn()
+        # db = get_dbcnn()
+        db = cls.db
         cursor = db.cursor()
         cursor.execute(sql)
         res = cursor.fetchone()
@@ -151,14 +154,16 @@ class MysqlSyncService(object):
 
     @classmethod
     def fetch_all(cls, sql):
-        db = get_dbcnn()
+        # db = get_dbcnn()
+        db = cls.db
         cursor = db.cursor()
         cursor.execute(sql)
         return cursor.fetchall()
 
     @classmethod
     def create_table(cls, tb):
-        db = get_dbcnn()
+        # db = get_dbcnn()
+        db = cls.db
         ddl = cls.gen_ddl(tb)
         # print ddl
         db.cursor().execute(ddl)
@@ -166,6 +171,8 @@ class MysqlSyncService(object):
 
     @classmethod
     def mongo_val_2_sql(cls, value, t):
+        if isinstance(value, str):
+            value = cls.db.escape_string(value)
         def trunc(v, length):
             if len(v) > length:
                 return "'%s'" % v.decode('utf-8')[:length].encode('utf-8')
