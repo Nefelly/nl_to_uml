@@ -149,6 +149,7 @@ class MysqlSyncService(object):
         cursor = db.cursor()
         cursor.execute(sql)
         res = cursor.fetchone()
+        db.commit()
         # print res
         return res[0]
 
@@ -249,7 +250,7 @@ class MysqlSyncService(object):
             j += 1
             if j == cls.UPSERT_MAX or i == res_len - 1:
                 sql = '\n'.join(sqls)
-                # print sql
+                print sql
                 cls.execute(sql)
                 j = 1
                 sqls = []
