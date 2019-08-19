@@ -23,7 +23,7 @@ from ..const import (
     MAX_TIME
 )
 from ..redis import RedisClient
-
+from ..CMysql import CMysql
 from ..key import (
     REDIS_USER_INFO_FINISHED,
     REDIS_ADMIN_USER
@@ -61,7 +61,8 @@ class MysqlSyncService(object):
         DateTimeField: 'timestamp NOT NULL DEFAULT \'0000-00-00 00:00:00\'',
         BooleanField: 'tinyint(1)'
     }
-    db = MySQLdb.connect("120.24.201.118", "lit", "asd1559", "lit", charset='utf8')
+    db = CMysql("120.24.201.118", 3306, "lit", "asd1559", "lit", "utf8")
+    # MySQLdb.connect("120.24.201.118", "lit", "asd1559", "lit", charset='utf8')
 
 
     @classmethod
@@ -138,28 +139,31 @@ class MysqlSyncService(object):
     @classmethod
     def execute(cls, sql):
         # db = get_dbcnn()
-        db = cls.db
-        db.cursor().execute(sql)
-        db.commit()
+        cls.db.query(sql)
+        # db = cls.db
+        # db.cursor().execute(sql)
+        # db.commit()
 
     @classmethod
     def fetch_one(cls, sql):
         # db = get_dbcnn()
-        db = cls.db
-        cursor = db.cursor()
-        cursor.execute(sql)
-        res = cursor.fetchone()
-        db.commit()
-        # print res
-        return res[0]
+        return cls.db.queryRow(sql)[0]
+        # db = cls.db
+        # cursor = db.cursor()
+        # cursor.execute(sql)
+        # res = cursor.fetchone()
+        # db.commit()
+        # # print res
+        # return res[0]
 
     @classmethod
     def fetch_all(cls, sql):
         # db = get_dbcnn()
-        db = cls.db
-        cursor = db.cursor()
-        cursor.execute(sql)
-        return cursor.fetchall()
+        return cls.db.queryAll(sql)
+        # db = cls.db
+        # cursor = db.cursor()
+        # cursor.execute(sql)
+        # return cursor.fetchall()
 
     @classmethod
     def create_table(cls, tb):
@@ -167,8 +171,8 @@ class MysqlSyncService(object):
         db = cls.db
         ddl = cls.gen_ddl(tb)
         # print ddl
-        db.cursor().execute(ddl)
-        db.commit()
+        cls.execute(ddl)
+        # db.commit()
 
     @classmethod
     def mongo_val_2_sql(cls, value, t):
