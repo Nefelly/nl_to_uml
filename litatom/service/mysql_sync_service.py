@@ -50,7 +50,7 @@ class MysqlSyncService(object):
     EMBEDDED_MAX = 1023
     STRING_MAX = 255
 
-    LIMIT_ROWS = 200
+    LIMIT_ROWS = 2000
     QUERY_AMOUNT = 100
     UPSERT_MAX = 1
     MONGO_MYSQL = {
@@ -220,7 +220,7 @@ class MysqlSyncService(object):
         for k in colums:
             values.append(cls.mongo_val_2_sql(getattr(obj, k), fields[k]))
         upsert_sql = 'INSERT IGNORE INTO %s (%s) VALUES (%s);' % (tb_name, 'id, ' + ', '.join(colums), ', '.join(values))
-        print upsert_sql
+        # print upsert_sql
         cls.execute(upsert_sql)
 
     @classmethod
