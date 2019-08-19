@@ -180,6 +180,7 @@ class MysqlSyncService(object):
         #     print 'get in escape str', value
         #     value = cls.db.escape_string(value)
         def trunc(v, length):
+            v = str(v)
             if len(v) > length:
                 return "'%s'" % cls.db.escape_string(v.decode('utf-8')[:length].encode('utf-8'))
             return "'%s'" % cls.db.escape_string(v)
