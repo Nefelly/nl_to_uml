@@ -250,12 +250,11 @@ class MysqlSyncService(object):
         except:
             time.sleep(1)
             mongo_res = eval(mongo_get)
-        colums = fields.keys()
 
         j = 1   # 用以多条合并成一个语句
         sqls = []
         for obj in mongo_res:
-            cls.update_one(tb_name, colums, obj)
+            cls.update_one(tb_name, fields, obj)
             # sqls.append(upsert_sql)
             # # print tb_name, colums, values
             # j += 1
