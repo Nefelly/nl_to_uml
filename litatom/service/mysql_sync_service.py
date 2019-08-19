@@ -229,7 +229,7 @@ class MysqlSyncService(object):
         create_name, t = cls._get_time_field(c)
         max_sql = 'SELECT MAX(%s) FROM %s;' % (create_name, tb_name)
         # print max_sql
-
+        HuanxinMessage
         cond = cls.fetch_one(max_sql)
         if t == DateTimeField:
             if not cond:
@@ -269,7 +269,7 @@ class MysqlSyncService(object):
 
     @classmethod
     def run_all(cls):
-        escape_tbs = ['TrackChat', 'UserMessage']
+        escape_tbs = ['TrackChat', 'UserMessage', 'HuanxinMessage']
         for tb in cls.get_tables().values():
             tb_name = tb.__name__
             if tb_name in escape_tbs:
