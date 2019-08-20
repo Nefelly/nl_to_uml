@@ -183,7 +183,7 @@ class MysqlSyncService(object):
             v = str(v)
             if len(v) > length:
                 return "`%s`" % cls.db.escape_string(v.decode('utf-8')[:length].encode('utf-8'))
-            return  "'" + cls.db.escape_string(v) + "'"
+            return  "`" + cls.db.escape_string(v) + "`"
         if not value:
             return {
                 StringField: "''",
@@ -220,7 +220,7 @@ class MysqlSyncService(object):
         for k in colums:
             values.append(cls.mongo_val_2_sql(getattr(obj, k), fields[k]))
         upsert_sql = 'INSERT IGNORE INTO %s (%s) VALUES (%s);' % (tb_name, 'id, ' + ', '.join(colums), ', '.join(values))
-        # print upsert_sql
+        print upsert_sql
         cls.execute(upsert_sql)
 
     @classmethod
@@ -295,5 +295,5 @@ class MysqlSyncService(object):
     def c(cls):
         print dir(model)
 
-# print MysqlSyncService.create_table(UserAddressList)
+print MysqlSyncService.create_table(Feedback)
 # print MysqlSyncService.update_tb(UserAddressList)
