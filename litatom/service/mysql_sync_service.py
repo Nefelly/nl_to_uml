@@ -168,11 +168,10 @@ class MysqlSyncService(object):
     @classmethod
     def create_table(cls, tb):
         # db = get_dbcnn()
-        db = cls.db
         ddl = cls.gen_ddl(tb)
         # print ddl
         cls.execute(ddl)
-        # db.commit()
+        cls.db.commit()
 
     @classmethod
     def mongo_val_2_sql(cls, value, t):
@@ -210,8 +209,8 @@ class MysqlSyncService(object):
 
     @classmethod
     def _mongo_val_2_sql(cls, value, t):
-        db = get_dbcnn()
-        return db.escape(cls._mongo_val_2_sql(value, t))
+        # db = get_dbcnn()
+        return MySQLdb.escape_string(cls._mongo_val_2_sql(value, t))
 
     @classmethod
     def update_one(cls, tb_name, fields, obj):
@@ -295,5 +294,5 @@ class MysqlSyncService(object):
     def c(cls):
         print dir(model)
 
-print MysqlSyncService.create_table(Feedback)
+# print MysqlSyncService.create_table(Feedback)
 # print MysqlSyncService.update_tb(UserAddressList)
