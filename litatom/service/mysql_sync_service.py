@@ -1,6 +1,7 @@
 # coding: utf-8
 import random
 import time
+import sys
 import datetime
 import MySQLdb
 from mongoengine import (
@@ -12,6 +13,8 @@ from mongoengine import (
     StringField,
     EmbeddedDocumentField
 )
+reload(sys)
+sys.setdefaultencoding('utf-8')
 from .. import model
 from ..model import *
 from ..service import (
@@ -178,8 +181,12 @@ class MysqlSyncService(object):
         # if isinstance(value, str):
         #     print 'get in escape str', value
         #     value = cls.db.escape_string(value)
+        def ensure_unicode(v):
+            if isinstance(v, str):
+                v = v.decode('utf8')
+            return unicode(v)  # convert anything not a string to unicode too
         def trunc(v, length):
-            v = str(v)
+            v = ensure_unicode(v).encode('utf8')
             if len(v) > length:
                 return "`%s`" % cls.db.escape_string(v.decode('utf-8')[:length].encode('utf-8'))
             return  "`" + cls.db.escape_string(v) + "`"
