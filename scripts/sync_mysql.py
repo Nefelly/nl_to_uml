@@ -17,7 +17,8 @@ def run():
     except:
         print 'program already in run'
         sys.exit(0)
-    MysqlSyncService.run_all()
+    # MysqlSyncService.run_all()
+    MysqlSyncService.update_tb(UserAction, 1000)
 
 if __name__ == "__main__":
     print "started at", time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
