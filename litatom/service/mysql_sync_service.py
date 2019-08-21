@@ -226,7 +226,7 @@ class MysqlSyncService(object):
         for k in colums:
             values.append(cls.mongo_val_2_sql(getattr(obj, k), fields[k]))
         upsert_sql = 'INSERT IGNORE INTO %s (%s) VALUES (%s);' % (tb_name, 'id, ' + ', '.join(colums), ', '.join(values))
-        print upsert_sql
+        # print upsert_sql
         cls.execute(upsert_sql)
 
     @classmethod
