@@ -251,7 +251,7 @@ class MysqlSyncService(object):
 
             mongo_get = '%s.objects(%s__gte=%r).order_by(\'%s\').limit(%d)' % (tb_name, create_name, cond, create_name, cls.LIMIT_ROWS)
             # mongo_get = '%s.objects(%s__gte=%r).count()' % (tb_name, create_name, cond)
-            print mongo_get, j
+            print mongo_get
             try:
                 mongo_res = eval(mongo_get)
                 # print mongo_res
