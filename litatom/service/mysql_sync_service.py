@@ -45,7 +45,7 @@ sys_rnd = random.SystemRandom()
 redis_client = RedisClient()['lit']
 
 def get_dbcnn():
-    db = MySQLdb.connect("120.24.201.118", "lit", "asd1559", "lit", charset='utf8')
+    db = MySQLdb.connect("120.24.201.118", "lit", "asd1559", "lit", charset='utf8', use_unicode=False)
     return db
 
 class MysqlSyncService(object):

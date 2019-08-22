@@ -262,6 +262,9 @@ class FeedService(object):
         feed = Feed.get_by_id(feed_id)
         if not feed:
             return 'wrong feed id', False
+        msg = BlockService.get_block_msg(feed.user_id, user_id)
+        if msg:
+            return msg, False
         feed.chg_feed_num(num)
         if feed.user_id != user_id and 1:
             chg_ts = 600
@@ -278,6 +281,9 @@ class FeedService(object):
         feed = Feed.get_by_id(feed_id)
         if not feed:
             return u'wrong feedid', False
+        msg = BlockService.get_block_msg(feed.user_id, user_id)
+        if msg:
+            return msg, False
         comment = FeedComment()
         if comment_id:
             father_comment = FeedComment.get_by_id(comment_id)
