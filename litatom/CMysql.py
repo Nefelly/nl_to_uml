@@ -1,7 +1,7 @@
 #!/usr/bin/python2.6
 #conding=utf-8
 
-import  MySQLdb
+import MySQLdb
 import os,sys
 
 class CMysql:
@@ -16,7 +16,7 @@ class CMysql:
         self.conn = None
         self.cur = None
         try:
-            self.conn=MySQLdb.connect(host=self.host,user=self.user,passwd=self.password,db=self.db,port=self.port) 
+            self.conn=MySQLdb.connect(host=self.host,user=self.user,passwd=self.password,db=self.db,port=self.port)
             self.conn.set_character_set(self.charset)  
             self.cur=self.conn.cursor()  
         except MySQLdb.Error as e:
