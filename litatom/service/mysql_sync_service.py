@@ -64,7 +64,7 @@ class MysqlSyncService(object):
         DateTimeField: 'timestamp NOT NULL DEFAULT \'0000-00-00 00:00:00\'',
         BooleanField: 'tinyint(1)'
     }
-    db = CMysql("120.24.201.118", 3306, "lit", "asd1559", "lit", "utf8")
+    db = CMysql("120.24.201.118", 3306, "lit", "asd1559", "lit", "utf8mb4", False)
     # MySQLdb.connect("120.24.201.118", "lit", "asd1559", "lit", charset='utf8')
 
 

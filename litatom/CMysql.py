@@ -5,7 +5,7 @@ import MySQLdb
 import os,sys
 
 class CMysql:
-    def __init__(self,host,port,user,pwd,db,charset):
+    def __init__(self,host,port,user,pwd,db,charset, use_unicode=False):
         self.host = host
         self.port = port
         self.user = user
