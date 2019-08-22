@@ -13,8 +13,7 @@ def monitor_logstash():
         os.popen('cd /usr/local/src/logstash-6.2.4; ./bin/logstash -f config/logstash.conf 2>&1 &')
 
 if __name__ == "__main__":
-    for i in range(100):
+    # for i in range(100):
         monitor_mongo()
-        monitor_logstash()
-        time.sleep(1)
+        # monitor_logstash()
     #rem()
