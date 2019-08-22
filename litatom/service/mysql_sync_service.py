@@ -231,7 +231,7 @@ class MysqlSyncService(object):
         # cls.db.commit()
 
     @classmethod
-    def update_tb(cls, c, num=10):
+    def update_tb(cls, c, num=100):
         tb_name = c.__name__
         create_name, t = cls._get_time_field(c)
         # print max_sql
