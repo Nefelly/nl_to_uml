@@ -210,7 +210,7 @@ class MysqlSyncService(object):
         elif t == EmbeddedDocumentField:
             return trunc(str(value), cls.EMBEDDED_MAX)
         elif t == BooleanField:
-            return str(int(t))
+            return str(int(value))
         else:
             return "''"
 
