@@ -251,13 +251,14 @@ class MysqlSyncService(object):
 
             mongo_get = '%s.objects(%s__gte=%r).order_by(\'%s\').limit(%d)' % (tb_name, create_name, cond, create_name, cls.LIMIT_ROWS)
             # mongo_get = '%s.objects(%s__gte=%r).count()' % (tb_name, create_name, cond)
-            print mongo_get
+            print mongo_get, j
             try:
                 mongo_res = eval(mongo_get)
                 # print mongo_res
                 # return
                 # mongo_res = [el for el in mongo_res]
-            except:
+            except Exception as e:
+                print 'a' * 100, e
                 time.sleep(100)
                 mongo_res = eval(mongo_get)
 
@@ -278,7 +279,7 @@ class MysqlSyncService(object):
             #     #break
 
             cls.db.commit()
-            if j <= 3:
+            if j < cls.LIMIT_ROWS:
                 break
 
     @classmethod
