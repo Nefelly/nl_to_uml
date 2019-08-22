@@ -228,7 +228,7 @@ class MysqlSyncService(object):
         upsert_sql = 'INSERT IGNORE INTO %s (%s) VALUES (%s);' % (tb_name, 'id, ' + ', '.join(colums), ', '.join(values))
         # print upsert_sql
         cls.execute(upsert_sql)
-        cls.db.commit()
+        # cls.db.commit()
 
     @classmethod
     def update_tb(cls, c, num=10):
