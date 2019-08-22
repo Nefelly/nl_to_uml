@@ -12,10 +12,11 @@ from litatom.const import (
     GENDERS,
     USER_ACTIVE,
     REAL_ACTIVE,
-    REDIS_HUANXIN_ONLINE
+
 )
 from litatom.key import (
-    REDIS_ANOY_GENDER_ONLINE_REGION
+    REDIS_ANOY_GENDER_ONLINE_REGION,
+    REDIS_HUANXIN_ONLINE
 )
 redis_client = RedisClient()['lit']
 
