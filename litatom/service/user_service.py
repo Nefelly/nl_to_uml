@@ -431,7 +431,8 @@ class UserService(object):
     @classmethod
     def uid_online_time(cls, uid):
         key = GlobalizationService._online_key_by_region_gender()
-        return int(redis_client.zscore(key, uid))
+        val = redis_client.zscore(key, uid)
+        return int(val) if val else 0
 
     @classmethod
     def uid_online(cls, uid):
