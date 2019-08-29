@@ -117,6 +117,7 @@ class UserService(object):
     @classmethod
     def _on_update_info(cls, user, data):
         cls.update_info_finished_cache(user)
+        print user.to_json(), user.finished_info
         if user.finished_info:
             cls.refresh_status(str(user.id))
         gender = data.get('gender', '')
