@@ -496,6 +496,7 @@ class UserService(object):
             cls._on_create_new_user(user)
             cls.update_info_finished_cache(user)
             RedisLock.release_mutex(key)
+        request.user_id = str(user.id)
         msg, status = cls.login_job(user)
         if not status:
             return msg, False
