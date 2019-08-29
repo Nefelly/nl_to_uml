@@ -365,11 +365,14 @@ class UserService(object):
                 user.avatar = random.choice(Avatar.get_avatars()[gender])
         if data.get('birthdate', ''):
             User.change_age(user_id)
+            user.birthdate = data.get('birthdate')
+            user.save()
             if getattr(request, 'region', '') == GlobalizationService.REGION_IN or request.loc == GlobalizationService.LOC_IN:
                 age = User.age_by_user_id(user_id)
                 gender = gender if gender else user.gender
                 print '!' * 100, 'get in', age, gender
-                if gender and age > 0:
+
+                if gender and age >= 0:
                     if (gender == GIRL and age < 15) or (gender == BOY and (age > 21 or age < 19)):
                         print '!' * 100, 'get in 2'
                         GlobalizationService.change_loc(user_id, GlobalizationService.LOC_INN)
