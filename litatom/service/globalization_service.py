@@ -114,7 +114,8 @@ class GlobalizationService(object):
     @classmethod
     def get_real_loc(cls, loc):
         if loc in cls.LOCS:
-            return loc
+            if loc == cls.LOC_IN:
+                return loc
         return cls.COUNTRY_LOC.get(request.ip_country, loc)
 
     @classmethod
@@ -201,6 +202,7 @@ class GlobalizationService(object):
                     tmp_loc = user_setting.lang
             if tmp_loc and tmp_loc in cls.LOCS:
                 loc = tmp_loc
+                print 'hhhhhh', loc
             else:
                 cls._set_user_loc(user_id, request.loc)
                 loc = request.loc
