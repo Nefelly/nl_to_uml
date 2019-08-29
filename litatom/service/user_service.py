@@ -117,15 +117,14 @@ class UserService(object):
     @classmethod
     def _on_update_info(cls, user, data):
         cls.update_info_finished_cache(user)
-        print user.to_json(), user.finished_info
-        if user.finished_info:
-            cls.refresh_status(str(user.id))
         gender = data.get('gender', '')
         if gender:
             key = REDIS_UID_GENDER.format(user_id=str(user.id))
             redis_client.set(key, user.gender, ONLINE_LIVE)
         if data.get('birthdate', ''):
             User._set_age_cache(user)
+        if user.finished_info:
+            cls.refresh_status(str(user.id))
 
     @classmethod
     def uids_age(cls, user_ids):
@@ -496,7 +495,7 @@ class UserService(object):
             cls._on_create_new_user(user)
             cls.update_info_finished_cache(user)
             RedisLock.release_mutex(key)
-        request.user_id = str(user.id)
+        request.user_id = str(user.id) # 为了region
         msg, status = cls.login_job(user)
         if not status:
             return msg, False
