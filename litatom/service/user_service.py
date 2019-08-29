@@ -365,7 +365,7 @@ class UserService(object):
                 user.avatar = random.choice(Avatar.get_avatars()[gender])
         if data.get('birthdate', ''):
             User.change_age(user_id)
-            if request.region == GlobalizationService.REGION_IN:
+            if getattr(request, 'region', '') == GlobalizationService.REGION_IN or request.loc == GlobalizationService.LOC_IN:
                 age = User.age_by_user_id(user_id)
                 if gender and age > 0:
                     if (gender == GIRL and age < 15) or (gender == BOY and (age > 21 or age < 19)):
