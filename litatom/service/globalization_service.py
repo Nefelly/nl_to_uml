@@ -190,33 +190,28 @@ class GlobalizationService(object):
         if region:
             return region
         if getattr(request, 'region', ''):
-            print "AAAAA", region
             return request.region
         loc = None
         user_id = request.user_id
         if user_id:
             loc_key = REDIS_USER_LOC.format(user_id=user_id)
             tmp_loc = redis_client.get(loc_key)
-            print 'tttttmploc', tmp_loc
             if not tmp_loc:
                 user_setting =  UserSetting.get_by_user_id(user_id)
                 if user_setting and user_setting.lang and user_setting.lang in cls.LOCS:
                     tmp_loc = user_setting.lang
             if tmp_loc and tmp_loc in cls.LOCS:
                 loc = tmp_loc
-                print 'hhhhhh', loc
             else:
                 cls._set_user_loc(user_id, request.loc)
                 loc = request.loc
         else:
             loc = request.loc
-        print "lllll", loc
         if cls.LOC_REGION.get(loc, ''):
             res = cls.LOC_REGION[loc]
         else:
             res = cls.DEFAULT_REGION
         request.region = res
-        print "rrrrrr", res
         return res
 
     @classmethod

@@ -370,11 +370,9 @@ class UserService(object):
             if getattr(request, 'region', '') == GlobalizationService.REGION_IN or request.loc == GlobalizationService.LOC_IN:
                 age = User.age_by_user_id(user_id)
                 gender = gender if gender else user.gender
-                print '!' * 100, 'get in', age, gender
 
                 if gender and age >= 0:
                     if (gender == GIRL and age < 15) or (gender == BOY and (age > 21 or age < 19)):
-                        print '!' * 100, 'get in 2'
                         GlobalizationService.change_loc(user_id, GlobalizationService.LOC_INN)
         for el in once:
             if data.get(el, '') and getattr(user, el):
@@ -420,10 +418,8 @@ class UserService(object):
         redis_client.zadd(REDIS_HUANXIN_ONLINE, {user_id: int_time})
         gender = cls.get_gender(user_id)
         if gender:
-            print "gggggender", user_id
             # key = REDIS_ONLINE_GENDER.format(gender=gender)
             key = GlobalizationService._online_key_by_region_gender(gender)
-            print "kkkkkkey", key
             redis_client.zadd(key, {user_id: int_time})
             #redis_client.zadd(GlobalizationService._online_key_by_region_gender(), {user_id: int_time})
             if int_time % 100 == 0:
