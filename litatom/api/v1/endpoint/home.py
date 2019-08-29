@@ -122,7 +122,7 @@ def check_version():
     if 0 and GlobalizationService.get_region() == GlobalizationService.REGION_TH:
         message = u'กรุณาอัพเดทเวอร์ชั่น เราได้ทำการแก้ไขปัญหาส่งข้อความเรียบร้อยแล้ว ขอบคุณค่ะ'
     else:
-        message = u'New Update: soul match related.'
+        message = u'New Update: Now you can use voice chat function.'
     if version < version_now:
         data = {
             'need_update': True,
