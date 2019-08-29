@@ -420,6 +420,7 @@ class UserService(object):
             return
         redis_client.zadd(REDIS_HUANXIN_ONLINE, {user_id: int_time})
         gender = cls.get_gender(user_id)
+        print "gggggender", user_id, gender
         if gender:
             print "gggggender", user_id
             # key = REDIS_ONLINE_GENDER.format(gender=gender)
