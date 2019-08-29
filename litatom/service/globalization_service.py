@@ -158,7 +158,6 @@ class GlobalizationService(object):
         old_loc = redis_client.get(REDIS_USER_LOC.format(user_id=user_id))
         if old_loc and old_loc != loc:
             cls._purge_loc_cache(user_id, old_loc)
-        print "!!!!", loc_key
         redis_client.set(loc_key, loc, ONLINE_LIVE)
 
     @classmethod
@@ -213,6 +212,7 @@ class GlobalizationService(object):
         else:
             res = cls.DEFAULT_REGION
         request.region = res
+        print "rrrrrr", res
         return res
 
     @classmethod
@@ -225,7 +225,6 @@ class GlobalizationService(object):
         '''
         if target_loc not in cls.LOCS:
             return u'your loc must be in one of [%s]' % (','.join(cls.LOCS)), False
-        print "hhhhhere"
         UserSetting.ensure_setting(user_id, target_loc)
         cls._set_loc_cache(user_id, target_loc)
         return  None, True
