@@ -6,7 +6,8 @@ from flask import (
 from ..redis import RedisClient
 from ..model import (
     RegionWord,
-    UserSetting
+    UserSetting,
+    User
 )
 
 from ..key import (
@@ -37,6 +38,7 @@ class GlobalizationService(object):
     REGION_ID = 'id'
     REGION_VN = 'vi'
     REGION_EN = 'en'
+    REGION_IN_NOCORE = 'indiaNoCore'
 
 
     LOC_TH = 'TH'   # 泰国
@@ -46,6 +48,7 @@ class GlobalizationService(object):
     LOC_CN = 'CN'   # 中国
     LOC_TE = 'TEST' # 测试,混杂区
     LOC_TH2 = 'th'
+    LOC_INN = 'INN'
 
     LOCS = {
         LOC_TH,
@@ -68,7 +71,7 @@ class GlobalizationService(object):
         'Thailand': LOC_TH,
         'Vietnam': LOC_VN,
         'China': LOC_CN,
-        'India': LOC_IN
+        'India': LOC_IN,
     }
 
 
@@ -87,7 +90,8 @@ class GlobalizationService(object):
         'IN': REGION_IN,
         'ID': REGION_ID,
         'th': REGION_TH,
-        'CN': REGION_TH
+        'CN': REGION_TH,
+        'INN': REGION_IN_NOCORE
     }
     REGIONS = list(set(LOC_REGION.values()))
     REGIONS.append(REGION_EN)
@@ -202,6 +206,7 @@ class GlobalizationService(object):
         else:
             loc = request.loc
         if cls.LOC_REGION.get(loc, ''):
+
             res = cls.LOC_REGION[loc]
         else:
             res = cls.DEFAULT_REGION
