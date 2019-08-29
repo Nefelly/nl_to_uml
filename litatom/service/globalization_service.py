@@ -225,6 +225,7 @@ class GlobalizationService(object):
         '''
         if target_loc not in cls.LOCS:
             return u'your loc must be in one of [%s]' % (','.join(cls.LOCS)), False
+        print "hhhhhere"
         UserSetting.ensure_setting(user_id, target_loc)
         cls._set_loc_cache(user_id, target_loc)
         return  None, True
