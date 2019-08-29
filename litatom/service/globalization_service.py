@@ -197,6 +197,7 @@ class GlobalizationService(object):
         if user_id:
             loc_key = REDIS_USER_LOC.format(user_id=user_id)
             tmp_loc = redis_client.get(loc_key)
+            print 'tttttmploc', tmp_loc
             if not tmp_loc:
                 user_setting =  UserSetting.get_by_user_id(user_id)
                 if user_setting and user_setting.lang and user_setting.lang in cls.LOCS:
@@ -211,7 +212,6 @@ class GlobalizationService(object):
             loc = request.loc
         print "lllll", loc
         if cls.LOC_REGION.get(loc, ''):
-
             res = cls.LOC_REGION[loc]
         else:
             res = cls.DEFAULT_REGION
