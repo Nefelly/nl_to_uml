@@ -367,8 +367,10 @@ class UserService(object):
             User.change_age(user_id)
             if getattr(request, 'region', '') == GlobalizationService.REGION_IN or request.loc == GlobalizationService.LOC_IN:
                 age = User.age_by_user_id(user_id)
+                print '!' * 100, 'get in', age, gender
                 if gender and age > 0:
                     if (gender == GIRL and age < 15) or (gender == BOY and (age > 21 or age < 19)):
+                        print '!' * 100, 'get in 2'
                         GlobalizationService.change_loc(user_id, GlobalizationService.LOC_INN)
         for el in once:
             if data.get(el, '') and getattr(user, el):
