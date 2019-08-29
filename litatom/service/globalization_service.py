@@ -208,7 +208,7 @@ class GlobalizationService(object):
                 loc = request.loc
         else:
             loc = request.loc
-        print "lllll", request.loc
+        print "lllll", loc
         if cls.LOC_REGION.get(loc, ''):
 
             res = cls.LOC_REGION[loc]
