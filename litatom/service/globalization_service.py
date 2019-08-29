@@ -56,7 +56,8 @@ class GlobalizationService(object):
         LOC_VN,
         LOC_ID,
         LOC_CN,
-        LOC_TE
+        LOC_TE,
+        LOC_INN
     }
 
     KOWN_REGION_LOC = {
