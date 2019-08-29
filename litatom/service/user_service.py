@@ -123,7 +123,7 @@ class UserService(object):
             redis_client.set(key, user.gender, ONLINE_LIVE)
         if data.get('birthdate', ''):
             User._set_age_cache(user)
-        if user.finished_info:
+        if user.finished_info:  # need to be last
             cls.refresh_status(str(user.id))
 
     @classmethod
