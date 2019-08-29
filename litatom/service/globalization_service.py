@@ -190,6 +190,7 @@ class GlobalizationService(object):
         if region:
             return region
         if getattr(request, 'region', ''):
+            print "AAAAA": region
             return request.region
         loc = None
         user_id = request.user_id
