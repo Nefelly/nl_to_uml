@@ -363,12 +363,11 @@ class UserService(object):
                 return u'gender must be one of ' + ',' . join(GENDERS), False
             if not Avatar.valid_avatar(data.get('avatar', '')) and not user.avatar:   # user's avatar not set random one
                 user.avatar = random.choice(Avatar.get_avatars()[gender])
-            user.gender = gender
         if data.get('birthdate', ''):
             User.change_age(user_id)
             if getattr(request, 'region', '') == GlobalizationService.REGION_IN or request.loc == GlobalizationService.LOC_IN:
                 age = User.age_by_user_id(user_id)
-                gender = user.gender
+                gender = gender if gender else user.gender
                 print '!' * 100, 'get in', age, gender
                 if gender and age > 0:
                     if (gender == GIRL and age < 15) or (gender == BOY and (age > 21 or age < 19)):
