@@ -117,7 +117,7 @@ def settings():
     return success(data)
 
 def check_version():
-    version_now = '1.6.0'
+    version_now = '2.0.0'
     version = request.args.get('version', None)
     if 0 and GlobalizationService.get_region() == GlobalizationService.REGION_TH:
         message = u'กรุณาอัพเดทเวอร์ชั่น เราได้ทำการแก้ไขปัญหาส่งข้อความเรียบร้อยแล้ว ขอบคุณค่ะ'
