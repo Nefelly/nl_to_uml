@@ -455,7 +455,7 @@ class UserService(object):
         # key = REDIS_ONLINE
         key = GlobalizationService._online_key_by_region_gender()
         score = redis_client.zscore(key, uid)
-        print 'hhhhhhhh', score, uid, judge_time
+        print 'hhhhhhhh', score, uid, judge_time, int(score) < judge_time
         if not score or int(score) < judge_time:
             return False
         return True
