@@ -28,6 +28,7 @@ class Feed(Document):
     comment_num = IntField(required=True, default=0)
     content = StringField()
     pics = ListField(default=[])
+    audios = ListField(default=[])
     create_time = IntField(required=True)
 
     @classmethod
@@ -49,6 +50,7 @@ class Feed(Document):
             'like_num': self.like_num,
             'comment_num': self.comment_num,
             'pics': self.pics if self.pics else [],
+            'audios': self.audios if self.audios else [],
             'content': self.content,
             'create_time': get_time_info(self.create_time)
         }
@@ -58,14 +60,15 @@ class Feed(Document):
         return cls.objects(user_id=user_id).order_by("-create_time").first()
 
     @classmethod
-    def create_feed(cls, user_id, content, pics):
+    def create_feed(cls, user_id, content, pics, audios):
         last = cls.last_feed_by_user_id(user_id)
-        if last and last.pics == pics and last.content == content:
+        if last and last.pics == pics and last.content == content and last.audios == audios:
             return last
         obj = cls()
         obj.user_id = user_id
         obj.content = content
         obj.pics = pics
+        obj.audios = audios
         obj.create_time = int(time.time())
         obj.save()
         return obj

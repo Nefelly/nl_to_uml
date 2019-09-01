@@ -1,4 +1,5 @@
 import logging
+import sys
 
 from flask import (
     jsonify,
@@ -16,21 +17,56 @@ from ....response import (
 )
 from ....service import (
     AnoyMatchService,
-    VoiceMatchService
+    VoiceMatchService,
+    VideoMatchService
 )
 
 logger = logging.getLogger(__name__)
+
+VIDEO_TYPE = 'video'
+VOICE_TYPE = 'voice'
+SOUL_TYPE = 'soul'
+
+MATCH_TYPES = {
+    'video': VIDEO_TYPE,
+    'voice': VOICE_TYPE,
+    'soul': SOUL_TYPE
+}
+
+
+FUNC_SERVICE_FUNC = {
+    'get_fakeid': 'create_fakeid',
+    'anoy_match': 'anoy_match',
+    'anoy_like': 'anoy_like',
+    'anoy_judge': 'judge',
+    'get_tips': 'get_tips',
+    'match_times_left': 'get_times_left',
+    'quit_match': 'quit_match'
+}
+
+MATCH_TYPE_SERVICE = {
+    VIDEO_TYPE: VideoMatchService,
+    VOICE_TYPE: VoiceMatchService,
+    SOUL_TYPE: AnoyMatchService
+}
+
+def get_match_type():
+    match_type = request.args.get('match_type', '')
+    return MATCH_TYPES.get(match_type, SOUL_TYPE)
 
 def is_voice_match():
     match_type = request.args.get('match_type', '')
     return match_type == 'voice'
 
+def get_match_func(func_name):
+    match_type = get_match_type()
+    service  = MATCH_TYPE_SERVICE.get(match_type)
+    return getattr(service, FUNC_SERVICE_FUNC.get(func_name))
+
+
 @session_finished_required
 def get_fakeid():
-    if is_voice_match():
-        data, status = VoiceMatchService.create_fakeid(request.user_id)
-    else:
-        data, status = AnoyMatchService.create_fakeid(request.user_id)
+    data, status = get_match_func(sys._getframe().f_code.co_name)(request.user_id)
     if not status:
         return fail(data)
     return success(data)
@@ -38,10 +74,7 @@ def get_fakeid():
 
 @session_finished_required
 def anoy_match():
-    if is_voice_match():
-        data, status = VoiceMatchService.anoy_match(request.user_id)
-    else:
-        data, status = AnoyMatchService.anoy_match(request.user_id)
+    data, status = get_match_func(sys._getframe().f_code.co_name)(request.user_id)
     if not status:
         return fail(data)
     return success(data)
@@ -49,10 +82,7 @@ def anoy_match():
 
 @session_finished_required
 def anoy_like():
-    if is_voice_match():
-        data, status = VoiceMatchService.anoy_like(request.user_id)
-    else:
-        data, status = AnoyMatchService.anoy_like(request.user_id)
+    data, status = get_match_func(sys._getframe().f_code.co_name)(request.user_id)
     if not status:
         return fail(data)
     return success(data)
@@ -62,20 +92,14 @@ def anoy_like():
 def anoy_judge():
     user_id = request.user_id
     judge = request.json.get('judge')
-    if is_voice_match():
-        data, status = VoiceMatchService.judge(user_id, judge)
-    else:
-        data, status = AnoyMatchService.judge(user_id, judge)
+    data, status = get_match_func(sys._getframe().f_code.co_name)(user_id, judge)
     if not status:
         return fail(data)
     return success(data)
 
 
 def get_tips():
-    if is_voice_match():
-        data, status = VoiceMatchService.get_tips()
-    else:
-        data, status = AnoyMatchService.get_tips()
+    data, status = get_match_func(sys._getframe().f_code.co_name)()
     if not status:
         return fail(data)
     return success(data)
@@ -83,21 +107,17 @@ def get_tips():
 
 @session_finished_required
 def match_times_left():
-    user_id = request.user_id
-    if is_voice_match():
-        words = VoiceMatchService.get_times_left(user_id)
-    else:
-        words = AnoyMatchService.get_times_left(user_id)
+    words = get_match_func(sys._getframe().f_code.co_name)(request.user_id)
     return success(words)
 
 
 @session_finished_required
 def quit_match():
-    print 'quit match', request.user_id
-    if is_voice_match():
-        data, status = VoiceMatchService.quit_match(request.user_id)
-    else:
-        data, status = AnoyMatchService.quit_match(request.user_id)
+    data, status = get_match_func(sys._getframe().f_code.co_name)(request.user_id)
     if not status:
         return fail(data)
+    return success(data)
+
+def video_list():
+    data = ['1FN4V_tGi4Q', 'r4boSN3PRNo', '08ve8Ude9mY']
     return success(data)

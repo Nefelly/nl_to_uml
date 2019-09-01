@@ -63,3 +63,31 @@ def get_image(fileid):
         return Response('', mimetype='image/jpeg')   # 返回空图片流, 兼容错误
         #return jsonify(Failed)
     return Response(content, mimetype='image/jpeg')
+
+@session_required
+def upload_audio_from_file():
+    """
+    直接上传图片到云盘
+    目前只用来传实名认证图片
+    """
+    audio = request.files.get('audio')
+    if not audio:
+        return jsonify(Failed)
+
+    fileid = AliOssService.upload_from_binary(audio)
+    if not fileid:
+        return jsonify(Failed)
+    return jsonify({
+        'success': True,
+        'data': {
+            'fileid': fileid
+        }
+    })
+
+def get_audio(fileid):
+    if fileid == 'null':
+        return jsonify(Failed)
+    content = AliOssService.get_binary_from_bucket(fileid)
+    if not content:
+        return Response('', mimetype='audio/AMR')   # 返回空流, 兼容错误
+    return Response(content, mimetype='audio/AMR')

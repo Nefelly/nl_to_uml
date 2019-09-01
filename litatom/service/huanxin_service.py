@@ -285,7 +285,7 @@ class HuanxinService(object):
         }
         for i in range(cls.TRY_TIMES):
             try:
-                response = requests.put(url, verify=False, headers=headers, data=json.dumps({'nickname': nickname})).json()
+                response = requests.put(url, verify=False, headers=headers, data=json.dumps({'nickname': nickname, 'username': user_name})).json()
                 # print response
                 assert response.get('entities')[0]['nickname']
                 return True

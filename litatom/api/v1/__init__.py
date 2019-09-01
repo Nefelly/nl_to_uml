@@ -51,8 +51,10 @@ b.add_url_rule('/lit/admin/send_message', 'admin-send_message', endpoint.admin.s
 b.add_url_rule('/lit/admin/download_phone', 'admin-download_phone', endpoint.admin.download_phone)
 
 # 图片
-b.add_url_rule('/lit/image/upload', 'image-upload', endpoint.image.upload_image_from_file, methods=['POST'])
-b.add_url_rule('/lit/image/<fileid>', 'get-image', endpoint.image.get_image)
+b.add_url_rule('/lit/image/upload', 'image-upload', endpoint.oss.upload_image_from_file, methods=['POST'])
+b.add_url_rule('/lit/image/<fileid>', 'get-image', endpoint.oss.get_image)
+b.add_url_rule('/lit/audio/upload', 'audio-upload', endpoint.oss.upload_audio_from_file, methods=['POST'])
+b.add_url_rule('/lit/audio/<fileid>', 'get-audio', endpoint.oss.get_audio)
 
 # home
 b.add_url_rule('/lit/home/online_user_count', 'home-online-user-count', endpoint.home.online_user_count)
@@ -92,6 +94,7 @@ b.add_url_rule('/lit/anoy_match/quit_match', 'anoy-match-quit-match', endpoint.a
 b.add_url_rule('/lit/anoy_match/times_left', 'anoy-match-times-left', endpoint.anoy_match.match_times_left)
 b.add_url_rule('/lit/anoy_match/tips', 'anoy-match-tips', endpoint.anoy_match.get_tips)
 b.add_url_rule('/lit/anoy_match/judge', 'anoy-match-judge', endpoint.anoy_match.anoy_judge, methods=['POST'])
+b.add_url_rule('/lit/anoy_match/video_list', 'anoy-match-video-list', endpoint.anoy_match.video_list)
 
 
 # debug

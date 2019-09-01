@@ -138,8 +138,8 @@ class FeedService(object):
         #     redis_client.zadd(REDIS_FEED_SQUARE, {feed_id: new_score})
 
     @classmethod
-    def create_feed(cls, user_id, content, pics=None):
-        feed = Feed.create_feed(user_id, content, pics)
+    def create_feed(cls, user_id, content, pics=None, audios=None):
+        feed = Feed.create_feed(user_id, content, pics, audios)
         cls._on_add_feed(feed)
         cls._add_to_feed_pool(feed)
         return str(feed.id)

@@ -8,16 +8,16 @@ from flask import (
     request
 )
 from ..key import (
-    REDIS_USER_VOICE_MATCH_LEFT,
-    REDIS_VOICE_FAKE_ID_UID,
-    REDIS_VOICE_UID_FAKE_ID,
-    REDIS_VOICE_FAKE_START,
-    REDIS_VOICE_ANOY_CHECK_POOL,
-    REDIS_VOICE_MATCH_PAIR,
-    REDIS_VOICE_MATCHED_BEFORE,
-    REDIS_VOICE_MATCHED,
-    REDIS_VOICE_FAKE_LIKE,
-    REDIS_VOICE_JUDGE_LOCK
+    REDIS_USER_VIDEO_MATCH_LEFT,
+    REDIS_VIDEO_FAKE_ID_UID,
+    REDIS_VIDEO_UID_FAKE_ID,
+    REDIS_VIDEO_FAKE_START,
+    REDIS_VIDEO_ANOY_CHECK_POOL,
+    REDIS_VIDEO_MATCH_PAIR,
+    REDIS_VIDEO_MATCHED_BEFORE,
+    REDIS_VIDEO_MATCHED,
+    REDIS_VIDEO_FAKE_LIKE,
+    REDIS_VIDEO_JUDGE_LOCK
 )
 from ..util import (
     now_date_key,
@@ -45,7 +45,7 @@ from ..service import (
 from ..model import User
 redis_client = RedisClient()['lit']
 
-class VoiceMatchService(object):
+class VideoMatchService(object):
     MAX_TIME = 10 ** 13
     MATCH_WAIT = 60 * 7 + 1
     MATCH_INT = 60 * 7  # talking time
@@ -55,7 +55,7 @@ class VoiceMatchService(object):
     OTHER_GENDER_M = {BOY: GIRL, GIRL: BOY}
 
     @classmethod
-    def _get_voice_id(cls, user):
+    def _get_video_id(cls, user):
         huanxin = user.huanxin
         return huanxin.user_id, huanxin.password
         # return HuanxinService.gen_id_pwd()
@@ -78,65 +78,65 @@ class VoiceMatchService(object):
         if not gender or not fake_id:
             return
         int_time = int(time.time())
-        # voice_gender_key = REDIS_ANOY_GENDER_ONLINE.format(gender=gender)
-        voice_gender_key = GlobalizationService.voice_match_key_by_region_gender(gender)
-        redis_client.zadd(voice_gender_key,{fake_id: int_time} )
+        # video_gender_key = REDIS_ANOY_GENDER_ONLINE.format(gender=gender)
+        video_gender_key = GlobalizationService.video_match_key_by_region_gender(gender)
+        redis_client.zadd(video_gender_key,{fake_id: int_time} )
 
     @classmethod
     def _remove_from_match_pool(cls, gender, fake_id):
         if not gender or not fake_id:
             return
-        return redis_client.zrem(GlobalizationService.voice_match_key_by_region_gender(gender), fake_id)
+        return redis_client.zrem(GlobalizationService.video_match_key_by_region_gender(gender), fake_id)
 
     @classmethod
     def _add_to_check_pool(cls, fake_id):
         if not fake_id:
             return
         int_time = int(time.time())
-        redis_client.zadd(REDIS_VOICE_ANOY_CHECK_POOL, {fake_id: int_time})
+        redis_client.zadd(REDIS_VIDEO_ANOY_CHECK_POOL, {fake_id: int_time})
 
     @classmethod
     def _destroy_fake_id(cls, fake_id, need_remove_from_pool=True):
         if not fake_id:
             return
         #HuanxinService.delete_user(fake_id)
-        user_id = redis_client.get(REDIS_VOICE_FAKE_ID_UID.format(fake_id=fake_id))
+        user_id = redis_client.get(REDIS_VIDEO_FAKE_ID_UID.format(fake_id=fake_id))
 
         if user_id:
             # could not be clear now, because should be used to judge
-            # redis_client.delete(REDIS_VOICE_FAKE_ID_UID.format(fake_id=fake_id))
-            redis_client.delete(REDIS_VOICE_JUDGE_LOCK.format(fake_id=fake_id))
-            redis_client.delete(REDIS_VOICE_UID_FAKE_ID.format(user_id=user_id))
+            # redis_client.delete(REDIS_VIDEO_FAKE_ID_UID.format(fake_id=fake_id))
+            redis_client.delete(REDIS_VIDEO_JUDGE_LOCK.format(fake_id=fake_id))
+            redis_client.delete(REDIS_VIDEO_UID_FAKE_ID.format(user_id=user_id))
 
         # delete match infos
         if need_remove_from_pool:
-            redis_client.delete(REDIS_VOICE_FAKE_START.format(fake_id=fake_id))
-            other_fakeid = redis_client.get(REDIS_VOICE_MATCHED.format(fake_id=fake_id))
+            redis_client.delete(REDIS_VIDEO_FAKE_START.format(fake_id=fake_id))
+            other_fakeid = redis_client.get(REDIS_VIDEO_MATCHED.format(fake_id=fake_id))
             if other_fakeid:
-                redis_client.delete(REDIS_VOICE_FAKE_START.format(fake_id=other_fakeid))
-                redis_client.delete(REDIS_VOICE_MATCHED.format(fake_id=fake_id))
-                redis_client.delete(REDIS_VOICE_MATCHED.format(fake_id=other_fakeid))
+                redis_client.delete(REDIS_VIDEO_FAKE_START.format(fake_id=other_fakeid))
+                redis_client.delete(REDIS_VIDEO_MATCHED.format(fake_id=fake_id))
+                redis_client.delete(REDIS_VIDEO_MATCHED.format(fake_id=other_fakeid))
                 pair = low_high_pair(fake_id, other_fakeid)
-                redis_client.delete(REDIS_VOICE_MATCH_PAIR.format(low_high_fakeid=pair))
-                # redis_client.delete(REDIS_VOICE_FAKE_LIKE.format(fake_id=fake_id))
-                # redis_client.delete(REDIS_VOICE_FAKE_LIKE.format(fake_id=other_fakeid))
+                redis_client.delete(REDIS_VIDEO_MATCH_PAIR.format(low_high_fakeid=pair))
+                # redis_client.delete(REDIS_VIDEO_FAKE_LIKE.format(fake_id=fake_id))
+                # redis_client.delete(REDIS_VIDEO_FAKE_LIKE.format(fake_id=other_fakeid))
             if not cls._remove_from_match_pool(BOY, fake_id):
                 cls._remove_from_match_pool(GIRL, fake_id)
-        redis_client.zrem(REDIS_VOICE_ANOY_CHECK_POOL, fake_id)
+        redis_client.zrem(REDIS_VIDEO_ANOY_CHECK_POOL, fake_id)
 
     @classmethod
     def _in_match(cls, fake_id1, fake_id2):
         pair = low_high_pair(fake_id1, fake_id2)
-        in_match = redis_client.get(REDIS_VOICE_MATCH_PAIR.format(low_high_fakeid=pair))
+        in_match = redis_client.get(REDIS_VIDEO_MATCH_PAIR.format(low_high_fakeid=pair))
         return True if in_match else False
 
     @classmethod
     def _create_match(cls, fake_id1, fake_id2, gender1):
         pair = low_high_pair(fake_id1, fake_id2)
-        redis_client.set(REDIS_VOICE_MATCHED.format(fake_id=fake_id2), fake_id1, cls.MATCH_INT)
-        redis_client.set(REDIS_VOICE_MATCHED.format(fake_id=fake_id1), fake_id2, cls.MATCH_INT)
-        redis_client.set(REDIS_VOICE_MATCH_PAIR.format(low_high_fakeid=pair), 1, cls.MATCH_INT)
-        redis_client.set(REDIS_VOICE_MATCHED_BEFORE.format(low_high_fakeid=pair), 1, ONE_DAY)
+        redis_client.set(REDIS_VIDEO_MATCHED.format(fake_id=fake_id2), fake_id1, cls.MATCH_INT)
+        redis_client.set(REDIS_VIDEO_MATCHED.format(fake_id=fake_id1), fake_id2, cls.MATCH_INT)
+        redis_client.set(REDIS_VIDEO_MATCH_PAIR.format(low_high_fakeid=pair), 1, cls.MATCH_INT)
+        redis_client.set(REDIS_VIDEO_MATCHED_BEFORE.format(low_high_fakeid=pair), 1, ONE_DAY)
 
         # 将其从正在匹配队列中删除
         cls._remove_from_match_pool(gender1, fake_id1)
@@ -148,12 +148,12 @@ class VoiceMatchService(object):
 
     @classmethod
     def _delete_match(cls, fake_id):
-        fake_id2 = redis_client.get(REDIS_VOICE_MATCHED.format(fake_id=fake_id))
+        fake_id2 = redis_client.get(REDIS_VIDEO_MATCHED.format(fake_id=fake_id))
         if not fake_id2:
             cls._destroy_fake_id(fake_id, True)
             return True
         pair = low_high_pair(fake_id, fake_id2)
-        redis_client.delete(REDIS_VOICE_MATCH_PAIR.format(low_high_fakeid=pair))
+        redis_client.delete(REDIS_VIDEO_MATCH_PAIR.format(low_high_fakeid=pair))
         cls._destroy_fake_id(fake_id, True)
         cls._destroy_fake_id(fake_id2, True)
         # map(cls._destroy_fake_id, [fake_id, fake_id2])
@@ -164,17 +164,17 @@ class VoiceMatchService(object):
         '''
         return matched fake_id, if this match info has been set up
         '''
-        matched_key = REDIS_VOICE_MATCHED.format(fake_id=fake_id)
+        matched_key = REDIS_VIDEO_MATCHED.format(fake_id=fake_id)
         fake_id2 = redis_client.get(matched_key)
         if fake_id2:
             if cls._in_match(fake_id, fake_id2):
-                # redis_client.delete(REDIS_VOICE_FAKE_START.format(fake_id=fake_id))
+                # redis_client.delete(REDIS_VIDEO_FAKE_START.format(fake_id=fake_id))
                 return fake_id2, True
             redis_client.delete(matched_key)
         int_time = int(time.time())
         judge_time = int_time - cls.MATCH_WAIT
         other_gender = cls.OTHER_GENDER_M.get(gender)
-        other_fakeids = redis_client.zrangebyscore(GlobalizationService.voice_match_key_by_region_gender(other_gender), judge_time, MAX_TIME, 0, cls.MAX_CHOOSE_NUM)
+        other_fakeids = redis_client.zrangebyscore(GlobalizationService.video_match_key_by_region_gender(other_gender), judge_time, MAX_TIME, 0, cls.MAX_CHOOSE_NUM)
         if not other_fakeids:
             return None, False
         try_tms = 3
@@ -182,7 +182,7 @@ class VoiceMatchService(object):
             fake_id2 = random.choice(other_fakeids)
             user_id2 = cls._uid_by_fake_id(fake_id2)
             user_id = cls._uid_by_fake_id(fake_id)
-            if not redis_client.get(REDIS_VOICE_MATCHED_BEFORE.format(low_high_fakeid=low_high_pair(fake_id, fake_id2))):
+            if not redis_client.get(REDIS_VIDEO_MATCHED_BEFORE.format(low_high_fakeid=low_high_pair(fake_id, fake_id2))):
                 break
             elif i == try_tms - 1:
                 return None,False
@@ -196,7 +196,7 @@ class VoiceMatchService(object):
         if BlockService.get_block_msg(user_id, user_id2):
             return None, False
         #redis_client.zadd(matched_key, {fake_id2: int_time})
-        fake_id2_matched = redis_client.get(REDIS_VOICE_MATCHED.format(fake_id=fake_id2))
+        fake_id2_matched = redis_client.get(REDIS_VIDEO_MATCHED.format(fake_id=fake_id2))
         if not fake_id2_matched or fake_id2_matched == fake_id:
             cls._create_match(fake_id, fake_id2, gender)
             return fake_id2, False
@@ -206,18 +206,18 @@ class VoiceMatchService(object):
     def _match_left_verify(cls, user_id):
         # 匹配次数验证
         now_date = now_date_key()
-        match_left_key = REDIS_USER_VOICE_MATCH_LEFT.format(user_date=user_id + now_date)
+        match_left_key = REDIS_USER_VIDEO_MATCH_LEFT.format(user_date=user_id + now_date)
         redis_client.setnx(match_left_key, cls.MATCH_TMS)
         redis_client.expire(match_left_key, ONE_DAY)
         times_left = int(redis_client.get(match_left_key))
         if times_left <= 0:
-            return u'Your voicematch opportunity has run out, please try again tomorrow', False
+            return u'Your videomatch opportunity has run out, please try again tomorrow', False
         return times_left, True
 
     @classmethod
     def _decr_match_left(cls, user_id):
         now_date = now_date_key()
-        match_left_key = REDIS_USER_VOICE_MATCH_LEFT.format(user_date=user_id + now_date)
+        match_left_key = REDIS_USER_VIDEO_MATCH_LEFT.format(user_date=user_id + now_date)
         if not redis_client.get(match_left_key):
             redis_client.setnx(match_left_key, cls.MATCH_TMS)
             redis_client.expire(match_left_key, ONE_DAY)
@@ -237,11 +237,11 @@ class VoiceMatchService(object):
         msg, status = cls._match_left_verify(user_id)
         if not status:
             return msg, False
-        old_fake_id = redis_client.get(REDIS_VOICE_UID_FAKE_ID.format(user_id=user_id))
+        old_fake_id = redis_client.get(REDIS_VIDEO_UID_FAKE_ID.format(user_id=user_id))
         if old_fake_id:
             cls._destroy_fake_id(old_fake_id)
 
-        fake_id, pwd = cls._get_voice_id(user)
+        fake_id, pwd = cls._get_video_id(user)
         if not fake_id:
             return CREATE_HUANXIN_ERROR, False
         res = {
@@ -250,19 +250,19 @@ class VoiceMatchService(object):
         }
         # cls._add_to_check_pool(fake_id)
         # 建立fakeid:uid索引
-        redis_client.set(REDIS_VOICE_FAKE_ID_UID.format(fake_id=fake_id), user_id, ex=cls.TOTAL_WAIT)
+        redis_client.set(REDIS_VIDEO_FAKE_ID_UID.format(fake_id=fake_id), user_id, ex=cls.TOTAL_WAIT)
 
         # 建立uid:fakeid索引
-        redis_client.set(REDIS_VOICE_UID_FAKE_ID.format(user_id=user_id), fake_id, ex=cls.TOTAL_WAIT)
+        redis_client.set(REDIS_VIDEO_UID_FAKE_ID.format(user_id=user_id), fake_id, ex=cls.TOTAL_WAIT)
 
         cls._add_to_match_pool(gender, fake_id)
 
         # 进入匹配过期
-        redis_client.set(REDIS_VOICE_FAKE_START.format(fake_id=fake_id), 1, cls.MATCH_WAIT)
+        redis_client.set(REDIS_VIDEO_FAKE_START.format(fake_id=fake_id), 1, cls.MATCH_WAIT)
         return res, True
 
     @classmethod
-    def voice_user_info(cls, fake_id):
+    def video_user_info(cls, fake_id):
         res = {}
         user_id = cls._uid_by_fake_id(fake_id)
         user = User.get_by_id(user_id)
@@ -275,7 +275,7 @@ class VoiceMatchService(object):
     def anoy_match(cls, user_id):
         fake_id = cls._fakeid_by_uid(user_id)
         # 匹配已过期
-        fake_expire_key = REDIS_VOICE_FAKE_START.format(fake_id=fake_id)
+        fake_expire_key = REDIS_VIDEO_FAKE_START.format(fake_id=fake_id)
         if not fake_id or not redis_client.get(fake_expire_key):
             return u'fakeid: %s time out, please try another one' % fake_expire_key, False
 
@@ -301,7 +301,7 @@ class VoiceMatchService(object):
             'matched_fake_id': matched_id,
             'tips': tips
         }
-        res.update(cls.voice_user_info(matched_id))
+        res.update(cls.video_user_info(matched_id))
         return res, True
 
     @classmethod
@@ -317,15 +317,15 @@ class VoiceMatchService(object):
 
     @classmethod
     def _uid_by_fake_id(cls, fake_id):
-        return redis_client.get(REDIS_VOICE_FAKE_ID_UID.format(fake_id=fake_id))
+        return redis_client.get(REDIS_VIDEO_FAKE_ID_UID.format(fake_id=fake_id))
 
     @classmethod
     def _fakeid_by_uid(cls, user_id):
-        return redis_client.get(REDIS_VOICE_UID_FAKE_ID.format(user_id=user_id))
+        return redis_client.get(REDIS_VIDEO_UID_FAKE_ID.format(user_id=user_id))
 
     @classmethod
     def _other_fakeid_byfake_id(cls, fake_id):
-        return redis_client.get(REDIS_VOICE_MATCHED.format(fake_id=fake_id))
+        return redis_client.get(REDIS_VIDEO_MATCHED.format(fake_id=fake_id))
 
     @classmethod
     def anoy_like(cls, user_id):
@@ -335,9 +335,9 @@ class VoiceMatchService(object):
         other_fake_id = cls._other_fakeid_byfake_id(fake_id)
         if not other_fake_id or not cls._in_match(fake_id, other_fake_id):
             return u'your are not in match', False
-        redis_client.set(REDIS_VOICE_FAKE_LIKE.format(fake_id=fake_id), other_fake_id, cls.MATCH_INT)
+        redis_client.set(REDIS_VIDEO_FAKE_LIKE.format(fake_id=fake_id), other_fake_id, cls.MATCH_INT)
         like_eachother = False
-        if redis_client.get(REDIS_VOICE_FAKE_LIKE.format(fake_id=other_fake_id)) == fake_id:
+        if redis_client.get(REDIS_VIDEO_FAKE_LIKE.format(fake_id=other_fake_id)) == fake_id:
             like_eachother = True
             FollowService.follow_eachother(cls._uid_by_fake_id(fake_id), cls._uid_by_fake_id(other_fake_id))
         return {'like_eachother': like_eachother}, True
@@ -356,11 +356,11 @@ class VoiceMatchService(object):
                 ctx = app.request_context(EnvironBuilder('/','http://localhost/').get_environ())
                 ctx.push()
                 request.region = region
-                to_rem = redis_client.zrangebyscore(GlobalizationService.voice_match_key_by_region_gender(g), 0, judge_time - wait_buff, 0, cls.MAX_CHOOSE_NUM)
+                to_rem = redis_client.zrangebyscore(GlobalizationService.video_match_key_by_region_gender(g), 0, judge_time - wait_buff, 0, cls.MAX_CHOOSE_NUM)
                 for el in to_rem:
                     cls._destroy_fake_id(el)
                     print "match pool fake_id: %s destoryed" % el
-                to_rem_check = redis_client.zrangebyscore(REDIS_VOICE_ANOY_CHECK_POOL.format(gender=g), 0,  int_time - cls.MATCH_INT - wait_buff, 0, cls.MAX_CHOOSE_NUM)
+                to_rem_check = redis_client.zrangebyscore(REDIS_VIDEO_ANOY_CHECK_POOL.format(gender=g), 0,  int_time - cls.MATCH_INT - wait_buff, 0, cls.MAX_CHOOSE_NUM)
                 for el in to_rem:
                     cls._destroy_fake_id(el, False)
                     print "check pool fake_id: %s destoryed" % el
@@ -368,10 +368,10 @@ class VoiceMatchService(object):
     @classmethod
     def judge(cls, user_id, judge):
         fake_id = cls._fakeid_by_uid(user_id)
-        other_fakeid = redis_client.get(REDIS_VOICE_MATCHED.format(fake_id=fake_id))
+        other_fakeid = redis_client.get(REDIS_VIDEO_MATCHED.format(fake_id=fake_id))
         if not other_fakeid:
             return NOT_IN_MATCH, False
-        redis_key = REDIS_VOICE_JUDGE_LOCK.format(fake_id=fake_id)
+        redis_key = REDIS_VIDEO_JUDGE_LOCK.format(fake_id=fake_id)
         lock = redis_client.setnx(redis_key, 1)
         redis_client.expire(redis_key, cls.MATCH_INT)
         if not lock:

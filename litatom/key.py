@@ -72,3 +72,22 @@ REDIS_VOICE_GENDER_ONLINE_REGION = 'voice_online:{gender}:{region}'
 REDIS_VOICE_CHAT_WAIT = 'voice_chat_wait:{user_id}'
 REDIS_VOICE_CHAT_CALLED = 'voice_chat_called:{user_id}'
 REDIS_VOICE_CHAT_IN_CHAT = 'voice_chat_in_chat:{user_id}'
+
+
+# video match
+REDIS_USER_VIDEO_MATCH_LEFT = 'video_user_match_left:{user_date}'   # 过期时间一天
+REDIS_VIDEO_FAKE_ID_UID = 'video_fakeid_uid:{fake_id}'
+REDIS_VIDEO_UID_FAKE_ID = 'video_uid_fakeid:{user_id}'
+REDIS_VIDEO_FAKE_START = 'video_fake_start:{fake_id}'   # 开始进入匹配
+REDIS_VIDEO_ANOY_CHECK_POOL = 'video_anoy_check_pool'   # sorted set
+REDIS_VIDEO_MATCH_PAIR = 'video_match_start:{low_high_fakeid}'
+REDIS_VIDEO_MATCHED_BEFORE = 'video_match_before:{low_high_fakeid}'
+REDIS_VIDEO_MATCHED = 'video_matched:{fake_id}'   # 双方匹配上, 匹配动作 需要同时填写 两个键值对
+REDIS_VIDEO_FAKE_LIKE = 'video_fake_like:{fake_id}'  # value fake_id
+REDIS_VIDEO_JUDGE_LOCK = 'video_judge_lock:{fake_id}'   # 评价对方的接口, 用于防范被刷评价
+REDIS_VIDEO_GENDER_ONLINE_REGION = 'video_online:{gender}:{region}'
+
+#video chat
+REDIS_VIDEO_CHAT_WAIT = 'video_chat_wait:{user_id}'
+REDIS_VIDEO_CHAT_CALLED = 'video_chat_called:{user_id}'
+REDIS_VIDEO_CHAT_IN_CHAT = 'video_chat_in_chat:{user_id}'
