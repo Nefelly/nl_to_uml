@@ -66,6 +66,7 @@ class StatisticService(object):
                     online = UserService.uid_online(uid)
                 _['online'] = online
                 user_infos.append(_)
+        print 'hhhhhhh', user_infos
         return user_infos
 
     @classmethod
