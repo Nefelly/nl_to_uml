@@ -245,7 +245,7 @@ class GlobalizationService(object):
             region = cls.get_region()
         # word = redis_client.get(cls._region_tag_key(region, tag))
         word = ''
-        if region == cls.REGION_IN:
+        if region == cls.REGION_IN or region == cls.REGION_IN_NOCORE:
             region = cls.REGION_EN
         if not word:
             word = RegionWord.word_by_region_tag(region, tag)

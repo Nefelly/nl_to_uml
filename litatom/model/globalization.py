@@ -28,7 +28,7 @@ class RegionWord(Document):
             'th': u'เหลือ %s ครั้ง',
             'en': u'%s times left',
             'id': u'%s kali lagi',
-            'india': u'%s times left'
+            'india': u'%s times left',
         },
         'anoy_match_msg': {
             'vi': u'Trò chuyện 180 giây, thích nhau mở khóa giới hạn trò chuyện',
