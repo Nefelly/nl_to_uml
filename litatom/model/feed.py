@@ -2,6 +2,7 @@
 import datetime
 import time
 import bson
+import cPickle
 from mongoengine import (
     BooleanField,
     DateTimeField,
@@ -14,8 +15,14 @@ from ..util import (
     get_time_info
 )
 from ..const import (
-    DEFAULT_QUERY_LIMIT
+    DEFAULT_QUERY_LIMIT,
+    ONE_HOUR
 )
+from ..key import (
+    REDIS_FEED_CACHE
+)
+from ..redis import RedisClient
+redis_client = RedisClient()['lit']
 
 class Feed(Document):
     meta = {
@@ -38,6 +45,11 @@ class Feed(Document):
     @classmethod
     def get_by_user_id(cls, user_id):
         return cls.objects(user_id=user_id)
+
+    def save(self, *args, **kwargs):
+        if getattr(self, 'id', ''):
+            self._disable_cache(str(self.id))
+        super(Feed, self).save(*args, **kwargs)
 
     @property
     def is_hq(self):
@@ -103,9 +115,15 @@ class Feed(Document):
 
     @classmethod
     def get_by_id(cls, feed_id):
+        cache_key = REDIS_FEED_CACHE.format(feed_id=feed_id)
+        cache_obj = redis_client.get(cache_key)
+        if cache_obj:
+            return cPickle.loads(cache_obj)
         if not bson.ObjectId.is_valid(feed_id):
             return None
-        return cls.objects(id=feed_id).first()
+        obj = cls.objects(id=feed_id).first()
+        redis_client.set(cache_key, cPickle.dumps(obj), ONE_HOUR)
+        return obj
 
 class FollowingFeed(Document):
     user_id = StringField(required=True)
