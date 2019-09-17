@@ -5,6 +5,7 @@ import hashlib
 import logging
 import json
 import random
+import cPickle
 sys_rng = random.SystemRandom()
 import urlparse
 
@@ -32,14 +33,16 @@ from mongoengine import (
 from ..key import (
     REDIS_KEY_SESSION_USER,
     REDIS_KEY_USER_HUANXIN,
-    REDIS_KEY_USER_AGE
+    REDIS_KEY_USER_AGE,
+    REDIS_USER_CACHE
 )
 from ..const import (
     TWO_WEEKS,
     ONE_DAY,
     UNKNOWN_GENDER,
     DEFAULT_QUERY_LIMIT,
-    NO_SET
+    NO_SET,
+    USER_ACTIVE
 )
 from ..redis import RedisClient
 from ..util import (
@@ -276,10 +279,25 @@ class User(Document, UserSessionMixin):
         return user
 
     @classmethod
+    def _disable_cache(cls, user_id):
+        redis_client.delete(REDIS_USER_CACHE.format(user_id=user_id))
+
+    @classmethod
     def get_by_id(cls, user_id):
+        cache_key = REDIS_USER_CACHE.format(user_id=user_id)
+        cache_obj = redis_client.get(cache_key)
+        if cache_obj:
+            return cPickle.loads(cache_obj)
         if not bson.ObjectId.is_valid(user_id):
             return None
-        return cls.objects(id=user_id).first()
+        obj = cls.objects(id=user_id).first()
+        redis_client.set(cache_key, cPickle.dumps(obj), USER_ACTIVE)
+        return obj
+
+    def save(self, *args, **kwargs):
+        if getattr(self, 'id', ''):
+            self._disable_cache(str(self.id))
+        super(User, self).save(*args, **kwargs)
 
     def add_judge(self, judge):
         if not judge in self.JUDGES:
@@ -303,12 +321,15 @@ class User(Document, UserSessionMixin):
         if not self.birthdate:
             return -1
         date_now = datetime.datetime.now()
-        date_birth = datetime.datetime.strptime(self.birthdate, '%Y-%m-%d')
+        try:
+            date_birth = datetime.datetime.strptime(self.birthdate, '%Y-%m-%d')
+        except:
+            date_birth = datetime.datetime.now()
         age = date_now.year - date_birth.year
         try:
             replaced_birth = date_birth.replace(year=date_now.year)
         except ValueError:   # raised when birth date is February 29 and the current year is not a leap year
-            replaced_birth = date_birth.replace(year=date_now.year, day=date_birth-1)
+            replaced_birth = date_birth.replace(year=date_now.year, day=date_birth.day-1)
         if replaced_birth > date_now:
             return date_now.year - date_birth.year -1
         return date_now.year - date_birth.year

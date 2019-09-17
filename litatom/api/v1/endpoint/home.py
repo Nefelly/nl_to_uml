@@ -48,7 +48,6 @@ def online_user_count():
     count = StatisticService.get_online_cnt(gender)
     return success({'count': count})
 
-
 def online_users():
     gender = request.args.get('gender', None)
     if GlobalizationService.get_region() in [GlobalizationService.REGION_VN, GlobalizationService.REGION_ID]:
@@ -142,7 +141,9 @@ def report():
     pics = form.pics.data
     target_user_id = form.target_user_id.data
     #if not reason or not pics:
-    if not reason or not pics:
+    # if not reason or not pics:
+    #     return fail('lack of reason or picture')
+    if not reason:
         return fail('lack of reason or picture')
     data, status = ReportService.report(user_id, reason, pics, target_user_id)
     if status:

@@ -2,6 +2,8 @@
 import time
 from ..redis import RedisClient
 from ..model import Report
+from ..const import ONE_DAY
+from ..service import UserService
 redis_client = RedisClient()['lit']
 
 class ReportService(object):
@@ -14,9 +16,18 @@ class ReportService(object):
         report.pics = pics
         if target_user_id:
             report.target_uid = target_user_id
-        report.create_ts = int(time.time())
+        ts_now = int(time.time())
+        report.create_ts = ts_now
         report.save()
         return {'report_id': str(report.id)}, True
+
+    @classmethod
+    def _should_block(cls, user_id):
+        ts_now = int(time.time())
+        objs = Report.objects(target_user_id=user_id, create_ts__gte=(ts_now - 3 * ONE_DAY))
+        if objs:
+            return True
+        return False
 
     @classmethod
     def info_by_id(cls, report_id):
