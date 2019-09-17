@@ -46,6 +46,10 @@ class Feed(Document):
     def get_by_user_id(cls, user_id):
         return cls.objects(user_id=user_id)
 
+    @classmethod
+    def _disable_cache(cls, feed_id):
+        redis_client.delete(REDIS_FEED_CACHE.format(feed_id=feed_id))
+
     def save(self, *args, **kwargs):
         if getattr(self, 'id', ''):
             self._disable_cache(str(self.id))
