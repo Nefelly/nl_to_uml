@@ -16,17 +16,21 @@ class ReportService(object):
         report.pics = pics
         if target_user_id:
             report.target_uid = target_user_id
+            if cls._should_block(target_user_id, user_id):
+                UserService.forbid_user(target_user_id, 3 * ONE_DAY)
         ts_now = int(time.time())
         report.create_ts = ts_now
         report.save()
         return {'report_id': str(report.id)}, True
 
     @classmethod
-    def _should_block(cls, user_id):
+    def _should_block(cls, target_user_id, user_id):
         ts_now = int(time.time())
-        objs = Report.objects(target_user_id=user_id, create_ts__gte=(ts_now - 3 * ONE_DAY))
+        objs = Report.objects(target_user_id=target_user_id, create_ts__gte=(ts_now - 3 * ONE_DAY))
         if objs:
-            return True
+            for _ in objs:
+                if _.uid != user_id:
+                    return True
         return False
 
     @classmethod
