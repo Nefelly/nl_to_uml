@@ -26,7 +26,7 @@ class ReportService(object):
     @classmethod
     def _should_block(cls, target_user_id, user_id):
         ts_now = int(time.time())
-        objs = Report.objects(target_user_id=target_user_id, create_ts__gte=(ts_now - 3 * ONE_DAY))
+        objs = Report.objects(target_uid=target_user_id, create_ts__gte=(ts_now - 3 * ONE_DAY))
         if objs:
             for _ in objs:
                 if _.uid != user_id:
