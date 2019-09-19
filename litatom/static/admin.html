@@ -49,10 +49,11 @@ created() {this.submitForm();},
 methods: {
       submitForm: function() {
         this.$http.get(BASE_URL + 'admin/query_reports?sid=session.1239394106468792255&dealed=False').then(function(result){
-	var res = result.data.data.objs;
+            var data = result.data.data;
+	res = data.objs;
 	this.items1 = res;
     this.previous_start = this.next_start;
-                    this.next_start = res.next_start;
+                    this.next_start = data.next_start;
 	      })
       },
     reject: function(report_id){
