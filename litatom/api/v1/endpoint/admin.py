@@ -50,7 +50,7 @@ from  ....const import (
     APP_PATH
 )
 logger = logging.getLogger(__name__)
-current_app.config['SEND_FILE_MAX_AGE_DEFAULT'] = timedelta(secconds=1)
+current_app.config['SEND_FILE_MAX_AGE_DEFAULT'] = timedelta(seconds=1)
 
 def login():
     data = request.json
