@@ -36,7 +36,7 @@ class Feed(Document):
     content = StringField()
     pics = ListField(default=[])
     audios = ListField(default=[])
-    create_time = IntField(required=True)
+    create_time = IntField(required=True, default=int(time.time()))
 
     @classmethod
     def feed_num(cls, user_id):
