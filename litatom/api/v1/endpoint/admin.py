@@ -50,7 +50,8 @@ from  ....const import (
     APP_PATH
 )
 logger = logging.getLogger(__name__)
-current_app.config['SEND_FILE_MAX_AGE_DEFAULT'] = timedelta(seconds=1)
+app = Flask(__name__)
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = timedelta(seconds=1)
 
 def login():
     data = request.json
