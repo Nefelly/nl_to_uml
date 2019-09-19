@@ -31,6 +31,8 @@ no pictures
 <td><button name='reject' @click='reject(item.report_id)'>reject</button></td>
 </tr>
 </table>
+<button v-if="previous_start >= 0" name="previous_page" @click="previous_page()">previous page</button>
+<button v-if="next_start >= 0" name="next_page" @click="next_page()">next page</button>
 </div>
 <script>
   const BASE_URL = 'http://' + document.domain + '/api/sns/v1/lit/';;
@@ -83,6 +85,41 @@ methods: {
         this.items1 = newItem1
 
       })
+    },
+
+
+    next_page: function() {
+        this.$http.get(BASE_URL + 'admin/query_reports', {params:{start_pos: this.next_start, loc:Loc}}).then(function(result){
+            var data = result.data.data;
+            this.feeds = data.feeds;
+            this.next_start = data.next_start;
+            if(this.next_start===0){
+                this.previous_start = -1;
+            }
+            else if(this.previous_start - this.feeds.length <= 0){
+                this.previous_start = 0;
+            }
+            else{
+                this.previous_start = (this.next_start - this.feeds.length);
+            }
+        })
+    },
+
+    previous_page: function() {
+        this.$http.get(BASE_URL + 'admin/query_reports', {params:{start_pos: this.previous_start, loc:Loc}}).then(function(result){
+            var data = result.data.data;
+            this.feeds = data.feeds;
+            this.next_start = this.previous_start;
+            if(this.next_start===0){
+                this.previous_start = -1;
+            }
+            else if(this.next_start - this.feeds.length <= 0){
+                this.previous_start = 0;
+            }
+            else{
+                this.previous_start = (this.next_start - this.feeds.length);
+            }
+        })
     },
     }
 })
