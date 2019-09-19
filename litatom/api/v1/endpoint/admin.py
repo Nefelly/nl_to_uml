@@ -2,6 +2,7 @@ import os
 import json
 import logging
 import time
+from datetime import timedelta
 
 from flask import (
     jsonify,
@@ -49,7 +50,7 @@ from  ....const import (
     APP_PATH
 )
 logger = logging.getLogger(__name__)
-current_app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 1
+current_app.config['SEND_FILE_MAX_AGE_DEFAULT'] = timedelta(secconds=1)
 
 def login():
     data = request.json
