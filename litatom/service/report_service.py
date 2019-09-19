@@ -15,9 +15,11 @@ class ReportService(object):
         report.reason =reason
         report.pics = pics
         if target_user_id:
+            if target_user_id.startswith('love'):
+                target_user_id = UserService.uid_by_huanxin_id(target_user_id)
             report.target_uid = target_user_id
             if cls._should_block(target_user_id, user_id):
-                UserService.forbid_user(target_user_id, 3 * ONE_DAY)
+                UserService.auto_forbid(target_user_id, 3 * ONE_DAY)
         ts_now = int(time.time())
         report.create_ts = ts_now
         report.save()

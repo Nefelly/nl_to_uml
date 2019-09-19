@@ -312,7 +312,7 @@ class UserService(object):
         return True
 
     @classmethod
-    def forbid_user(cls, user_id, forbid_ts):
+    def _forbid_action(cls, user_id, forbid_ts):
         user = User.get_by_id(user_id)
         if not user:
             return False
@@ -327,10 +327,20 @@ class UserService(object):
         user.save()
         if user.huanxin and user.huanxin.user_id:
             HuanxinService.deactive_user(user.huanxin.user_id)
-        UserRecord.add_forbidden(user_id)
         feeds = Feed.get_by_user_id(user_id)
         for _ in feeds:
             _.delete()
+
+    @classmethod
+    def forbid_user(cls, user_id, forbid_ts):
+        cls._forbid_action(user_id, forbid_ts)
+        UserRecord.add_forbidden(user_id)
+        return True
+
+    @classmethod
+    def auto_forbid(cls, user_id, forbid_ts):
+        cls._forbid_action(user_id, forbid_ts)
+        UserRecord.add_auto_forbidden(user_id)
         return True
 
     @classmethod
