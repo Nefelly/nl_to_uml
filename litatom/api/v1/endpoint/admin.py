@@ -8,7 +8,8 @@ from flask import (
     request,
     render_template,
     current_app,
-    send_file
+    send_file,
+    Flask
 
 )
 
@@ -48,6 +49,7 @@ from  ....const import (
     APP_PATH
 )
 logger = logging.getLogger(__name__)
+current_app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 1
 
 def login():
     data = request.json
