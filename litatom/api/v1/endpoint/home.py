@@ -144,6 +144,8 @@ def report():
     # if not reason or not pics:
     #     return fail('lack of reason or picture')
     if not reason:
+        return fail('lack of reason')
+    if reason != 'match' and not pics:
         return fail('lack of reason or picture')
     data, status = ReportService.report(user_id, reason, pics, target_user_id)
     if status:
