@@ -36,7 +36,8 @@ from ....service import (
     TrackActionService,
     FeedbackService,
     GlobalizationService,
-    UserFilterService
+    UserFilterService,
+    FeedService
 )
 
 logger = logging.getLogger(__name__)
@@ -139,14 +140,18 @@ def report():
     form = ReportForm(data=request.json)
     reason = form.reason.data
     pics = form.pics.data
+    feed_id = form.feed_id.data
     target_user_id = form.target_user_id.data
     #if not reason or not pics:
     # if not reason or not pics:
     #     return fail('lack of reason or picture')
     if not reason:
         return fail('lack of reason')
-    if reason != 'match' and not pics:
+    if reason != 'match' and not feed_id and not pics:
         return fail('lack of reason or picture')
+    if feed_id:
+        feed_info = FeedService.get_feed_info(None, feed_id)
+        pics = feed_info['pics']
     data, status = ReportService.report(user_id, reason, pics, target_user_id)
     if status:
         return success(data)
