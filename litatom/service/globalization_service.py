@@ -117,6 +117,7 @@ class GlobalizationService(object):
         if loc in cls.LOCS:
             if loc == cls.LOC_IN:
                 return loc
+            return loc
         return cls.COUNTRY_LOC.get(request.ip_country, loc)
 
     @classmethod
