@@ -150,7 +150,9 @@ def report():
     if reason != 'match' and not feed_id and not pics:
         return fail('lack of reason or picture')
     if feed_id:
-        feed_info = FeedService.get_feed_info(None, feed_id)
+        feed_info, status_feed = FeedService.get_feed_info(None, feed_id)
+        if not status_feed:
+            return fail(feed_info)
         pics = feed_info['pics']
     data, status = ReportService.report(user_id, reason, pics, target_user_id)
     if status:
