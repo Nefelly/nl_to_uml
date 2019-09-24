@@ -154,7 +154,9 @@ def report():
         if not status_feed:
             return fail(feed_info)
         pics = feed_info['pics']
-    data, status = ReportService.report(user_id, reason, pics, target_user_id)
+        data, status = ReportService.report(user_id, reason, pics, target_user_id, feed_id)
+    else:
+        data, status = ReportService.report(user_id, reason, pics, target_user_id)
     if status:
         return success(data)
     return fail(data)

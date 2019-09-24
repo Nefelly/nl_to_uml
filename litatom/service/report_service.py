@@ -9,11 +9,12 @@ redis_client = RedisClient()['lit']
 class ReportService(object):
 
     @classmethod
-    def report(cls, user_id, reason, pics=[], target_user_id=None):
+    def report(cls, user_id, reason, pics=[], target_user_id=None, related_feed_id=None):
         report = Report()
         report.uid = user_id
         report.reason =reason
         report.pics = pics
+        report.related_feed = related_feed_id
         if target_user_id:
             if target_user_id.startswith('love'):
                 target_user_id = UserService.uid_by_huanxin_id(target_user_id)
