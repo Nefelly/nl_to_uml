@@ -119,5 +119,5 @@ def quit_match():
     return success(data)
 
 def video_list():
-    data = ['1FN4V_tGi4Q', 'r4boSN3PRNo', '08ve8Ude9mY']
+    data = ['r4boSN3PRNo', '08ve8Ude9mY']
     return success(data)
