@@ -55,6 +55,11 @@ class Feed(Document):
             self._disable_cache(str(self.id))
         super(Feed, self).save(*args, **kwargs)
 
+    def delete(self, *args, **kwargs):
+        if getattr(self, 'id', ''):
+            self._disable_cache(str(self.id))
+        super(Feed, self).delete(*args, **kwargs)
+
     @property
     def is_hq(self):
         return self.like_num >= 5 or self.comment_num >= 5
