@@ -50,6 +50,7 @@ from .track import TrackChat
 from .admin import AdminUser
 from .fbbackup import FaceBookBackup
 from .globalization import RegionWord
+from .referral_code import ReferralCode
 from ..db import DBManager
 
 

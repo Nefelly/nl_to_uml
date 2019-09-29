@@ -44,7 +44,8 @@ from ..model import (
     Follow,
     Blocked,
     FaceBookBackup,
-    RedisLock
+    RedisLock,
+    ReferralCode
 )
 from ..service import (
     SmsCodeService,
@@ -345,7 +346,7 @@ class UserService(object):
 
     @classmethod
     def update_info(cls, user_id, data):
-        els = ['nickname', 'birthdate', 'avatar', 'bio', 'country']
+        els = ['nickname', 'birthdate', 'avatar', 'bio', 'country', 'referral_code']
         once = ['gender']
         total_fields = els + once
         field_info = u'field must be at least one of: [%s]' % ','.join(total_fields)
@@ -384,6 +385,8 @@ class UserService(object):
                 if gender and age >= 0:
                     if (gender == GIRL and age < 15) or (gender == BOY and (age > 21 or age < 19)):
                         GlobalizationService.change_loc(user_id, GlobalizationService.LOC_INN)
+        if data.get('referral_code', ''):
+            ReferralCode.create(user_id, data.get('referral_code'))
         for el in once:
             if data.get(el, '') and getattr(user, el):
                 return u'%s can\'t be reset' % el, False
