@@ -20,10 +20,10 @@ class AlertService(object):
         pwd = 'vshditifewnhcajb'
         message = MIMEText(content, "plain", "utf-8")
         message['Subject'] = 'alert'
-        message['To'] = to
+        if not isinstance(to, list):
+            to = [to]
+        message['To'] = ','.join(to)
         message['From'] = sender
         smtp = smtplib.SMTP_SSL("smtp.qq.com", 465)
         smtp.login(sender, pwd)
-        if not isinstance(to, list):
-            to = [to]
         smtp.sendmail(sender, to, message.as_string())
