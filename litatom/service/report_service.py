@@ -3,7 +3,9 @@ import time
 from ..redis import RedisClient
 from ..model import Report
 from ..const import ONE_DAY
-from ..service import UserService
+from ..service import (
+    UserService,
+)
 redis_client = RedisClient()['lit']
 
 class ReportService(object):
@@ -21,6 +23,13 @@ class ReportService(object):
             report.target_uid = target_user_id
             if cls._should_block(target_user_id, user_id):
                 UserService.auto_forbid(target_user_id, 3 * ONE_DAY)
+                objs = Report.objects(target_uid=target_user_id, create_ts__gte=(ts_now - 3 * ONE_DAY))
+                send_uids = []
+                for _ in objs:
+                    if not _.dealed:
+                        _.dealed = True
+                        send_uids.append(_.uid)
+                UserService.block_actions(target_user_id, list(set(send_uids)))
         ts_now = int(time.time())
         report.create_ts = ts_now
         report.save()

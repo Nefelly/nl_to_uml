@@ -53,7 +53,8 @@ from ..service import (
     GoogleService,
     FacebookService,
     BlockService,
-    GlobalizationService
+    GlobalizationService,
+    FirebaseService
 )
 
 sys_rnd = random.SystemRandom()
@@ -343,6 +344,15 @@ class UserService(object):
         cls._forbid_action(user_id, forbid_ts)
         UserRecord.add_auto_forbidden(user_id)
         return True
+
+    @classmethod
+    def block_actions(cls, reported_uid, report_user_ids):
+        target_user_nickname = cls.nickname_by_uid(reported_uid)
+        to_user_info = u"Your report on the user %s  has been settled. %s's account is disabled. Thank you for your support of the Lit community." \
+                       % (target_user_nickname, target_user_nickname)
+        for _ in report_user_ids:
+            cls.msg_to_user(to_user_info, _)
+            FirebaseService.send_to_user(_, u'your report succeed', to_user_info)
 
     @classmethod
     def update_info(cls, user_id, data):
