@@ -42,7 +42,8 @@ from ....service import (
     FirebaseService,
     FeedService,
     GlobalizationService,
-    UserService
+    UserService,
+    AlertService
 )
 from  ....const import (
     MAX_TIME,
@@ -199,7 +200,14 @@ def change_avatar():
     user.save()
     return success()
 
-
+def mail_alert():
+    data = request.json
+    content = data.get('content', '')
+    to_users = data.get('users', '')
+    if not to_users:
+        to_users = ['w326571@126.com', 'juzhongtian@gmail.com', '382365209@qq.com']
+    AlertService.send_mail(to_users, content)
+    return success({'to_users': to_users})
 
 def download_phone():
     date = request.args.get('date')

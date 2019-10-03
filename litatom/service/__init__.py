@@ -1,6 +1,7 @@
 # flake8: noqa
 from .token_bucket_service import TokenBucketService
-from .ip2address_service import  Ip2AddressService
+from .ip2address_service import Ip2AddressService
+from .alert_service import AlertService
 from .globalization_service import GlobalizationService
 from .mq_service import MqService
 from .sms_code_service import SmsCodeService

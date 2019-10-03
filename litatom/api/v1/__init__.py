@@ -49,6 +49,7 @@ b.add_url_rule('/lit/admin/upload_apk', 'admin-upload_apk', endpoint.admin.uploa
 b.add_url_rule('/lit/admin/msg_to_region', 'admin-to-region', endpoint.admin.msg_to_region, methods=['POST'])
 b.add_url_rule('/lit/admin/send_message', 'admin-send_message', endpoint.admin.send_message_html)
 b.add_url_rule('/lit/admin/download_phone', 'admin-download_phone', endpoint.admin.download_phone)
+b.add_url_rule('/lit/admin/mail_alert', 'admin-mail-alert', endpoint.admin.mail_alert, methods=['POST'])
 
 # 图片
 b.add_url_rule('/lit/image/upload', 'image-upload', endpoint.oss.upload_image_from_file, methods=['POST'])
