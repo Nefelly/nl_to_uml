@@ -11,8 +11,8 @@ import json
 import sys
 import os
 
-if 'dev' in os.getcwd():
-    sys.exit()
+#if 'dev' in os.getcwd():
+#    sys.exit()
 
 # Load env var from YAML
 with open("ansible/online_conf") as f:

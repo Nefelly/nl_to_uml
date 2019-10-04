@@ -44,7 +44,8 @@ class QiniuService(object):
                 # headers = {"code": res.status_code, "reqid": res.req_id, "xlog": res.x_log}
                 test_res = json.loads(res.text_body)
                 #print test_res
-                if 'invalid URI' in test_res.get('error', '') and i <= loop_tms - 1:
+                err = test_res.get('error', '')
+                if ('invalid URI' in err or 'fetch uri failed' in err) and i <= loop_tms - 1:
                     time.sleep(0.3)
                     continue
                 scenes = test_res['result']['scenes']
