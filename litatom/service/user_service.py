@@ -194,7 +194,13 @@ class UserService(object):
         from_name='Lit official'
         officail_user = User.get_by_nickname(from_name)
         if not officail_user:
-            return False
+            from hendrix.conf import setting
+            if setting.IS_DEV:
+                officail_user = User.objects().first()
+                officail_user.nickname = from_name
+                officail_user.save()
+            else:
+                return False
         user = User.get_by_id(target_user_id)
         if not user:
             return False
