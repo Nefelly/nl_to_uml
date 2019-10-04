@@ -177,6 +177,7 @@ def change_loc():
     phone = request.args.get('phone')
     target_loc = request.loc
     user_id = request.user_id
+    print '!' * 100, target_loc
     if phone and phone.startswith('86'):
         user = User.get_by_phone(phone)
         if user:
