@@ -182,7 +182,6 @@ def change_loc():
         if user:
             user_id = str(user.id)
             request.user_id = user_id
-    print '!' * 100, target_loc, user_id
     msg, status = GlobalizationService.change_loc(user_id, target_loc)
     if status:
         return success()

@@ -98,7 +98,8 @@ class GlobalizationService(object):
         'ID': REGION_ID,
         'th': REGION_TH,
         'CN': REGION_TH,
-        'INN': REGION_IN_NOCORE
+        #'INN': REGION_IN_NOCORE
+        'INN': REGION_IN
     }
     REGIONS = list(set(LOC_REGION.values()))
     REGIONS.append(REGION_EN)
@@ -210,7 +211,7 @@ class GlobalizationService(object):
             loc_key = REDIS_USER_LOC.format(user_id=user_id)
             tmp_loc = redis_client.get(loc_key)
             if not tmp_loc:
-                user_setting =  UserSetting.get_by_user_id(user_id)
+                user_setting = UserSetting.get_by_user_id(user_id)
                 if user_setting and user_setting.lang and user_setting.lang in cls.LOCS:
                     tmp_loc = user_setting.lang
             if tmp_loc and tmp_loc in cls.LOCS:
@@ -239,7 +240,7 @@ class GlobalizationService(object):
             return u'your loc must be in one of [%s]' % (','.join(cls.LOCS)), False
         UserSetting.ensure_setting(user_id, target_loc)
         cls._set_loc_cache(user_id, target_loc)
-        return  None, True
+        return None, True
 
     @classmethod
     def _region_tag_key(cls, region, tag):
