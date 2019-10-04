@@ -3,7 +3,7 @@ set -e
 
 exec 2>&1
 
-cd /data/litatom
+#cd /data/litatom
 
 python <<EOF
 import yaml
