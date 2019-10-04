@@ -108,6 +108,7 @@ class GlobalizationService(object):
     @classmethod
     def _online_key_by_region_gender(cls, gender=None):
         region = cls.get_region()
+        print region
         if gender:
             return REDIS_ONLINE_GENDER_REGION.format(region=region, gender=gender)
         else:
@@ -220,13 +221,11 @@ class GlobalizationService(object):
                 loc = request.loc
         else:
             loc = request.loc
-        print '! * 100', loc
         if cls.LOC_REGION.get(loc, ''):
             res = cls.LOC_REGION[loc]
         else:
             res = cls.DEFAULT_REGION
         request.region = res
-        print res
         return res
 
     @classmethod
