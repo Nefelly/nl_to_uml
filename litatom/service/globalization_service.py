@@ -226,6 +226,7 @@ class GlobalizationService(object):
         else:
             res = cls.DEFAULT_REGION
         request.region = res
+        print region
         return res
 
     @classmethod
