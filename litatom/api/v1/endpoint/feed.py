@@ -36,7 +36,7 @@ def create_feed():
     content = data.get('content')
     pics = data.get('pics')
     audios = data.get('audios')
-    if not content:
+    if not content and not pics and not audios:
         return jsonify(FailedLackOfField)
     feed_id = FeedService.create_feed(request.user_id, content, pics, audios)
     return success({'feed_id':feed_id})

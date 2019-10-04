@@ -24,7 +24,7 @@ from ..key import (
 from ..redis import RedisClient
 redis_client = RedisClient()['lit']
 
-class Feed(Document):
+class xFeed(Document):
     meta = {
         'strict': False,
         'alias': 'db_alias'
