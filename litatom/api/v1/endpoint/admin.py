@@ -177,12 +177,12 @@ def change_loc():
     phone = request.args.get('phone')
     target_loc = request.loc
     user_id = request.user_id
-    print '!' * 100, target_loc
     if phone and phone.startswith('86'):
         user = User.get_by_phone(phone)
         if user:
             user_id = str(user.id)
             request.user_id = user_id
+    print '!' * 100, target_loc, user_id
     msg, status = GlobalizationService.change_loc(user_id, target_loc)
     if status:
         return success()
