@@ -40,6 +40,7 @@ class GlobalizationService(object):
     REGION_VN = 'vi'
     REGION_EN = 'en'
     REGION_IN_NOCORE = 'indiaNoCore'
+    REGION_KR = 'ko'
 
 
     LOC_TH = 'TH'   # 泰国
@@ -50,6 +51,7 @@ class GlobalizationService(object):
     LOC_TE = 'TEST' # 测试,混杂区
     LOC_TH2 = 'th'
     LOC_INN = 'INN'
+    LOC_KR = 'KR'
 
     LOCS = {
         LOC_TH,
@@ -58,14 +60,16 @@ class GlobalizationService(object):
         LOC_ID,
         LOC_CN,
         LOC_TE,
-        LOC_INN
+        LOC_INN,
+        LOC_KR
     }
 
     KOWN_REGION_LOC = {
         REGION_VN: LOC_VN,
         REGION_TH: [LOC_TH, LOC_CN, LOC_TH2],
         REGION_ID: LOC_ID,
-        REGION_IN: LOC_IN
+        REGION_IN: LOC_IN,
+        REGION_KR: LOC_KR
     }
 
     COUNTRY_LOC = {
@@ -74,6 +78,7 @@ class GlobalizationService(object):
         'Vietnam': LOC_VN,
         'China': LOC_CN,
         'India': LOC_IN,
+        'South Korea': LOC_KR
     }
 
 
@@ -215,6 +220,7 @@ class GlobalizationService(object):
                 loc = request.loc
         else:
             loc = request.loc
+        print '! * 100', loc
         if cls.LOC_REGION.get(loc, ''):
             res = cls.LOC_REGION[loc]
         else:
