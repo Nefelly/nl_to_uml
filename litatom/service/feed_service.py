@@ -63,7 +63,7 @@ class FeedService(object):
 
     @classmethod
     def _on_del_feed(cls, feed):
-        MqService.push(cls.REMOVE_EXCHANGE, {"feed_id":str(feed.id)})
+        MqService.push(cls.REMOVE_EXCHANGE, {"feed_id": str(feed.id)})
         # FollowingFeedService.remove_feed(feed)
 
     @classmethod
