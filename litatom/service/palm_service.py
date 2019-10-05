@@ -292,7 +292,7 @@ class PalmService(object):
                 return lst[ind]
             return u'not set yet'
         region = GlobalizationService.get_region()
-        raw_m = desc.get(region, {})
+        raw_m = desc.get(region, desc[GlobalizationService.REGION_EN])
         res = {
             palm_type: get_desc(raw_m, palm_type, palm_type_ind),
             life: get_desc(raw_m, life, life_ind),
