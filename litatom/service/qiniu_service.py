@@ -42,7 +42,10 @@ class QiniuService(object):
             try:
                 ret, res = http._post_with_qiniu_mac(url, data, cls.AUTH)
                 # headers = {"code": res.status_code, "reqid": res.req_id, "xlog": res.x_log}
-                test_res = json.loads(res.text_body)
+                try:
+                    test_res = json.loads(res.text_body)
+                except Exception, e:
+                    logger.error('text_body:%r, type:%r', res.text_body, type(res.text_body))
                 #print test_res
                 err = test_res.get('error', '')
                 if ('invalid URI' in err or 'fetch uri failed' in err) and i <= loop_tms - 1:
@@ -52,7 +55,7 @@ class QiniuService(object):
                 for r in scenes:
                     details = scenes[r].get('details', [])
                     if details and details[0]['label'] != 'normal' and details[0]['score'] > cls.JUDGE_SCORE:
-                        logger.error('pic not past, url:%r, reason:%r', out_url, r)
+                        # logger.error('pic not past, url:%r, reason:%r', out_url, r)
                         return r
                 return ''
             except Exception, e:

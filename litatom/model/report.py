@@ -23,6 +23,7 @@ class Report(Document):
     uid = StringField(required=True)
     target_uid = StringField()
     pics = ListField(required=False, default=[])
+    chat_record = StringField(required=True)
     deal_res = StringField()
     dealed  = BooleanField(required=True, default=False)
     deal_user = StringField()

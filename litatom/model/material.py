@@ -29,13 +29,13 @@ class Avatar(Document):
 
     @classmethod
     def get_avatars(cls):
-        if getattr(cls, 'avatars', ''):
+        if getattr(cls, 'avatars', None):
             return cls.avatars
         cls.avatars = {}
         cls.avatar_m = {}
         for g in GENDERS:
             if not cls.avatars.get(g):
-                cls.avatars[g] =[]
+                cls.avatars[g] = []
             objs = cls.objects(gender=g)
             for obj in objs:
                 fileid = obj.fileid

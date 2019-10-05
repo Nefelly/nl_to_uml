@@ -389,7 +389,10 @@ class UserService(object):
             if gender not in GENDERS:
                 return u'gender must be one of ' + ',' . join(GENDERS), False
             if not Avatar.valid_avatar(data.get('avatar', '')) and not user.avatar:   # user's avatar not set random one
-                user.avatar = random.choice(Avatar.get_avatars()[gender])
+                random_avatars = Avatar.get_avatars()
+                if not random_avatars.get(gender):
+                    logger.error("radom Avatars", random_avatars)
+                user.avatar = random.choice(random_avatars.get(gender))
         if data.get('birthdate', ''):
             User.change_age(user_id)
             user.birthdate = data.get('birthdate')
