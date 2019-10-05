@@ -158,7 +158,7 @@ def report():
         pics = feed_info['pics']
         data, status = ReportService.report(user_id, reason, pics, target_user_id, feed_id)
     elif chat_record:
-        data, status = ReportService.report(user_id, reason, pics, None, None, json.dumps(chat_record))
+        data, status = ReportService.report(user_id, reason, pics, target_user_id, None, json.dumps(chat_record))
     else:
         data, status = ReportService.report(user_id, reason, pics, target_user_id)
     if status:
