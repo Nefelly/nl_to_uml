@@ -11,11 +11,12 @@ redis_client = RedisClient()['lit']
 class ReportService(object):
 
     @classmethod
-    def report(cls, user_id, reason, pics=[], target_user_id=None, related_feed_id=None):
+    def report(cls, user_id, reason, pics=[], target_user_id=None, related_feed_id=None, chat_record=None):
         report = Report()
         report.uid = user_id
         report.reason = reason
         report.pics = pics
+        report.chat_record = chat_record
         report.related_feed = related_feed_id
         if target_user_id:
             ts_now = int(time.time())
