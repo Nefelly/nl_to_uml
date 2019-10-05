@@ -48,6 +48,8 @@ class QiniuService(object):
                     logger.error('text_body:%r, type:%r', res.text_body, type(res.text_body))
                 #print test_res
                 err = test_res.get('error', '')
+                if 'Rectangle invalid' in err:
+                    return ''
                 if ('invalid URI' in err or 'fetch uri failed' in err) and i <= loop_tms - 1:
                     time.sleep(0.3)
                     continue
