@@ -22,7 +22,8 @@ from ..const import (
     ONLINE_LIVE,
     USER_ACTIVE,
     FORBID_INFO,
-    OPERATE_TOO_OFTEN
+    OPERATE_TOO_OFTEN,
+    REMOVE_EXCHANGE
 
 )
 
@@ -54,7 +55,8 @@ from ..service import (
     FacebookService,
     BlockService,
     GlobalizationService,
-    FirebaseService
+    FirebaseService,
+    MqService
 )
 
 sys_rnd = random.SystemRandom()
@@ -338,6 +340,7 @@ class UserService(object):
         feeds = Feed.get_by_user_id(user_id)
         for _ in feeds:
             _.delete()
+            MqService.push(REMOVE_EXCHANGE, {"feed_id": str(_.id)})
 
     @classmethod
     def forbid_user(cls, user_id, forbid_ts):

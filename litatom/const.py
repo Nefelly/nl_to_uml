@@ -6,6 +6,9 @@ WHOSYOURDADDY = 'IAMYOURDADDY'
 LOGGING_PRDLINE = 'sns'
 LOGGING_APP_NAME = 'sns-litatom'
 
+REMOVE_EXCHANGE = 'remove_feed'
+ADD_EXCHANGE = 'add_feed'
+
 # cookie 中的存 session 的 key
 SESSION_SESSION_ID_KEY = 'sessionid.1'
 PLATFORM_IOS = 'ios'

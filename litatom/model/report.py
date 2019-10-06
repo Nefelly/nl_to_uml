@@ -25,7 +25,7 @@ class Report(Document):
     pics = ListField(required=False, default=[])
     chat_record = StringField()
     deal_res = StringField()
-    dealed  = BooleanField(required=True, default=False)
+    dealed = BooleanField(required=True, default=False)
     deal_user = StringField()
     related_feed = StringField()
     #passed = StringField()

@@ -2,7 +2,9 @@
 import time
 from ..redis import RedisClient
 from ..model import Report
-from ..const import ONE_DAY
+from ..const import (
+    ONE_DAY
+)
 from ..service import (
     UserService,
 )

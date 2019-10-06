@@ -18,7 +18,9 @@ from ..util import (
 )
 from ..const import (
     MAX_TIME,
-    ONE_DAY
+    ONE_DAY,
+    REMOVE_EXCHANGE,
+    ADD_EXCHANGE
 )
 
 from ..service import (
@@ -40,13 +42,9 @@ from ..model import (
 redis_client = RedisClient()['lit']
 
 class FeedService(object):
-    ADD_EXCHANGE = 'add_feed'
-    REMOVE_EXCHANGE = 'remove_feed'
-
-
     @classmethod
     def _on_add_feed(cls, feed):
-        MqService.push(cls.ADD_EXCHANGE, {"feed_id":str(feed.id)})
+        MqService.push(ADD_EXCHANGE, {"feed_id":str(feed.id)})
         # FollowingFeedService.add_feed(feed)
 
     @classmethod
@@ -63,7 +61,7 @@ class FeedService(object):
 
     @classmethod
     def _on_del_feed(cls, feed):
-        MqService.push(cls.REMOVE_EXCHANGE, {"feed_id": str(feed.id)})
+        MqService.push(REMOVE_EXCHANGE, {"feed_id": str(feed.id)})
         # FollowingFeedService.remove_feed(feed)
 
     @classmethod

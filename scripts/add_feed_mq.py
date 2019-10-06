@@ -9,6 +9,9 @@ from litatom.mq import (
 from litatom.service import (
     FeedService
 )
+from litatom.const import (
+    ADD_EXCHANGE
+)
 from hendrix.conf import setting
 
 
@@ -28,7 +31,7 @@ def feed_consum():
                 setting.DEFAULT_MQ_PORT,
                 setting.DEFAULT_MQ_PRODUCER,
                 setting.DEFAULT_MQ_PRODUCER_PASSWORD,
-                exchange=FeedService.ADD_EXCHANGE,
+                exchange=ADD_EXCHANGE,
                 vhost=setting.DEFAULT_MQ_VHOST
                 ).start()
 
