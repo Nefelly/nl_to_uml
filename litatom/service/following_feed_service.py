@@ -82,7 +82,7 @@ class FollowingFeedService(object):
         feeds = []
         for following_feed in following_feeds:
             feed = Feed.get_by_id(following_feed.feed_id)
-            if feed:
+            if feed and feed.user_id:
                feeds.append(FeedService._feed_info(feed, user_id))
             else:
                 following_feed.delete()
