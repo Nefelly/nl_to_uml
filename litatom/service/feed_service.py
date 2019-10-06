@@ -75,6 +75,9 @@ class FeedService(object):
     def _feed_info(cls, feed, visitor_user_id=None):
         if not feed:
             return {}
+        if not feed.user_id:
+            feed.delete()
+            return {}
         user_info = UserService.user_info_by_uid(feed.user_id)
         res = feed.get_info()
         res['user_info'] = user_info
