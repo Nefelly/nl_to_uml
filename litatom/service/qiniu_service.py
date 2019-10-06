@@ -42,10 +42,9 @@ class QiniuService(object):
             try:
                 ret, res = http._post_with_qiniu_mac(url, data, cls.AUTH)
                 # headers = {"code": res.status_code, "reqid": res.req_id, "xlog": res.x_log}
-                try:
-                    test_res = json.loads(res.text_body)
-                except Exception, e:
-                    logger.error('text_body:%r, type:%r', res.text_body, type(res.text_body))
+                if not res.text_body:
+                    continue
+                test_res = json.loads(res.text_body)
                 #print test_res
                 err = test_res.get('error', '')
                 if 'Rectangle invalid' in err:
