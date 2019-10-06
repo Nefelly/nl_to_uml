@@ -8,6 +8,10 @@ from ..const import (
 from ..service import (
     UserService,
 )
+from ..util import (
+    date_from_unix_ts,
+    format_standard_time
+)
 redis_client = RedisClient()['lit']
 
 class ReportService(object):
@@ -52,10 +56,22 @@ class ReportService(object):
                 if _.uid != user_id and not _.dealed:
                     return True
         return False
-
+    
+    @classmethod
+    def get_report_info(cls, report):
+        return {
+            'reason': report.reason,
+            'report_id': str(report.id),
+            'user_id': report.uid,
+            'pics': report.pics,
+            'deal_result': report.deal_res if report.deal_res else '',
+            'target_user_id': '%s\n%s' % (report.target_uid, UserService.nickname_by_uid(report.target_uid)) if report.target_uid else '',
+            'create_time': format_standard_time(date_from_unix_ts(report.create_ts))
+        }
+    
     @classmethod
     def info_by_id(cls, report_id):
         report = Report.get_by_id(report_id)
         if not report:
             return u'worng id', False
-        return report.to_json(), True
+        return cls.get_report_info(report), True

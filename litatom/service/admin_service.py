@@ -11,7 +11,8 @@ from ..model import (
 from ..service import (
     UserService,
     FirebaseService,
-    FeedService
+    FeedService,
+    ReportService
 )
 from ..const import (
     MAX_TIME
@@ -83,7 +84,7 @@ class AdminService(object):
             next_start = objs[-1].create_ts
             objs = objs[:-1]
         return {
-                   'objs': [el.to_json() for el in objs],
+                   'objs': [ReportService.get_report_info(el) for el in objs],
                    'has_next': has_next,
                    'next_start': next_start
                }, True
