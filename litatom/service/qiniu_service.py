@@ -43,6 +43,7 @@ class QiniuService(object):
                 ret, res = http._post_with_qiniu_mac(url, data, cls.AUTH)
                 # headers = {"code": res.status_code, "reqid": res.req_id, "xlog": res.x_log}
                 if not res.text_body:
+                    time.sleep(0.3)
                     continue
                 test_res = json.loads(res.text_body)
                 #print test_res
