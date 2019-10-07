@@ -180,7 +180,7 @@ class AnoyMatchService(object):
         other_fakeids = redis_client.zrangebyscore(GlobalizationService.anoy_match_key_by_region_gender(other_gender), judge_time, MAX_TIME, 0, cls.MAX_CHOOSE_NUM)
         if not other_fakeids:
             return None, False
-        try_tms = 3
+        try_tms = 5
         for i in range(try_tms):
             fake_id2 = random.choice(other_fakeids)
             user_id2 = cls._uid_by_fake_id(fake_id2)
