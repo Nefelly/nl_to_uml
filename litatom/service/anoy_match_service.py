@@ -55,7 +55,7 @@ class AnoyMatchService(object):
     MATCH_WAIT = 60 * 3 + 1
     MATCH_INT = 60 * 3  # talking time
     TOTAL_WAIT = MATCH_INT + MATCH_WAIT + FIVE_MINS
-    MAX_CHOOSE_NUM = 100
+    MAX_CHOOSE_NUM = 40
     MATCH_TMS = 20 if not setting.IS_DEV else 1000
     OTHER_GENDER_M = {BOY: GIRL, GIRL: BOY}
 
