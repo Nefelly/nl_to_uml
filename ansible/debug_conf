@@ -1,0 +1,35 @@
+litatom_envvars:
+  SENTRY_ENABLED: False
+  
+litatom_envvars_json:
+  DB_LIT:
+    host: "mongodb://test:11@47.244.141.151/lit?authsource=testlit"
+    port: 27017
+    maxPoolSize: 80
+    socketTimeoutMS: 8000
+    connectTimeoutMS: 3000
+    serverSelectionTimeoutMS: 8000
+    waitQueueTimeoutMS: 8100
+    waitQueueMultiple: 5
+    maxIdleTimeMS: 600000
+  DB_HUANXIN_MESSAGE:
+      host: "mongodb://msg_record:ads123@47.244.141.151/huanxin_message?authsource=huanxin_message"
+      port: 27017
+      alias: huanxin_message
+      maxPoolSize: 80
+      socketTimeoutMS: 5000
+      connectTimeoutMS: 3000
+      serverSelectionTimeoutMS: 3000
+      waitQueueTimeoutMS: 1100
+      waitQueueMultiple: 5
+      maxIdleTimeMS: 600000
+  REDIS_LIT:
+      password: 4567abc
+      db: 0
+      host: 47.244.141.151
+      port: 6380
+  HUANXIN_ACCOUNT:
+    org_name: "1102190223222824"
+    app_name: testlit
+    client_id: YXA6VGtawFnCEems-LdBeGX_Dg
+    client_secret: YXA6xTJjuWrjnYovfLUSx2Brz-if3AY
