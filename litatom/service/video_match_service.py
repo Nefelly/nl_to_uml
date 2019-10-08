@@ -182,7 +182,7 @@ class VideoMatchService(object):
             fake_id2 = random.choice(other_fakeids)
             user_id2 = cls._uid_by_fake_id(fake_id2)
             user_id = cls._uid_by_fake_id(fake_id)
-            if not redis_client.get(REDIS_VIDEO_MATCHED_BEFORE.format(low_high_fakeid=low_high_pair(fake_id, fake_id2))):
+            if not redis_client.get(REDIS_VIDEO_MATCHED_BEFORE.format(low_high_fakeid=low_high_pair(fake_id, fake_id2))) and 1:
                 break
             elif i == try_tms - 1:
                 return None,False
