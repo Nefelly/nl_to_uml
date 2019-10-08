@@ -3,7 +3,7 @@ litatom_envvars:
   
 litatom_envvars_json:
   DB_LIT:
-    host: "mongodb://ll:11@47.244.141.151/lit?authsource=lit"
+    host: "mongodb://ll:11@172.31.138.46/lit?authsource=lit"
     port: 27017
     maxPoolSize: 80
     socketTimeoutMS: 8000
@@ -13,7 +13,7 @@ litatom_envvars_json:
     waitQueueMultiple: 5
     maxIdleTimeMS: 600000
   DB_HUANXIN_MESSAGE:
-      host: "mongodb://msg_record:ads123@47.244.141.151/huanxin_message?authsource=huanxin_message"
+      host: "mongodb://msg_record:ads123@172.31.138.46/huanxin_message?authsource=huanxin_message"
       port: 27017
       alias: huanxin_message
       maxPoolSize: 80
@@ -26,7 +26,7 @@ litatom_envvars_json:
   REDIS_LIT:
       password: 4567abc
       db: 0
-      host: 47.244.141.151
+      host: 172.31.138.46
       port: 6379
   HUANXIN_ACCOUNT:
     org_name: "1102190223222824"
