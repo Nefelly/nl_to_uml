@@ -1,7 +1,5 @@
 # coding: utf-8
 import logging
-import time
-import pickle
 from ..redis import RedisClient
 from ..mq import (
     MQProducer,
