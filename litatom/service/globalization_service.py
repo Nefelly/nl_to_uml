@@ -64,7 +64,7 @@ class GlobalizationService(object):
         LOC_KR
     }
 
-    KOWN_REGION_LOC = {
+    KNOWN_REGION_LOC = {
         REGION_VN: LOC_VN,
         REGION_TH: [LOC_TH, LOC_CN, LOC_TH2],
         REGION_ID: LOC_ID,
@@ -147,7 +147,7 @@ class GlobalizationService(object):
         from flask import current_app,request, Flask
         app = Flask(__name__)
         from werkzeug.test import EnvironBuilder
-        ctx = app.request_context(EnvironBuilder('/','http://localhost/').get_environ())
+        ctx = app.request_context(EnvironBuilder('/', 'http://localhost/').get_environ())
         ctx.push()
         request.region = region
 

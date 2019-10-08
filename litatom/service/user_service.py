@@ -212,9 +212,9 @@ class UserService(object):
 
     @classmethod
     def _huanxin_ids_by_region(cls, region):
-        locs = GlobalizationService.KOWN_REGION_LOC.get(region, '')
+        locs = GlobalizationService.KNOWN_REGION_LOC.get(region, '')
         all_known_locs = []
-        for _ in GlobalizationService.KOWN_REGION_LOC.values():
+        for _ in GlobalizationService.KNOWN_REGION_LOC.values():
             if isinstance(_, list):
                 all_known_locs += _
             else:
