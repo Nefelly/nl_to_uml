@@ -46,6 +46,7 @@ class Report(Document):
             'report_id': str(self.id),
             'user_id': self.uid,
             'pics': self.pics,
+            'chat_record': self.chat_record,
             'related_feed': self.related_feed,
             'deal_result': self.deal_res if self.deal_res else '',
             'target_user_id': self.target_uid if self.target_uid else '',
