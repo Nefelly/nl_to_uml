@@ -100,11 +100,11 @@ class DebugHelperService(object):
                 res[k] = redis_client.zscan(k)[1]
         if not key:
             users = []
-            for _ in User.objects():
+            for _ in User.objects().order_by('-create_time'):
                 users.append(UserService.get_user_info(None, str(_.id)))
             res['zusers'] = users
             feeds = []
-            for _ in Feed.objects():
+            for _ in Feed.objects().order_by('-create_time'):
                 feeds.append(FeedService.get_feed_info(None, str(_.id)))
             res['zzfeeds'] = feeds
         return res
