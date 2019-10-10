@@ -1,14 +1,16 @@
 # coding: utf-8
-from ..redis import RedisClient
+import time
 from ..model import (
     User,
+    Feed,
     HuanxinAccount,
 )
 from ..service import (
     SmsCodeService,
     UserService,
     AnoyMatchService,
-    HuanxinService
+    HuanxinService,
+    FeedService
 )
 from ..const import (
     GIRL,
@@ -82,3 +84,27 @@ class DebugHelperService(object):
     @classmethod
     def feed_num(cls, user_id):
         return 3
+
+
+    @classmethod
+    def debug_all_keys(cls, key=None):
+        res = {'time_now': int(time.time())}
+        for k in redis_client.keys():
+            if key and key not in k:
+                continue
+            if 'cache' in k:
+                continue
+            try:
+                res[k] = redis_client.get(k)
+            except:
+                res[k] = redis_client.zscan(k)[1]
+        if not key:
+            users = []
+            for _ in User.objects():
+                users.append(UserService.get_user_info(None, str(_.id)))
+            res['zusers'] = users
+            feeds = []
+            for _ in Feed.objects():
+                feeds.append(FeedService.get_feed_info(None, str(_.id)))
+            res['zzfeeds'] = feeds
+        return res

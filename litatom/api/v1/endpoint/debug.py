@@ -41,7 +41,7 @@ def redis_status():
     if not setting.IS_DEV:
         return success()
     key = request.args.get('key')
-    return success(AnoyMatchService.debug_all_keys(key))
+    return success(DebugHelperService.debug_all_keys(key))
 
 def batch_create_login():
     return success(DebugHelperService.batch_create_login())
@@ -53,7 +53,7 @@ def del_match_before():
     if not setting.IS_DEV:
         return fail()
     DebugHelperService.del_match_before(request.user_id)
-    return success(AnoyMatchService.debug_all_keys(REDIS_MATCH_BEFORE_PREFIX))
+    return success(DebugHelperService.debug_all_keys(REDIS_MATCH_BEFORE_PREFIX))
 
 #@session_required
 def query_region():
