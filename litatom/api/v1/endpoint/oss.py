@@ -93,6 +93,7 @@ def get_audio(fileid):
     return Response(content, mimetype='audio/AMR')
 
 def get_audio_mp3(fileid):
+    """https://blog.csdn.net/pj_developer/article/details/72778792"""
     if fileid == 'null':
         return jsonify(Failed)
     content = AliOssService.get_binary_from_bucket(fileid)

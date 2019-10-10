@@ -18,7 +18,8 @@ from ....response import (
 from ....service import (
     AnoyMatchService,
     VoiceMatchService,
-    VideoMatchService
+    VideoMatchService,
+    GlobalizationService
 )
 
 logger = logging.getLogger(__name__)
@@ -119,5 +120,7 @@ def quit_match():
     return success(data)
 
 def video_list():
-    data = ['r4boSN3PRNo', '08ve8Ude9mY']
+    data = GlobalizationService.get_region_word('video_list')
+    if not data:
+        data = []
     return success(data)
