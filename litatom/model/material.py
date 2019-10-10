@@ -1,5 +1,6 @@
 # coding: utf-8
 import datetime
+import cPickle
 from mongoengine import (
     BooleanField,
     DateTimeField,
@@ -8,9 +9,14 @@ from mongoengine import (
     ListField,
     StringField,
 )
+from ..redis import RedisClient
 from ..const import (
     GENDERS
 )
+from ..key import (
+    REDIS_AVATAR_CACHE
+)
+redis_client = RedisClient()['lit']
 
 class Avatar(Document):
     meta = {
@@ -26,28 +32,39 @@ class Avatar(Document):
     def create(cls, fileid, gender):
         obj = cls(fileid=fileid, gender=gender)
         obj.save()
+        cls._disable_cache()
+
+    @classmethod
+    def _disable_cache(cls):
+        redis_client.delete(REDIS_AVATAR_CACHE)
+
+    def save(self, *args, **kwargs):
+        super(Avatar, self).save(*args, **kwargs)
+        if getattr(self, 'id', ''):
+            self._disable_cache()
 
     @classmethod
     def get_avatars(cls):
-        if getattr(cls, 'avatars', None):
-            return cls.avatars
-        cls.avatars = {}
-        cls.avatar_m = {}
+        cache_obj = redis_client.get(REDIS_AVATAR_CACHE)
+        if cache_obj:
+            return cPickle.loads(cache_obj)
+        avatars = {}
         for g in GENDERS:
-            if not cls.avatars.get(g):
-                cls.avatars[g] = []
+            if not avatars.get(g):
+                avatars[g] = []
             objs = cls.objects(gender=g)
             for obj in objs:
                 fileid = obj.fileid
-                cls.avatars[g].append(fileid)
-                cls.avatar_m[fileid] = g
-        return cls.avatars
+                avatars[g].append(fileid)
+        return avatars
 
     @classmethod
     def valid_avatar(cls, fileid):
-        cls.get_avatars()
-        return cls.avatar_m.get(fileid, None) is not None
-
+        avatars = cls.get_avatars()
+        for _ in GENDERS:
+            if avatars[_].get(fileid, None):
+                return True
+        return False
 
 class Wording(Document):
     meta = {
