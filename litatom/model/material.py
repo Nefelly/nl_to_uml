@@ -43,6 +43,11 @@ class Avatar(Document):
         if getattr(self, 'id', ''):
             self._disable_cache()
 
+    def delete(self, *args, **kwargs):
+        super(Avatar, self).delete(*args, **kwargs)
+        if getattr(self, 'id', ''):
+            self._disable_cache()
+
     @classmethod
     def get_avatars(cls):
         cache_obj = redis_client.get(REDIS_AVATAR_CACHE)
