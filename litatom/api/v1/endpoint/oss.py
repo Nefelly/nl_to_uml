@@ -101,7 +101,7 @@ def get_audio_mp3(fileid):
     amr_add = '/tmp/%s.amr' % fileid
     mp3_add = '/tmp/%s.mp3' % fileid
     with open(amr_add, 'w') as f:
-        f.save(content)
+        f.write(content)
         f.close()
     import subprocess
     subprocess.call(['ffmpeg/bin/ffmpeg', '-i', amr_add, mp3_add])
