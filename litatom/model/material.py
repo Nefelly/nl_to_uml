@@ -68,7 +68,7 @@ class Avatar(Document):
     def valid_avatar(cls, fileid):
         avatars = cls.get_avatars()
         for _ in GENDERS:
-            if avatars[_].get(fileid, None):
+            if fileid in avatars[_]:
                 return True
         return False
 
