@@ -91,3 +91,22 @@ def get_audio(fileid):
     if not content:
         return Response('', mimetype='audio/AMR')   # 返回空流, 兼容错误
     return Response(content, mimetype='audio/AMR')
+
+def get_audio_mp3(fileid):
+    if fileid == 'null':
+        return jsonify(Failed)
+    content = AliOssService.get_binary_from_bucket(fileid)
+    if not content:
+        return Response('', mimetype='audio/x-mpeg')   # 返回空流, 兼容错误
+    amr_add = '/tmp/%s.amr' % fileid
+    mp3_add = '/tmp/%s.mp3' % fileid
+    with open(amr_add, 'w') as f:
+        f.save(content)
+        f.close()
+    import subprocess
+    subprocess.call(['ffmpeg/bin/ffmpeg', '-i', amr_add, mp3_add])
+    content = ''
+    with open(mp3_add, 'r') as f:
+        content = f.read()
+        f.close()
+    return Response(content, mimetype='audio/x-mpeg')

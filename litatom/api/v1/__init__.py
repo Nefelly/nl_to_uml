@@ -56,6 +56,7 @@ b.add_url_rule('/lit/image/upload', 'image-upload', endpoint.oss.upload_image_fr
 b.add_url_rule('/lit/image/<fileid>', 'get-image', endpoint.oss.get_image)
 b.add_url_rule('/lit/audio/upload', 'audio-upload', endpoint.oss.upload_audio_from_file, methods=['POST'])
 b.add_url_rule('/lit/audio/<fileid>', 'get-audio', endpoint.oss.get_audio)
+b.add_url_rule('/lit/mp3audio/<fileid>', 'get-mp3audio', endpoint.oss.get_audio_mp3)
 
 # home
 b.add_url_rule('/lit/home/online_user_count', 'home-online-user-count', endpoint.home.online_user_count)
