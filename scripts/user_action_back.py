@@ -7,10 +7,10 @@ keep_time = 8 * 3600 * 24
 save_dir = '/data/chats'
 
 def back():
-    host = ''
+    host = '172.31.138.46'
     port = 27017
-    user =
-    pwd =
+    user = "ll"
+    pwd = "11"
     query_time = int(time.time()) - keep_time
     save_add = "%s/%s" % (save_dir, (datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y-%m-%d'))
     sql = '''mongoexport -h %s --port %r -u %s -p %s --authenticationDatabase lit -d lit -c user_action -o %s -q '{"create_time": {$lt:%s}}}''' % (host, port, user, pwd, save_add, query_time)
@@ -18,7 +18,7 @@ def back():
 
 
 def ensure_path(path):
-    dir_name  = path[:path.rfind('/')]
+    dir_name = path[:path.rfind('/')]
     if not os.path.exists(dir_name):
         os.makedirs(dir_name)
 
