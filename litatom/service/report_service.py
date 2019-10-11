@@ -2,9 +2,6 @@
 import time
 import json
 from ..redis import RedisClient
-from flask import (
-    request
-)
 from ..model import (
     Report,
     Feed
@@ -14,6 +11,7 @@ from ..const import (
 )
 from ..service import (
     UserService,
+    GlobalizationService
 )
 from ..util import (
     date_from_unix_ts,
@@ -31,7 +29,7 @@ class ReportService(object):
         report.pics = pics
         report.chat_record = chat_record
         report.related_feed = related_feed_id
-        report.region = request.region
+        report.region = GlobalizationService.get_region()
         if target_user_id:
             ts_now = int(time.time())
             cnt = Report.objects(uid=user_id, create_ts__gte=ts_now - ONE_DAY).count()

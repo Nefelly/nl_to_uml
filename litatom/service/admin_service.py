@@ -15,7 +15,8 @@ from ..service import (
     UserService,
     FirebaseService,
     FeedService,
-    ReportService
+    ReportService,
+    GlobalizationService
 )
 from ..const import (
     MAX_TIME
@@ -76,7 +77,7 @@ class AdminService(object):
         if not num:
             num = 10
         if dealed in [False, True]:
-            objs = Report.objects(create_ts__lte=start_ts, dealed=dealed, region=request.region).order_by('-create_ts').limit(num + 1)
+            objs = Report.objects(create_ts__lte=start_ts, dealed=dealed, region=GlobalizationService.get_region()).order_by('-create_ts').limit(num + 1)
         else:
             objs = Report.objects(create_ts__lte=start_ts).order_by('-create_ts').limit(num + 1)
         objs = list(objs)
