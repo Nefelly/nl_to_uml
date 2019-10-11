@@ -28,6 +28,7 @@ class Report(Document):
     dealed = BooleanField(required=True, default=False)
     deal_user = StringField()
     related_feed = StringField()
+    region = StringField()
     #passed = StringField()
     create_ts = IntField(required=True)
     deal_ts = IntField()
