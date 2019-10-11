@@ -156,6 +156,8 @@ class UserService(object):
     def age_in_user_range(cls, user_id, age):
         if not user_id:
             return True
+        if request.region != GlobalizationService.REGION_TH:   # if not in thailand, get out of limit
+            return True
         user_age = cls.uid_age(user_id)
         interval = 5
         if user_age >= 25:
