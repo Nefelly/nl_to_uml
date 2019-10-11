@@ -105,7 +105,7 @@ class RegionWord(Document):
             'id': u'Litmatch adalah aplikasi untuk bertemu dengan teman baru.'
         }, 
         'video_list': {
-            'vi': ['ZwcmNkzm7m0', 'fhbxpm8yZWA', 'ReXNvQUURdI'],
+            'vi': ['5QfXwgkJITA', 'GQ4F9k4USfA', 'xyNNLWSnNPk', 'U4P3djsPU94', 'JbJ5AdZeR14', 'Nk-isYXzUsg', 'XTVWGjWJAdI', 'AiD1a2fFFLw', 'JbJ5AdZeR14', '5QfXwgkJITA'],
             'th': ['ZwcmNkzm7m0', 'fhbxpm8yZWA', 'ReXNvQUURdI', 'ZJNI3vBZvqc', 'ILU9NbWn4t0', 'B8Hu35Qyw5w', 'tBGHuRhU_yk', 'SecLbWBvDP8', 'oHSlO4UQ16o', 'n32PxBLrut4'], 
             'en': ['ZwcmNkzm7m0', 'fhbxpm8yZWA', 'ReXNvQUURdI'],
             'india': ['ZwcmNkzm7m0', 'fhbxpm8yZWA', 'ReXNvQUURdI'],
