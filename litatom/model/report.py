@@ -39,20 +39,23 @@ class Report(Document):
             return None
         return cls.objects(id=report_id).first()
 
-    def to_json(self):
+    def to_json(self, *args, **kwargs):
         if not self:
             return {}
-        return {
-            'reason': self.reason,
-            'report_id': str(self.id),
-            'user_id': self.uid,
-            'pics': self.pics,
-            'chat_record': self.chat_record,
-            'related_feed': self.related_feed,
-            'deal_result': self.deal_res if self.deal_res else '',
-            'target_user_id': self.target_uid if self.target_uid else '',
-            'create_time': format_standard_time(date_from_unix_ts(self.create_ts))
-        }
+        tmp = super(Report, self).to_json(*args, **kwargs)
+        tmp['create_time'] = format_standard_time(date_from_unix_ts(self.create_ts))
+        return tmp
+        # return {
+        #     'reason': self.reason,
+        #     'report_id': str(self.id),
+        #     'user_id': self.uid,
+        #     'pics': self.pics,
+        #     'chat_record': self.chat_record,
+        #     'related_feed': self.related_feed,
+        #     'deal_result': self.deal_res if self.deal_res else '',
+        #     'target_user_id': self.target_uid if self.target_uid else '',
+        #     'create_time': format_standard_time(date_from_unix_ts(self.create_ts))
+        # }
     
     def ban(self, ban_time):
         self.dealed = True
