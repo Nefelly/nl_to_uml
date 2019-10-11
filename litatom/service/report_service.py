@@ -73,7 +73,7 @@ class ReportService(object):
             'user_id': report.uid,
             'pics': report.pics,
             'deal_result': report.deal_res if report.deal_res else '',
-            'target_user_id': '%s\r\n%s' % (report.target_uid, UserService.nickname_by_uid(report.target_uid)) if report.target_uid else '',
+            'target_user_id': '%s\n%s' % (report.target_uid, UserService.nickname_by_uid(report.target_uid)) if report.target_uid else '',
             'create_time': format_standard_time(date_from_unix_ts(report.create_ts))
         }
         if report.chat_record:
@@ -83,7 +83,7 @@ class ReportService(object):
                 uid = UserService.uid_by_huanxin_id(el['id'])
                 # res_record.append({'content': el['content'], 'name': UserService.nickname_by_uid(uid)})
                 res_record.append("%s: %s" % (UserService.nickname_by_uid(uid), el['content']))
-            res['chat_record'] = '\n'.join(res_record)
+            res['chat_record'] = '\r\n'.join(res_record)
         else:
             res['chat_record'] = ''
         if report.related_feed:
