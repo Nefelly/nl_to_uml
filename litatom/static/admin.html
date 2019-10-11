@@ -8,12 +8,10 @@
  <th>reported user id</th>
  <th>reason</th>
  <th>pictures</th>
- <th>report time</th>
- <th>ban</th>
- <th>reject</th>
+ <th>ban/reject</th>
  </tr>
 <tr v-for="item in items1">
-<td>{{item.user_id}}<br /> {{item.create_time}}</td>
+<td>{{item.user_id}}<br /><br /><br /> {{item.create_time}}</td>
 <td>{{item.target_user_id}}</td>
 <td>{{item.reason}}</td>
 <td
@@ -26,9 +24,7 @@
 no pictures
 </td>
 
-<td>{{item.create_time}}</td>
-<td><button name='ban'  style="background:red" @click='ban(item.report_id)'>ban</button></td>
-<td><button name='reject' @click='reject(item.report_id)'>reject</button></td>
+<td><button name='ban'  style="background:red" @click='ban(item.report_id)'>ban</button><br /> <br /><br /> <button name='reject' @click='reject(item.report_id)'>reject</button></td>
 </tr>
 </table>
 <button v-if="previous_start >= 0" name="previous_page" @click="previous_page()">previous page</button>
