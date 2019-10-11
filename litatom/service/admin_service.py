@@ -73,7 +73,7 @@ class AdminService(object):
         if not num:
             num = 10
         if dealed in [False, True]:
-            objs = Report.objects(create_ts__lte=start_ts, dealed=dealed, reason__ne='match').order_by('-create_ts').limit(num + 1)
+            objs = Report.objects(create_ts__lte=start_ts, dealed=dealed).order_by('-create_ts').limit(num + 1)
         else:
             objs = Report.objects(create_ts__lte=start_ts).order_by('-create_ts').limit(num + 1)
         objs = list(objs)
