@@ -61,6 +61,9 @@ no pictures
     Request = GetRequest();
     var Loc = Request['loc']
     console.log(Request['loc'])
+    if(!Loc){
+        Loc='TH'
+    }
 //    var Loc = window.location.hash;
 //    console.log(Loc)
   const BASE_URL = 'http://' + document.domain + '/api/sns/v1/lit/';
