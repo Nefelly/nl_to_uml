@@ -32,6 +32,7 @@ class ReportService(object):
         report.chat_record = chat_record
         report.related_feed = related_feed_id
         report.region = request.region
+        print request.region
         if target_user_id:
             ts_now = int(time.time())
             cnt = Report.objects(uid=user_id, create_ts__gte=ts_now - ONE_DAY).count()
