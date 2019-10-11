@@ -83,7 +83,7 @@ class ReportService(object):
                 uid = UserService.uid_by_huanxin_id(el['id'])
                 # res_record.append({'content': el['content'], 'name': UserService.nickname_by_uid(uid)})
                 res_record.append("%s: %s" % (UserService.nickname_by_uid(uid), el['content']))
-            res['chat_record'] = '<br />'.join(res_record)
+            res['chat_record'] = '\\\r\\\n'.join(res_record)
         else:
             res['chat_record'] = ''
         if report.related_feed:
