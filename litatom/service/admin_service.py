@@ -2,6 +2,9 @@
 import random
 import time
 import datetime
+from flask import (
+    request
+)
 from ..model import (
     AdminUser,
     Report,
@@ -75,7 +78,7 @@ class AdminService(object):
         if dealed in [False, True]:
             objs = Report.objects(create_ts__lte=start_ts, dealed=dealed).order_by('-create_ts').limit(num + 1)
         else:
-            objs = Report.objects(create_ts__lte=start_ts).order_by('-create_ts').limit(num + 1)
+            objs = Report.objects(create_ts__lte=start_ts, region=request.region).order_by('-create_ts').limit(num + 1)
         objs = list(objs)
         has_next = False
         next_start = -1
