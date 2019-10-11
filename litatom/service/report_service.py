@@ -90,7 +90,10 @@ class ReportService(object):
             feed = Feed.get_by_id(report.related_feed)
             if feed:
                 res['content'] = feed.content if feed.content else ''
-                res['audio_url'] = 'http://www.litatom.com/api/sns/v1/lit/mp3audio/%s' % feed.audios[0]
+                if feed.audio:
+                    res['audio_url'] = 'http://www.litatom.com/api/sns/v1/lit/mp3audio/%s' % feed.audios[0]
+                else:
+                    res['audio_url'] = ''
                 res['pics'] = feed.pics
             else:
                 res['content'] = ''
