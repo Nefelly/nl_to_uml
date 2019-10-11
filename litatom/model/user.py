@@ -75,24 +75,18 @@ class UserSessionMixin(object):
         #     return '%d%d' % (ss, rs)
         # return 'N%d%d' % (ss, rs)
 
+    @classmethod
+    def _is_valid_session(cls, pure_session):
+        return len(pure_session) == 19 and pure_session.startswith('12')
+
     def _purge_session_cache(self):
         key = REDIS_KEY_SESSION_USER.format(session=self.session)
         redis_client.delete(key)
 
-    def _set_session_cache(self, user_id):
+    def _set_session_cache(self):
         key = REDIS_KEY_SESSION_USER.format(session=self.session)
         expire_time = 60 * ONE_DAY if self.phone else TWO_WEEKS
-        redis_client.set(key, user_id, ex=expire_time)
-
-
-    @classmethod
-    def get_user_id_by_session(cls, sid):
-        key = REDIS_KEY_SESSION_USER.format(session=sid.replace('session.', ''))
-        user_id = redis_client.get(key)
-        if user_id:
-            redis_client.set(key, user_id, ex=TWO_WEEKS)
-            return user_id
-        return None
+        redis_client.set(key, str(self.id), ex=expire_time)
 
 
     def clear_session(self):
@@ -200,9 +194,27 @@ class User(Document, UserSessionMixin):
         return True
 
     @classmethod
+    def get_user_id_by_session(cls, sid):
+        pure_session = sid.replace('session.', '')
+        key = REDIS_KEY_SESSION_USER.format(session=pure_session)
+        user_id = redis_client.get(key)
+        if user_id:
+            redis_client.set(key, user_id, ex=TWO_WEEKS)
+            return user_id
+        else:
+            if not cls._is_valid_session(pure_session):
+                return None
+            obj = cls.objects(session=pure_session).first()
+            if not obj:
+                return None
+            obj._set_session_cache()
+            return str(obj.user_id)
+        return None
+
+    @classmethod
     def user_register_yesterday(cls, gender, country):
         now = datetime.datetime.now()
-        zeroToday = now - datetime.timedelta(hours=now.hour, minutes=now.minute, seconds=now.second,microseconds=now.microsecond)
+        zeroToday = now - datetime.timedelta(hours=now.hour, minutes=now.minute, seconds=now.second, microseconds=now.microsecond)
         zeroYestoday = zeroToday - datetime.timedelta(days=1)
         return list(User.objects(create_time__gte=zeroYestoday, create_time__lte=zeroToday, gender=gender, country=country))
 

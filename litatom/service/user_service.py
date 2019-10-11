@@ -83,7 +83,7 @@ class UserService(object):
                 unforbid_time = time_str_by_ts(user.forbidden_ts)
                 return FORBID_INFO.format(unforbid_time=unforbid_time), False
         user.generate_new_session()
-        user._set_session_cache(str(user.id))
+        user._set_session_cache()
         user._set_huanxin_cache()
         user._set_age_cache()
         if not user.logined:
