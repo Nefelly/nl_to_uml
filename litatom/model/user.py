@@ -208,7 +208,7 @@ class User(Document, UserSessionMixin):
             if not obj:
                 return None
             obj._set_session_cache()
-            return str(obj.user_id)
+            return str(obj.id)
         return None
 
     @classmethod
