@@ -6,14 +6,14 @@
 <tr>
  <th>report user id</th>
  <th>reported user id</th>
- <th>reason</th>
+ <th>reason/feed content/chat record</th>
  <th>pictures</th>
  <th>ban/reject</th>
  </tr>
 <tr v-for="item in items1">
 <td>{{item.user_id}}<br /><br /><br /> {{item.create_time}}</td>
 <td>{{item.target_user_id}}</td>
-<td>{{item.reason}}</td>
+<td>{{item.reason}}<br /> content: {{item.content}} <br /> <br />chat: {{item.chat_record}}</td>
 <td
   v-if="item.pics.length > 0"
    >
