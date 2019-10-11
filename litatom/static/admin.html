@@ -65,7 +65,7 @@ created() {this.submitForm();},
 
 methods: {
       submitForm: function() {
-        this.$http.get(BASE_URL + 'admin/query_reports?sid=session.1239394106468792255&dealed=False').then(function(result){
+        this.$http.get(BASE_URL + 'admin/query_reports?sid=session.1239394106468792255&dealed=False' + '?loc=' + Loc).then(function(result){
         var data = result.data.data;
 	this.items1 = data.objs;
     this.previous_start = this.next_start;
