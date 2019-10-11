@@ -99,7 +99,8 @@ class GlobalizationService(object):
         'th': REGION_TH,
         'CN': REGION_TH,
         #'INN': REGION_IN_NOCORE
-        'INN': REGION_IN
+        'INN': REGION_IN,
+        'TEST': REGION_EN
     }
     REGIONS = list(set(LOC_REGION.values()))
     REGIONS.append(REGION_EN)
