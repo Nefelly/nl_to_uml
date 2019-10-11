@@ -43,6 +43,8 @@ class Report(Document):
         if not self:
             return {}
         tmp = super(Report, self).to_json(*args, **kwargs)
+        import json
+        tmp = json.loads(tmp)
         tmp['create_time'] = format_standard_time(date_from_unix_ts(self.create_ts))
         return tmp
         # return {
