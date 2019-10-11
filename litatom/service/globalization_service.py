@@ -200,6 +200,20 @@ class GlobalizationService(object):
         return True
 
     @classmethod
+    def region_by_uid(cls, user_id):
+        loc_key = REDIS_USER_LOC.format(user_id=user_id)
+        tmp_loc = redis_client.get(loc_key)
+        if not tmp_loc:
+            user_setting = UserSetting.get_by_user_id(user_id)
+            if user_setting and user_setting.lang and user_setting.lang in cls.LOCS:
+                tmp_loc = user_setting.lang
+        if tmp_loc and tmp_loc in cls.LOCS:
+            loc = tmp_loc
+            return cls.LOC_REGION.get(loc, cls.DEFAULT_REGION)
+        else:
+            return None
+
+    @classmethod
     def get_region(cls, region=None):
         if region:
             return region
