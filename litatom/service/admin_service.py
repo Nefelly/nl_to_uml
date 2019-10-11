@@ -5,6 +5,7 @@ import datetime
 from flask import (
     request
 )
+from mongoengine.queryset.visitor import Q
 from ..model import (
     AdminUser,
     Report,
@@ -77,7 +78,7 @@ class AdminService(object):
         if not num:
             num = 10
         if dealed in [False, True]:
-            objs = Report.objects(create_ts__lte=start_ts, dealed=dealed, region=GlobalizationService.get_region()).order_by('-create_ts').limit(num + 1)
+            objs = Report.objects(Q(create_ts__lte=start_ts) & Q(dealed=dealed) & Q(region=GlobalizationService.get_region()) & (Q(reason__ne='match')| Q(chat_record__ne=None))).order_by('-create_ts').limit(num + 1)
         else:
             objs = Report.objects(create_ts__lte=start_ts).order_by('-create_ts').limit(num + 1)
         objs = list(objs)
