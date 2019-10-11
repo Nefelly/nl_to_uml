@@ -86,6 +86,7 @@ REDIS_VIDEO_FAKE_START = 'video_fake_start:{fake_id}'   # 开始进入匹配
 REDIS_VIDEO_ANOY_CHECK_POOL = 'video_anoy_check_pool'   # sorted set
 REDIS_VIDEO_MATCH_PAIR = 'video_match_start:{low_high_fakeid}'
 REDIS_VIDEO_MATCHED_BEFORE = 'video_match_before:{low_high_fakeid}'
+REDIS_VIDEO_VID = 'video_match_vid:{low_high_fakeid}'
 REDIS_VIDEO_MATCHED = 'video_matched:{fake_id}'   # 双方匹配上, 匹配动作 需要同时填写 两个键值对
 REDIS_VIDEO_FAKE_LIKE = 'video_fake_like:{fake_id}'  # value fake_id
 REDIS_VIDEO_JUDGE_LOCK = 'video_judge_lock:{fake_id}'   # 评价对方的接口, 用于防范被刷评价

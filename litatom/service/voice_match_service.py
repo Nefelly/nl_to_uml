@@ -80,7 +80,7 @@ class VoiceMatchService(object):
         int_time = int(time.time())
         # voice_gender_key = REDIS_ANOY_GENDER_ONLINE.format(gender=gender)
         voice_gender_key = GlobalizationService.voice_match_key_by_region_gender(gender)
-        redis_client.zadd(voice_gender_key,{fake_id: int_time} )
+        redis_client.zadd(voice_gender_key, {fake_id: int_time})
 
     @classmethod
     def _remove_from_match_pool(cls, gender, fake_id):

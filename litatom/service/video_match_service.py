@@ -17,7 +17,8 @@ from ..key import (
     REDIS_VIDEO_MATCHED_BEFORE,
     REDIS_VIDEO_MATCHED,
     REDIS_VIDEO_FAKE_LIKE,
-    REDIS_VIDEO_JUDGE_LOCK
+    REDIS_VIDEO_JUDGE_LOCK,
+    REDIS_VIDEO_VID
 )
 from ..util import (
     now_date_key,
@@ -80,7 +81,7 @@ class VideoMatchService(object):
         int_time = int(time.time())
         # video_gender_key = REDIS_ANOY_GENDER_ONLINE.format(gender=gender)
         video_gender_key = GlobalizationService.video_match_key_by_region_gender(gender)
-        redis_client.zadd(video_gender_key,{fake_id: int_time} )
+        redis_client.zadd(video_gender_key, {fake_id: int_time})
 
     @classmethod
     def _remove_from_match_pool(cls, gender, fake_id):
@@ -131,12 +132,18 @@ class VideoMatchService(object):
         return True if in_match else False
 
     @classmethod
+    def _random_choose_video(cls):
+        vlist = GlobalizationService.get_region_word('video_list')
+        return random.choice(vlist)
+
+    @classmethod
     def _create_match(cls, fake_id1, fake_id2, gender1):
         pair = low_high_pair(fake_id1, fake_id2)
         redis_client.set(REDIS_VIDEO_MATCHED.format(fake_id=fake_id2), fake_id1, cls.MATCH_INT)
         redis_client.set(REDIS_VIDEO_MATCHED.format(fake_id=fake_id1), fake_id2, cls.MATCH_INT)
         redis_client.set(REDIS_VIDEO_MATCH_PAIR.format(low_high_fakeid=pair), 1, cls.MATCH_INT)
         redis_client.set(REDIS_VIDEO_MATCHED_BEFORE.format(low_high_fakeid=pair), 1, ONE_DAY)
+        redis_client.set(REDIS_VIDEO_VID.format(low_high_fakeid=pair), cls._random_choose_video(), cls.MATCH_INT)
 
         # 将其从正在匹配队列中删除
         cls._remove_from_match_pool(gender1, fake_id1)
@@ -299,7 +306,8 @@ class VideoMatchService(object):
         tips, status = cls.get_tips()
         res = {
             'matched_fake_id': matched_id,
-            'tips': tips
+            'tips': tips,
+            'video': redis_client.get(REDIS_VIDEO_VID.format(low_high_fakeid=low_high_pair(fake_id, matched_id)))
         }
         res.update(cls.video_user_info(matched_id))
         return res, True
