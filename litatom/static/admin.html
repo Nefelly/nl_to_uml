@@ -51,7 +51,10 @@ no pictures
     Request = GetRequest();
     var Loc = Request['loc']
     console.log(Request['loc'])
-  const BASE_URL = 'http://' + document.domain + '/api/sns/v1/lit/';
+    if(!Loc){
+        Loc='TH'
+    }
+    const BASE_URL = 'http://' + document.domain + '/api/sns/v1/lit/';
 var app7 = new Vue({
   el: '#app-7',
   data: {
@@ -111,6 +114,7 @@ methods: {
         this.$http.get(BASE_URL + 'admin/query_reports', {params:{start_ts: this.next_start, loc:Loc}}).then(function(result){
             var data = result.data.data;
             this.objs = data.objs;
+            this.items1 = this.objs;
             this.next_start = data.next_start;
             if(this.next_start===0){
                 this.previous_start = -1;
