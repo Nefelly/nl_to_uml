@@ -71,7 +71,6 @@ def hello():
 def index():
     return current_app.send_static_file('admin1.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
 
-
 def feeds_square_html():
     return current_app.send_static_file('feed_square.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
 
