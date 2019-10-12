@@ -81,7 +81,8 @@ class UserService(object):
                     HuanxinService.active_user(user.huanxin.user_id)
             else:
                 unforbid_time = time_str_by_ts(user.forbidden_ts)
-                return FORBID_INFO.format(unforbid_time=unforbid_time), False
+                forbid_info = GlobalizationService.get_region_word('banned_warn')
+                return forbid_info.format(unforbid_time=unforbid_time), False
         user.generate_new_session()
         user._set_session_cache()
         user._set_huanxin_cache()
