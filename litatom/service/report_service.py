@@ -76,6 +76,7 @@ class ReportService(object):
             'report_id': str(report.id),
             'user_id': report.uid,
             'pics': report.pics,
+            'region': report.region,
             'deal_result': report.deal_res if report.deal_res else '',
             'target_user_id': '%s\n%s' % (report.target_uid, UserService.nickname_by_uid(report.target_uid)) if report.target_uid else '',
             'create_time': format_standard_time(date_from_unix_ts(report.create_ts))
