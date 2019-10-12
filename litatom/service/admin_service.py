@@ -79,7 +79,7 @@ class AdminService(object):
             num = 10
         if dealed in [False, True]:
             objs = Report.objects(create_ts__lte=start_ts, dealed=dealed, region=GlobalizationService.get_region()).filter(Q(reason__ne='match') | Q(chat_record__ne=None)).order_by('-create_ts').limit(num + 1)
-            print len*
+            print len(objs)
         else:
             objs = Report.objects(create_ts__lte=start_ts).order_by('-create_ts').limit(num + 1)
         objs = list(objs)
