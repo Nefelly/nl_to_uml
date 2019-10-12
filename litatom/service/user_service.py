@@ -74,7 +74,7 @@ class UserService(object):
         :return:
         """
         if user.forbidden:
-            if False and int(time.time()) > user.forbidden_ts:
+            if int(time.time()) > user.forbidden_ts:
                 user.forbidden = False
                 user.save()
                 if user.huanxin and user.huanxin.user_id:
@@ -328,8 +328,9 @@ class UserService(object):
         user = User.get_by_id(user_id)
         if not user:
             return False
+        forbid_times = UserRecord.get_forbidden_times_user_id(user_id)
         user.forbidden = True
-        user.forbidden_ts = int(time.time()) + forbid_ts
+        user.forbidden_ts = int(time.time()) + forbid_ts * (1 + 2 * forbid_times)
         user.clear_session()
         for gender in GENDERS:
             # key = REDIS_ONLINE_GENDER.format(gender=gender)
