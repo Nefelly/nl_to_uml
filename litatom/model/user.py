@@ -573,7 +573,7 @@ class UserRecord(Document):
 
     @classmethod
     def get_forbidden_times_user_id(cls, user_id):
-        return cls.objects(action=cls.FORBIDDEN_ACTION, user_id=user_id).count()
+        return cls.objects(user_id=user_id).count()
 
     @classmethod
     def add_forbidden(cls, user_id):
