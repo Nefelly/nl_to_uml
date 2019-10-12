@@ -49,6 +49,7 @@ no pictures
     Request = GetRequest();
     var Loc = Request['loc']
     console.log(Request['loc'])
+    var Dealed = Request['dealed']
     if(!Loc){
         Loc='TH'
     }
@@ -109,7 +110,7 @@ methods: {
 
 
     next_page: function() {
-        this.$http.get(BASE_URL + 'admin/query_reports', {params:{start_ts: this.next_start, loc:Loc}}).then(function(result){
+        this.$http.get(BASE_URL + 'admin/query_reports', {params:{start_ts: this.next_start, loc:Loc, dealed:Dealed}}).then(function(result){
             var data = result.data.data;
             this.objs = data.objs;
             this.items1 = this.objs;
