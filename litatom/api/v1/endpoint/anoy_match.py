@@ -124,7 +124,7 @@ def quit_match():
 
 def update_video(vid):
     region = request.region
-    YoutubeVideo.create(vid, region, request.json.data)
+    YoutubeVideo.create(vid, region, request.json)
     return success(YoutubeVideo.get_video_infos(region))
 
 def video_list():
