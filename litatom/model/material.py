@@ -102,6 +102,11 @@ class YoutubeVideo(Document):
         return True
 
     @classmethod
+    def info_by_vid(cls, vid):
+        obj = cls.objects(vid=vid).first()
+        return obj.get_info()
+
+    @classmethod
     def get_by_vid_region(cls, vid, region):
         obj = cls.objects(vid=vid, region=region).first()
         return obj

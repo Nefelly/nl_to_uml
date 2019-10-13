@@ -43,7 +43,10 @@ from ..service import (
     GlobalizationService,
     UserFilterService
 )
-from ..model import User
+from ..model import (
+    User,
+    YoutubeVideo
+)
 redis_client = RedisClient()['lit']
 
 class VideoMatchService(object):
@@ -307,7 +310,8 @@ class VideoMatchService(object):
         res = {
             'matched_fake_id': matched_id,
             'tips': tips,
-            'video': redis_client.get(REDIS_VIDEO_VID.format(low_high_fakeid=low_high_pair(fake_id, matched_id)))
+            'video': redis_client.get(REDIS_VIDEO_VID.format(low_high_fakeid=low_high_pair(fake_id, matched_id))),
+            'video_info': YoutubeVideo.info_by_vid(redis_client.get(REDIS_VIDEO_VID.format(low_high_fakeid=low_high_pair(fake_id, matched_id))))
         }
         res.update(cls.video_user_info(matched_id))
         return res, True
