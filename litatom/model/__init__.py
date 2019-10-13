@@ -13,6 +13,7 @@ from .follow import (
 )
 from .material import (
     Avatar,
+    YoutubeVideo,
     Wording
 )
 from .report import (

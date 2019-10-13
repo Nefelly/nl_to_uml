@@ -168,6 +168,10 @@ class LitatomRequest(flask.Request):
         # return loc
 
     @cached_property
+    def region(self):
+        return GlobalizationService.get_region()
+
+    @cached_property
     def user(self):
         pass
         # from .model import User

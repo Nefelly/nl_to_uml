@@ -21,6 +21,9 @@ from ....service import (
     VideoMatchService,
     GlobalizationService
 )
+from ....model import (
+    YoutubeVideo
+)
 
 logger = logging.getLogger(__name__)
 
@@ -119,8 +122,14 @@ def quit_match():
         return fail(data)
     return success(data)
 
+def update_video(vid):
+    region = request.region
+    YoutubeVideo.create(vid, region, request.json.data)
+    return success(YoutubeVideo.get_video_infos(region))
+
 def video_list():
-    data = GlobalizationService.get_region_word('video_list')
+    # data = GlobalizationService.get_region_word('video_list')
+    data = YoutubeVideo.get_video_infos(request.region)
     if not data:
         data = []
     return success(data)

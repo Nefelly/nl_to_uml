@@ -16,6 +16,7 @@ REDIS_FEED_ID_AGE = 'feed_id_age:{feed_id}'
 REDIS_USER_CACHE = 'user_cache:{user_id}'
 REDIS_FEED_CACHE = 'feed_cache:{feed_id}'
 REDIS_AVATAR_CACHE = 'avatar_cache'
+REDIS_YOUTUBE_VIDEO_CACHE = 'youtube_video_cache:{region}'
 
 REDIS_ONLINE_GENDER = 'online:{gender}'   # !!!
 REDIS_HUANXIN_ONLINE = 'huanxin_online'

@@ -97,6 +97,7 @@ b.add_url_rule('/lit/anoy_match/times_left', 'anoy-match-times-left', endpoint.a
 b.add_url_rule('/lit/anoy_match/tips', 'anoy-match-tips', endpoint.anoy_match.get_tips)
 b.add_url_rule('/lit/anoy_match/judge', 'anoy-match-judge', endpoint.anoy_match.anoy_judge, methods=['POST'])
 b.add_url_rule('/lit/anoy_match/video_list', 'anoy-match-video-list', endpoint.anoy_match.video_list)
+b.add_url_rule('/lit/anoy_match/video/<vid>', 'anoy-match-update-video', endpoint.anoy_match.update_video, methods=['POST'])
 
 
 # debug

@@ -1,6 +1,7 @@
 # coding: utf-8
 import datetime
 import cPickle
+import json
 from mongoengine import (
     BooleanField,
     DateTimeField,
@@ -14,7 +15,8 @@ from ..const import (
     GENDERS
 )
 from ..key import (
-    REDIS_AVATAR_CACHE
+    REDIS_AVATAR_CACHE,
+    REDIS_VIDEO_VID
 )
 redis_client = RedisClient()['lit']
 
@@ -71,6 +73,67 @@ class Avatar(Document):
             if fileid in avatars[_]:
                 return True
         return False
+
+
+class YoutubeVideo(Document):
+    meta = {
+        'strict': False,
+        'alias': 'db_alias'
+    }
+
+    vid = StringField(required=True)
+    region = StringField(required=True)
+    info = StringField(required=False)
+    create_time = DateTimeField(required=True, default=datetime.datetime.now)
+
+    @classmethod
+    def create(cls, vid, region, info):
+        obj = cls.get_by_vid_region(vid, region)
+        if obj:
+            obj.info = info
+            obj.save()
+        else:
+            obj = cls(vid=vid, region=region, info=info)
+            obj.save()
+        cls._disable_cache(region=region)
+
+    @classmethod
+    def get_by_vid_region(cls, vid, region):
+        obj = cls.objects(vid=vid, region=region).first()
+        return obj
+
+    @classmethod
+    def _disable_cache(cls, region):
+        redis_client.delete(REDIS_VIDEO_VID.format(region=region))
+
+    def save(self, *args, **kwargs):
+        super(YoutubeVideo, self).save(*args, **kwargs)
+        if getattr(self, 'id', ''):
+            self._disable_cache(self.region)
+
+    def delete(self, *args, **kwargs):
+        super(YoutubeVideo, self).delete(*args, **kwargs)
+        if getattr(self, 'id', ''):
+            self._disable_cache(self.region)
+
+    def get_info(self):
+        info = json.loads(self.info)
+        info.update({"video_id": self.vid})
+        return info
+
+    @classmethod
+    def get_video_infos(cls, region):
+        cache_key = REDIS_VIDEO_VID.format(region=region)
+        cache_obj = redis_client.get(cache_key)
+        if cache_obj:
+            return cPickle.loads(cache_obj)
+        videos = []
+        objs = cls.objects(region=region)
+        for obj in objs:
+            videos.append(obj.get_info())
+        redis_client.set(cache_key, cPickle.dumps(videos))
+        return videos
+
 
 class Wording(Document):
     meta = {
