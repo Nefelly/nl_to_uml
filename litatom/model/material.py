@@ -104,6 +104,8 @@ class YoutubeVideo(Document):
     @classmethod
     def info_by_vid(cls, vid):
         obj = cls.objects(vid=vid).first()
+        if not obj:
+            return {}
         return obj.get_info()
 
     @classmethod
