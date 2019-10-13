@@ -88,6 +88,9 @@ class YoutubeVideo(Document):
 
     @classmethod
     def create(cls, vid, region, info):
+        if not isinstance(info, dict):
+            return False
+        info = json.dumps(info)
         obj = cls.get_by_vid_region(vid, region)
         if obj:
             obj.info = info
@@ -96,6 +99,7 @@ class YoutubeVideo(Document):
             obj = cls(vid=vid, region=region, info=info)
             obj.save()
         cls._disable_cache(region=region)
+        return True
 
     @classmethod
     def get_by_vid_region(cls, vid, region):
