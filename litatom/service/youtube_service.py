@@ -23,8 +23,8 @@ from google.auth.transport import requests
 
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
-import socks
-import socket
+# import socks
+# import socket
 
 DEVELOPER_KEY = 'AIzaSyCWNIf6719OyYEbZGX03vgIE4eqGm9QpTg'
 YOUTUBE_API_SERVICE_NAME = 'youtube'
