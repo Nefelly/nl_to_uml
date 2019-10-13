@@ -26,7 +26,7 @@ from googleapiclient.errors import HttpError
 # import socks
 # import socket
 
-DEVELOPER_KEY = 'AIzaSyCWNIf6719OyYEbZGX03vgIE4eqGm9QpTg'
+DEVELOPER_KEY = 'AIzaSyCzA7srhqLJRmVP9-l6PX8gjBGCZSAbpGI'
 YOUTUBE_API_SERVICE_NAME = 'youtube'
 YOUTUBE_API_VERSION = 'v3'
 
