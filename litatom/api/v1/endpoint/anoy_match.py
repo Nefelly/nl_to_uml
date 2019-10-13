@@ -128,6 +128,13 @@ def update_video(vid):
     return success(YoutubeVideo.get_video_infos(region))
 
 def video_list():
+    data = GlobalizationService.get_region_word('video_list')
+    # data = YoutubeVideo.get_video_infos(request.region)
+    if not data:
+        data = []
+    return success(data)
+
+def video_info_list():
     # data = GlobalizationService.get_region_word('video_list')
     data = YoutubeVideo.get_video_infos(request.region)
     if not data:
