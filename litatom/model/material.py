@@ -16,7 +16,7 @@ from ..const import (
 )
 from ..key import (
     REDIS_AVATAR_CACHE,
-    REDIS_VIDEO_VID
+    REDIS_YOUTUBE_VIDEO_CACHE
 )
 redis_client = RedisClient()['lit']
 
@@ -108,7 +108,7 @@ class YoutubeVideo(Document):
 
     @classmethod
     def _disable_cache(cls, region):
-        redis_client.delete(REDIS_VIDEO_VID.format(region=region))
+        redis_client.delete(REDIS_YOUTUBE_VIDEO_CACHE.format(region=region))
 
     def save(self, *args, **kwargs):
         super(YoutubeVideo, self).save(*args, **kwargs)
@@ -127,7 +127,7 @@ class YoutubeVideo(Document):
 
     @classmethod
     def get_video_infos(cls, region):
-        cache_key = REDIS_VIDEO_VID.format(region=region)
+        cache_key = REDIS_YOUTUBE_VIDEO_CACHE.format(region=region)
         cache_obj = redis_client.get(cache_key)
         if cache_obj:
             return cPickle.loads(cache_obj)
