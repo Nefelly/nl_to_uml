@@ -137,7 +137,6 @@ class GlobalizationService(object):
         region = cls.get_region()
         return REDIS_VOICE_GENDER_ONLINE_REGION.format(region=region, gender=gender)
 
-
     @classmethod
     def video_match_key_by_region_gender(cls, gender):
         region = cls.get_region()
@@ -218,8 +217,8 @@ class GlobalizationService(object):
     def get_region(cls, region=None):
         if region:
             return region
-        if getattr(request, 'region', ''):
-            return request.region
+        # if getattr(request, 'region', ''):
+        #     return request.region
         loc = None
         user_id = request.user_id
         if user_id:
