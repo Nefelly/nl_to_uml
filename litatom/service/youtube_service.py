@@ -102,10 +102,10 @@ class YoutubeService(object):
             print 'Channels:\n', '\n'.join(channels), '\n'
             print 'Playlists:\n', '\n'.join(playlists), '\n'
 
-
-if __name__ == '__main__':
-    args = {'q': 'boating|sailing –fishing', 'max_results': 20}
-    try:
-        YoutubeService.youtube_search(args)
-    except HttpError, e:
-        print 'An HTTP error %d occurred:\n%s' % (e.resp.status, e.content)
+#
+# if __name__ == '__main__':
+#     args = {'q': 'boating|sailing –fishing', 'max_results': 20}
+#     try:
+#         YoutubeService.youtube_search(args)
+#     except HttpError, e:
+#         print 'An HTTP error %d occurred:\n%s' % (e.resp.status, e.content)
