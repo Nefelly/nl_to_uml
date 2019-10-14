@@ -9,6 +9,7 @@ from urllib2 import urlopen
 from ..model import (
     YoutubeVideo
 )
+from ..util import trans_secs_to_time
 import oss2
 import youtube_dl
 from ..const import ONE_HOUR
@@ -58,7 +59,10 @@ class YoutubeService(object):
             for region in cls.VIDEO_LIST:
                 for vid in cls.VIDEO_LIST.get(region):
                     try:
-                        YoutubeVideo.create(vid, region, cls.get_infos(vid, get_fields))
+                        res = cls.get_infos(vid, get_fields)
+                        res['duration'] = trans_secs_to_time(res.get('duration', 0))
+                        res['channel_title'] = res['alt_title']
+                        YoutubeVideo.create(vid, region, )
                     except Exception, e:
                         print "vid:%s, error:%r" % (vid, e)
 

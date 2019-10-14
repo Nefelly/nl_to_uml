@@ -38,6 +38,12 @@ def format_standard_date(time_data):
 def format_standard_time(time_data):
     return time_data.strftime('%Y-%m-%d %H:%M:%S')
 
+def trans_secs_to_time(secs):
+    m, s = divmod(secs, 60)
+    h, m = divmod(m, 60)
+    if h > 0:
+        return "%d:%02d:%02d" % (h, m, s)
+    return "%02d:%02d" % (m, s)
 
 def parse_standard_time(time_data_str):
     return datetime.datetime.strptime(time_data_str, '%Y-%m-%d %H:%M:%S')
