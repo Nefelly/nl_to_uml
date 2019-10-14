@@ -57,7 +57,10 @@ class YoutubeService(object):
             get_fields = ['duration', 'title', 'alt_title', 'subtitles', 'creator']
             for region in cls.VIDEO_LIST:
                 for vid in cls.VIDEO_LIST.get(region):
-                    YoutubeVideo.create(vid, region, cls.get_infos(vid, get_fields))
+                    try:
+                        YoutubeVideo.create(vid, region, cls.get_infos(vid, get_fields))
+                    except Exception, e:
+                        print "vid:%s, error:e" % (vid, e)
 
 
         def youtube_search(cls, options):
