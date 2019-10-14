@@ -60,7 +60,7 @@ class YoutubeService(object):
                     try:
                         YoutubeVideo.create(vid, region, cls.get_infos(vid, get_fields))
                     except Exception, e:
-                        print "vid:%s, error:e" % (vid, e)
+                        print "vid:%s, error:%r" % (vid, e)
 
 
         def youtube_search(cls, options):
