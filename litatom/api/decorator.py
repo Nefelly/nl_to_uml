@@ -43,7 +43,7 @@ def session_required(view):
             UserService.refresh_status(request.user_id)
             return view(*args, **kwargs)
         if has_user_id is None:  # 检查时发生了Exception, 报错而不登出.
-            logger.error("nnnnn-10")
+            # logger.error("nnnnn-10")
             return jsonify(error.FailedSession)
     return wrapper
 
@@ -57,7 +57,7 @@ def session_finished_required(view):
         if has_user_id:
             user_finish_info = UserService.query_user_info_finished(request.user_id)
             if not user_finish_info:
-                logger.error("nnnnn-11")
+                # logger.error("nnnnn-11")
                 return jsonify(error.FailedFinishedSession)
             UserService.refresh_status(request.user_id)
             if request.is_guest:
@@ -65,7 +65,7 @@ def session_finished_required(view):
                 return guest_forbidden()
             return view(*args, **kwargs)
         if has_user_id is None:  # 检查时发生了Exception, 报错而不登出.
-            logger.error("nnnnn-10")
+            # logger.error("nnnnn-10")
             return jsonify(error.FailedSession)
     return wrapper
 

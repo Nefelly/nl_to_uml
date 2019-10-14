@@ -134,6 +134,7 @@ def video_list():
     # data = YoutubeVideo.get_video_infos(request.region)
     if not data:
         data = []
+    data = []
     return success(data)
 
 def video_info_list():
