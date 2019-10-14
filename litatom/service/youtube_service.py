@@ -11,18 +11,11 @@ from ..model import (
 )
 from ..util import trans_secs_to_time
 import oss2
-import youtube_dl
+# import youtube_dl
 from ..const import ONE_HOUR
 
 logger = logging.getLogger(__name__)
 
-from google.oauth2 import id_token
-from google.auth.transport import requests
-
-# (Receive token by HTTPS POST)
-# ...
-# !/usr/bin/python
-# -*- coding: UTF-8 -*-
 
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
@@ -66,7 +59,7 @@ class YoutubeService(object):
                     except Exception, e:
                         print "vid:%s, error:%r" % (vid, e)
 
-
+        @classmethod
         def youtube_search(cls, options):
             # socks.setdefaultproxy(socks.PROXY_TYPE_HTTP, "此处写你的代理IP", 此处写你的代理端口号)
             # socket.socket = socks.socksocket
