@@ -62,7 +62,7 @@ class YoutubeService(object):
                         res = cls.get_infos(vid, get_fields)
                         res['duration'] = trans_secs_to_time(res.get('duration', 0))
                         res['channel_title'] = res['alt_title']
-                        YoutubeVideo.create(vid, region, )
+                        YoutubeVideo.create(vid, region, res)
                     except Exception, e:
                         print "vid:%s, error:%r" % (vid, e)
 
