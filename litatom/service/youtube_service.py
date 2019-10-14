@@ -11,7 +11,7 @@ from ..model import (
 )
 from ..util import trans_secs_to_time
 import oss2
-# import youtube_dl
+import youtube_dl
 from ..const import ONE_HOUR
 
 logger = logging.getLogger(__name__)
