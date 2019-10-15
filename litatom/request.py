@@ -167,9 +167,9 @@ class LitatomRequest(flask.Request):
         return GlobalizationService.get_real_loc(loc)
         # return loc
 
-    @cached_property
-    def region(self):
-        return GlobalizationService.get_region()
+    # @cached_property
+    # def region(self):
+    #     return GlobalizationService.get_region()
 
     @cached_property
     def user(self):
