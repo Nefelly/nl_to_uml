@@ -471,10 +471,10 @@ class UserSetting(Document):
     @classmethod
     def get_by_user_id(cls, user_id):
         cache_key = REDIS_USER_SETTING_CACHE.format(user_id=user_id)
-        cache_obj = redis_client.get(cache_key)
-        if cache_obj:
-            # redis_client.incr('user_cache_hit_cnt')
-            return cPickle.loads(cache_obj)
+        # cache_obj = redis_client.get(cache_key)
+        # if cache_obj:
+        #     # redis_client.incr('user_cache_hit_cnt')
+        #     return cPickle.loads(cache_obj)
         obj = cls.objects(user_id=user_id).first()
         redis_client.set(cache_key, cPickle.dumps(obj), USER_ACTIVE)
         return obj
