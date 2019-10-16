@@ -13,6 +13,7 @@ from ..model import (
 from ..key import (
     REDIS_REGION_TAG_WORD,
     REDIS_USER_LOC,
+    REDIS_USER_REGION,
     REDIS_ONLINE_GENDER,
     REDIS_ONLINE_GENDER_REGION,
     REDIS_ONLINE,
@@ -23,7 +24,7 @@ from ..key import (
 )
 from ..const import (
     ONLINE_LIVE,
-    GENDERS
+    GENDERS,
 )
 from ..service import (
     Ip2AddressService
@@ -153,7 +154,7 @@ class GlobalizationService(object):
 
     @classmethod
     def rem_from_region(cls, user_id, region):
-        cls.set_current_region_for_script(region)
+        cls.set_current_regionONLINE_LIVE_for_script(region)
         for g in GENDERS + [None]:
             key = GlobalizationService._online_key_by_region_gender(g)
             redis_client.zrem(key, user_id)
@@ -173,7 +174,7 @@ class GlobalizationService(object):
         old_loc = redis_client.get(REDIS_USER_LOC.format(user_id=user_id))
         if old_loc and old_loc != loc:
             cls._purge_loc_cache(user_id, old_loc)
-        redis_client.set(loc_key, loc, ONLINE_LIVE)
+        redis_client.set(loc_key, loc, )
 
     @classmethod
     def _set_user_loc(cls, user_id, loc):
@@ -197,6 +198,7 @@ class GlobalizationService(object):
                 redis_client.zrem(key, user_id)
         loc_key = REDIS_USER_LOC.format(user_id=user_id)
         redis_client.delete(loc_key)   # delete old loc_key
+        redis_client.delete(REDIS_USER_REGION.format(user_id=user_id))
         return True
 
     @classmethod
@@ -222,6 +224,10 @@ class GlobalizationService(object):
         loc = None
         user_id = request.user_id
         if user_id:
+            region_key = REDIS_USER_REGION.format(user_id=user_id)
+            region = redis_client.get(region_key)
+            if region:
+                return region
             loc_key = REDIS_USER_LOC.format(user_id=user_id)
             tmp_loc = redis_client.get(loc_key)
             if not tmp_loc:
@@ -240,6 +246,8 @@ class GlobalizationService(object):
         else:
             res = cls.DEFAULT_REGION
         request.region = res
+        if request.user_id:
+            redis_client.set(region_key, res, ONLINE_LIVE)
         return res
 
     @classmethod

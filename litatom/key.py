@@ -9,6 +9,7 @@ REDIS_KEY_USER_AGE = 'user_age:{user_id}'
 REDIS_ADMIN_USER = 'admin_username:{session}'
 REDIS_REGION_TAG_WORD = 'region_tag:{region_tag}'
 REDIS_USER_LOC = 'user_loc:{user_id}'
+REDIS_USER_REGION = 'user_region:{user_id}'
 REDIS_HUANXIN_USER = 'huanxin_user:{huanxin_id}'
 REDIS_FEED_ID_AGE = 'feed_id_age:{feed_id}'
 

@@ -20,6 +20,7 @@ class Report(Document):
     报告的问题
     '''
     reason = StringField(required=True)
+    # match_type = StringField(required=True)
     uid = StringField(required=True)
     target_uid = StringField()
     pics = ListField(required=False, default=[])

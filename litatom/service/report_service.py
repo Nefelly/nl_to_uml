@@ -22,7 +22,7 @@ redis_client = RedisClient()['lit']
 class ReportService(object):
 
     @classmethod
-    def report(cls, user_id, reason, pics=[], target_user_id=None, related_feed_id=None, chat_record=None):
+    def report(cls, user_id, reason, pics=[], target_user_id=None, related_feed_id=None, match_type=None, chat_record=None):
         report = Report()
         report.uid = user_id
         report.reason = reason

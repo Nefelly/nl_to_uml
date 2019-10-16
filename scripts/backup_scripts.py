@@ -18,6 +18,15 @@ def get_ages():
             m[a] += 1
     print m
 
+def cal_country_num():
+    m = {}
+    for _ in User.objects():
+        c = _.country
+        if not m.get(c):
+            m[c] = 0
+        m[c] += 1
+    print m
+
 
 if __name__ == "__main__":
     pass
