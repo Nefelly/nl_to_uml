@@ -198,6 +198,7 @@ class User(Document, UserSessionMixin):
         pure_session = sid.replace('session.', '')
         key = REDIS_KEY_SESSION_USER.format(session=pure_session)
         user_id = redis_client.get(key)
+        user_id = None
         if user_id:
             redis_client.set(key, user_id, ex=TWO_WEEKS)
             return user_id
@@ -296,11 +297,11 @@ class User(Document, UserSessionMixin):
 
     @classmethod
     def get_by_id(cls, user_id):
-        cache_key = REDIS_USER_CACHE.format(user_id=user_id)
-        cache_obj = redis_client.get(cache_key)
-        if cache_obj:
-            # redis_client.incr('user_cache_hit_cnt')
-            return cPickle.loads(cache_obj)
+        # cache_key = REDIS_USER_CACHE.format(user_id=user_id)
+        # cache_obj = redis_client.get(cache_key)
+        # if cache_obj:
+        #     # redis_client.incr('user_cache_hit_cnt')
+        #     return cPickle.loads(cache_obj)
         if not bson.ObjectId.is_valid(user_id):
             return None
         obj = cls.objects(id=user_id).first()
