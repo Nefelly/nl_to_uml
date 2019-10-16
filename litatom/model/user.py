@@ -297,7 +297,7 @@ class User(Document, UserSessionMixin):
 
     @classmethod
     def get_by_id(cls, user_id):
-        # cache_key = REDIS_USER_CACHE.format(user_id=user_id)
+        cache_key = REDIS_USER_CACHE.format(user_id=user_id)
         # cache_obj = redis_client.get(cache_key)
         # if cache_obj:
         #     # redis_client.incr('user_cache_hit_cnt')
