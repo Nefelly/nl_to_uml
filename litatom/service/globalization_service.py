@@ -174,7 +174,7 @@ class GlobalizationService(object):
         old_loc = redis_client.get(REDIS_USER_LOC.format(user_id=user_id))
         if old_loc and old_loc != loc:
             cls._purge_loc_cache(user_id, old_loc)
-        redis_client.set(loc_key, loc, )
+        redis_client.set(loc_key, loc, ONLINE_LIVE)
 
     @classmethod
     def _set_user_loc(cls, user_id, loc):
