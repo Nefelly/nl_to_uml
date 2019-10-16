@@ -34,7 +34,8 @@ from ..key import (
     REDIS_KEY_SESSION_USER,
     REDIS_KEY_USER_HUANXIN,
     REDIS_KEY_USER_AGE,
-    REDIS_USER_CACHE
+    REDIS_USER_CACHE,
+    REDIS_USER_SETTING_CACHE
 )
 from ..const import (
     TWO_WEEKS,
@@ -198,7 +199,6 @@ class User(Document, UserSessionMixin):
         pure_session = sid.replace('session.', '')
         key = REDIS_KEY_SESSION_USER.format(session=pure_session)
         user_id = redis_client.get(key)
-        user_id = None
         if user_id:
             redis_client.set(key, user_id, ex=TWO_WEEKS)
             return user_id
@@ -298,10 +298,10 @@ class User(Document, UserSessionMixin):
     @classmethod
     def get_by_id(cls, user_id):
         cache_key = REDIS_USER_CACHE.format(user_id=user_id)
-        # cache_obj = redis_client.get(cache_key)
-        # if cache_obj:
-        #     # redis_client.incr('user_cache_hit_cnt')
-        #     return cPickle.loads(cache_obj)
+        cache_obj = redis_client.get(cache_key)
+        if cache_obj:
+            # redis_client.incr('user_cache_hit_cnt')
+            return cPickle.loads(cache_obj)
         if not bson.ObjectId.is_valid(user_id):
             return None
         obj = cls.objects(id=user_id).first()
@@ -399,6 +399,11 @@ class User(Document, UserSessionMixin):
         return self.nickname != None and self.gender != None and self.birthdate != None and self.avatar != None
         return True
 
+    def delete(self, *args, **kwargs):
+        if getattr(self, 'id', ''):
+            self._disable_cache(str(self.id))
+        super(User, self).delete(*args, **kwargs)
+
     def basic_info(self):
         return {
             'user_id': str(self.id),
@@ -465,7 +470,28 @@ class UserSetting(Document):
 
     @classmethod
     def get_by_user_id(cls, user_id):
-        return cls.objects(user_id=user_id).first()
+        cache_key = REDIS_USER_SETTING_CACHE.format(user_id=user_id)
+        cache_obj = redis_client.get(cache_key)
+        if cache_obj:
+            # redis_client.incr('user_cache_hit_cnt')
+            return cPickle.loads(cache_obj)
+        obj = cls.objects(user_id=user_id).first()
+        redis_client.set(cache_key, cPickle.dumps(obj), USER_ACTIVE)
+        return obj
+
+    @classmethod
+    def _disable_cache(cls, user_id):
+        redis_client.delete(REDIS_USER_SETTING_CACHE.format(user_id=user_id))
+
+    def save(self, *args, **kwargs):
+        if getattr(self, 'id', ''):
+            self._disable_cache(str(self.id))
+        super(UserSetting, self).save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        if getattr(self, 'id', ''):
+            self._disable_cache(str(self.id))
+        super(UserSetting, self).delete(*args, **kwargs)
 
     @classmethod
     def create_setting(cls, user_id, lang):
