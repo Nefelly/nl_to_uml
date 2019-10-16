@@ -15,7 +15,7 @@ def clear_redis():
 
 def clear_by_date():
     time.mktime(time.strptime("2019-11-02 00:00:00","%Y-%m-%d %H:%M:%S"))
-    a = datetime.datetime(2019, 11,2, 0, 0 ,0)
+    a = datetime.datetime(2019, 11, 2, 0, 0, 0)
     ls = User.objects(create_time__lte=a)
     ls = list(ls)
     map(UserService._delete_user, ls)

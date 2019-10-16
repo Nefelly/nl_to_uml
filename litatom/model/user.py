@@ -299,12 +299,12 @@ class User(Document, UserSessionMixin):
         cache_key = REDIS_USER_CACHE.format(user_id=user_id)
         cache_obj = redis_client.get(cache_key)
         if cache_obj:
-            redis_client.incr('user_cache_hit_cnt')
+            # redis_client.incr('user_cache_hit_cnt')
             return cPickle.loads(cache_obj)
         if not bson.ObjectId.is_valid(user_id):
             return None
         obj = cls.objects(id=user_id).first()
-        redis_client.incr('user_cache_miss_cnt')
+        # redis_client.incr('user_cache_miss_cnt')
         redis_client.set(cache_key, cPickle.dumps(obj), USER_ACTIVE)
         return obj
 

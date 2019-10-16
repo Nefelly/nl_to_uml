@@ -359,7 +359,7 @@ class AnoyMatchService(object):
         matched_id = None
         if CAN_MATCH_ONLINE:
             times_left, status = cls._match_left_verify(user_id)
-            if status and (cls.MATCH_TMS - times_left) % 5 == 0 and  cls.MATCH_TMS != times_left:
+            if status and (cls.MATCH_TMS - times_left) % 5 == 0 and cls.MATCH_TMS != times_left:
                 matched_id, has_matched = cls._match_yesterday(fake_id, gender)
         if not matched_id:
             matched_id, has_matched = cls._match(fake_id, gender)

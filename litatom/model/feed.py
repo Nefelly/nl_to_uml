@@ -127,10 +127,12 @@ class Feed(Document):
         cache_key = REDIS_FEED_CACHE.format(feed_id=feed_id)
         cache_obj = redis_client.get(cache_key)
         if cache_obj:
+            redis_client.incr('feed_cache_hit_cnt')
             return cPickle.loads(cache_obj)
         if not bson.ObjectId.is_valid(feed_id):
             return None
         obj = cls.objects(id=feed_id).first()
+        redis_client.incr('feed_cache_miss_cnt')
         redis_client.set(cache_key, cPickle.dumps(obj), ONE_HOUR)
         return obj
 
