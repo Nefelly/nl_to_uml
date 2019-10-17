@@ -465,6 +465,7 @@ class UserSetting(Document):
 
     user_id = StringField(required=True, unique=True)
     lang = StringField(required=True, default='')
+    loc_change_times = IntField(default=0)
     online_limit = EmbeddedDocumentField(OnlineLimit)
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
 

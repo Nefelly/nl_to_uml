@@ -63,6 +63,7 @@ class FirebaseService(object):
                 return u'send failed', False
             return None, True
         except Exception, e:
-            traceback.print_exc()
+            logger.error(traceback.format_exc())
+            # traceback.print_exc()
             #logger.error('firebase send  error, user_id: %r, err: %r', user_id, e)
             return u'send error', False

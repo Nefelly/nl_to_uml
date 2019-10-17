@@ -3,6 +3,7 @@ import random
 import time
 import datetime
 import logging
+import langid
 from flask import request
 logger = logging.getLogger(__name__)
 
@@ -94,7 +95,13 @@ class UserService(object):
             cls.refresh_status(str(user.id))
         return None, True
 
-
+    @classmethod
+    def _get_words_loc(cls, words):
+        for word in words:
+            lang, score = langid.classify(word)
+            loc = GlobalizationService.loc_by_lang(lang)
+            if loc:
+                return loc
 
     @classmethod
     def unban_user(cls, user_id):
@@ -130,6 +137,21 @@ class UserService(object):
             User._set_age_cache(user)
         if user.finished_info:  # need to be last
             cls.refresh_status(str(user.id))
+        if getattr(user, 'id', ''):
+            # auto move unknown region user to it's lang
+            uid = str(user.id)
+            nickname = data.get('nickname', '')
+            bio = data.get('bio', '')
+            if (bio or nickname) and GlobalizationService.get_region() == GlobalizationService.DEFAULT_REGION:
+                loc = cls._get_words_loc([nickname, bio])
+                if loc:
+                    userSetting = UserSetting.get_by_user_id(uid)
+                    if not userSetting or userSetting.loc_change_times == 0:
+                        GlobalizationService.change_loc(uid, loc)
+                        userSetting = UserSetting.get_by_user_id(uid)
+                        if userSetting:
+                            userSetting.loc_change_times += 1
+                            userSetting.save()
 
     @classmethod
     def uids_age(cls, user_ids):

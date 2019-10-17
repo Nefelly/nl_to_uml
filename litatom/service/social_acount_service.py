@@ -51,7 +51,7 @@ class GoogleService(object):
             return idinfo
         except ValueError, e:
             # Invalid token
-            print e
+            # print e
             logger.error('log false token:%s, %s', token, e)
             return None
 
@@ -75,7 +75,8 @@ class FacebookService(object):
             assert response.get('data')['is_valid']
             return response.get('data', {}).get('user_id', None)
         except Exception, e:
-            traceback.print_exc()
+            logger.error(traceback.format_exc())
+            # traceback.print_exc()
             logger.error('Error get , token: %r, err: %r', token, e)
             return None
 
@@ -87,8 +88,9 @@ class FacebookService(object):
             assert response.get('id')
             return response
         except Exception, e:
-            traceback.print_exc()
-            logger.error('Error get , token: %r, err: %r', token, e)
+            logger.error(traceback.format_exc())
+            # traceback.print_exc()
+            logger.error('Error get , err: %r',  e)
             return None
 
     @classmethod

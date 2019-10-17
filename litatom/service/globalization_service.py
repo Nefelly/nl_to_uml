@@ -54,6 +54,13 @@ class GlobalizationService(object):
     LOC_INN = 'INN'
     LOC_KR = 'KR'
 
+    LANG_LOC = {
+        'th': LOC_TH,
+        'vi': LOC_VN,
+        'id': LOC_ID,
+        'ko': LOC_KR
+    }
+
     LOCS = {
         LOC_TH,
         LOC_IN,
@@ -90,7 +97,7 @@ class GlobalizationService(object):
     #     'ID'    # 印尼
     # }
 
-    DEFAULT_REGION  = REGION_EN
+    DEFAULT_REGION = REGION_EN
 
     LOC_REGION = {
         'TH': REGION_TH,
@@ -115,6 +122,13 @@ class GlobalizationService(object):
             return REDIS_ONLINE_GENDER_REGION.format(region=region, gender=gender)
         else:
             return REDIS_ONLINE_REGION.format(region=region)
+
+    @classmethod
+    def loc_by_lang(cls, lang):
+        loc = cls.KNOWN_REGION_LOC.get(lang, '')
+        if isinstance(loc, list):
+            return loc[0]
+        return loc
 
     @classmethod
     def region_by_loc(cls, loc):
