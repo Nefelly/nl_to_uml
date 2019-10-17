@@ -3,6 +3,7 @@ set -e
 
 exec 2>&1
 
+source /data/lit/bin/activate&&pip install langid
 #cd /data/litatom
 
 python <<EOF
