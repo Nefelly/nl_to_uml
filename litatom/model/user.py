@@ -473,10 +473,10 @@ class UserSetting(Document):
         cache_key = REDIS_USER_SETTING_CACHE.format(user_id=user_id)
         cache_obj = redis_client.get(cache_key)
         if cache_obj:
-            redis_client.incr('setting_cache_hit_cnt')
+            # redis_client.incr('setting_cache_hit_cnt')
             return cPickle.loads(cache_obj)
         obj = cls.objects(user_id=user_id).first()
-        redis_client.incr('setting_cache_miss_cnt')
+        # redis_client.incr('setting_cache_miss_cnt')
         redis_client.set(cache_key, cPickle.dumps(obj), USER_ACTIVE)
         return obj
 
@@ -485,12 +485,12 @@ class UserSetting(Document):
         redis_client.delete(REDIS_USER_SETTING_CACHE.format(user_id=user_id))
 
     def save(self, *args, **kwargs):
-        if getattr(self, 'id', ''):
+        if getattr(self, 'user_id', ''):
             self._disable_cache(str(self.id))
         super(UserSetting, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
-        if getattr(self, 'id', ''):
+        if getattr(self, 'user_id', ''):
             self._disable_cache(str(self.id))
         super(UserSetting, self).delete(*args, **kwargs)
 
