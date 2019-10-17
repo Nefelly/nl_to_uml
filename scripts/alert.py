@@ -6,9 +6,9 @@ from litatom.service import AlertService
 import time
 
 stat_len = 100
-inter_val = 20
+inter_val = 5
 stat_queue = [(0, 0) for i in range(stat_len)]
-alert_num = 15
+alert_num = 3
 stat_interval_s = 1
 cnt = 0
 alert_cnt = 0
@@ -47,7 +47,7 @@ def run():
         sys.exit(0)
     while (True):
         monitor_error()
-        time.sleep(1)
+        time.sleep(stat_interval_s)
 
 if __name__ == "__main__":
     run()
