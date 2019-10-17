@@ -184,6 +184,7 @@ class GlobalizationService(object):
 
     @classmethod
     def _set_loc_cache(cls, user_id, loc):
+        redis_client.delete(REDIS_USER_REGION.format(user_id=user_id))
         loc_key = REDIS_USER_LOC.format(user_id=user_id)
         old_loc = redis_client.get(REDIS_USER_LOC.format(user_id=user_id))
         if old_loc and old_loc != loc:
@@ -212,7 +213,6 @@ class GlobalizationService(object):
                 redis_client.zrem(key, user_id)
         loc_key = REDIS_USER_LOC.format(user_id=user_id)
         redis_client.delete(loc_key)   # delete old loc_key
-        redis_client.delete(REDIS_USER_REGION.format(user_id=user_id))
         return True
 
     @classmethod
