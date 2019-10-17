@@ -491,7 +491,7 @@ class UserSetting(Document):
 
     def delete(self, *args, **kwargs):
         if getattr(self, 'user_id', ''):
-            self._disable_cache(str(self.id))
+            self._disable_cache(str(self.user_id))
         super(UserSetting, self).delete(*args, **kwargs)
 
     @classmethod
