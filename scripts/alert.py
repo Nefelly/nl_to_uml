@@ -16,13 +16,13 @@ def monitor_error():
     y = int(y)
     # stat_queue.append(int(y))
     ts = int(time.time())
-    # global cnt
+    global cnt
     cnt += 1
     stat_queue[cnt % 100] = (y, ts)
     last, last_ts = stat_queue[(cnt - inter_val) % 100]
     if last == 0:
         return
-    # global  lastest_alert_ts
+    global  lastest_alert_ts
     if y - last >= alert_num:
         judge_interval = 2 ** alert_cnt * 10
         if ts - lastest_alert_ts >= judge_interval:
