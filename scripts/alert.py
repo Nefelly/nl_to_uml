@@ -5,7 +5,7 @@ import time
 stat_len = 100
 inter_val = 20
 stat_queue = [(0, 0) for i in range(stat_len)]
-alert_num = 15
+alert_num = 1
 stat_interval_s = 1
 cnt = 0
 
@@ -21,6 +21,7 @@ def monitor_error():
         return
     if y - last >= alert_num:
         AlertService.send_mail(["382365209@qq.com"], "online, %d errors in %d secconds" % (y - last, ts - last_ts))
+        print "send alert!!!"
 
 if __name__ == "__main__":
     while(True):
