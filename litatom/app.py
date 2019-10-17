@@ -175,6 +175,8 @@ class PathDispatchMiddleware(object):
             res = traceback.format_exc()
             logger1 = logging.getLogger('litatom.app')
             #print dir(logger), logger.handlers, 'fin'
+            if "start_response)\nTypeError: 'NoneType' object is not callable\n" in res:
+                return
             logger1.error(res)
             #logger.error(str(e), exc_info=True)
 
