@@ -6,7 +6,7 @@ from litatom.service import (
     AlertService,
     UserService
 )
-from litatom.model import FeedBack
+from litatom.model import Feedback
 import time
 
 stat_len = 100
@@ -22,7 +22,7 @@ def inform_feedback():
     ts = int(time.time())
     judge_time = ts - inter_val
     global cnt, lastest_alert_ts, alert_cnt
-    objs = FeedBack.objects(passed=False, create_ts__gte=judge_time)
+    objs = Feedback.objects(passed=False, create_ts__gte=judge_time)
     if not objs:
         return
     res_lst = []
