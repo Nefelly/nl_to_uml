@@ -29,7 +29,7 @@ def inform_feedback():
     for obj in objs:
         res_lst.append("\n".join(["user_id: " + obj.uid, "nickname:" + UserService.nickname_by_uid(obj.uid), "content:" + obj.content]))
         obj.passed = True
-    res = "-----------------------\n".join(obj)
+    res = "-----------------------\n".join(res_lst)
     lastest_alert_ts = ts
     print "send feedback!!!"
     AlertService.send_mail(["382365209@qq.com"], res, "litatom feedback")
