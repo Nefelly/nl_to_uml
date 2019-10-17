@@ -15,7 +15,7 @@ def monitor_error():
     ts = int(time.time())
     global cnt
     cnt += 1
-    stat_queue[cnt % 100] = (y, ts)
+    stat_queue[cnt % 100] = (int(y), ts)
     last, last_ts = stat_queue[(cnt - inter_val) % 100]
     if last == 0:
         return
