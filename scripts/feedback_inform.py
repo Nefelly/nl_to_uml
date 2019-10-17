@@ -33,7 +33,7 @@ def inform_feedback():
     res = "\n-----------------------\n\n".join(res_lst)
     lastest_alert_ts = ts
     print "send feedback!!!"
-    AlertService.send_mail(["382365209@qq.com"], res, "litatom feedback")
+    AlertService.send_mail(["litatomwang@gmail.com", "w326571@126.com"], res, "litatom feedback")
 
 
 def run():
