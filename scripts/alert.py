@@ -31,7 +31,7 @@ def monitor_error():
             print "send alert!!!"
             AlertService.send_mail(["382365209@qq.com"], "online, %d errors in %d secconds" % (y - last, ts - last_ts))
             lastest_alert_ts = ts
-            if alert_cnt >= 5:
+            if alert_cnt >= 5 or (ts - lastest_alert_ts > 2 ** alert_cnt * 10 and lastest_alert_ts != 0):
                 alert_cnt = 0
 
 
