@@ -11,11 +11,12 @@ cnt = 0
 
 def monitor_error():
     y = os.popen('wc -l /data/log/litatom/err.json.log').read().split(' ')[0]
+    y = int(y)
     # stat_queue.append(int(y))
     ts = int(time.time())
     global cnt
     cnt += 1
-    stat_queue[cnt % 100] = (int(y), ts)
+    stat_queue[cnt % 100] = (y, ts)
     last, last_ts = stat_queue[(cnt - inter_val) % 100]
     if last == 0:
         return
