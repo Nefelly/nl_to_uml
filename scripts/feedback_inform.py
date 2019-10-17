@@ -27,7 +27,7 @@ def inform_feedback():
         return
     res_lst = []
     for obj in objs:
-        res_lst.append("\n".join(["user_id: " + obj.uid, "nickname:" + UserService.nickname_by_uid(obj.uid), "content:" + obj.content]), "feedback inform")
+        res_lst.append("\n".join(["user_id: " + obj.uid, "nickname:" + UserService.nickname_by_uid(obj.uid), "content:" + obj.content]))
         obj.passed = True
         obj.save()
     res = "\n-----------------------\n\n".join(res_lst)

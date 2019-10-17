@@ -19,7 +19,7 @@ class AlertService(object):
         sender = '382365209@qq.com'
         pwd = 'vshditifewnhcajb'
         message = MIMEText(content, "plain", "utf-8")
-        message['Subject'] = 'alert'
+        message['Subject'] = 'alert' if not subject else subject
         if not isinstance(to, list):
             to = [to]
         message['To'] = ','.join(to)
