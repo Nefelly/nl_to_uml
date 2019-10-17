@@ -1,11 +1,14 @@
 import os
+import sys
+import fcntl
+from hendrix.conf import setting
 from litatom.service import AlertService
 import time
 
 stat_len = 100
 inter_val = 20
 stat_queue = [(0, 0) for i in range(stat_len)]
-alert_num = 1
+alert_num = 15
 stat_interval_s = 1
 cnt = 0
 alert_cnt = 0
@@ -32,8 +35,20 @@ def monitor_error():
                 alert_cnt = 0
 
 
-if __name__ == "__main__":
-    while(True):
+def run():
+    mutex_f = '/var/run/%s.mutex' % __file__.split('/')[-1].replace('.py', '')
+    if setting.IS_DEV:
+        mutex_f += 'dev'
+    f = open(mutex_f, 'w')
+    try:
+        fcntl.flock(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except:
+        print 'program already in run'
+        sys.exit(0)
+    while (True):
         monitor_error()
-        time.sleep(0.2)
+        time.sleep(1)
+
+if __name__ == "__main__":
+    run()
 
