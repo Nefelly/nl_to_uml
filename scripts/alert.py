@@ -6,9 +6,9 @@ from litatom.service import AlertService
 import time
 
 stat_len = 100
-inter_val = 5
+inter_val = 15
 stat_queue = [(0, 0) for i in range(stat_len)]
-alert_num = 3
+alert_num = 13
 stat_interval_s = 1
 cnt = 0
 alert_cnt = 0
