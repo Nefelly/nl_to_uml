@@ -484,15 +484,15 @@ class UserSetting(Document):
     def _disable_cache(cls, user_id):
         redis_client.delete(REDIS_USER_SETTING_CACHE.format(user_id=user_id))
 
-    def save(self, *args, **kwargs):
-        if getattr(self, 'user_id', ''):
-            self._disable_cache(str(self.id))
-        super(UserSetting, self).save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     if getattr(self, 'user_id', ''):
+    #         self._disable_cache(str(self.id))
+    #     super(UserSetting, self).save(*args, **kwargs)
 
-    def delete(self, *args, **kwargs):
-        if getattr(self, 'user_id', ''):
-            self._disable_cache(str(self.id))
-        super(UserSetting, self).delete(*args, **kwargs)
+    # def delete(self, *args, **kwargs):
+    #     if getattr(self, 'user_id', ''):
+    #         self._disable_cache(str(self.id))
+    #     super(UserSetting, self).delete(*args, **kwargs)
 
     @classmethod
     def create_setting(cls, user_id, lang):
