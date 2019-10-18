@@ -146,7 +146,7 @@ class UserService(object):
                 loc = cls._get_words_loc([nickname, bio])
                 if loc:
                     userSetting = UserSetting.get_by_user_id(uid)
-                    if not userSetting or userSetting.loc_change_times == 0:
+                    if not userSetting or userSetting.loc_change_times <= 50:
                         GlobalizationService.change_loc(uid, loc)
                         userSetting = UserSetting.get_by_user_id(uid)
                         if userSetting:
@@ -552,7 +552,7 @@ class UserService(object):
             cls._on_create_new_user(user)
             cls.update_info_finished_cache(user)
             RedisLock.release_mutex(key)
-        request.user_id = str(user.id) # 为了region
+        request.user_id = str(user.id)    # 为了region
         msg, status = cls.login_job(user)
         if not status:
             return msg, False
