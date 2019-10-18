@@ -26,7 +26,7 @@ def inform_feedback():
     if not objs:
         return
     res_lst = []
-    if ts - lastest_alert_ts < 20 * 60:
+    if ts - lastest_alert_ts < 60 * 60:
         return
     for obj in objs:
         res_lst.append("\n".join(["user_id: " + obj.uid, "nickname:" + UserService.nickname_by_uid(obj.uid), "content:" + obj.content]))
