@@ -101,7 +101,9 @@ class DebugHelperService(object):
         if not key:
             users = []
             for _ in User.objects().order_by('-create_time'):
-                users.append(UserService.get_user_info(str(_.id), str(_.id)))
+                raw_info = UserService.get_user_info(str(_.id), str(_.id))
+                raw_info['phone'] = _.phone
+                users.append(raw_info)
             res['zusers'] = users
             feeds = []
             for _ in Feed.objects().order_by('-create_time'):
