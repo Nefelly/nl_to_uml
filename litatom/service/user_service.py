@@ -650,7 +650,7 @@ class UserService(object):
         '''
         if user.bio:
             return user.bio
-        login_long = user.create_time - datetime.datetime > datetime.timedelta(days=3)
+        login_long = datetime.datetime.now() - user.create_time > datetime.timedelta(days=3)
         word_m = GlobalizationService.get_region_word('bio')
         if login_long:
             key = 'mystierious'
