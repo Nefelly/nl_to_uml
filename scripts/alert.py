@@ -31,7 +31,7 @@ def monitor_error():
         judge_interval = 2 ** alert_cnt * 10
         if ts - lastest_alert_ts >= judge_interval:
             print "send alert!!!"
-            if err_line < 10:
+            if err_line < 20:
                 res = os.popen('tail -n %d %s' % (err_line, err_file)).read().split(' ')
             AlertService.send_mail(["382365209@qq.com"], "online, %d errors in %d secconds\n\n\n%s" % (err_line, ts - last_ts, res))
             lastest_alert_ts = ts
