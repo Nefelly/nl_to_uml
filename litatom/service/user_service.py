@@ -650,11 +650,18 @@ class UserService(object):
         '''
         if user.bio:
             return user.bio
-        feed_num = Feed.feed_num(str(user.id))
-        he_or_she = 'He' if user.gender == BOY else 'She'
-        if feed_num < 3:
-            return u'%s is newcomer~' % he_or_she
-        return u'%s loves to share' % he_or_she
+        login_long = user.create_time - datetime.datetime > datetime.timedelta(days=3)
+        word_m = GlobalizationService.get_region_word('bio')
+        if login_long:
+            key = 'mystierious'
+        else:
+            key = 'newcomer'
+        he_or_she_ind = 0 if user.gender == BOY else 1
+        return word_m[key][he_or_she_ind]
+        # feed_num = Feed.feed_num(str(user.id))
+        # if feed_num < 3:
+        #     return u'%s is newcomer~' % he_or_she
+        # return u'%s loves to share' % he_or_she
 
     @classmethod
     def verify_nickname_exists(cls, nickname):   # judge if nickname exists

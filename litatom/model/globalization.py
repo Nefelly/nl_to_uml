@@ -121,7 +121,12 @@ class RegionWord(Document):
             'en': ['b-7qGd5jM2s', 'pWAP7fIwGnI', 'XOBGHAQB-wI', 'kJQP7kiw5Fk', 'cBVGlBWQzuc', 'PMhWCD6u4fA', 'lBiRs4wzIhI', 'SecLbWBvDP8', '250rS-RvwlU', 'Y0viP67wNqk'],
             'india': ['b-7qGd5jM2s', 'pWAP7fIwGnI', 'XOBGHAQB-wI', 'kJQP7kiw5Fk', 'cBVGlBWQzuc', 'PMhWCD6u4fA', 'lBiRs4wzIhI', 'SecLbWBvDP8', '250rS-RvwlU', 'Y0viP67wNqk'],
             'id': ['b-7qGd5jM2s', 'pWAP7fIwGnI', 'XOBGHAQB-wI', 'kJQP7kiw5Fk', 'cBVGlBWQzuc', 'PMhWCD6u4fA', 'lBiRs4wzIhI', 'SecLbWBvDP8', '250rS-RvwlU', 'Y0viP67wNqk']
-    }
+        },
+        'bio': {
+            'en': {'newcomer': ['He is a newcomer~', 'She is a newcomer~'], 'mystierious': ['He is mysterious~', 'She is mysterious~']},
+            'vi': {'newcomer': [u'Anh ấy là thành viên mới~', u'Cô ấy là thành viên mới~'], 'mystierious': [u'Anh ấy là người bí ẩn~', u'Cô ấy là người bí ẩn~']},
+            'th': {'newcomer': [u'เขาเป็นผู้ใช้งานใหม่~', u'เธอเป็นผู้ใช้งานใหม่~'], 'mystierious': [u'เขาคือบุคคลลึกลับ~', u'เธอคือบุคคลลึกลับ~']}
+        }
     }
 
     @classmethod
