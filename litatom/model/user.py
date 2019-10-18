@@ -173,6 +173,7 @@ class User(Document, UserSessionMixin):
     bio = StringField()
     phone = StringField()
     country = StringField()
+    good_rate_cnt = IntField()
     forbidden = BooleanField(required=True, default=False)
     forbidden_ts = IntField(required=True, default=0)
     follower = IntField(required=True, default=0)
