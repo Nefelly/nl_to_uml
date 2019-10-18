@@ -101,7 +101,7 @@ class StatisticService(object):
         #GlobalizationService.set_current_region_for_script(GlobalizationService.REGION_TH)
         key = GlobalizationService._online_key_by_region_gender(gender)
         time_now = int(time.time())
-        raw_uids = redis_client.zrangebyscore(key, time_now - interval, time_now)
+        raw_uids = redis_client.zrangebyscore(key, time_now - interval, time_now, 0, cls.MAX_SELECT_POOL)
         return raw_uids
 
     @classmethod
@@ -176,7 +176,7 @@ class StatisticService(object):
                 # if start_p == 0:
                 #     user_age = User.age_by_user_id(temp_uid)
                 #     time_now = int(time.time())
-                #     raw_uids = redis_client.zrangebyscore(key, time_now - ONE_MIN, time_now)
+                #     raw_uids = redis_client.zrangebyscore(key, time_now - ONE_MIN, time_now, 0, cls.MAX_SELECT_POOL)
                 #     uids = [el for el in raw_uids if abs(User.age_by_user_id(el) - user_age) <= 4]
                 #     has_next = True
                 #     next_start = len(raw_uids) + 1
