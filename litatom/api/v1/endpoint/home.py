@@ -37,7 +37,8 @@ from ....service import (
     FeedbackService,
     GlobalizationService,
     UserFilterService,
-    FeedService
+    FeedService,
+    UserSettingService
 )
 
 logger = logging.getLogger(__name__)
@@ -111,10 +112,7 @@ def get_wording():
     return success(wording)
 
 def settings():
-    data = {
-        'need_login': True
-    }
-    return success(data)
+    return success(UserSettingService.get_settings(request.user_id))
 
 def check_version():
     version_now = '2.0.0'
