@@ -15,7 +15,8 @@ alert_cnt = 0
 lastest_alert_ts = 0
 
 def monitor_error():
-    y = os.popen('wc -l /data/log/litatom/err.json.log').read().split(' ')[0]
+    err_file = '/data/log/litatom/err.json.log'
+    y = os.popen('wc -l %s' % err_file).read().split(' ')[0]
     y = int(y)
     # stat_queue.append(int(y))
     ts = int(time.time())
@@ -25,15 +26,17 @@ def monitor_error():
     last, last_ts = stat_queue[(cnt - inter_val) % 100]
     if last == 0:
         return
-    if y - last >= alert_num:
+    err_line = y - last
+    if err_line >= alert_num:
         judge_interval = 2 ** alert_cnt * 10
         if ts - lastest_alert_ts >= judge_interval:
             print "send alert!!!"
-            AlertService.send_mail(["382365209@qq.com"], "online, %d errors in %d secconds" % (y - last, ts - last_ts))
+            if err_line < 10:
+                res = os.popen('tail -n %d %s' % (err_line, err_file)).read().split(' ')
+            AlertService.send_mail(["382365209@qq.com"], "online, %d errors in %d secconds\n\n\n%s" % (err_line, ts - last_ts, res))
             lastest_alert_ts = ts
             if alert_cnt >= 5 or (ts - lastest_alert_ts > 2 ** alert_cnt * 10 and lastest_alert_ts != 0):
                 alert_cnt = 0
-
 
 def run():
     mutex_f = '/var/run/%s.mutex' % __file__.split('/')[-1].replace('.py', '')
