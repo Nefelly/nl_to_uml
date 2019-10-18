@@ -16,7 +16,8 @@ from ..const import (
     MAX_TIME,
     USER_ACTIVE,
     REAL_ACTIVE,
-    FIVE_MINS
+    FIVE_MINS,
+    ONE_MIN
 )
 from ..service import (
     UserService,
@@ -160,16 +161,28 @@ class StatisticService(object):
                         break
                     start_p = start_p + num
             else:
-                if start_p == 0:
+                for i in range(max_loop_tms):
+                    temp_uids = redis_client.zrevrange(key, start_p, start_p + num)
+                    has_next = False
+                    if len(temp_uids) == num + 1:
+                        has_next = True
+                        temp_uids = temp_uids[:-1]
                     user_age = User.age_by_user_id(temp_uid)
-                    time_now = int(time.time())
-                    raw_uids = redis_client.zrangebyscore(key, time_now - FIVE_MINS, time_now)
-                    uids = [el for el in raw_uids if abs(User.age_by_user_id(el) - user_age) <= 4]
-                    has_next = True
-                    next_start = len(raw_uids) + 1
+                    next_start = start_p + num if has_next else - 1
+                    uids += [el for el in temp_uids if abs(User.age_by_user_id(el) - user_age) <= 4]
+                    if len(uids) >= max(num - 3, 1) or not has_next:
+                        break
+                    start_p = start_p + num
+                # if start_p == 0:
+                #     user_age = User.age_by_user_id(temp_uid)
+                #     time_now = int(time.time())
+                #     raw_uids = redis_client.zrangebyscore(key, time_now - ONE_MIN, time_now)
+                #     uids = [el for el in raw_uids if abs(User.age_by_user_id(el) - user_age) <= 4]
+                #     has_next = True
+                #     next_start = len(raw_uids) + 1
             uids = [el for el in uids if el != temp_uid]
             if not uids:
-                uids =  [el for el in redis_client.zrevrange(key, start_p, start_p + num) if el != temp_uid]
+                uids = [el for el in redis_client.zrevrange(key, start_p, start_p + num) if el != temp_uid]
                 has_next = len(uids) == num + 1
                 next_start = start_p + num if has_next else -1
         user_infos = cls._user_infos_by_uids(uids)
