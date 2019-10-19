@@ -21,17 +21,18 @@ class UserSettingService(object):
         res = {
             'need_login': True
         }
-        need_pop = False
-        if user_id:
-            userSetting = UserSetting.get_by_user_id(user_id)
-            if userSetting:
-                pop_time_interval = [0.5 * ONE_DAY, 2 * ONE_DAY, 10 * ONE_DAY]
-                create_ts = date_to_int_time(userSetting.create_time)
-                if len(pop_time_interval) > userSetting.good_rate_times and int(time.time()) - create_ts > pop_time_interval[userSetting.good_rate_times]:
-                    need_pop = True
-                    userSetting.good_rate_times += 1
-                    userSetting.save()
-        res['pop_good_rate'] = need_pop
+        # need_pop = False
+        # if user_id:
+        #     userSetting = UserSetting.get_by_user_id(user_id)
+        #     if userSetting:
+        #         pop_time_interval = [0.5 * ONE_DAY, 2 * ONE_DAY, 10 * ONE_DAY]
+        #         create_ts = date_to_int_time(userSetting.create_time)
+        #         if len(pop_time_interval) > userSetting.good_rate_times and int(time.time()) - create_ts > pop_time_interval[userSetting.good_rate_times]:
+        #             need_pop = True
+        #             userSetting.good_rate_times += 1
+        #             userSetting.save()
+        # res['pop_good_rate'] = need_pop
+        res['pop_good_rate'] = True
         region = GlobalizationService.get_region()
         modules_open = {
             "soul_match": 1,
