@@ -62,7 +62,7 @@ class FeedService(object):
         feed = Feed.get_by_id(feed_id)
         if feed:
             if reason:
-                FeedService.delete_feed(feed.user_id, feed)
+                FeedService.delete_feed(feed.user_id, str(feed.id))
             else:
                 #  need region to send to this because of request env
                 redis_client.zadd(cls._redis_feed_region_key(REDIS_FEED_SQUARE_REGION),
@@ -169,7 +169,7 @@ class FeedService(object):
         feed = Feed.get_by_id(feed_id)
         if not feed:
             return None, True
-        if not getattr(request, 'is_admin', False) and feed.user_id != user_id:
+        if (not locals().get('request') or not getattr(request, 'is_admin', False)) and feed.user_id != user_id:
         #if not request.is_admin and feed.user_id != user_id:
             return u'you are not authorized', False
         cls._del_from_feed_pool(feed)

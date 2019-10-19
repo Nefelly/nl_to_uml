@@ -2,6 +2,7 @@ import os
 import time
 import sys
 import fcntl
+import threading
 from litatom.mq import (
     MQProducer,
     MQConsumer
@@ -25,6 +26,7 @@ class ConsumeFeed(MQConsumer):
         print payload
 
 def feed_consum():
+    print "inininin"
     queue_name = 'feed_added'
     routing_key = 'tasks'
     ConsumeFeed(queue_name,
@@ -48,8 +50,15 @@ def run():
     except:
         print 'program already in run'
         sys.exit(0)
-    print "inininin"
-    feed_consum()
+    thread_num = 10
+    threads = []
+    for i in range(thread_num):
+        t = threading.Thread(target=feed_consum, args=())
+        t.start()
+        threads.append(t)
+    for t in threads:
+        t.join()
+    # feed_consum()
 
 if __name__ == "__main__":
     run()
