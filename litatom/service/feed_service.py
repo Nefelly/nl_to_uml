@@ -63,7 +63,9 @@ class FeedService(object):
         feed = Feed.get_by_id(feed_id)
         if feed:
             if reason:
-                FeedService.delete_feed(feed.user_id, str(feed.id))
+                FeedLike.objects(feed_id=feed_id).delete()
+                FeedComment.objects(feed_id=feed_id).delete()
+                feed.delete()
             else:
                 #  need region to send to this because of request env
                 redis_client.zadd(region_key,
@@ -170,7 +172,7 @@ class FeedService(object):
         feed = Feed.get_by_id(feed_id)
         if not feed:
             return None, True
-        if (not locals().get('request') or not getattr(request, 'is_admin', False)) and feed.user_id != user_id:
+        if not getattr(request, 'is_admin', False) and feed.user_id != user_id:
         #if not request.is_admin and feed.user_id != user_id:
             return u'you are not authorized', False
         cls._del_from_feed_pool(feed)
@@ -178,6 +180,7 @@ class FeedService(object):
         FeedLike.objects(feed_id=feed_id).delete()
         FeedComment.objects(feed_id=feed_id).delete()
         feed.delete()
+        MqService.push(REMOVE_EXCHANGE, {"feed_id": feed_id})
         return None, True
 
 
