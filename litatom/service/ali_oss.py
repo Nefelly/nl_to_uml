@@ -101,6 +101,4 @@ class AliOssService(object):
         image_byte = BytesIO()
         out.convert('RGB').save(image_byte, format='JPEG')
         res = image_byte.getvalue()
-        print len(obj)
-        print len(res)
         return res
