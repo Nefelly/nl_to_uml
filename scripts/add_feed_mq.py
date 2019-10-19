@@ -19,7 +19,9 @@ class ConsumeFeed(MQConsumer):
     def callback(self, msg):
         payload = msg.get('payload', {})
         feed_id = payload.get('feed_id')
-        FeedService.consume_feed_added(feed_id)
+        pics = payload.get('pics', [])
+        region_key = payload.get('region_key')
+        FeedService.consume_feed_added(feed_id, pics, region_key)
         print payload
 
 def feed_consum():

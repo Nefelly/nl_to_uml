@@ -8,6 +8,8 @@ LOGGING_APP_NAME = 'sns-litatom'
 
 REMOVE_EXCHANGE = 'remove_feed'
 ADD_EXCHANGE = 'add_feed'
+#
+# PIC_UPLOAD_EXCHANGE = 'feed_check'
 
 # cookie 中的存 session 的 key
 SESSION_SESSION_ID_KEY = 'sessionid.1'

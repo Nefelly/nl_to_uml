@@ -37,21 +37,21 @@ def upload_image_from_file():
     直接上传图片到云盘
     目前只用来传实名认证图片
     """
-    import time
-    t_start = time.time()
+    # import time
+    # t_start = time.time()
     image = request.files.get('image')
     if not image:
         return jsonify(Failed)
     fileid = AliOssService.upload_from_binary(image)
     if not fileid:
         return jsonify(Failed)
-    url = 'http://www.litatom.com/api/sns/v1/lit/image/' + fileid
-    t_before_qiniu = time.time()
-    reason = QiniuService.should_pic_block_from_url(url)
-    t_end = time.time()
-    print 'upload using:%r, qiniu using:%r, ratio:%r' % (t_end - t_before_qiniu, t_before_qiniu - t_start, (t_end - t_before_qiniu)/(t_before_qiniu - t_start))
-    if reason:
-        return fail('the pic have vialate rule of:%s please check' % reason)
+    # url = 'http://www.litatom.com/api/sns/v1/lit/image/' + fileid
+    # t_before_qiniu = time.time()
+    # reason = QiniuService.should_pic_block_from_url(url)
+    # t_end = time.time()
+    # print 'qiniu using:%r, upload using:%r, ratio:%r' % (t_end - t_before_qiniu, t_before_qiniu - t_start, (t_end - t_before_qiniu)/(t_before_qiniu - t_start))
+    # if reason:
+    #     return fail('the pic have vialate rule of:%s please check' % reason)
     return jsonify({
         'success': True,
         'data': {

@@ -21,6 +21,10 @@ class QiniuService(object):
     '''
 
     @classmethod
+    def should_pic_block_from_file_id(cls, fileid):
+        return cls.should_pic_block_from_url("http://www.litatom.com/api/sns/v1/lit/image/" + fileid)
+
+    @classmethod
     def should_pic_block_from_url(cls, out_url):
         '''scenes could be ads, pulp...'''
         data = {

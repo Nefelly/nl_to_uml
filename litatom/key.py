@@ -20,6 +20,9 @@ REDIS_FEED_CACHE = 'feed_cache:{feed_id}'
 REDIS_AVATAR_CACHE = 'avatar_cache'
 REDIS_YOUTUBE_VIDEO_CACHE = 'youtube_video_cache:{region}'
 
+#pic check redis
+REDIS_PIC_CHECK_STATUS = 'pic_check_status:{}'
+
 REDIS_ONLINE_GENDER = 'online:{gender}'   # !!!
 REDIS_HUANXIN_ONLINE = 'huanxin_online'
 REDIS_ONLINE_GENDER_REGION = 'online:{gender}:{region}'

@@ -31,7 +31,8 @@ from ..service import (
     FollowingFeedService,
     GlobalizationService,
     UserMessageService,
-    MqService
+    MqService,
+    QiniuService
 )
 from ..model import (
     Feed,
@@ -44,13 +45,27 @@ redis_client = RedisClient()['lit']
 class FeedService(object):
     @classmethod
     def _on_add_feed(cls, feed):
-        MqService.push(ADD_EXCHANGE, {"feed_id":str(feed.id)})
+        if not feed.pics:
+            cls._add_to_feed_pool(feed)
+        MqService.push(ADD_EXCHANGE,
+                       {"feed_id": str(feed.id), "pics": feed.pics, "region_key": cls._redis_feed_region_key(REDIS_FEED_SQUARE_REGION)})
         # FollowingFeedService.add_feed(feed)
 
     @classmethod
-    def consume_feed_added(cls, feed_id):
+    def consume_feed_added(cls, feed_id, pics, region_key):
+        reason = None
+        if pics:
+            for pic in pics:
+                reason = QiniuService.should_pic_block_from_file_id(pic)
+                if reason:
+                    break
         feed = Feed.get_by_id(feed_id)
         if feed:
+            if reason:
+                FeedService.delete_feed(feed.user_id, feed)
+            else:
+                redis_client.zadd(cls._redis_feed_region_key(REDIS_FEED_SQUARE_REGION),
+                                  {str(feed.id): feed.create_time})
             FollowingFeedService.add_feed(feed)
 
     @classmethod
@@ -80,7 +95,10 @@ class FeedService(object):
         res = feed.get_info()
         res['user_info'] = user_info
         if visitor_user_id:
-            res['liked'] = True if FeedLike.get_by_ids(visitor_user_id, str(feed.id)) else False
+            liked = False
+            if feed.like_num:
+                liked = True if FeedLike.get_by_ids(visitor_user_id, str(feed.id)) else False
+            res['liked'] = liked
         return res
 
     @classmethod
@@ -142,7 +160,7 @@ class FeedService(object):
     def create_feed(cls, user_id, content, pics=None, audios=None):
         feed = Feed.create_feed(user_id, content, pics, audios)
         cls._on_add_feed(feed)
-        cls._add_to_feed_pool(feed)
+        # cls._add_to_feed_pool(feed)
         return str(feed.id)
 
     @classmethod
