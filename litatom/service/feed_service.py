@@ -2,7 +2,7 @@
 import time
 import random
 import datetime
-from  flask import (
+from flask import (
     request
 )
 from ..redis import RedisClient
@@ -64,6 +64,7 @@ class FeedService(object):
             if reason:
                 FeedService.delete_feed(feed.user_id, feed)
             else:
+                #  need region to send to this because of request env
                 redis_client.zadd(cls._redis_feed_region_key(REDIS_FEED_SQUARE_REGION),
                                   {str(feed.id): feed.create_time})
             FollowingFeedService.add_feed(feed)
