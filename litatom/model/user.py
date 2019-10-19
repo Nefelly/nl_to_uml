@@ -50,6 +50,7 @@ from ..util import (
     format_standard_time,
     unix_ts_local,
     passwdhash,
+    date_to_int_time
 )
 
 logger = logging.getLogger(__name__)
@@ -426,7 +427,7 @@ class User(Document, UserSessionMixin):
             'session': self.session_id,
             'finished_info': self.finished_info,
             'is_first_login': not self.logined,
-            'create_time': self.create_time,
+            'create_time': date_to_int_time(self.create_time),
             'huanxin': HuanxinAccount.get_info(self.huanxin)
         }
 
