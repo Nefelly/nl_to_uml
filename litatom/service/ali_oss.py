@@ -96,6 +96,8 @@ class AliOssService(object):
         x_s = 250  # define standard width
         y_s = y * x_s / x  # calc height based on standard width
         out = img.resize((x_s, y_s), Image.ANTIALIAS)
-        res = out.tostring()
+        image_byte = BytesIO()
+        image_byte = out.convert('RGB').save(image_byte, format='JPEG')
+        res = image_byte.getvalue()
         print len(res)
         return res
