@@ -58,6 +58,7 @@ class FeedService(object):
             for pic in pics:
                 reason = QiniuService.should_pic_block_from_file_id(pic)
                 if reason:
+                    print reason
                     break
         feed = Feed.get_by_id(feed_id)
         if feed:
