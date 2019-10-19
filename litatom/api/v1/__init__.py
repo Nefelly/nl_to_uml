@@ -54,7 +54,7 @@ b.add_url_rule('/lit/admin/mail_alert', 'admin-mail-alert', endpoint.admin.mail_
 # 图片
 b.add_url_rule('/lit/image/upload', 'image-upload', endpoint.oss.upload_image_from_file, methods=['POST'])
 # b.add_url_rule('/lit/image/<fileid>', 'get-image', endpoint.oss.get_image)
-b.add_url_rule('/lit/image/<fileid>', 'get-image', endpoint.oss.get_simage)
+b.add_url_rule('/lit/image/<fileid>', 'get-image', endpoint.oss.get_image)
 b.add_url_rule('/lit/simage/<fileid>', 'get-simage', endpoint.oss.get_simage)
 b.add_url_rule('/lit/audio/upload', 'audio-upload', endpoint.oss.upload_audio_from_file, methods=['POST'])
 b.add_url_rule('/lit/audio/<fileid>', 'get-audio', endpoint.oss.get_audio)
