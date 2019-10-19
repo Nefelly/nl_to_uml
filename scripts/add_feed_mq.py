@@ -27,7 +27,7 @@ class ConsumeFeed(MQConsumer):
 
 
 def feed_consum():
-    print "inininin"
+    # print "inininin"
     queue_name = 'feed_added'
     routing_key = 'tasks'
     ConsumeFeed(queue_name,
