@@ -64,6 +64,15 @@ def get_image(fileid):
         #return jsonify(Failed)
     return Response(content, mimetype='image/jpeg')
 
+def get_simage(fileid):
+    if fileid == 'null':
+        return jsonify(Failed)
+    content = AliOssService.get_binary_from_bucket(fileid)
+    if not content:
+        return Response('', mimetype='image/jpeg')   # 返回空图片流, 兼容错误
+        #return jsonify(Failed)
+    return Response(content, mimetype='image/jpeg')
+
 @session_required
 def upload_audio_from_file():
     """
