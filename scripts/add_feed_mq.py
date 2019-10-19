@@ -48,6 +48,7 @@ def run():
     except:
         print 'program already in run'
         sys.exit(0)
+    print "inininin"
     feed_consum()
 
 if __name__ == "__main__":
