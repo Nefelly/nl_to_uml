@@ -234,7 +234,7 @@ def msg_to_region():
     if num:
         num = int(num)
     if not region or not msg:
-        return  fail('lake of field')
+        return fail('lake of field')
     res = UserService.msg_to_region_users(region, msg, num)
     if res:
         return success()
