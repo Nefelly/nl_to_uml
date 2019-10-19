@@ -426,6 +426,7 @@ class User(Document, UserSessionMixin):
             'session': self.session_id,
             'finished_info': self.finished_info,
             'is_first_login': not self.logined,
+            'create_time': self.create_time,
             'huanxin': HuanxinAccount.get_info(self.huanxin)
         }
 
