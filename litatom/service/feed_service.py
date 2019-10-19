@@ -65,7 +65,7 @@ class FeedService(object):
                 FeedService.delete_feed(feed.user_id, str(feed.id))
             else:
                 #  need region to send to this because of request env
-                redis_client.zadd(cls._redis_feed_region_key(REDIS_FEED_SQUARE_REGION),
+                redis_client.zadd(region_key,
                                   {str(feed.id): feed.create_time})
             FollowingFeedService.add_feed(feed)
 
