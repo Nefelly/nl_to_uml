@@ -6,6 +6,8 @@ import logging
 import time
 import uuid
 from urllib2 import urlopen
+from PIL import Image
+from io import BytesIO
 
 import oss2
 
@@ -83,4 +85,15 @@ class AliOssService(object):
             logger.error(' get image_from_url failed, fileid: %s, %s', fileid, e)
         return None
 
-
+    @classmethod
+    def get_simage(cls, fileid):
+        """https://blog.csdn.net/lafengxiaoyu/article/details/82534206"""
+        obj = cls.get_binary_from_bucket(fileid)
+        if not obj:
+            return None
+        img = Image.open(BytesIO(obj))
+        (x, y) = img.size
+        x_s = 250  # define standard width
+        y_s = y * x_s / x  # calc height based on standard width
+        out = img.resize((x_s, y_s), Image.ANTIALIAS)
+        return out.tobytes()
