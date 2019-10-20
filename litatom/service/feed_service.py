@@ -63,7 +63,7 @@ class FeedService(object):
         feed = Feed.get_by_id(feed_id)
         if feed:
             if reason:
-                UserService.msg_to_user(u'Your feed have been deleted due to reason:%s. Please keep your feed positive.' % reason, feed.user_id)
+                UserService.msg_to_user(u'Your feed have been deleted due to reason: %s. Please keep your feed positive.' % reason, feed.user_id)
                 FeedLike.objects(feed_id=feed_id).delete()
                 FeedComment.objects(feed_id=feed_id).delete()
                 feed.delete()
