@@ -100,7 +100,7 @@ class DebugHelperService(object):
                 try:
                     res[k] = redis_client.zscan(k)[1]
                 except:
-                    res[k] = redis_client.smembers(k)
+                    res[k] = str(redis_client.smembers(k))
         if not key:
             users = []
             for _ in User.objects().order_by('-create_time'):
