@@ -19,7 +19,8 @@ from ..const import (
     ONE_HOUR
 )
 from ..key import (
-    REDIS_FEED_CACHE
+    REDIS_FEED_CACHE,
+    REDIS_FEED_LIKE_CACHE
 )
 from ..redis import RedisClient
 redis_client = RedisClient()['lit']
@@ -177,6 +178,7 @@ class FollowingFeed(Document):
 
 
 class FeedLike(Document):
+    LIKE_NUM_THRESHOLD = 500
     feed_id = StringField(required=True)
     uid = StringField(required=True)
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
@@ -184,6 +186,31 @@ class FeedLike(Document):
     @classmethod
     def get_by_ids(cls, uid, feed_id):
         return cls.objects(uid=uid, feed_id=feed_id).first()
+
+    @classmethod
+    def get_redis_key(cls, feed_id):
+        return REDIS_FEED_LIKE_CACHE.format(feed_id=feed_id)
+
+    @classmethod
+    def ensure_cache(cls, feed_id):
+        key = cls.get_redis_key(feed_id)
+        if not redis_client.exists(key):
+            uids = [e.uid for e in cls.objects()]
+
+    @classmethod
+    def in_like(cls, uid, feed_id, feed_like_num):
+        key = cls.get_redis_key(feed_id)
+        if feed_like_num > cls.LIKE_NUM_THRESHOLD:
+            obj = cls.objects(uid=uid, feed_id=feed_id).first()
+            return True if obj else False
+
+        return redis_client.sismember(key, uid)
+
+
+
+    @classmethod
+    def del_by_feedid(cls, feed_id):
+        cls.objects(feed_id=feed_id).delete()
 
     @classmethod
     def like(cls, uid, feed_id):
@@ -202,7 +229,7 @@ class FeedLike(Document):
         return False
 
     @classmethod
-    def reverse(cls, uid, feed_id):
+    def reverse(cls, uid, feed_id, feed_like_num):
         '''
         返回最终是否是like
         :param uid:

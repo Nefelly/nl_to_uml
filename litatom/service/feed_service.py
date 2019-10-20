@@ -66,7 +66,7 @@ class FeedService(object):
                 reason_m = {"pulp": "sexual"}
                 reason = reason_m.get(reason, reason)
                 UserService.msg_to_user(u'Your post have been deleted due to reason: %s. Please keep your feed positive.' % reason, feed.user_id)
-                FeedLike.objects(feed_id=feed_id).delete()
+                FeedLike.del_by_feedid(feed_id)
                 FeedComment.objects(feed_id=feed_id).delete()
                 feed.delete()
             else:
@@ -104,7 +104,7 @@ class FeedService(object):
         if visitor_user_id:
             liked = False
             if feed.like_num:
-                liked = True if FeedLike.get_by_ids(visitor_user_id, str(feed.id)) else False
+                liked = FeedLike.in_like(visitor_user_id, str(feed.id), feed.like_num)
             res['liked'] = liked
         return res
 
@@ -180,7 +180,7 @@ class FeedService(object):
             return u'you are not authorized', False
         cls._del_from_feed_pool(feed)
         cls._del_from_feed_hq(feed)
-        FeedLike.objects(feed_id=feed_id).delete()
+        FeedLike.del_by_feedid(feed_id)
         FeedComment.objects(feed_id=feed_id).delete()
         feed.delete()
         MqService.push(REMOVE_EXCHANGE, {"feed_id": feed_id})
@@ -284,11 +284,11 @@ class FeedService(object):
 
     @classmethod
     def like_feed(cls, user_id, feed_id):
-        like_now = FeedLike.reverse(user_id, feed_id)
-        num = 1 if like_now else -1
         feed = Feed.get_by_id(feed_id)
         if not feed:
             return 'wrong feed id', False
+        like_now = FeedLike.reverse(user_id, feed_id, feed.like_num)
+        num = 1 if like_now else -1
         msg = BlockService.get_block_msg(feed.user_id, user_id)
         if msg:
             return msg, False

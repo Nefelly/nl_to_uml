@@ -19,6 +19,7 @@ REDIS_USER_SETTING_CACHE = 'user_setting_cache:{user_id}'
 REDIS_FEED_CACHE = 'feed_cache:{feed_id}'
 REDIS_AVATAR_CACHE = 'avatar_cache'
 REDIS_YOUTUBE_VIDEO_CACHE = 'youtube_video_cache:{region}'
+REDIS_FEED_LIKE_CACHE = 'feed_like_cache:{feed_id}'
 
 #pic check redis
 REDIS_PIC_CHECK_STATUS = 'pic_check_status:{}'
