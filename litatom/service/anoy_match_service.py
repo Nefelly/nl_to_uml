@@ -181,14 +181,18 @@ class AnoyMatchService(object):
         if not other_fakeids:
             return None, False
         try_tms = 5
+        user_id = cls._uid_by_fake_id(fake_id)
+        user_age = UserService.uid_age(user_id)
         for i in range(try_tms):
             fake_id2 = random.choice(other_fakeids)
             user_id2 = cls._uid_by_fake_id(fake_id2)
-            user_id = cls._uid_by_fake_id(fake_id)
+            user2_age = UserService.uid_age(user_id2)
+            if i < try_tms - 1 and abs(user_age - user2_age) > 3:
+                continue
             if not redis_client.get(REDIS_MATCH_BEFORE.format(low_high_fakeid=low_high_pair(fake_id, fake_id2))):
                 break
             elif i == try_tms - 1:
-                return None,False
+                return None, False
             # if not UserFilterService.filter_by_age_gender(user_id, user_id2) or not UserFilterService.filter_by_age_gender(user_id2, user_id):
             #     if i == try_tms - 1:
             #         return None, False
