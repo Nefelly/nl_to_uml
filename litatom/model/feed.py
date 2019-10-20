@@ -180,6 +180,7 @@ class FollowingFeed(Document):
 
 class FeedLike(Document):
     LIKE_NUM_THRESHOLD = 500
+    PROTECT = 5
     CACHED_TIME = 50 * ONE_MIN
     feed_id = StringField(required=True)
     uid = StringField(required=True)
@@ -204,7 +205,9 @@ class FeedLike(Document):
     @classmethod
     def in_like(cls, uid, feed_id, feed_like_num):
         key = cls.get_redis_key(feed_id)
-        if feed_like_num > cls.LIKE_NUM_THRESHOLD:
+        if feed_like_num > cls.LIKE_NUM_THRESHOLD - cls.PROTECT:   #PROTECT 用来保护缓存不会因为like num 一上一下不断刷缓存
+            if feed_like_num >= cls.LIKE_NUM_THRESHOLD:
+                redis_client.delete(key)
             obj = cls.objects(uid=uid, feed_id=feed_id).first()
             return True if obj else False
         cls.ensure_cache(feed_id)
@@ -256,13 +259,20 @@ class FeedLike(Document):
         else:
             obj.delete()
             like_now = False
-        if cls.LIKE_NUM_THRESHOLD < feed_like_num:
+        if cls.LIKE_NUM_THRESHOLD > feed_like_num:
             key = cls.get_redis_key(feed_id)
-            cls.ensure_cache(feed_id)
-            if like_now:
-                redis_client.sadd(key, uid)
+            if cls.LIKE_NUM_THRESHOLD - cls.PROTECT <= feed_like_num:
+                if redis_client.exists(key):
+                    if like_now:
+                        redis_client.sadd(key, uid)
+                    else:
+                        redis_client.srem(key, uid)
             else:
-                redis_client.srem(key, uid)
+                cls.ensure_cache(feed_id)
+                if like_now:
+                    redis_client.sadd(key, uid)
+                else:
+                    redis_client.srem(key, uid)
         return like_now
 
 
