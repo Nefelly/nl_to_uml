@@ -63,8 +63,8 @@ def online_users():
     return success(data)
 
 def first_start():
-    data = request.json
-    return success()
+    data = request.values
+    return success(data)
 
 @session_required
 def upload_address_list():
