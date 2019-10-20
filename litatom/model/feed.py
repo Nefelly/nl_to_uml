@@ -198,7 +198,7 @@ class FeedLike(Document):
     def ensure_cache(cls, feed_id):
         key = cls.get_redis_key(feed_id)
         if not redis_client.exists(key):
-            uids = [e.uid for e in cls.objects()]
+            uids = [e.uid for e in cls.objects(feed_id=feed_id)]
             redis_client.sadd(key, *uids)
             redis_client.expire(key, cls.CACHED_TIME)
 
