@@ -3,8 +3,8 @@ set -e
 
 exec 2>&1
 
-source /data/lit/bin/activate&&pip install langid
-source /data/lit/bin/activate&&pip install pillow
+#source /data/lit/bin/activate&&pip install langid
+#source /data/lit/bin/activate&&pip install pillow
 #cd /data/litatom
 
 python <<EOF
