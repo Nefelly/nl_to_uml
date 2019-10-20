@@ -16,7 +16,8 @@ from ..util import (
 )
 from ..const import (
     DEFAULT_QUERY_LIMIT,
-    ONE_HOUR
+    ONE_HOUR,
+    ONE_MIN
 )
 from ..key import (
     REDIS_FEED_CACHE,
@@ -179,6 +180,7 @@ class FollowingFeed(Document):
 
 class FeedLike(Document):
     LIKE_NUM_THRESHOLD = 500
+    CACHED_TIME = 50 * ONE_MIN
     feed_id = StringField(required=True)
     uid = StringField(required=True)
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
@@ -196,6 +198,8 @@ class FeedLike(Document):
         key = cls.get_redis_key(feed_id)
         if not redis_client.exists(key):
             uids = [e.uid for e in cls.objects()]
+            redis_client.sadd(key, *uids)
+            redis_client.expire(key, cls.CACHED_TIME)
 
     @classmethod
     def in_like(cls, uid, feed_id, feed_like_num):
@@ -203,30 +207,38 @@ class FeedLike(Document):
         if feed_like_num > cls.LIKE_NUM_THRESHOLD:
             obj = cls.objects(uid=uid, feed_id=feed_id).first()
             return True if obj else False
-
+        cls.ensure_cache(feed_id)
         return redis_client.sismember(key, uid)
-
-
 
     @classmethod
     def del_by_feedid(cls, feed_id):
         cls.objects(feed_id=feed_id).delete()
 
-    @classmethod
-    def like(cls, uid, feed_id):
-        if not cls.get_by_ids(uid, feed_id):
-            obj = cls(uid=uid, feed_id=feed_id)
-            obj.save()
-        return True
+    # @classmethod
+    # def like(cls, uid, feed_id):
+    #     if not cls.get_by_ids(uid, feed_id):
+    #         obj = cls(uid=uid, feed_id=feed_id)
+    #         obj.save()
+    #     return True
+    #
+    # @classmethod
+    # def unlike(cls, uid, feed_id):
+    #     obj = cls.get_by_ids(uid, feed_id)
+    #     if obj:
+    #         obj.delete()
+    #         obj.save()
+    #         return True
+    #     return False
 
-    @classmethod
-    def unlike(cls, uid, feed_id):
-        obj = cls.get_by_ids(uid, feed_id)
-        if obj:
-            obj.delete()
-            obj.save()
-            return True
-        return False
+    # def save(self, *args, **kwargs):
+    #     if getattr(self, 'user_id', ''):
+    #         self._disable_cache(str(self.user_id))
+    #     super(FeedLike, self).save(*args, **kwargs)
+    #
+    # def delete(self, *args, **kwargs):
+    #     if getattr(self, 'user_id', ''):
+    #         self._disable_cache(str(self.user_id))
+    #     super(FeedLike, self).delete(*args, **kwargs)
 
     @classmethod
     def reverse(cls, uid, feed_id, feed_like_num):
@@ -244,6 +256,13 @@ class FeedLike(Document):
         else:
             obj.delete()
             like_now = False
+        if cls.LIKE_NUM_THRESHOLD < feed_like_num:
+            key = cls.get_redis_key(feed_id)
+            cls.ensure_cache(feed_id)
+            if like_now:
+                redis_client.sadd(key, uid)
+            else:
+                redis_client.srem(key, uid)
         return like_now
 
 
