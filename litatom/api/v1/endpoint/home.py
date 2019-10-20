@@ -62,6 +62,10 @@ def online_users():
     data = StatisticService.get_online_users(gender, star_p, num)
     return success(data)
 
+def first_start():
+    data = request.json
+    return success()
+
 @session_required
 def upload_address_list():
     data = request.json
