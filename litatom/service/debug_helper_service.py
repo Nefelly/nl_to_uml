@@ -92,7 +92,7 @@ class DebugHelperService(object):
         for k in redis_client.keys():
             if key and key not in k:
                 continue
-            if 'cache' in k:
+            if 'cache' in k and 'feed_like' not in k:
                 continue
             try:
                 res[k] = redis_client.get(k)
