@@ -525,9 +525,14 @@ class UserService(object):
         if not isinstance(uids, list):
             return u'wrong user_ids', False
         res = {}
+        judge_time = int(time.time()) - USER_ACTIVE
+        key = GlobalizationService._online_key_by_region_gender()
         for _ in uids:
             if _:
-                res[_] = cls.uid_online(_)
+                score = redis_client.zscore(key, _)
+                if not score or int(score) < judge_time:
+                    res[_] = False
+                res[_] = True
         return res, True
 
     @classmethod
