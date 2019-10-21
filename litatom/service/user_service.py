@@ -412,7 +412,7 @@ class UserService(object):
                 nick_name = cls.choose_a_nickname_for_user(nick_name)
                 if not user.finished_info:
                     LoginRecord.create('nicknameexists', user_id)
-                return u'nickname already exists', False
+                # return u'nickname already exists', False
             data['nickname'] = nick_name
             if not user.finished_info:
                 LoginRecord.create('nicknamesucc', user_id)
