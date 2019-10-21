@@ -11,7 +11,9 @@ from ..redis import RedisClient
 from ..util import (
     validate_phone_number,
     get_time_info,
-    time_str_by_ts)
+    time_str_by_ts,
+    trunc
+)
 from ..const import (
     TWO_WEEKS,
     ONE_DAY,
@@ -408,6 +410,9 @@ class UserService(object):
         if has_nickname:
             nick_name = data.get('nickname', '')
             nick_name = nick_name.replace('\r', '').replace('\n', '')
+            max_nickname = 60
+            if len(nick_name) > max_nickname:
+                nick_name = trunc(nick_name, max_nickname)
             if cls.verify_nickname_exists(nick_name):
                 if not user.finished_info:
                     LoginRecord.create('nicknameexists', user_id, nick_name)
