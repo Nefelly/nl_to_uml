@@ -69,6 +69,7 @@ redis_client = RedisClient()['lit']
 class UserService(object):
     FORBID_TIME = ONE_MIN
     CREATE_LOCK = 'user_create'
+    NICKNAME_LEN_LIMIT = 60
 
     @classmethod
     def login_job(cls, user):
@@ -410,9 +411,8 @@ class UserService(object):
         if has_nickname:
             nick_name = data.get('nickname', '')
             nick_name = nick_name.replace('\r', '').replace('\n', '')
-            max_nickname = 60
-            if len(nick_name) > max_nickname:
-                nick_name = trunc(nick_name, max_nickname)
+            if len(nick_name) > cls.NICKNAME_LEN_LIMIT:
+                nick_name = trunc(nick_name, cls.NICKNAME_LEN_LIMIT)
             if cls.verify_nickname_exists(nick_name):
                 if not user.finished_info:
                     LoginRecord.create('nicknameexists', user_id, nick_name)
@@ -458,7 +458,9 @@ class UserService(object):
         status = True
         if has_nickname:
             huanxin_id = user.huanxin.user_id
-            status = HuanxinService.update_nickname(huanxin_id, data.get('nickname'))
+            status = True
+            if len(data.get('nickname')) < cls.NICKNAME_LEN_LIMIT:
+                status = HuanxinService.update_nickname(huanxin_id, data.get('nickname'))
         if status or True:
             cls._on_update_info(user, data)
             user.save()

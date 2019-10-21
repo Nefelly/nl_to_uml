@@ -41,6 +41,7 @@ def trunc(v, length):
     v = ensure_unicode(v).encode('utf8')
     if len(v) > length:
         return v.decode('utf-8')[:length].encode('utf-8')
+    return v
 
 
 def format_standard_date(time_data):
