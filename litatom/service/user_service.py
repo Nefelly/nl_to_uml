@@ -409,10 +409,11 @@ class UserService(object):
             nick_name = data.get('nickname', '')
             nick_name = nick_name.replace('\r', '').replace('\n', '')
             if cls.verify_nickname_exists(nick_name):
-                nick_name = cls.choose_a_nickname_for_user(nick_name)
                 if not user.finished_info:
+                    nick_name = cls.choose_a_nickname_for_user(nick_name)
                     LoginRecord.create('nicknameexists', user_id)
-                # return u'nickname already exists', False
+                else:
+                    return u'nickname already exists', False
             data['nickname'] = nick_name
             if not user.finished_info:
                 LoginRecord.create('nicknamesucc', user_id)
