@@ -530,7 +530,6 @@ class UserService(object):
         pp = redis_client.pipeline()
         for _ in uids:
             pp.zscore(key, _)
-        print pp.execute()
         for uid, score in zip(uids, pp.execute()):
             print uid, score
             if not score or int(score) < judge_time:
