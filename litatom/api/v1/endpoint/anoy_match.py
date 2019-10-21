@@ -111,8 +111,8 @@ def get_tips():
 
 @session_finished_required
 def match_times_left():
-    if get_match_type() != VOICE_TYPE:
-        return success()
+    # if get_match_type() != VOICE_TYPE:
+    #     return success()
     words = get_match_func(sys._getframe().f_code.co_name)(request.user_id)
     return success(words)
 

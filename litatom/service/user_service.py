@@ -687,6 +687,10 @@ class UserService(object):
         return False
 
     @classmethod
+    def choose_a_nickname_for_user(cls, nickname):
+        chars = [u'\U0001f618', u'\U0001f495', u'\U0001f914', u'\U0001f36d', u'\U0001f497', ]
+
+    @classmethod
     def uid_online_time_with_huanxin(cls, target_user_id):
         huanxin_time = redis_client.zscore(REDIS_HUANXIN_ONLINE, target_user_id)
         return max(cls.uid_online_time(target_user_id), int(huanxin_time) if huanxin_time else 0 )
