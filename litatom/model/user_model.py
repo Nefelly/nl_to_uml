@@ -25,7 +25,7 @@ class LoginRecord(Document):
     @classmethod
     def create(cls, result, user_id):
         obj = cls()
-        obj.result = json.dumps(result)
+        obj.result = result
         obj.user_id = user_id
         obj.save()
         return str(obj.id)
