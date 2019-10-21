@@ -36,7 +36,7 @@ def monitor_error():
                 res_lst = [line for line in res.split("\n") if 'app(environ, start_response' not in line or "MainProcess" not in line or "NoneType" not in line]
                 err_line = len(res_lst)
             if err_line >= alert_num:
-                AlertService.send_mail(["382365209@qq.com"], "online, %d errors in %d secconds\n\n\n%s" % (err_line, ts - last_ts, res))
+                AlertService.send_mail(["382365209@qq.com"], "online, %d errors in %d secconds\n\n\n%s" % (err_line, ts - last_ts, '\n'.join(res_lst)))
             lastest_alert_ts = ts
             if alert_cnt >= 5 or (ts - lastest_alert_ts > 2 ** alert_cnt * 10 and lastest_alert_ts != 0):
                 alert_cnt = 0
