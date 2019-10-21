@@ -31,6 +31,18 @@ def passwdhash(passwd):
     return m.hexdigest()
 
 
+def ensure_unicode(v):
+    if isinstance(v, str):
+        v = v.decode('utf8')
+    return unicode(v)  # convert anything not a string to unicode too
+
+
+def trunc(v, length):
+    v = ensure_unicode(v).encode('utf8')
+    if len(v) > length:
+        return v.decode('utf-8')[:length].encode('utf-8')
+
+
 def format_standard_date(time_data):
     return time_data.strftime('%Y-%m-%d')
 
