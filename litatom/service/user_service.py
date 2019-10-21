@@ -534,7 +534,8 @@ class UserService(object):
             print uid, score
             if not score or int(score) < judge_time:
                 res[uid] = False
-            res[uid] = True
+            else:
+                res[uid] = True
             # if _:
             #     score = redis_client.zscore(key, _)
             #     if not score or int(score) < judge_time:
