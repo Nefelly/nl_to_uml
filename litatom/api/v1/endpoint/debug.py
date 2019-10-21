@@ -72,7 +72,7 @@ def online_del_match_status():
     user_id2 = get_user_id_by_phone(phone2)
     msg, status = DebugHelperService.online_del_match_status(user_id1, user_id2)
     if status:
-        return success(DebugHelperService.debug_all_keys(REDIS_MATCH_BEFORE_PREFIX))
+        return success()
     return fail(msg)
 
 
