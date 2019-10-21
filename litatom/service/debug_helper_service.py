@@ -16,8 +16,18 @@ from ..const import (
     GIRL,
     BOY
 )
+from ..util import (
+    low_high_pair,
+    now_date_key
+)
 from ..key import (
     REDIS_MATCH_BEFORE_PREFIX,
+    REDIS_VIDEO_MATCHED_BEFORE,
+    REDIS_VOICE_MATCHED_BEFORE,
+    REDIS_MATCH_BEFORE,
+    REDIS_USER_MATCH_LEFT,
+    REDIS_USER_VIDEO_MATCH_LEFT,
+    REDIS_USER_VOICE_MATCH_LEFT
 )
 
 from hendrix.conf import setting
@@ -72,14 +82,48 @@ class DebugHelperService(object):
         return res
 
     @classmethod
+    def get_fakeid_by_uid(cls, user_id):
+        return AnoyMatchService.create_fakeid(user_id)[0].get('fake_id')
+
+
+    @classmethod
     def del_match_before(cls, user_id=None):
+        if user_id:
+            fakeid = cls.get_fakeid_by_uid(user_id)
         for k in redis_client.keys():
             if REDIS_MATCH_BEFORE_PREFIX in k:
                 if not user_id:
                     redis_client.delete(k)
                 else:
-                    if user_id in k:
+                    if fakeid in k:
                         redis_client.delete(k)
+
+    @classmethod
+    def online_del_match_status(cls, user_id1, user_id2):
+        def del_times_left(user_id):
+            if not user_id:
+                return
+            now_date = now_date_key()
+            redis_client.delete(REDIS_USER_MATCH_LEFT.format(user_date=user_id + now_date))
+            redis_client.delete(REDIS_USER_VOICE_MATCH_LEFT.format(user_date=user_id + now_date))
+            redis_client.delete(REDIS_USER_VIDEO_MATCH_LEFT.format(user_date=user_id + now_date))
+
+        def del_low_high_pair(pair):
+            if not pair:
+                return
+            redis_client.delete(REDIS_MATCH_BEFORE.format(low_high_fakeid=pair))
+            redis_client.delete(REDIS_VOICE_MATCHED_BEFORE.format(low_high_fakeid=pair))
+            redis_client.delete(REDIS_VIDEO_MATCHED_BEFORE.format(low_high_fakeid=pair))
+        if not user_id1:
+            return u'phone1 not exists, starts with86 please', False
+        del_times_left(user_id1)
+        if not user_id2:
+            return u'phone2 not exists, starts with86 please', False
+        fake_id1 = cls.get_fakeid_by_uid(user_id1)
+        fake_id2 = cls.get_fakeid_by_uid(user_id2)
+        pair = low_high_pair(fake_id1, fake_id2)
+        del_low_high_pair(pair)
+        return None, True
 
     @classmethod
     def feed_num(cls, user_id):

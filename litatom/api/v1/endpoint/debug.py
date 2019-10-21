@@ -49,22 +49,43 @@ def batch_create_login():
 def batch_anoy_match_start():
     return success(DebugHelperService.batch_anoy_match_start())
 
+
 def del_match_before():
     if not setting.IS_DEV:
         return fail()
     DebugHelperService.del_match_before(request.user_id)
     return success(DebugHelperService.debug_all_keys(REDIS_MATCH_BEFORE_PREFIX))
 
+
+def get_user_id_by_phone(phone):
+    if phone and phone.startswith('86'):
+        user = User.get_by_phone(phone)
+        if user:
+            return str(user.id)
+    return None
+
+
+def online_del_match_status():
+    phone1 = request.args.get('phone1')
+    phone2 = request.args.get('phone2')
+    user_id1 = get_user_id_by_phone(phone1)
+    user_id2 = get_user_id_by_phone(phone2)
+    msg, status = DebugHelperService.online_del_match_status(user_id1, user_id2)
+    if status:
+        return success(DebugHelperService.debug_all_keys(REDIS_MATCH_BEFORE_PREFIX))
+    return fail(msg)
+
+
 #@session_required
 def query_region():
     phone = request.args.get('phone')
     user_id = request.user_id
     if not user_id:
-        if phone and phone.startswith('86'):
-            user = User.get_by_phone(phone)
-            if user:
-                request.user_id = str(user.id)
+        uid = get_user_id_by_phone(phone)
+        if uid:
+            request.user_id = uid
     return success({"region": GlobalizationService.get_region()})
+
 
 def user_info():
     user_id = request.user_id
