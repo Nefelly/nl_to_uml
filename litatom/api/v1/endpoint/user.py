@@ -174,6 +174,7 @@ def firebase_push():
 def query_online():
     uids = request.json.get('user_ids', [])
     uids = uids[:100] + uids[-40:] if len(uids) > 140 else uids
+    uids = list(set([_ for _ in uids if _]))
     data, status = UserService.uids_online(uids)
     if not status:
         return fail(data)

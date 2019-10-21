@@ -47,7 +47,8 @@ from ..model import (
     Blocked,
     FaceBookBackup,
     RedisLock,
-    ReferralCode
+    ReferralCode,
+    LoginRecord
 )
 from ..service import (
     SmsCodeService,
@@ -400,16 +401,20 @@ class UserService(object):
         for el in data:
             if el not in total_fields or (not data.get(el) and data.get(el) != False):
                 return field_info, False
-        has_nickname = 'nickname' in data
-        if has_nickname:
-            nick_name = data.get('nickname', '')
-            if cls.verify_nickname_exists(nick_name):
-                return u'nickname already exists', False
-            nick_name = nick_name.replace('\r', '').replace('\n', '')
-            data['nickname'] = nick_name
         user = User.get_by_id(user_id)
         if not user:
             return USER_NOT_EXISTS, False
+        has_nickname = 'nickname' in data
+        if has_nickname:
+            nick_name = data.get('nickname', '')
+            nick_name = nick_name.replace('\r', '').replace('\n', '')
+            if cls.verify_nickname_exists(nick_name):
+                if not user.finished_info:
+                    LoginRecord.create('nickname exists', user_id)
+                return u'nickname already exists', False
+            data['nickname'] = nick_name
+            if not user.finished_info:
+                LoginRecord.create('nickname succ', user_id)
         if data.get('avatar', ''):
             if not Avatar.valid_avatar(data.get('avatar')):
                 data.pop('avatar')
