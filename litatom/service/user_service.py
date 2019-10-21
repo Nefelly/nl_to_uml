@@ -410,11 +410,11 @@ class UserService(object):
             nick_name = nick_name.replace('\r', '').replace('\n', '')
             if cls.verify_nickname_exists(nick_name):
                 if not user.finished_info:
-                    LoginRecord.create('nickname exists', user_id)
+                    LoginRecord.create('nicknameexists', user_id)
                 return u'nickname already exists', False
             data['nickname'] = nick_name
             if not user.finished_info:
-                LoginRecord.create('nickname succ', user_id)
+                LoginRecord.create('nicknamesucc', user_id)
         if data.get('avatar', ''):
             if not Avatar.valid_avatar(data.get('avatar')):
                 data.pop('avatar')
