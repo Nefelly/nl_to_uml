@@ -6,9 +6,9 @@ from litatom.service import AlertService
 import time
 
 stat_len = 100
-inter_val = 15
+inter_val = 10
 stat_queue = [(0, 0) for i in range(stat_len)]
-alert_num = 13
+alert_num = 4
 stat_interval_s = 1
 cnt = 0
 alert_cnt = 0
@@ -32,8 +32,11 @@ def monitor_error():
         if ts - lastest_alert_ts >= judge_interval:
             print "send alert!!!"
             if err_line < 20:
-                res = os.popen('tail -n %d %s' % (err_line, err_file)).read().split(' ')
-            AlertService.send_mail(["382365209@qq.com"], "online, %d errors in %d secconds\n\n\n%s" % (err_line, ts - last_ts, res))
+                res = os.popen('tail -n %d %s' % (err_line, err_file)).read()
+                res_lst = [line for line in res.split("\n") if 'app(environ, start_response' not in line or "MainProcess" not in line or "NoneType" not in line]
+                err_line = len(res_lst)
+            if err_line >= alert_num:
+                AlertService.send_mail(["382365209@qq.com"], "online, %d errors in %d secconds\n\n\n%s" % (err_line, ts - last_ts, res))
             lastest_alert_ts = ts
             if alert_cnt >= 5 or (ts - lastest_alert_ts > 2 ** alert_cnt * 10 and lastest_alert_ts != 0):
                 alert_cnt = 0
