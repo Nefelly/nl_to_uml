@@ -409,6 +409,7 @@ class UserService(object):
             nick_name = data.get('nickname', '')
             nick_name = nick_name.replace('\r', '').replace('\n', '')
             if cls.verify_nickname_exists(nick_name):
+                nick_name = cls.choose_a_nickname_for_user(nick_name)
                 if not user.finished_info:
                     LoginRecord.create('nicknameexists', user_id)
                 return u'nickname already exists', False
@@ -688,7 +689,12 @@ class UserService(object):
 
     @classmethod
     def choose_a_nickname_for_user(cls, nickname):
-        chars = [u'\U0001f618', u'\U0001f495', u'\U0001f914', u'\U0001f36d', u'\U0001f497', ]
+        chars = [u'\U0001f618', u'\U0001f495', u'\U0001f914', u'\U0001f36d', u'\U0001f497', u'\U0001f619', u'\U0001f61c']
+        res = nickname
+        for i in range(5):
+            res += random.choice(chars)
+            if not cls.verify_nickname_exists(res):
+                return res
 
     @classmethod
     def uid_online_time_with_huanxin(cls, target_user_id):
