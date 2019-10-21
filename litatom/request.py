@@ -162,6 +162,11 @@ class LitatomRequest(flask.Request):
         return sid
 
     @cached_property
+    def version(self):
+        version = self.values.get('version', '')
+        return version
+
+    @cached_property
     def loc(self):
         loc = self.values.get('loc', '')
         return GlobalizationService.get_real_loc(loc)

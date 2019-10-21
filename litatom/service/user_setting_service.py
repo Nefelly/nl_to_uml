@@ -40,6 +40,7 @@ class UserSettingService(object):
             "voice_match": 1
         }
         if region != GlobalizationService.REGION_TH:
-            modules_open['video_match'] = 0
+            if request.version != '2.5.3':
+                modules_open['video_match'] = 0
         res['modules_open'] = modules_open
         return res
