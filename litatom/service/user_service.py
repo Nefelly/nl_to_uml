@@ -528,11 +528,17 @@ class UserService(object):
         judge_time = int(time.time()) - USER_ACTIVE
         key = GlobalizationService._online_key_by_region_gender()
         for _ in uids:
-            if _:
-                score = redis_client.zscore(key, _)
-                if not score or int(score) < judge_time:
-                    res[_] = False
-                res[_] = True
+            pp = redis_client.pipline()
+            pp.zscore(key, _)
+        for uid, score in zip(uids, pp.execute()):
+            if not score or int(score) < judge_time:
+                res[uid] = False
+            res[uid] = True
+            # if _:
+            #     score = redis_client.zscore(key, _)
+            #     if not score or int(score) < judge_time:
+            #         res[_] = False
+            #     res[_] = True
         return res, True
 
     @classmethod
