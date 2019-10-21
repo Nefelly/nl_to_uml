@@ -20,10 +20,11 @@ class LoginRecord(Document):
 
     result = StringField(required=True)
     user_id = StringField(required=True)
+    nickname = StringField()
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
 
     @classmethod
-    def create(cls, result, user_id):
+    def create(cls, result, user_id, nickname=""):
         obj = cls()
         obj.result = result
         obj.user_id = user_id
