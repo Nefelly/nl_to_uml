@@ -70,6 +70,7 @@ class UserService(object):
     FORBID_TIME = ONE_MIN
     CREATE_LOCK = 'user_create'
     NICKNAME_LEN_LIMIT = 60
+    BIO_ELN_LIMIT = 150
 
     @classmethod
     def login_job(cls, user):
@@ -408,6 +409,10 @@ class UserService(object):
         if not user:
             return USER_NOT_EXISTS, False
         has_nickname = 'nickname' in data
+        if 'bio' in data:
+            bio = data['bio']
+            if len(bio) > cls.BIO_ELN_LIMIT:
+                data['bio'] = trunc(bio, cls.BIO_ELN_LIMIT)
         if has_nickname:
             nick_name = data.get('nickname', '')
             nick_name = nick_name.replace('\r', '').replace('\n', '')
