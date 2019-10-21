@@ -199,8 +199,9 @@ class FeedLike(Document):
         key = cls.get_redis_key(feed_id)
         if not redis_client.exists(key):
             uids = [e.uid for e in cls.objects(feed_id=feed_id)]
-            redis_client.sadd(key, *uids)
-            redis_client.expire(key, cls.CACHED_TIME)
+            if uids:
+                redis_client.sadd(key, *uids)
+                redis_client.expire(key, cls.CACHED_TIME)
 
     @classmethod
     def in_like(cls, uid, feed_id, feed_like_num):
