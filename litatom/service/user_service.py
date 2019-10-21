@@ -413,8 +413,8 @@ class UserService(object):
             if len(bio) > cls.BIO_ELN_LIMIT:
                 data['bio'] = trunc(bio, cls.BIO_ELN_LIMIT)
         has_nickname = 'nickname' in data
-        if not has_nickname and not user.finished_info:
-            data['nickname'] = random.choice(['kendall', 'alberti', 'chris', 'asabi', 'bobbie'])
+        # if not has_nickname and not user.finished_info:
+        #     data['nickname'] = random.choice(['kendall', 'alberti', 'chris', 'asabi', 'bobbie'])
         if has_nickname:
             nick_name = data.get('nickname', '')
             nick_name = nick_name.replace('\r', '').replace('\n', '')
