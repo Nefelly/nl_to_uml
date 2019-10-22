@@ -51,6 +51,7 @@ class TrackActionService(object):
                 "other_user_id": other_user_id,
                 "user_id": user_id
             })
+            print insert_pack
         client.insert_many(insert_pack, ordered=False)
 
 

@@ -20,7 +20,6 @@ uri = setting.DB_SETTINGS.get('DB_LIT')
 client = MongoClient(uri)
 
 
-
 class ConsumeFeed(MQConsumer):
     insert_pack = []
     num = 0
@@ -30,7 +29,7 @@ class ConsumeFeed(MQConsumer):
         print payload
         ConsumeFeed.insert_pack.append(payload)
         ConsumeFeed.num += 1
-        if ConsumeFeed.num >= 50:
+        if ConsumeFeed.num >= 3:
             TrackActionService.pymongo_batch_insert(client, ConsumeFeed.insert_pack)
             ConsumeFeed.insert_pack = []
             ConsumeFeed.num = 0
