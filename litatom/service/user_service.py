@@ -706,7 +706,8 @@ class UserService(object):
 
     @classmethod
     def choose_a_nickname_for_user(cls, nickname):
-        chars = [u'\U0001f618', u'\U0001f495', u'\U0001f914', u'\U0001f36d', u'\U0001f497', u'\U0001f619', u'\U0001f61c']
+        chars = [u'\U0001f618', u'\U0001f495', u'\U0001f914', u'\U0001f36d', u'\U0001f497', u'\U0001f619',
+                 u'\U0001f61c', u'\U0001f917', u'\U0001f62a', u'\U0001f970', u'\U0001f308', u'\U0001f60f']
         res = nickname
         for i in range(5):
             res += random.choice(chars)
