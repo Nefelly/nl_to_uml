@@ -30,7 +30,7 @@ class ConsumeFeed(MQConsumer):
         ConsumeFeed.num += 1
         print ConsumeFeed.num
         try:
-            if ConsumeFeed.num >= 3:
+            if ConsumeFeed.num >= 1:
                 TrackActionService.pymongo_batch_insert(client, ConsumeFeed.insert_pack)
                 print ConsumeFeed.insert_pack
                 ConsumeFeed.insert_pack = []
