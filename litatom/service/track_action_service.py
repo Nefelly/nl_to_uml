@@ -37,7 +37,7 @@ class TrackActionService(object):
         insert_pack = []
         for el in payload_list:
             print el
-            lst = cPickle.loads(el.get('args'))
+            lst = cPickle.loads(str(el.get('args')))
             print lst
             user_id, action, other_user_id, amount, remark, create_date, create_time = tuple(lst)
             # user_id = el.get('user_id')
