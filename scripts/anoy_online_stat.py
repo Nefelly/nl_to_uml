@@ -29,7 +29,7 @@ def stat():
                     count = redis_client.zcount(key, judge_time, MAX_TIME)
                     tt = t.split(":")[0]
                     AnoyOnline.create(g, r, tt, ts, count)
-                    # print g, r, tt, ts, count
+                    print g, r, tt, ts, count
         time.sleep(5)
 
 def run():
