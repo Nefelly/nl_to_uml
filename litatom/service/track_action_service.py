@@ -33,7 +33,7 @@ class TrackActionService(object):
         return cls._create_action(user_id, action, other_user_id, amount, remark)
 
     @classmethod
-    def pymongo_batch_insert(cls, client, payload_list):
+    def pymongo_batch_insert(cls, collection, payload_list):
         insert_pack = []
         for el in payload_list:
             print el
@@ -54,7 +54,7 @@ class TrackActionService(object):
                 "user_id": user_id
             })
             print insert_pack
-        client.user_action.insert_many(insert_pack, ordered=False)
+        collection.insert_many(insert_pack, ordered=False)
 
 
     @classmethod
