@@ -30,6 +30,7 @@ class AnoyOnline(Document):
     region = StringField(required=True)
     match_type = StringField(required=False)
     stat_time = IntField()
+    cnt = IntField()
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
 
     @classmethod
@@ -37,10 +38,11 @@ class AnoyOnline(Document):
         return cls.objects(user_name=user_name).first()
 
     @classmethod
-    def create(cls, gender, region, match_type, stat_time):
+    def create(cls, gender, region, match_type, stat_time, cnt):
         obj = cls()
         obj.gender = gender
         obj.region = region
         obj.match_type = match_type
         obj.stat_time = stat_time
+        obj.cnt = cnt
         obj.save()
