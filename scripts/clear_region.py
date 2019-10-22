@@ -1,7 +1,6 @@
 import os
 import time
 from litatom.service import AnoyMatchService, VoiceMatchService, VideoMatchService, GlobalizationService
-from litatom.user_service import *
 
 
 def clear():

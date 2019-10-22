@@ -4,7 +4,6 @@ from litatom.const import GENDERS
 from litatom.service import AnoyMatchService, VoiceMatchService, VideoMatchService, GlobalizationService
 from litatom.model import AnoyOnline
 from litatom.redis import RedisClient
-from litatom.user_service import *
 from litatom.key import REDIS_VOICE_GENDER_ONLINE_REGION, REDIS_VIDEO_GENDER_ONLINE_REGION, REDIS_ANOY_GENDER_ONLINE_REGION
 
 redis_client = RedisClient()['lit']
