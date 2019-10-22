@@ -13,7 +13,7 @@ from ..service import (
 )
 
 class TrackActionService(object):
-    MQ_INSERT = False
+    MQ_INSERT = True
 
     @classmethod
     def create_action(cls, user_id, action, other_user_id=None, amount=None, remark=None):
