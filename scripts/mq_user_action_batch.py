@@ -18,7 +18,7 @@ from hendrix.conf import setting
 
 uri = setting.DB_SETTINGS.get('DB_LIT')["host"]
 print uri
-client = MongoClient(uri).get_database('lit').user_action
+client = MongoClient(uri).get_database('testlit').user_action
 
 
 class ConsumeFeed(MQConsumer):
