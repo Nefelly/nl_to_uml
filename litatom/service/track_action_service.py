@@ -54,7 +54,7 @@ class TrackActionService(object):
                 "user_id": user_id
             })
             print insert_pack
-        client.insert_many(insert_pack, ordered=False)
+        client['lit'].insert_many(insert_pack, ordered=False)
 
 
     @classmethod
