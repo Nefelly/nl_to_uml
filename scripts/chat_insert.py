@@ -26,13 +26,14 @@ def insert_records():
     with open(path, 'w') as f:
         f.write(content)
         f.close()
-    msgs = ChatRecordService.records_by_content(content)
-    for msg in msgs:
-        try:
-            ChatRecordService.save_to_db(msg)
-        except Exception as e:
-            print e
-            continue
+    # !!!!!!! 更新动作会在整点运行, 占用数据库规模 现在日百万级，严重影响性能； 还要注意磁盘是否会满
+    # msgs = ChatRecordService.records_by_content(content)
+    # for msg in msgs:
+    #     try:
+    #         ChatRecordService.save_to_db(msg)
+    #     except Exception as e:
+    #         print e
+    #         continue
 
 
 if __name__ == "__main__":
