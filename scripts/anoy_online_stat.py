@@ -24,7 +24,7 @@ def stat():
                     ts = int(time.time())
                     key = t.format(gender=g, region=r)
                     judge_time = int(time.time()) - wait_time
-                    count = redis_client.zcount(key, judge_time)
+                    count = redis_client.zcount(key, judge_time, MAX_TIME)
                     tt = t.split(":")[0]
                     AnoyOnline.create(g, r, tt, ts, count)
                     print g, r, tt, ts, count
