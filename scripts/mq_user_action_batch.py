@@ -16,9 +16,9 @@ from litatom.const import (
 )
 from hendrix.conf import setting
 
-uri = setting.DB_SETTINGS.get('DB_LIT')["host"]
-print uri
-client = MongoClient(uri).get_database('testlit').user_action
+conf_m = setting.DB_SETTINGS.get('DB_LIT')
+host = conf_m['host']
+db = host.split('?')[-1].split('=')[0]
 
 
 class ConsumeFeed(MQConsumer):
@@ -29,7 +29,7 @@ class ConsumeFeed(MQConsumer):
         payload = msg.get('payload', {})
         ConsumeFeed.insert_pack.append(payload)
         ConsumeFeed.num += 1
-        print ConsumeFeed.num
+        client = MongoClient(host).get_database(db).user_action
         try:
             if ConsumeFeed.num >= 1:
                 TrackActionService.pymongo_batch_insert(client, ConsumeFeed.insert_pack)
