@@ -18,7 +18,7 @@ from hendrix.conf import setting
 
 conf_m = setting.DB_SETTINGS.get('DB_LIT')
 host = conf_m['host']
-db = host.split('?')[-1].split('=')[0]
+db = host.split('/')[-1].split('?')[0]
 
 
 class ConsumeFeed(MQConsumer):
