@@ -1,14 +1,61 @@
 # coding: utf-8
 import time
 import datetime
+import cPickle
+from ..const import (
+    USER_ACTION_EXCHANGE
+)
 from ..model import (
     UserAction
 )
+from ..service import (
+    MqService
+)
 
 class TrackActionService(object):
+    MQ_INSERT = False
 
     @classmethod
     def create_action(cls, user_id, action, other_user_id=None, amount=None, remark=None):
+        if cls.MQ_INSERT:
+            MqService.push(USER_ACTION_EXCHANGE,
+                           {"args": cPickle.dumps([user_id, action, other_user_id, amount, remark, datetime.datetime.now(), int(time.time())])}
+                            # {
+                            #         "user_id": user_id,
+                            #         "action": action,
+                            #         "other_user_id": other_user_id,
+                            #         "amount": amount,
+                            #         "remark": remark,
+                            #         "create_time": cPickle.dumps(datetime.datetime.now())
+                            # }
+                           )
+            return True
+        return cls._create_action(user_id, action, other_user_id, amount, remark)
+
+    @classmethod
+    def pymongo_batch_insert(cls, client, payload_list):
+        insert_pack = []
+        for el in payload_list:
+            lst = cPickle.loads(el.get('args'))
+            user_id, action, other_user_id, amount, remark, create_date, create_time = tuple(lst)
+            # user_id = el.get('user_id')
+            # action = el.get('action')
+            # other_user_id = el.get('other_user_id')
+            # amount = el.get('amount')
+            # remark = el.get('remark')
+            insert_pack.append({
+                "action": action,
+                "create_date": create_date,
+                "create_time": create_time,
+                "remark": remark,
+                "other_user_id": other_user_id,
+                "user_id": user_id
+            })
+        client.insert_many(insert_pack, ordered=False)
+
+
+    @classmethod
+    def _create_action(cls, user_id, action, other_user_id=None, amount=None, remark=None):
         userAction = UserAction()
         userAction.user_id = user_id
         userAction.action = action
@@ -22,7 +69,6 @@ class TrackActionService(object):
         userAction.create_date = datetime.datetime.now()
         userAction.save()
         return True
-
 
     @classmethod
     def action_by_uid(cls, user_id):
