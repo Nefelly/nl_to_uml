@@ -6,10 +6,17 @@ from ..model import (
 import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
+
+from ..redis import RedisClient
+
 from ..const import (
     DEFAULT_QUERY_LIMIT,
     MAX_TIME,
-    NOT_AUTHORIZED
+    NOT_AUTHORIZED,
+    ONLINE_LIVE
+)
+from ..key import (
+    REDIS_USER_NOT_MESSAGE_CACHE
 )
 from ..util import get_time_info
 from ..service import (
@@ -20,6 +27,8 @@ from ..service import (
 from flask import (
     request
 )
+redis_client = RedisClient()['lit']
+
 class UserMessageService(object):
     MSG_LIKE = 'like'
     MSG_FOLLOW = 'follow'
@@ -76,11 +85,20 @@ class UserMessageService(object):
         :return:
         '''
         res = []
+        has_next = False
+        next_start = -1
+        no_msg_key = REDIS_USER_NOT_MESSAGE_CACHE.format(user_id=user_id)
+        nomsg = redis_client.get(no_msg_key)
+        if nomsg:
+            return {
+            'messages': res,
+            'has_next': has_next,
+            'next_start': next_start
+            }, True
         objs = UserMessage.objects(uid=user_id, create_time__lte=start_ts).order_by('-create_time').limit(num + 1)
         objs = list(objs)
         #objs.reverse()   # 时间顺序错误
-        has_next = False
-        next_start = -1
+
         if len(objs) == num + 1:
             has_next = True
             next_start = objs[-1].create_time
@@ -88,6 +106,8 @@ class UserMessageService(object):
         for obj in objs:
             res.append(cls.msg_by_message_obj(obj))
         #UserMessage.objects(uid=user_id).limit(DEFAULT_QUERY_LIMIT).delete()
+        if not objs:
+            redis_client.set(no_msg_key, 1, ONLINE_LIVE)
         ret = {
             'messages': res,
             'has_next': has_next,
@@ -108,6 +128,8 @@ class UserMessageService(object):
     @classmethod
     def add_message(cls, user_id, related_user_id, m_type, related_feed_id=None, content=None):
         obj_id = UserMessage.add_message(user_id, related_user_id, m_type, related_feed_id, content)
+        no_msg_key = REDIS_USER_NOT_MESSAGE_CACHE.format(user_id=user_id)
+        redis_client.delete(no_msg_key)
         related_nickname = UserService.nickname_by_uid(related_user_id)
         # message = cls.get_message_m().get(m_type, '')
         message = cls.get_message(m_type)
