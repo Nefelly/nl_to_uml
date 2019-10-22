@@ -1,6 +1,8 @@
 import os
-import time
+import time, sys
 from litatom.const import GENDERS
+import fcntl
+from hendrix.conf import setting
 from litatom.service import AnoyMatchService, VoiceMatchService, VideoMatchService, GlobalizationService
 from litatom.model import AnoyOnline
 from litatom.redis import RedisClient
@@ -27,11 +29,20 @@ def stat():
                     count = redis_client.zcount(key, judge_time, MAX_TIME)
                     tt = t.split(":")[0]
                     AnoyOnline.create(g, r, tt, ts, count)
-                    print g, r, tt, ts, count
-        time.sleep(1)
+                    # print g, r, tt, ts, count
+        time.sleep(5)
 
+def run():
+    mutex_f = '/var/run/%s.mutex' % __file__.split('/')[-1].replace('.py', '')
+    if setting.IS_DEV:
+        mutex_f += 'dev'
+    f = open(mutex_f, 'w')
+    try:
+        fcntl.flock(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except:
+        print 'program already in run'
+        sys.exit(0)
+    stat()
 
 if __name__ == "__main__":
-    print "started at", time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
-    stat()
-    print "ended at", time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
+    run()
