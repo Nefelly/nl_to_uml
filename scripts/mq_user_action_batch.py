@@ -36,6 +36,8 @@ class ConsumeFeed(MQConsumer):
                 ConsumeFeed.insert_pack = []
                 ConsumeFeed.num = 0
         except Exception, e:
+            import traceback
+            traceback.print_exc()
             print str(e)
 
 
