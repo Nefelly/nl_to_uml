@@ -16,7 +16,8 @@ from litatom.const import (
 )
 from hendrix.conf import setting
 
-uri = setting.DB_SETTINGS.get('DB_LIT')
+uri = setting.DB_SETTINGS.get('DB_LIT')["host"]
+print uri
 client = MongoClient(uri).get_database('lit').user_action
 
 
