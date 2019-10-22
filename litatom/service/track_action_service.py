@@ -36,9 +36,7 @@ class TrackActionService(object):
     def pymongo_batch_insert(cls, collection, payload_list):
         insert_pack = []
         for el in payload_list:
-            print el
-            lst = cPickle.loads(str(el.get('args')))
-            print lst
+            lst = cPickle.loads(str(el.get('args')))  # str  because mq encoded
             user_id, action, other_user_id, amount, remark, create_date, create_time = tuple(lst)
             # user_id = el.get('user_id')
             # action = el.get('action')
@@ -53,7 +51,7 @@ class TrackActionService(object):
                 "other_user_id": other_user_id,
                 "user_id": user_id
             })
-            print insert_pack
+            # print insert_pack
         collection.insert_many(insert_pack, ordered=False)
 
 

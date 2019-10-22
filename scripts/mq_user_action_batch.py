@@ -31,9 +31,9 @@ class ConsumeFeed(MQConsumer):
         ConsumeFeed.num += 1
         client = MongoClient(host).get_database(db).user_action
         try:
-            if ConsumeFeed.num >= 1:
+            if ConsumeFeed.num >= 50:
                 TrackActionService.pymongo_batch_insert(client, ConsumeFeed.insert_pack)
-                print ConsumeFeed.insert_pack
+                # print ConsumeFeed.insert_pack
                 ConsumeFeed.insert_pack = []
                 ConsumeFeed.num = 0
         except Exception, e:
