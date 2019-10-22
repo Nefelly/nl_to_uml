@@ -26,11 +26,11 @@ class ConsumeFeed(MQConsumer):
 
     def callback(self, msg):
         payload = msg.get('payload', {})
-        print payload
         ConsumeFeed.insert_pack.append(payload)
         ConsumeFeed.num += 1
         if ConsumeFeed.num >= 3:
             TrackActionService.pymongo_batch_insert(client, ConsumeFeed.insert_pack)
+            print ConsumeFeed.insert_pack
             ConsumeFeed.insert_pack = []
             ConsumeFeed.num = 0
 
