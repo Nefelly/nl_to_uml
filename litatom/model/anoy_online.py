@@ -26,7 +26,7 @@ class AnoyOnline(Document):
         'alias': 'db_alias'
     }
 
-    gender = StringField(required=True, unique=True)
+    gender = StringField(required=True)
     region = StringField(required=True)
     match_type = StringField(required=False)
     stat_time = IntField()
