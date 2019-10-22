@@ -29,11 +29,14 @@ class ConsumeFeed(MQConsumer):
         ConsumeFeed.insert_pack.append(payload)
         ConsumeFeed.num += 1
         print ConsumeFeed.num
-        if ConsumeFeed.num >= 3:
-            TrackActionService.pymongo_batch_insert(client, ConsumeFeed.insert_pack)
-            print ConsumeFeed.insert_pack
-            ConsumeFeed.insert_pack = []
-            ConsumeFeed.num = 0
+        try:
+            if ConsumeFeed.num >= 3:
+                TrackActionService.pymongo_batch_insert(client, ConsumeFeed.insert_pack)
+                print ConsumeFeed.insert_pack
+                ConsumeFeed.insert_pack = []
+                ConsumeFeed.num = 0
+        except Exception, e:
+            print str(e)
 
 
 def feed_consum():
