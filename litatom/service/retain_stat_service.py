@@ -48,6 +48,16 @@ class RetainStatService(object):
         return uids, len(uids.keys())
 
     @classmethod
+    def start_match(cls, uids, start_d):
+        end_d = next_date(start_d)
+        m = {}
+        for uid in uids:
+            if UserAction.objects(user_id=uid, create_time__gte=date_to_int_time(start_d),
+                                  create_time__lte=date_to_int_time(end_d), remark__contains='start').count() > 1:
+                m[uid] = 1
+        return len(m.keys())
+
+    @classmethod
     def stat_match_succ(cls, uids, start_d):
         end_d = next_date(start_d)
         m = {}
