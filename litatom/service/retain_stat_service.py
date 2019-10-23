@@ -51,7 +51,9 @@ class RetainStatService(object):
     def stat_match_succ(cls, uids, start_d):
         end_d = next_date(start_d)
         m = {}
-        for _ in UserAction.objects(action='match', create_date__gte=start_d, create_date__lte=end_d, remark__contains='uccess'):
+        for _ in UserAction.objects(action='match', create_date__gte=start_d, create_date__lte=end_d):
+            if 'uccess' not in _.remark:
+                continue
             uid = _.user_id
             if uid not in uids:
                 continue
