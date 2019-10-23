@@ -38,7 +38,9 @@ redis_client = RedisClient()['lit']
 class RetainStatService(object):
 
     @classmethod
-    def register_userids(cls, start_d, end_d):
+    def register_userids(cls, start_d, end_d=None):
+        if not end_d:
+            end_d = next_date(start_d)
         uids = {}
         for _ in User.objects(create_time__gte=start_d, create_time__lte=end_d):
             uids[str(_.id)] = 1
