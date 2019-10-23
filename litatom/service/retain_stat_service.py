@@ -39,10 +39,11 @@ class RetainStatService(object):
 
     @classmethod
     def register_userids(cls, start_d, end_d):
-        uids = []
+        uids = {}
         for _ in User.objects(create_time__gte=start_d, create_time__lte=end_d):
-            uids.append(str(_.id))
-        return uids, len(uids)
+            uids[str(_.id)] = 1
+            # uids.append(str(_.id))
+        return uids, len(uids.keys())
 
     @classmethod
     def stat_match_succ(cls, uids, start_d):
@@ -50,6 +51,8 @@ class RetainStatService(object):
         m = {}
         for _ in UserAction.objects(action='match', create_date__gte=start_d, create_date__lte=end_d, remark__contains='uccess'):
             uid = _.user_id
+            if uid not in uids:
+                continue
             if not m.get(uid):
                 m[uid] = 1
             else:
@@ -62,6 +65,8 @@ class RetainStatService(object):
         m = {}
         for _ in UserAction.objects(create_date__gte=start_d, create_date__lte=end_d):
             uid = _.user_id
+            if uid not in uids:
+                continue
             if not m.get(uid):
                 m[uid] = 1
             else:
