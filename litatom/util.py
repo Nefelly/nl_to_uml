@@ -58,9 +58,13 @@ def trans_secs_to_time(secs):
         return "%d:%02d:%02d" % (h, m, s)
     return "%02d:%02d" % (m, s)
 
+
 def parse_standard_time(time_data_str):
     return datetime.datetime.strptime(time_data_str, '%Y-%m-%d %H:%M:%S')
 
+
+def next_date(d_time, d=1):
+    return d_time + datetime.timedelta(days=d)
 
 def get_times_from_str(time_data_str):
     if len(time_data_str) == 8:
@@ -68,6 +72,7 @@ def get_times_from_str(time_data_str):
     else:
         d_time = datetime.datetime.strptime(time_data_str, '%Y%m%d%H%M%S')
     return date_to_int_time(d_time), d_time
+
 
 def parse_standard_date(time_data_str):
     return datetime.datetime.strptime(time_data_str, '%Y-%m-%d')
