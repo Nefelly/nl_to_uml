@@ -97,7 +97,8 @@ class RetainStatService(object):
         print "match success users active next day:%r, action num:%r, average action:%r" % (succ_ac, succ_ac_num, succ_ac_num * 1.0/succ_ac)
         all_ac, allnum = cls.stat_active(m, next_date(start_d))
         print "all users active next day:%r,actionsnum:%r, average action:%r" % (all_ac, allnum, allnum * 1.0 / all_ac)
-        print "next day active ration: %r, match success active ratio:%r, match fail active ration:%r" % (all_ac *1.0 /l, succ_ac * 1.0 / succ_num, nomsuccnum * 1.0 / len(not_match_succ.keys()))
+        print "next day active ration: %r, match success active ratio:%r, match fail active ration:%r, not matching active ratio" % \
+              (all_ac *1.0 /l, succ_ac * 1.0 / succ_num, nomsucc_ac * 1.0 / len(not_match_succ.keys()), (all_ac - succ_ac - nomsucc_ac) * 1.0 / (l - s_match_num))
 
 
     @classmethod
@@ -105,8 +106,9 @@ class RetainStatService(object):
         end_d = next_date(start_d)
         m = {}
         for uid in uids:
-            if UserAction.objects(user_id=uid, create_time__gte=date_to_int_time(start_d), create_time__lte=date_to_int_time(end_d)).count() > 0:
-                m[uid] = 1
+            cnt = UserAction.objects(user_id=uid, create_time__gte=date_to_int_time(start_d), create_time__lte=date_to_int_time(end_d)).count()
+            if cnt > 0:
+                m[uid] = cnt
         # for _ in UserAction.objects(create_time__gte=date_to_int_time(start_d), create_time__lte=date_to_int_time(end_d)):
         #     uid = _.user_id
         #     if uid not in uids:
