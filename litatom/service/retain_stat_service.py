@@ -78,6 +78,7 @@ class RetainStatService(object):
 
     @classmethod
     def test_all(cls, d='20191021'):
+        print "match date", d
         start_d = get_times_from_str(d)[1]
         m, l = cls.register_userids(start_d)
         print "total", l
