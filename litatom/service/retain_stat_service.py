@@ -67,12 +67,15 @@ class RetainStatService(object):
     def stat_active(cls, uids, start_d):
         end_d = next_date(start_d)
         m = {}
-        for _ in UserAction.objects(create_time__gte=date_to_int_time(start_d), create_time__lte=date_to_int_time(end_d)):
-            uid = _.user_id
-            if uid not in uids:
-                continue
-            if not m.get(uid):
-                m[uid] = 1
-            else:
-                m[uid] += 1
+        for uid in uids:
+            if UserAction.objects(user_id=uid, create_time__gte=date_to_int_time(start_d), create_time__lte=date_to_int_time(end_d)).count() > 0:
+                m[id] = 1
+        # for _ in UserAction.objects(create_time__gte=date_to_int_time(start_d), create_time__lte=date_to_int_time(end_d)):
+        #     uid = _.user_id
+        #     if uid not in uids:
+        #         continue
+        #     if not m.get(uid):
+        #         m[uid] = 1
+        #     else:
+        #         m[uid] += 1
         return len(m.keys()), sum(m.values())
