@@ -69,7 +69,7 @@ class RetainStatService(object):
         m = {}
         for uid in uids:
             if UserAction.objects(user_id=uid, create_time__gte=date_to_int_time(start_d), create_time__lte=date_to_int_time(end_d)).count() > 0:
-                m[id] = 1
+                m[uid] = 1
         # for _ in UserAction.objects(create_time__gte=date_to_int_time(start_d), create_time__lte=date_to_int_time(end_d)):
         #     uid = _.user_id
         #     if uid not in uids:
