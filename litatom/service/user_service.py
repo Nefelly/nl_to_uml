@@ -128,7 +128,7 @@ class UserService(object):
     def _on_create_new_user(cls, user):
         loc = request.loc
         if loc:
-            UserSetting.create_setting(str(user.id), loc)
+            UserSetting.create_setting(str(user.id), loc, request.uuid)
         return True
 
     @classmethod

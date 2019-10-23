@@ -198,7 +198,7 @@ class GlobalizationService(object):
         if loc == 'th':
             loc = 'TH'
         if not user_setting:
-            UserSetting.create_setting(user_id, loc)
+            UserSetting.create_setting(user_id, loc, request.uuid)
         else:
             if user_setting.lang != loc and user_setting.lang in cls.LOCS:   #
                 return False
@@ -275,7 +275,7 @@ class GlobalizationService(object):
         '''
         if target_loc not in cls.LOCS:
             return u'your loc must be in one of [%s]' % (','.join(cls.LOCS)), False
-        UserSetting.ensure_setting(user_id, target_loc)
+        UserSetting.ensure_setting(user_id, target_loc, request.uuid)
         cls._set_loc_cache(user_id, target_loc)
         return None, True
 

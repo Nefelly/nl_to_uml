@@ -1,6 +1,8 @@
 import os
 import time
 import sys
+import langid
+
 from litatom.mq import (
     MQProducer,
     MQConsumer
@@ -17,6 +19,21 @@ def get_ages():
         else:
             m[a] += 1
     print m
+
+
+def stat_lang(objs):
+     m = {}
+     for o in objs:
+         try:
+             lan, score = langid.classify(o.nickname)
+             if m.get(lan):
+                 m[lan] += 1
+             else:
+                 m[lan] = 1
+         except:
+             continue
+     return m
+
 
 def cal_country_num():
     m = {}

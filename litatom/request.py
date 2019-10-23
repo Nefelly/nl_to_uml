@@ -230,6 +230,10 @@ class LitatomRequest(flask.Request):
         return self.values.get('deviceId')
 
     @cached_property
+    def uuid(self):
+        return self.values.get('uuid')
+
+    @cached_property
     def shumei_fingerprint(self):
         fingerprint = self.values.get('device_fingerprint1', '')
         if len(fingerprint) == 62:

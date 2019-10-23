@@ -467,6 +467,7 @@ class UserSetting(Document):
 
     user_id = StringField(required=True, unique=True)
     lang = StringField(required=True, default='')
+    uuid = StringField()
     loc_change_times = IntField(default=0)
     good_rate_times = IntField(default=0)
     online_limit = EmbeddedDocumentField(OnlineLimit)
@@ -499,12 +500,14 @@ class UserSetting(Document):
         super(UserSetting, self).delete(*args, **kwargs)
 
     @classmethod
-    def create_setting(cls, user_id, lang):
+    def create_setting(cls, user_id, lang, uuid=None):
         if cls.get_by_user_id(user_id):
             return True
         obj = cls()
         obj.user_id = user_id
         obj.lang = lang
+        if uuid:
+            obj.uuid = uuid
         obj.save()
         user = User.get_by_id(user_id)
         if user:
@@ -513,10 +516,10 @@ class UserSetting(Document):
         return True
 
     @classmethod
-    def ensure_setting(cls, user_id, lang):
+    def ensure_setting(cls, user_id, lang, uuid):
         obj = cls.get_by_user_id(user_id)
         if not obj:
-            cls.create_setting(user_id, lang)
+            cls.create_setting(user_id, lang, uuid)
         else:
             obj.lang = lang
             obj.save()
