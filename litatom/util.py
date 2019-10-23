@@ -62,12 +62,19 @@ def parse_standard_time(time_data_str):
     return datetime.datetime.strptime(time_data_str, '%Y-%m-%d %H:%M:%S')
 
 
+def get_times_from_str(time_data_str):
+    if len(time_data_str) == 8:
+        d_time = datetime.datetime.strptime(time_data_str, '%Y%m%d')
+    else:
+        d_time = datetime.datetime.strptime(time_data_str, '%Y%m%d%H%M%S')
+    return date_to_int_time(d_time), d_time
+
 def parse_standard_date(time_data_str):
     return datetime.datetime.strptime(time_data_str, '%Y-%m-%d')
 
 
 def time_str_by_ts(ts):
-    return  time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(ts))
+    return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(ts))
 
 def date_to_int_time(d):
     return int(time.mktime(d.timetuple()))
