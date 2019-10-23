@@ -97,7 +97,7 @@ class RetainStatService(object):
         print "match success users active next day:%r, action num:%r, average action:%r" % (succ_ac, succ_ac_num, succ_ac_num * 1.0/succ_ac)
         all_ac, allnum = cls.stat_active(m, next_date(start_d))
         print "all users active next day:%r,actionsnum:%r, average action:%r" % (all_ac, allnum, allnum * 1.0 / all_ac)
-        print "next day active ration: %r, match success active ratio:%r, match fail active ration:%r, not matching active ratio" % \
+        print "next day active ration: %r, match success active ratio:%r, match fail active ration:%r, not matching active ratio: %r" % \
               (all_ac *1.0 /l, succ_ac * 1.0 / succ_num, nomsucc_ac * 1.0 / len(not_match_succ.keys()), (all_ac - succ_ac - nomsucc_ac) * 1.0 / (l - s_match_num))
 
 
