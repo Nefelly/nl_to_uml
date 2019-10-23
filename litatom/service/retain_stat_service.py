@@ -29,7 +29,7 @@ from ..key import (
     REDIS_USER_INFO_FINISHED,
     REDIS_ADMIN_USER
 )
-from ..util import get_times_from_str, next_date
+from ..util import get_times_from_str, next_date, date_to_int_time
 
 sys_rnd = random.SystemRandom()
 redis_client = RedisClient()['lit']
@@ -51,9 +51,9 @@ class RetainStatService(object):
     def stat_match_succ(cls, uids, start_d):
         end_d = next_date(start_d)
         m = {}
-        for _ in UserAction.objects(action='match', create_date__gte=start_d, create_date__lte=end_d):
-            if 'uccess' not in _.remark:
-                continue
+        for _ in UserAction.objects(action='match', create_date__gte=start_d, create_date__lte=end_d, remark__contains='uccess'):
+            # if 'uccess' not in _.remark:
+            #     continue
             uid = _.user_id
             if uid not in uids:
                 continue
@@ -61,7 +61,7 @@ class RetainStatService(object):
                 m[uid] = 1
             else:
                 m[uid] += 1
-        return len(m.keys()), sum(m.values())
+        return len(m.keys()), m
 
     @classmethod
     def stat_active(cls, uids, start_d):
