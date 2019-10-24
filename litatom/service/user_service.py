@@ -58,6 +58,7 @@ from ..service import (
     GoogleService,
     FacebookService,
     BlockService,
+    FollowService,
     GlobalizationService,
     FirebaseService,
     MqService
@@ -729,7 +730,8 @@ class UserService(object):
             return USER_NOT_EXISTS, False
         basic_info = cls.get_basic_info(target_user)
         basic_info.update({
-            'followed': Follow.in_follow(user_id, target_user_id),
+            # 'followed': Follow.in_follow(user_id, target_user_id),
+            'followed': FollowService.in_follow(user_id, target_user_id) if target_user.followed > 0 else False,
             'blocked': Blocked.in_block(user_id, target_user_id),
             # 'is_blocked': Blocked.in_block(target_user_id, user_id),
             # 'is_followed': Follow.in_follow(target_user_id, user_id)

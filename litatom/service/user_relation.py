@@ -21,6 +21,10 @@ class FollowService(object):
         FollowingFeedService.add_following(user_id, followed_user_id)
 
     @classmethod
+    def in_follow(cls, user_id, target_user_id):
+        return Follow.in_follow(user_id, target_user_id)
+
+    @classmethod
     def _on_unfollow(cls, user_id, followed_user_id):
         FollowingFeedService.remove_following(user_id, followed_user_id)
 
