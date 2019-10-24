@@ -27,6 +27,7 @@ b.add_url_rule('/lit/user/read_message/<message_id>', 'user-message-read', endpo
 b.add_url_rule('/lit/user/firebase_token', 'user-firebase-token', endpoint.user.register_firebase, methods=['POST'])
 b.add_url_rule('/lit/user/firebase_push', 'user-firebase-push', endpoint.user.firebase_push, methods=['POST'])
 b.add_url_rule('/lit/user/query_online', 'user-query-online', endpoint.user.query_online, methods=['POST'])
+b.add_url_rule('/lit/user/search', 'user-search', endpoint.user.search_user)
 
 # admin
 b.add_url_rule('/lit/admin/index', 'admin-index', endpoint.admin.index)

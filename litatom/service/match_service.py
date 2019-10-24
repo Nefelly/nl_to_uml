@@ -229,6 +229,15 @@ class MatchService(object):
         redis_client.decr(match_left_key)
 
     @classmethod
+    def _incr_match_left(cls, user_id, num=1):
+        now_date = now_date_key()
+        match_left_key = cls.TYPE_USER_MATCH_LEFT.format(user_date=user_id + now_date)
+        if not redis_client.get(match_left_key):
+            redis_client.setnx(match_left_key, cls.MATCH_TMS)
+            redis_client.expire(match_left_key, ONE_DAY)
+        redis_client.incrby(match_left_key, num)
+
+    @classmethod
     def pure_get_fake_id(cls, user_id):
         user = User.get_by_id(user_id)
         if not user:

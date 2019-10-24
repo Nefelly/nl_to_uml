@@ -102,6 +102,32 @@ class UserService(object):
         return None, True
 
     @classmethod
+    def search_user(cls, nickname):
+        res = []
+        if not nickname:
+            return res
+        cnt = 0
+        max_num = 10
+        objs = []
+        if len(nickname) <= 3:
+            obj = User.get_by_nickname(nickname)
+            if obj:
+                objs.append(obj)
+        else:
+            for _ in User.objects(nickname__contains=nickname):
+                objs.append(_)
+                cnt += 1
+                if cnt >= max_num:
+                    break
+        uids = [str(el.id) for el in objs]
+        online_info = cls.uids_online(uids)
+        for _ in objs:
+            basic_info = cls.get_basic_info(_)
+            basic_info['online'] = online_info.get(str(_.id), False)
+            res.append(basic_info)
+        return res
+
+    @classmethod
     def _get_words_loc(cls, words):
         for word in words:
             lang, score = langid.classify(word)
