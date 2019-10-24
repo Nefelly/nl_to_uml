@@ -18,6 +18,9 @@ from .social_acount_service import (
     GoogleService,
     FacebookService
 )
+from .ad_service import (
+    AdService
+)
 from .user_filter_service import UserFilterService
 from .user_service import UserService
 from .voice_chat_service import VoiceChatService
