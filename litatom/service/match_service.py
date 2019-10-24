@@ -16,7 +16,8 @@ from ..key import (
     REDIS_MATCH_BEFORE,
     REDIS_MATCHED,
     REDIS_FAKE_LIKE,
-    REDIS_JUDGE_LOCK
+    REDIS_JUDGE_LOCK,
+    REDIS_MATCH_PAIR
 )
 from ..util import (
     now_date_key,
@@ -67,6 +68,7 @@ class MatchService(object):
     TYPE_ANOY_CHECK_POOL = REDIS_ANOY_CHECK_POOL
     TYPE_USER_MATCH_LEFT = REDIS_USER_MATCH_LEFT
     TYPE_FAKE_LIKE = REDIS_FAKE_LIKE
+    TYPE_MATCH_PAIR = REDIS_MATCH_PAIR
     MATCH_KEY_BY_REGION_GENDER = GlobalizationService.anoy_match_key_by_region_gender
     
     
