@@ -6,6 +6,7 @@ from flask import (
     request
 )
 from mongoengine.queryset.visitor import Q
+
 from ..model import (
     AdminUser,
     Report,
