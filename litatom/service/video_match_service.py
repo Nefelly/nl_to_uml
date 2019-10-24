@@ -84,6 +84,7 @@ class VideoMatchService(MatchService):
         res, status = super(VideoMatchService, cls).anoy_match(user_id)
         if not status:
             return res, status
+        fake_id = cls._fakeid_by_uid(user_id)
         matched_id = res.get('matched_fake_id')
         res.update(
             {
