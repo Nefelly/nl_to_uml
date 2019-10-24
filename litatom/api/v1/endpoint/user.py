@@ -122,7 +122,7 @@ def get_user_info(target_user_id):
 @session_required
 def search_user():
     nickname = request.values.get('nickname')
-    print nickname
+    # print nickname
     data, status = UserService.search_user(nickname)
     if not status:
         return fail(data)
