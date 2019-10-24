@@ -120,7 +120,9 @@ class UserService(object):
                 if cnt >= max_num:
                     break
         uids = [str(el.id) for el in objs]
-        online_info = cls.uids_online(uids)
+        online_info, status = cls.uids_online(uids)
+        if not status:
+            online_info = {}
         for _ in objs:
             basic_info = cls.get_basic_info(_)
             basic_info['online'] = online_info.get(str(_.id), False)
