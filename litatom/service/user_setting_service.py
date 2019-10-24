@@ -11,6 +11,9 @@ from ..model import (
     User,
     UserSetting
 )
+from ..const import (
+    ONE_HOUR
+)
 from ..service import GlobalizationService
 
 
@@ -18,9 +21,7 @@ class UserSettingService(object):
 
     @classmethod
     def get_settings(cls, user_id=None):
-        res = {
-            'need_login': True
-        }
+        res = {'need_login': True, 'max_voice_time': ONE_HOUR, 'pop_good_rate': True}
         # need_pop = False
         # if user_id:
         #     userSetting = UserSetting.get_by_user_id(user_id)
@@ -32,7 +33,6 @@ class UserSettingService(object):
         #             userSetting.good_rate_times += 1
         #             userSetting.save()
         # res['pop_good_rate'] = need_pop
-        res['pop_good_rate'] = True
         region = GlobalizationService.get_region()
         modules_open = {
             "soul_match": 1,
