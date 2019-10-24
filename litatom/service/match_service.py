@@ -4,9 +4,6 @@ import datetime
 import random
 from hendrix.conf import setting
 from ..redis import RedisClient
-from flask import (
-    request
-)
 from ..key import (
     REDIS_USER_MATCH_LEFT,
     REDIS_FAKE_ID_UID,
@@ -40,10 +37,8 @@ from ..const import (
 from ..service import (
     UserService,
     FollowService,
-    HuanxinService,
     BlockService,
     GlobalizationService,
-    UserFilterService,
     StatisticService
 )
 from ..model import User
@@ -58,18 +53,18 @@ class MatchService(object):
     MATCH_TMS = 20 if not setting.IS_DEV else 1000
     OTHER_GENDER_M = {BOY: GIRL, GIRL: BOY}
 
-    MATCH_LEFT_KEY = REDIS_USER_MATCH_LEFT
     TYPE_ANOY_CHECK_POOL = REDIS_ANOY_CHECK_POOL
     TYPE_FAKE_ID_UID = REDIS_FAKE_ID_UID
     TYPE_UID_FAKE_ID = REDIS_UID_FAKE_ID
     TYPE_FAKE_START = REDIS_FAKE_START
     TYPE_MATCHED = REDIS_MATCHED
     TYPE_MATCH_BEFORE = REDIS_MATCH_BEFORE
-    TYPE_ANOY_CHECK_POOL = REDIS_ANOY_CHECK_POOL
     TYPE_USER_MATCH_LEFT = REDIS_USER_MATCH_LEFT
     TYPE_FAKE_LIKE = REDIS_FAKE_LIKE
     TYPE_MATCH_PAIR = REDIS_MATCH_PAIR
+    TYPE_JUDGE_LOCK = REDIS_JUDGE_LOCK
     MATCH_KEY_BY_REGION_GENDER = GlobalizationService.anoy_match_key_by_region_gender
+    
     
     
     @classmethod
@@ -115,7 +110,7 @@ class MatchService(object):
         if user_id:
             # could not be clear now, because should be used to judge
             # redis_client.delete(cls.TYPE_FAKE_ID_UID.format(fake_id=fake_id))
-            redis_client.delete(REDIS_JUDGE_LOCK.format(fake_id=fake_id))
+            redis_client.delete(cls.TYPE_JUDGE_LOCK.format(fake_id=fake_id))
             redis_client.delete(cls.TYPE_UID_FAKE_ID.format(user_id=user_id))
 
         # delete match infos
@@ -457,7 +452,7 @@ class MatchService(object):
         other_fakeid = redis_client.get(cls.TYPE_MATCHED.format(fake_id=fake_id))
         if not other_fakeid:
             return NOT_IN_MATCH, False
-        redis_key = REDIS_JUDGE_LOCK.format(fake_id=fake_id)
+        redis_key = cls.TYPE_JUDGE_LOCK.format(fake_id=fake_id)
         lock = redis_client.setnx(redis_key, 1)
         redis_client.expire(redis_key, cls.MATCH_INT)
         if not lock:
