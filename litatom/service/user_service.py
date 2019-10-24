@@ -105,7 +105,7 @@ class UserService(object):
     def search_user(cls, nickname):
         res = []
         if not nickname:
-            return res
+            return res, True
         cnt = 0
         max_num = 10
         objs = []
@@ -125,7 +125,7 @@ class UserService(object):
             basic_info = cls.get_basic_info(_)
             basic_info['online'] = online_info.get(str(_.id), False)
             res.append(basic_info)
-        return res
+        return res, True
 
     @classmethod
     def _get_words_loc(cls, words):
