@@ -25,6 +25,7 @@ from .message_service import UserMessageService
 from .qiniu_service import QiniuService
 from .ali_oss import AliOssService
 from .statistic_service import StatisticService
+from .match_service import MatchService
 from .anoy_match_service import AnoyMatchService
 from .voice_match_service import VoiceMatchService
 from .video_match_service import VideoMatchService
