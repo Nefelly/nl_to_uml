@@ -67,7 +67,7 @@ def is_voice_match():
 
 def get_match_func(func_name):
     match_type = get_match_type()
-    service  = MATCH_TYPE_SERVICE.get(match_type)
+    service = MATCH_TYPE_SERVICE.get(match_type)
     return getattr(service, FUNC_SERVICE_FUNC.get(func_name))
 
 

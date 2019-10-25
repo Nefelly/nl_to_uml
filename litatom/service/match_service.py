@@ -490,3 +490,7 @@ class MatchService(object):
     def add_time(cls, user_id):
         cls._incr_match_left(user_id)
         return None, True
+
+    @classmethod
+    def accelerate(cls, user_id):
+        return {"queue_number": 1}, True
