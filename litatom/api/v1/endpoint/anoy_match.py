@@ -47,8 +47,8 @@ FUNC_SERVICE_FUNC = {
     'get_tips': 'get_tips',
     'match_times_left': 'get_times_left',
     'quit_match': 'quit_match',
-    'add_time': 'add_time',
-    'accelerate': 'accelerate'
+    'add_time_by_ad': 'add_time',
+    'accelerate_by_ad': 'accelerate'
 }
 
 MATCH_TYPE_SERVICE = {
@@ -128,7 +128,7 @@ def quit_match():
     return success(data)
 
 @session_finished_required
-def add_time():
+def add_time_by_ad():
     data = request.json
     user_id = request.user_id
     data, status = AdService.verify_ad_viewed(user_id, data)
@@ -140,7 +140,7 @@ def add_time():
     return success(data)
 
 @session_finished_required
-def accelerate():
+def accelerate_by_ad():
     data = request.json
     user_id = request.user_id
     data, status = AdService.verify_ad_viewed(user_id, data)

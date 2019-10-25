@@ -103,6 +103,8 @@ b.add_url_rule('/lit/anoy_match/judge', 'anoy-match-judge', endpoint.anoy_match.
 b.add_url_rule('/lit/anoy_match/video_list', 'anoy-match-video-list', endpoint.anoy_match.video_list)
 b.add_url_rule('/lit/anoy_match/video_info_list', 'anoy-match-video-info-list', endpoint.anoy_match.video_info_list)
 b.add_url_rule('/lit/anoy_match/video/<vid>', 'anoy-match-update-video', endpoint.anoy_match.update_video, methods=['POST'])
+b.add_url_rule('/lit/anoy_match/add_time_by_ad', 'anoy-match-add-time-by-ad', endpoint.anoy_match.add_time_by_ad, methods=['POST'])
+b.add_url_rule('/lit/anoy_match/accelerate_by_ad', 'anoy-match-accelerate-by-ad', endpoint.anoy_match.accelerate_by_ad, methods=['POST'])
 
 
 # debug
