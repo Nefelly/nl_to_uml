@@ -391,7 +391,6 @@ class MatchService(object):
             'matched_fake_id': matched_id,
             'tips': tips
         }
-        print res, '!!!'
         res.update(cls.anoy_user_info(matched_id))
         return res, True
 
