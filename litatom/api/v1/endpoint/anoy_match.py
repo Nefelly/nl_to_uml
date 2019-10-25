@@ -19,7 +19,8 @@ from ....service import (
     AnoyMatchService,
     VoiceMatchService,
     VideoMatchService,
-    GlobalizationService
+    GlobalizationService,
+    AdService
 )
 from ....model import (
     YoutubeVideo
@@ -45,7 +46,9 @@ FUNC_SERVICE_FUNC = {
     'anoy_judge': 'judge',
     'get_tips': 'get_tips',
     'match_times_left': 'get_times_left',
-    'quit_match': 'quit_match'
+    'quit_match': 'quit_match',
+    'add_time': 'add_time',
+    'accelerate': 'accelerate'
 }
 
 MATCH_TYPE_SERVICE = {
@@ -119,6 +122,30 @@ def match_times_left():
 
 @session_finished_required
 def quit_match():
+    data, status = get_match_func(sys._getframe().f_code.co_name)(request.user_id)
+    if not status:
+        return fail(data)
+    return success(data)
+
+@session_finished_required
+def add_time():
+    data = request.json
+    user_id = request.user_id
+    data, status = AdService.verify_ad_viewed(user_id, data)
+    if not status:
+        return fail(data)
+    data, status = get_match_func(sys._getframe().f_code.co_name)(request.user_id)
+    if not status:
+        return fail(data)
+    return success(data)
+
+@session_finished_required
+def accelerate():
+    data = request.json
+    user_id = request.user_id
+    data, status = AdService.verify_ad_viewed(user_id, data)
+    if not status:
+        return fail(data)
     data, status = get_match_func(sys._getframe().f_code.co_name)(request.user_id)
     if not status:
         return fail(data)

@@ -48,4 +48,4 @@ class AdService(object):
     @classmethod
     def verify_ad_viewed(cls, user_id, payload):
         cls.decr_times_left(user_id)
-        return True
+        return None, True

@@ -126,11 +126,6 @@ class DebugHelperService(object):
         return None, True
 
     @classmethod
-    def feed_num(cls, user_id):
-        return 3
-
-
-    @classmethod
     def debug_all_keys(cls, key=None):
         res = {'time_now': int(time.time())}
         for k in redis_client.keys():

@@ -485,3 +485,8 @@ class MatchService(object):
         cls._delete_match(fake_id)
         return None, True
         # if possible to reset pwd
+
+    @classmethod
+    def add_time(cls, user_id):
+        cls._incr_match_left(user_id)
+        return None, True
