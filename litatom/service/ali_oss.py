@@ -8,7 +8,8 @@ import uuid
 from urllib2 import urlopen
 from PIL import Image
 from io import BytesIO
-
+from PIL import ImageFile
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 import oss2
 
 
