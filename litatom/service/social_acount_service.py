@@ -76,6 +76,7 @@ class FacebookService(object):
             s = rq.session()
             s.keep_alive = False  # 关闭多余连接
             response = s.get(url, verify=False).json()
+            print response
             assert response.get('data')['is_valid']
             return response.get('data', {}).get('user_id', None)
         # except Exception, e:
