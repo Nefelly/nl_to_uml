@@ -71,31 +71,31 @@ class FacebookService(object):
 
     @classmethod
     def _get_user_id(cls, token):
-        try:
+        # try:
             url = 'https://graph.facebook.com/debug_token?access_token=%s&input_token=%s' % (cls.APP_TOKEN, token)
             s = rq.session()
             s.keep_alive = False  # 关闭多余连接
             response = s.get(url, verify=False).json()
             assert response.get('data')['is_valid']
             return response.get('data', {}).get('user_id', None)
-        except Exception, e:
-            logger.error(traceback.format_exc())
-            # traceback.print_exc()
-            logger.error('Error get , token: %r, err: %r', token, e)
-            return None
+        # except Exception, e:
+        #     logger.error(traceback.format_exc())
+        #     # traceback.print_exc()
+        #     logger.error('Error get , token: %r, err: %r', token, e)
+        #     return None
 
     @classmethod
     def _get_info(cls, fb_user_id):
-        try:
+        # try:
             url = 'https://graph.facebook.com/%s?access_token=%s' % (fb_user_id, cls.APP_TOKEN)
             response = rq.get(url, verify=False).json()
             assert response.get('id')
             return response
-        except Exception, e:
-            logger.error(traceback.format_exc())
-            # traceback.print_exc()
-            logger.error('Error get , err: %r',  e)
-            return None
+        # except Exception, e:
+        #     logger.error(traceback.format_exc())
+        #     # traceback.print_exc()
+        #     logger.error('Error get , err: %r',  e)
+        #     return None
 
     @classmethod
     def login_info(cls, token):
@@ -107,11 +107,12 @@ class FacebookService(object):
         :param token:
         :return:
         '''
-        try:
+        # try:
+        if 1:
             user_id = cls._get_user_id(token)
             assert user_id is not None
             return cls._get_info(user_id)
-        except ValueError, e:
-            # Invalid token
-            logger.error('log false token:%s, %s', token, e)
-            return None
+        # except ValueError, e:
+        #     # Invalid token
+        #     logger.error('log false token:%s, %s', token, e)
+        #     return None
