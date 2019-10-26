@@ -4,6 +4,8 @@ import hashlib
 import json
 import logging
 import requests as rq
+rq.adapters.DEFAULT_RETRIES = 5  # 增加重连次数
+
 import traceback
 from urllib2 import urlopen
 
@@ -71,7 +73,9 @@ class FacebookService(object):
     def _get_user_id(cls, token):
         try:
             url = 'https://graph.facebook.com/debug_token?access_token=%s&input_token=%s' % (cls.APP_TOKEN, token)
-            response = rq.get(url, verify=False).json()
+            s = rq.session()
+            s.keep_alive = False  # 关闭多余连接
+            response = s.get(url, verify=False).json()
             assert response.get('data')['is_valid']
             return response.get('data', {}).get('user_id', None)
         except Exception, e:
