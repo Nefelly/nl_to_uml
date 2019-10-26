@@ -2,6 +2,7 @@
 import base64
 import hashlib
 import json
+import time
 import logging
 import requests as rq
 rq.adapters.DEFAULT_RETRIES = 5  # 增加重连次数
@@ -108,11 +109,16 @@ class FacebookService(object):
         :param token:
         :return:
         '''
-        try:
-            user_id = cls._get_user_id(token)
-            assert user_id is not None
-            return cls._get_info(user_id)
-        except ValueError, e:
-            # Invalid token
-            logger.error('log false token:%s, %s', token, e)
-            return None
+        try_times = 3
+        for i in range(try_times):
+            try:
+                user_id = cls._get_user_id(token)
+                assert user_id is not None
+                return cls._get_info(user_id)
+            except ValueError, e:
+                # Invalid token
+                if i < try_times - 1:
+                    time.sleep(0.3)
+                    continue
+                logger.error('log false token:%s, %s', token, e)
+                return None
