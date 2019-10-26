@@ -115,7 +115,7 @@ class FacebookService(object):
                 user_id = cls._get_user_id(token)
                 assert user_id is not None
                 return cls._get_info(user_id)
-            except ValueError, e:
+            except Exception, e:
                 # Invalid token
                 if i < try_times - 1:
                     time.sleep(0.3)
