@@ -138,7 +138,7 @@ def create_app_by_prefix(prefix):
     elif prefix == 'api':
         return LitatomAppFactory.create_app(route_gen=default_api_blueprints)
     else:
-        return LitatomAppFactory.create_app(route_gen=default_api_blueprints)
+        return LitatomAppFactory.create_app(route_gen=home_api_blue_prints)
 
 
 class PathDispatchMiddleware(object):
