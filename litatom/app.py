@@ -123,6 +123,10 @@ def web_api_blueprints(app):
     app.register_blueprint(web_api.v1.blueprint, url_prefix='/web_api/sns/v1')
 
 
+def home_api_blue_prints(app):
+    from . import home_api
+    app.register_blueprint(home_api.v1.blueprint, url_prefix='/')
+
 def _all_api_blueprints(app):
     default_api_blueprints(app)
     web_api_blueprints(app)
@@ -132,6 +136,8 @@ def create_app_by_prefix(prefix):
     if prefix == 'web_api':
         return LitatomAppFactory.create_app(route_gen=web_api_blueprints)
     elif prefix == 'api':
+        return LitatomAppFactory.create_app(route_gen=default_api_blueprints)
+    else:
         return LitatomAppFactory.create_app(route_gen=default_api_blueprints)
 
 
