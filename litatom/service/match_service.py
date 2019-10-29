@@ -14,7 +14,8 @@ from ..key import (
     REDIS_MATCHED,
     REDIS_FAKE_LIKE,
     REDIS_JUDGE_LOCK,
-    REDIS_MATCH_PAIR
+    REDIS_MATCH_PAIR,
+    REDIS_ACCELERATE_CACHE
 )
 from ..util import (
     now_date_key,
@@ -91,6 +92,8 @@ class MatchService(object):
     def _remove_from_match_pool(cls, gender, fake_id):
         if not gender or not fake_id:
             return
+        uid = cls._uid_by_fake_id(fake_id)
+        redis_client.delete(REDIS_ACCELERATE_CACHE.format(user_id=uid))
         return redis_client.zrem(cls.MATCH_KEY_BY_REGION_GENDER(gender), fake_id)
 
     @classmethod
@@ -492,5 +495,34 @@ class MatchService(object):
         return None, True
 
     @classmethod
+    def _is_accelerate(cls, user_id):
+        key = REDIS_ACCELERATE_CACHE.format(user_id=user_id)
+        if not redis_client.get(key):
+            return False
+        return True
+
+    @classmethod
+    def accelerate_info(cls, user_id):
+        times, status = cls._match_left_verify(user_id)
+        if not status:
+            times = 0
+        queue_num = 10
+        if cls._is_accelerate(user_id):
+            queue_num = 1
+        if queue_num < 3:
+            wait_time = 1
+        elif queue_num < 8:
+            wait_time = 2
+        else:
+            wait_time = 3
+        return {
+            "times_left": times,
+            "queue_number": queue_num,
+            "wait_time": wait_time,
+        }
+
+    @classmethod
     def accelerate(cls, user_id):
-        return {"queue_number": 1}, True
+        key = REDIS_ACCELERATE_CACHE.format(user_id=user_id)
+        redis_client.set(key, 1, cls.TOTAL_WAIT)
+        return cls.accelerate_info(user_id), True

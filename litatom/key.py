@@ -22,6 +22,7 @@ REDIS_AVATAR_CACHE = 'avatar_cache'
 REDIS_YOUTUBE_VIDEO_CACHE = 'youtube_video_cache:{region}'
 REDIS_FEED_LIKE_CACHE = 'feed_like_cache:{feed_id}'
 REDIS_USER_NOT_MESSAGE_CACHE = 'user_nomsg_cache:{user_id}'
+REDIS_ACCELERATE_CACHE = 'acclerate_cache:{user_id}'
 
 #pic check redis
 REDIS_PIC_CHECK_STATUS = 'pic_check_status:{}'
@@ -57,7 +58,6 @@ REDIS_MATCHED = 'matched:{fake_id}'   # 双方匹配上, 匹配动作 需要同�
 REDIS_JUDGE_LOCK = 'judge_lock:{fake_id}'   # 评价对方的接口, 用于防范被刷评价
 
 REDIS_USER_MESSAGES = 'user_messages:{user_id}'   #sortedset
-
 REDIS_HUANXIN_ACCESS_TOKEN = 'huanxin_access_token'
 REDIS_HUANXIN_ACCESS_TOKEN_EXPIRE = 'huanxin_access_token_expire'
 REDIS_LOCK = 'redis_lock:{key}'
