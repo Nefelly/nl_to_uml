@@ -124,12 +124,14 @@ def quit_match():
         return fail(data)
     return success(data)
 
+
 def update_video(vid):
     region = GlobalizationService.get_region()
     status = YoutubeVideo.create(vid, region, request.json)
     if not status:
         return fail()
     return success(YoutubeVideo.get_video_infos(region))
+
 
 def video_list():
     data = GlobalizationService.get_region_word('video_list')
@@ -138,6 +140,7 @@ def video_list():
         data = []
     data = []
     return success(data)
+
 
 def video_info_list():
     # data = GlobalizationService.get_region_word('video_list')
