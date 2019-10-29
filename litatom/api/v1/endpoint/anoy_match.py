@@ -168,6 +168,7 @@ def video_list():
     return success(data)
 
 
+@session_required
 def get_accelerate_info():
     data, status = get_match_func(sys._getframe().f_code.co_name)(request.user_id)
     if not status:
