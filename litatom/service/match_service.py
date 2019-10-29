@@ -519,7 +519,7 @@ class MatchService(object):
             "times_left": times,
             "queue_number": queue_num,
             "wait_time": wait_time,
-        }
+        }, True
 
     @classmethod
     def accelerate(cls, user_id):
