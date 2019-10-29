@@ -48,7 +48,8 @@ FUNC_SERVICE_FUNC = {
     'match_times_left': 'get_times_left',
     'quit_match': 'quit_match',
     'add_time_by_ad': 'add_time',
-    'accelerate_by_ad': 'accelerate'
+    'accelerate_by_ad': 'accelerate',
+    'get_accelerate_info': 'accelerate_info'
 }
 
 MATCH_TYPE_SERVICE = {
@@ -165,6 +166,14 @@ def video_list():
         data = []
     data = []
     return success(data)
+
+
+def get_accelerate_info():
+    data, status = get_match_func(sys._getframe().f_code.co_name)(request.user_id)
+    if not status:
+        return fail(data)
+    return success(data)
+
 
 def video_info_list():
     # data = GlobalizationService.get_region_word('video_list')
