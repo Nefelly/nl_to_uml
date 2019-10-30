@@ -94,7 +94,7 @@ class AliOssService(object):
             return None
         img = Image.open(BytesIO(obj))
         (x, y) = img.size
-        x_s = 350  # define standard width
+        x_s = 300  # define standard width
         if x < x_s:
             return obj
         y_s = y * x_s / x  # calc height based on standard width
