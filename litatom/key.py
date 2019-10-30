@@ -47,6 +47,8 @@ REDIS_UID_FAKE_ID = 'uid_fakeid:{user_id}'
 REDIS_ANOY_GENDER_ONLINE = 'anoy_online:{gender}'   # sorted set   # !!!
 REDIS_ANOY_GENDER_ONLINE_REGION = 'anoy_online:{gender}:{region}'   # sorted set   # !!!
 
+REDIS_ACCELERATE_REGION_TYPE_GENDER = 'accelerate_online:{match_type}:{region}:{gender}'
+
 REDIS_ANOY_CHECK_POOL = 'anoy_check_pool'   # sorted set
 REDIS_FAKE_ID_GENDER = 'fakeid_gender:{fake_id}'
 REDIS_FAKE_ID_AGE = 'fakeid_age:{fake_id}'

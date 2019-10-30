@@ -65,6 +65,8 @@ class MatchService(object):
     TYPE_MATCH_PAIR = REDIS_MATCH_PAIR
     TYPE_JUDGE_LOCK = REDIS_JUDGE_LOCK
     MATCH_KEY_BY_REGION_GENDER = GlobalizationService.anoy_match_key_by_region_gender
+    MATCH_TYPE = 'soul'
+    ACCELERATE_KEY_BY_TYPE_REGION_GENDER = GlobalizationService.accelerate_match_key_by_region_type_gender
     
     
     
@@ -94,7 +96,7 @@ class MatchService(object):
             return
         uid = cls._uid_by_fake_id(fake_id)
         redis_client.delete(REDIS_ACCELERATE_CACHE.format(user_id=uid))
-        return redis_client.zrem(cls.MATCH_KEY_BY_REGION_GENDER(gender), fake_id)
+        return redis_client.zrem(cls.MATCH_KEY_BY_REGION_GENDER(gender), fake_id) or redis_client.zrem(cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender), fake_id)
 
     @classmethod
     def _add_to_check_pool(cls, fake_id):
@@ -181,7 +183,8 @@ class MatchService(object):
         int_time = int(time.time())
         judge_time = int_time - cls.MATCH_WAIT
         other_gender = cls.OTHER_GENDER_M.get(gender)
-        other_fakeids = redis_client.zrangebyscore(cls.MATCH_KEY_BY_REGION_GENDER(other_gender), judge_time, MAX_TIME, 0, cls.MAX_CHOOSE_NUM)
+        other_fakeids = redis_client.zrangebyscore(cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(other_gender), judge_time, MAX_TIME, 0, cls.MAX_CHOOSE_NUM)
+        other_fakeids += redis_client.zrangebyscore(cls.MATCH_KEY_BY_REGION_GENDER(other_gender), judge_time, MAX_TIME, 0, cls.MAX_CHOOSE_NUM)
         if not other_fakeids:
             return None, False
         try_tms = 5
@@ -443,13 +446,14 @@ class MatchService(object):
             int_time = time.time()
             judge_time = int_time - cls.MATCH_WAIT
             for region in GlobalizationService.LOC_REGION.values():
-                from flask import current_app,request, Flask
+                from flask import current_app, request, Flask
                 app = Flask(__name__)
                 from werkzeug.test import EnvironBuilder
-                ctx = app.request_context(EnvironBuilder('/','http://localhost/').get_environ())
+                ctx = app.request_context(EnvironBuilder('/', 'http://localhost/').get_environ())
                 ctx.push()
                 request.region = region
                 to_rem = redis_client.zrangebyscore(cls.MATCH_KEY_BY_REGION_GENDER(g), 0, judge_time - wait_buff, 0, cls.MAX_CHOOSE_NUM)
+                to_rem += redis_client.zrangebyscore(cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, g), 0, judge_time - wait_buff, 0, cls.MAX_CHOOSE_NUM)
                 for el in to_rem:
                     cls._destroy_fake_id(el)
                     print "match pool fake_id: %s destoryed" % el
@@ -525,4 +529,12 @@ class MatchService(object):
     def accelerate(cls, user_id):
         key = REDIS_ACCELERATE_CACHE.format(user_id=user_id)
         redis_client.set(key, 1, cls.TOTAL_WAIT)
+        fake_id = cls._fakeid_by_uid(user_id)
+        gender = UserService.get_gender(user_id)
+        old_time = redis_client.zscore(cls.MATCH_KEY_BY_REGION_GENDER(gender), fake_id)
+        if old_time:
+            redis_client.zrem(cls.MATCH_KEY_BY_REGION_GENDER(gender), fake_id)
+        else:
+            old_time = int(time.time())
+        redis_client.zadd(cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender), {fake_id: old_time})
         return cls.accelerate_info(user_id), True

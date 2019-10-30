@@ -526,6 +526,68 @@ class UserSetting(Document):
         return True
 
 
+class UserModel(Document):
+    meta = {
+        'strict': False,
+        'alias': 'db_alias'
+    }
+
+    user_id = StringField(required=True, unique=True)
+    create_time = DateTimeField(required=True, default=datetime.datetime.now)
+
+    @classmethod
+    def get_by_user_id(cls, user_id):
+        cache_key = REDIS_USER_SETTING_CACHE.format(user_id=user_id)
+        cache_obj = redis_client.get(cache_key)
+        if cache_obj:
+            # redis_client.incr('setting_cache_hit_cnt')
+            return cPickle.loads(cache_obj)
+        obj = cls.objects(user_id=user_id).first()
+        # redis_client.incr('setting_cache_miss_cnt')
+        redis_client.set(cache_key, cPickle.dumps(obj), USER_ACTIVE)
+        return obj
+
+    @classmethod
+    def _disable_cache(cls, user_id):
+        redis_client.delete(REDIS_USER_SETTING_CACHE.format(user_id=user_id))
+
+    def save(self, *args, **kwargs):
+        if getattr(self, 'user_id', ''):
+            self._disable_cache(str(self.user_id))
+        super(UserSetting, self).save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        if getattr(self, 'user_id', ''):
+            self._disable_cache(str(self.user_id))
+        super(UserSetting, self).delete(*args, **kwargs)
+
+    @classmethod
+    def create_setting(cls, user_id, lang, uuid=None):
+        if cls.get_by_user_id(user_id):
+            return True
+        obj = cls()
+        obj.user_id = user_id
+        obj.lang = lang
+        if uuid:
+            obj.uuid = uuid
+        obj.save()
+        user = User.get_by_id(user_id)
+        if user:
+            user.country = lang
+            user.save()
+        return True
+
+    @classmethod
+    def ensure_setting(cls, user_id, lang, uuid):
+        obj = cls.get_by_user_id(user_id)
+        if not obj:
+            cls.create_setting(user_id, lang, uuid)
+        else:
+            obj.lang = lang
+            obj.save()
+        return True
+
+
 class UserAddressList(Document):
     '''
     user's daily records

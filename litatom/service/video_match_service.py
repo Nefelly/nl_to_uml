@@ -52,6 +52,7 @@ class VideoMatchService(MatchService):
     TYPE_FAKE_LIKE = REDIS_VIDEO_FAKE_LIKE
     TYPE_MATCH_PAIR = REDIS_VIDEO_MATCH_PAIR
     TYPE_JUDGE_LOCK = REDIS_VIDEO_JUDGE_LOCK
+    MATCH_TYPE = 'video'
     MATCH_KEY_BY_REGION_GENDER = GlobalizationService.video_match_key_by_region_gender
 
     @classmethod
