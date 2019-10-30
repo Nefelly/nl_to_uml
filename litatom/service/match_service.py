@@ -503,9 +503,9 @@ class MatchService(object):
 
     @classmethod
     def accelerate_info(cls, user_id):
-        times, status = cls._match_left_verify(user_id)
-        if not status:
-            times = 0
+    #     times, status = cls._match_left_verify(user_id)
+    #     if not status:
+    #         times = 0
         queue_num = 10
         if cls._is_accelerate(user_id):
             queue_num = 1
@@ -516,10 +516,8 @@ class MatchService(object):
         else:
             wait_time = 3
         return {
-            "times_left": times,
             "queue_number": queue_num,
             "wait_time": wait_time,
-            "time_info": u"You left %d match times today" % times,
             "queue_info": u'Queuing number: %d, wait about %d minutes' % (queue_num, wait_time)
         }, True
 
