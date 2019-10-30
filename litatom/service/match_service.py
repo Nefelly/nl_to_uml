@@ -519,6 +519,8 @@ class MatchService(object):
             "times_left": times,
             "queue_number": queue_num,
             "wait_time": wait_time,
+            "time_info": u"You left %d match times today" % times,
+            "queue_info": u'Queuing number: %d, wait about %d minutes' % (queue_num, wait_time)
         }, True
 
     @classmethod
