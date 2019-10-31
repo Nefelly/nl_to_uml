@@ -17,6 +17,7 @@ REDIS_AD_TIMES_LEFT = 'ad_times_left:{user_date}'
 # cache
 REDIS_USER_CACHE = 'user_cache:{user_id}'
 REDIS_USER_SETTING_CACHE = 'user_setting_cache:{user_id}'
+REDIS_USER_MODEL_CACHE = 'user_model_cache:{user_id}'
 REDIS_FEED_CACHE = 'feed_cache:{feed_id}'
 REDIS_AVATAR_CACHE = 'avatar_cache'
 REDIS_YOUTUBE_VIDEO_CACHE = 'youtube_video_cache:{region}'

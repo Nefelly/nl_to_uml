@@ -35,7 +35,8 @@ from ..key import (
     REDIS_KEY_USER_HUANXIN,
     REDIS_KEY_USER_AGE,
     REDIS_USER_CACHE,
-    REDIS_USER_SETTING_CACHE
+    REDIS_USER_SETTING_CACHE,
+    REDIS_USER_MODEL_CACHE
 )
 from ..const import (
     TWO_WEEKS,
@@ -333,6 +334,10 @@ class User(Document, UserSessionMixin):
         return cls.objects(huanxin__user_id=huanxinid).first()
 
     @property
+    def days(self):
+        return (datetime.datetime.now() - self.create_time).days
+
+    @property
     def age(self):
         if not self.birthdate:
             return -1
@@ -537,54 +542,44 @@ class UserModel(Document):
 
     @classmethod
     def get_by_user_id(cls, user_id):
-        cache_key = REDIS_USER_SETTING_CACHE.format(user_id=user_id)
+        cache_key = REDIS_USER_MODEL_CACHE.format(user_id=user_id)
         cache_obj = redis_client.get(cache_key)
         if cache_obj:
-            # redis_client.incr('setting_cache_hit_cnt')
             return cPickle.loads(cache_obj)
         obj = cls.objects(user_id=user_id).first()
-        # redis_client.incr('setting_cache_miss_cnt')
         redis_client.set(cache_key, cPickle.dumps(obj), USER_ACTIVE)
         return obj
 
     @classmethod
     def _disable_cache(cls, user_id):
-        redis_client.delete(REDIS_USER_SETTING_CACHE.format(user_id=user_id))
+        redis_client.delete(REDIS_USER_MODEL_CACHE.format(user_id=user_id))
 
     def save(self, *args, **kwargs):
         if getattr(self, 'user_id', ''):
             self._disable_cache(str(self.user_id))
-        super(UserSetting, self).save(*args, **kwargs)
+        super(UserModel, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
         if getattr(self, 'user_id', ''):
             self._disable_cache(str(self.user_id))
-        super(UserSetting, self).delete(*args, **kwargs)
+        super(UserModel, self).delete(*args, **kwargs)
 
     @classmethod
-    def create_setting(cls, user_id, lang, uuid=None):
+    def create_model(cls, user_id):
         if cls.get_by_user_id(user_id):
             return True
         obj = cls()
         obj.user_id = user_id
-        obj.lang = lang
-        if uuid:
-            obj.uuid = uuid
         obj.save()
-        user = User.get_by_id(user_id)
-        if user:
-            user.country = lang
-            user.save()
         return True
 
     @classmethod
-    def ensure_setting(cls, user_id, lang, uuid):
+    def ensure_model(cls, user_id):
         obj = cls.get_by_user_id(user_id)
         if not obj:
-            cls.create_setting(user_id, lang, uuid)
+            cls.create_model(user_id)
         else:
-            obj.lang = lang
-            obj.save()
+            pass
         return True
 
 
