@@ -181,10 +181,12 @@ class MatchService(object):
     def get_match_user_info(cls, fake_id):
         user_id = cls._uid_by_fake_id(fake_id)
         age = UserService.uid_age(user_id)
+        cls.get_times_left()
         return {
             "user_id": user_id,
             "age": age,
-            "login_day": User.get_by_id(user_id).days
+            "login_day": User.get_by_id(user_id).days,
+            "matched_times": cls._get_matched_times(user_id)
         }
 
     @classmethod
@@ -237,16 +239,17 @@ class MatchService(object):
                 m = cls.get_match_user_info(el_fake_id)
                 age = m["age"]
                 login_day = m["login_day"]
+                matched_times = m["matched_times"]
                 if abs(user_age - age) > 3:
-                    if login_day > 1:
-                        far_old.append(el_fake_id)
-                    else:
+                    if login_day <= 1 and matched_times < 1:
                         far_new.append(el_fake_id)
-                else:
-                    if login_day > 1:
-                        near_old.append(el_fake_id)
                     else:
+                        far_old.append(el_fake_id)
+                else:
+                    if login_day <= 1 and matched_times < 1:
                         near_new.append(el_fake_id)
+                    else:
+                        near_old.append(el_fake_id)
 
             for fake_id2 in near_new + near_old + far_new + far_old:
                 # fake_id2 = random.choice(other_fakeids)
@@ -283,6 +286,13 @@ class MatchService(object):
         if times_left <= 0:
             return u'Your match opportunity has run out, please try again tomorrow', False
         return times_left, True
+
+    @classmethod
+    def _get_matched_times(cls, user_id):
+        times, status = cls._match_left_verify(user_id)
+        if not status:
+            return cls.MATCH_TMS
+        return cls.MATCH_TMS - times
 
     @classmethod
     def _decr_match_left(cls, user_id):
