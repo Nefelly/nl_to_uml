@@ -27,7 +27,7 @@ class AnoyMatchService(MatchService):
     MATCH_INT = 60 * 3  # talking time
     MAX_CHOOSE_NUM = 40
     TOTAL_WAIT = MATCH_INT + MATCH_WAIT + FIVE_MINS
-    MATCH_TMS = 20 if not setting.IS_DEV else 3
+    MATCH_TMS = 20 if not setting.IS_DEV else 1000
 
     TYPE_ANOY_CHECK_POOL = REDIS_ANOY_CHECK_POOL
     TYPE_FAKE_ID_UID = REDIS_FAKE_ID_UID
