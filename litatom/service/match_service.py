@@ -181,7 +181,6 @@ class MatchService(object):
     def get_match_user_info(cls, fake_id):
         user_id = cls._uid_by_fake_id(fake_id)
         age = UserService.uid_age(user_id)
-        cls.get_times_left()
         return {
             "user_id": user_id,
             "age": age,
