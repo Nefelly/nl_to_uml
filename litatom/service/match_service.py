@@ -522,13 +522,21 @@ class MatchService(object):
         return True
 
     @classmethod
+    def get_queue_num(cls, user_id):
+        is_accelerated = cls._is_accelerate(user_id)
+        fake_id = cls._fakeid_by_uid(user_id)
+        if not fake_id:
+            return 100
+        gender = UserService.get_gender(user_id)
+        if is_accelerated:
+            return redis_client.zrank(cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender, fake_id))
+        return redis_client.zcount(cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender), 0, MAX_TIME) + redis_client.zrank(cls.MATCH_KEY_BY_REGION_GENDER(gender), fake_id)
+
+    @classmethod
     def accelerate_info(cls, user_id):
-    #     times, status = cls._match_left_verify(user_id)
-    #     if not status:
-    #         times = 0
-        queue_num = 10
-        if cls._is_accelerate(user_id):
-            queue_num = 1
+        queue_num = cls.get_queue_num(user_id)
+        # if cls._is_accelerate(user_id):
+        #     queue_num = 1
         if queue_num < 3:
             wait_time = 1
         elif queue_num < 8:
