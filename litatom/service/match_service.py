@@ -233,20 +233,20 @@ class MatchService(object):
             near_old = []
             far_new = []
             far_old = []
-            for fake_id in other_fakeids:
-                m = cls.get_match_user_info(fake_id)
+            for el_fake_id in other_fakeids:
+                m = cls.get_match_user_info(el_fake_id)
                 age = m["age"]
                 login_day = m["login_day"]
                 if abs(user_age - age) > 3:
                     if login_day > 1:
-                        far_old.append(fake_id)
+                        far_old.append(el_fake_id)
                     else:
-                        far_new.append(fake_id)
+                        far_new.append(el_fake_id)
                 else:
                     if login_day > 1:
-                        near_old.append(fake_id)
+                        near_old.append(el_fake_id)
                     else:
-                        near_new.append(fake_id)
+                        near_new.append(el_fake_id)
 
             for fake_id2 in near_new + near_old + far_new + far_old:
                 # fake_id2 = random.choice(other_fakeids)
