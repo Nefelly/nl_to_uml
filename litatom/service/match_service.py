@@ -241,12 +241,12 @@ class MatchService(object):
                 login_day = m["login_day"]
                 matched_times = m["matched_times"]
                 if abs(user_age - age) > 3:
-                    if login_day <= 1 and matched_times < 1:
+                    if login_day < 1 and matched_times < 1:
                         far_new.append(el_fake_id)
                     else:
                         far_old.append(el_fake_id)
                 else:
-                    if login_day <= 1 and matched_times < 1:
+                    if login_day < 1 and matched_times < 1:
                         near_new.append(el_fake_id)
                     else:
                         near_old.append(el_fake_id)
