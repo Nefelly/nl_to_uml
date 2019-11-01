@@ -70,7 +70,10 @@ class MatchService(object):
     
     @classmethod
     def get_anoy_count(cls, gender):
-        return redis_client.zcount(cls.MATCH_KEY_BY_REGION_GENDER(gender), 0, MAX_TIME)
+        int_time = int(time.time())
+        judge_time = int_time - cls.MATCH_WAIT
+        return redis_client.zcount(cls.MATCH_KEY_BY_REGION_GENDER(gender), judge_time, MAX_TIME) + \
+               redis_client.zcount(cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender), judge_time, MAX_TIME)
 
     @classmethod
     def _get_anoy_id(cls, user):
@@ -189,6 +192,13 @@ class MatchService(object):
         int_time = int(time.time())
         judge_time = int_time - cls.MATCH_WAIT
         other_gender = cls.OTHER_GENDER_M.get(gender)
+        other_cnt = cls.get_anoy_count(other_gender)
+        if other_cnt == 0:
+            return None, False
+        my_cnt = cls.get_anoy_count(gender)
+        if other_cnt == 1:
+            if my_cnt > 1:
+                return None, False
 
         accelerate_fakeids = redis_client.zrangebyscore(cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, other_gender), judge_time, MAX_TIME, 0, cls.MAX_CHOOSE_NUM)
         other_fakeids = redis_client.zrangebyscore(cls.MATCH_KEY_BY_REGION_GENDER(other_gender), judge_time, MAX_TIME, 0, cls.MAX_CHOOSE_NUM)
