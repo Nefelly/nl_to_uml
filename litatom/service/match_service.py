@@ -178,6 +178,16 @@ class MatchService(object):
         return True
 
     @classmethod
+    def get_match_user_info(cls, fake_id):
+        user_id = cls._uid_by_fake_id(fake_id)
+        age = UserService.uid_age(user_id)
+        return {
+            "user_id": user_id,
+            "age": age,
+            "login_day": User.get_by_id(user_id).days
+        }
+
+    @classmethod
     def _match(cls, fake_id, gender):
         '''
         return matched fake_id, if this match info has been set up
@@ -216,23 +226,44 @@ class MatchService(object):
                 matched_fakeid = fake_id2
                 break
 
-        try_tms = 5
-        for i in range(try_tms):
-            fake_id2 = random.choice(other_fakeids)
-            user_id2 = cls._uid_by_fake_id(fake_id2)
-            user2_age = UserService.uid_age(user_id2)
-            if i < try_tms - 1 and abs(user_age - user2_age) > 3:
-                continue
-            if not redis_client.get(cls.TYPE_MATCH_BEFORE.format(low_high_fakeid=low_high_pair(fake_id, fake_id2))) and not BlockService.get_block_msg(user_id, user_id2):
-                matched_fakeid = fake_id2
-                break
-            elif i == try_tms - 1:
-                return None, False
-            # if not UserFilterService.filter_by_age_gender(user_id, user_id2) or not UserFilterService.filter_by_age_gender(user_id2, user_id):
-            #     if i == try_tms - 1:
-            #         return None, False
-            #     continue
-        #redis_client.zadd(matched_key, {fake_id2: int_time})
+        try_tms = 20
+        #TODO first select all, then choose
+        if not matched_fakeid:
+            near_new = []
+            near_old = []
+            far_new = []
+            far_old = []
+            for fake_id in other_fakeids:
+                m = cls.get_match_user_info(fake_id)
+                age = m["age"]
+                login_day = m["login_day"]
+                if abs(user_age - age) > 3:
+                    if login_day > 1:
+                        far_old.append(fake_id)
+                    else:
+                        far_new.append(fake_id)
+                else:
+                    if login_day > 1:
+                        near_old.append(fake_id)
+                    else:
+                        near_new.append(fake_id)
+
+            for fake_id2 in near_new + near_old + far_new + far_old:
+                # fake_id2 = random.choice(other_fakeids)
+                user_id2 = cls._uid_by_fake_id(fake_id2)
+                # user2_age = UserService.uid_age(user_id2)
+                # if cnt < try_tms - 1 and abs(user_age - user2_age) > 3:
+                #     continue
+                if not redis_client.get(cls.TYPE_MATCH_BEFORE.format(low_high_fakeid=low_high_pair(fake_id, fake_id2))) and not BlockService.get_block_msg(user_id, user_id2):
+                    matched_fakeid = fake_id2
+                    break
+                elif cnt == try_tms - 1:
+                    return None, False
+                # if not UserFilterService.filter_by_age_gender(user_id, user_id2) or not UserFilterService.filter_by_age_gender(user_id2, user_id):
+                #     if i == try_tms - 1:
+                #         return None, False
+                #     continue
+            #redis_client.zadd(matched_key, {fake_id2: int_time})
         if not matched_fakeid:
             return None, False
         fake_id2_matched = redis_client.get(cls.TYPE_MATCHED.format(fake_id=matched_fakeid))
