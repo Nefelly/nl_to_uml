@@ -269,7 +269,7 @@ class User(Document, UserSessionMixin):
         elif not res:
             user = cls.get_by_id(user_id)
             if not user:
-                return ''
+                return 0
             res = user._set_age_cache()
         return int(res) if res != NO_SET else 0
 
