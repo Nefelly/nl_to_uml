@@ -579,18 +579,18 @@ class MatchService(object):
         MAX_QUEUE_NUM = 100
         is_accelerated = cls._is_accelerate(user_id)
         fake_id = cls._fakeid_by_uid(user_id)
+        judge_time = cls.get_judge_time()
         if not fake_id:
             return MAX_QUEUE_NUM
         gender = UserService.get_gender(user_id)
         if is_accelerated:
             rank = redis_client.zrank(cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender), fake_id)
-            print cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender), fake_id
-            return rank if rank else 0
+            return rank if rank is not None else redis_client.zcount(cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender), judge_time, MAX_TIME)
         rank = redis_client.zrank(cls.MATCH_KEY_BY_REGION_GENDER(gender), fake_id)
-        print rank, '!!!!!'
-        if not rank:
-            return MAX_QUEUE_NUM
-        return redis_client.zcount(cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender), 0, MAX_TIME) + rank
+        if rank is None:
+            print rank, '!!!!!'
+            rank = cls.get_anoy_count(gender)
+        return redis_client.zcount(cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender), judge_time, MAX_TIME) + rank
 
     @classmethod
     def accelerate_info(cls, user_id):
