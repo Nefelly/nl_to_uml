@@ -79,7 +79,7 @@ class Avatar(Document):
         print 'ininin'
 
 
-Avatar.test()
+# Avatar.test()
 
 
 class YoutubeVideo(Document):
