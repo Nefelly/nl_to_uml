@@ -67,11 +67,14 @@ class MatchService(object):
     MATCH_KEY_BY_REGION_GENDER = GlobalizationService.anoy_match_key_by_region_gender
     MATCH_TYPE = 'soul'
     ACCELERATE_KEY_BY_TYPE_REGION_GENDER = GlobalizationService.accelerate_match_key_by_region_type_gender
-    
+
+    @classmethod
+    def get_judge_time(cls):
+        return int(time.time()) - cls.MATCH_WAIT
+
     @classmethod
     def get_anoy_count(cls, gender):
-        int_time = int(time.time())
-        judge_time = int_time - cls.MATCH_WAIT
+        judge_time = cls.get_judge_time()
         return redis_client.zcount(cls.MATCH_KEY_BY_REGION_GENDER(gender), judge_time, MAX_TIME) + \
                redis_client.zcount(cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender), judge_time, MAX_TIME)
 
@@ -581,8 +584,12 @@ class MatchService(object):
         gender = UserService.get_gender(user_id)
         if is_accelerated:
             rank = redis_client.zrank(cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender), fake_id)
-            return rank if rank else MAX_QUEUE_NUM
-        return redis_client.zcount(cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender), 0, MAX_TIME) + redis_client.zrank(cls.MATCH_KEY_BY_REGION_GENDER(gender), fake_id)
+            print cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender), fake_id
+            return rank if rank else 0
+        rank = redis_client.zrank(cls.MATCH_KEY_BY_REGION_GENDER(gender), fake_id)
+        if not rank:
+            return MAX_QUEUE_NUM
+        return redis_client.zcount(cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender), 0, MAX_TIME) + rank
 
     @classmethod
     def accelerate_info(cls, user_id):
