@@ -588,7 +588,6 @@ class MatchService(object):
             return rank if rank is not None else redis_client.zcount(cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender), judge_time, MAX_TIME)
         rank = redis_client.zrank(cls.MATCH_KEY_BY_REGION_GENDER(gender), fake_id)
         if rank is None:
-            print rank, '!!!!!'
             rank = cls.get_anoy_count(gender)
         return redis_client.zcount(cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender), judge_time, MAX_TIME) + rank
 
