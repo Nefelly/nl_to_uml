@@ -587,6 +587,7 @@ class MatchService(object):
             print cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender), fake_id
             return rank if rank else 0
         rank = redis_client.zrank(cls.MATCH_KEY_BY_REGION_GENDER(gender), fake_id)
+        print rank, '!!!!!'
         if not rank:
             return MAX_QUEUE_NUM
         return redis_client.zcount(cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender), 0, MAX_TIME) + rank
