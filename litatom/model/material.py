@@ -74,6 +74,13 @@ class Avatar(Document):
                 return True
         return False
 
+    @classmethod
+    def test(cls):
+        print 'ininin'
+
+
+Avatar.test()
+
 
 class YoutubeVideo(Document):
     meta = {
