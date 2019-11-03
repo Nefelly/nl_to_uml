@@ -152,7 +152,6 @@ def accelerate_by_ad():
     if not status:
         return fail(data)
     return success(data)
->>>>>>> feature-match-restruct
 
 def update_video(vid):
     region = GlobalizationService.get_region()
