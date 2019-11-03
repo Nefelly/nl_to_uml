@@ -28,7 +28,8 @@ from ..key import (
     REDIS_MATCH_BEFORE,
     REDIS_USER_MATCH_LEFT,
     REDIS_USER_VIDEO_MATCH_LEFT,
-    REDIS_USER_VOICE_MATCH_LEFT
+    REDIS_USER_VOICE_MATCH_LEFT,
+    REDIS_AD_TIMES_LEFT
 )
 
 from hendrix.conf import setting
@@ -132,6 +133,7 @@ class DebugHelperService(object):
         redis_client.set(REDIS_USER_MATCH_LEFT.format(user_date=user_id + now_date), 1, ex=ONE_DAY)
         redis_client.set(REDIS_USER_VOICE_MATCH_LEFT.format(user_date=user_id + now_date), 1, ex=ONE_DAY)
         redis_client.set(REDIS_USER_VIDEO_MATCH_LEFT.format(user_date=user_id + now_date), 1, ex=ONE_DAY)
+        redis_client.set(REDIS_AD_TIMES_LEFT.format(user_date=user_id + now_date), 100, ex=ONE_DAY)
         return None, True
 
     @classmethod
