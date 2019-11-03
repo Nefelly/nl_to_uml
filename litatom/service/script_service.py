@@ -8,10 +8,6 @@ from flask import (
 from mongoengine.queryset.visitor import Q
 from collections import Counter
 from ..model import (
-    AdminUser,
-    Report,
-    Feed,
-    User,
     UserAction
 )
 from ..redis import RedisClient
