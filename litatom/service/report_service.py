@@ -38,7 +38,7 @@ class ReportService(object):
             if target_user_id.startswith('love'):
                 target_user_id = UserService.uid_by_huanxin_id(target_user_id)
             report.target_uid = target_user_id
-            if cls._should_block(target_user_id, user_id):
+            if cls._should_block(target_user_id, user_id, reason):
                 UserService.auto_forbid(target_user_id, 3 * ONE_DAY)
                 objs = Report.objects(target_uid=target_user_id, create_ts__gte=(ts_now - 3 * ONE_DAY))
                 send_uids = []
@@ -54,17 +54,22 @@ class ReportService(object):
         return {'report_id': str(report.id)}, True
 
     @classmethod
-    def _should_block(cls, target_user_id, user_id):
+    def _should_block(cls, target_user_id, user_id, reason=None):
+        match_reason = 'match'
+        match_cnt = 0.7
         ts_now = int(time.time())
         objs = Report.objects(target_uid=target_user_id, create_ts__gte=(ts_now - 3 * ONE_DAY), dealed=False)
-        judge_num = 1
-        cnt = 0
+        judge_num = 2
+        cnt = match_cnt if reason == match_reason else 1
         uids = {user_id}
         if objs:
             for _ in objs:
                 if _.uid not in uids:
                     uids.add(_.uid)
-                    cnt += 1
+                    if _.reason == match_reason:
+                        cnt += 1
+                    else:
+                        cnt += match_cnt
                     if cnt >= judge_num:
                         return True
         return False
