@@ -119,6 +119,7 @@ b.add_url_rule('/lit/debug/user_info', 'debug-user_info', endpoint.debug.user_in
 b.add_url_rule('/lit/debug/register_yesterday', 'debug-register_yesterday', endpoint.debug.change_register_to_yes)
 b.add_url_rule('/lit/debug/delete_matched_record', 'debug-del_match_before', endpoint.debug.del_match_before)
 b.add_url_rule('/lit/debug/delete_online_matched_record', 'debug-online_del_match_status', endpoint.debug.online_del_match_status)
+b.add_url_rule('/lit/debug/set_times_to1', 'debug-set-times-to1', endpoint.debug.set_left_times_to_1)
 
 
 # feed

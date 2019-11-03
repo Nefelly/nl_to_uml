@@ -27,7 +27,10 @@ class UserSettingService(object):
             'pop_good_rate': True,
             'ad_rule': {
                 'interval': 5,
-                'need_ad': True
+                'need_ad': True,
+                'voice_match_top': True,
+                'in_match': True,
+                'im': True
             }
         }
         # need_pop = False

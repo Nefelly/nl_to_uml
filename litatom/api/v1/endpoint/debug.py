@@ -75,6 +75,13 @@ def online_del_match_status():
         return success()
     return fail(msg)
 
+def set_left_times_to_1():
+    phone = request.args.get('phone')
+    user_id = get_user_id_by_phone(phone)
+    msg, status = DebugHelperService.set_left_times_to1(user_id)
+    if status:
+        return success()
+    return fail(msg)
 
 #@session_required
 def query_region():

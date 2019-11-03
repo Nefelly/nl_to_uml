@@ -14,7 +14,8 @@ from ..service import (
 )
 from ..const import (
     GIRL,
-    BOY
+    BOY,
+    ONE_DAY
 )
 from ..util import (
     low_high_pair,
@@ -123,6 +124,14 @@ class DebugHelperService(object):
         fake_id2 = cls.get_fakeid_by_uid(user_id2)
         pair = low_high_pair(fake_id1, fake_id2)
         del_low_high_pair(pair)
+        return None, True
+
+    @classmethod
+    def set_left_times_to1(cls, user_id):
+        now_date = now_date_key()
+        redis_client.set(REDIS_USER_MATCH_LEFT.format(user_date=user_id + now_date), 1, ex=ONE_DAY)
+        redis_client.set(REDIS_USER_VOICE_MATCH_LEFT.format(user_date=user_id + now_date), 1, ex=ONE_DAY)
+        redis_client.set(REDIS_USER_VIDEO_MATCH_LEFT.format(user_date=user_id + now_date), 1, ex=ONE_DAY)
         return None, True
 
     @classmethod
