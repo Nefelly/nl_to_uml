@@ -22,7 +22,7 @@ sys_rnd = random.SystemRandom()
 redis_client = RedisClient()['lit']
 
 def stat_distribute():
-    start_d = get_times_from_str('20191102')
+    start_d = get_times_from_str('20191102')[1]
     end_d = next_date(start_d)
     objs = UserAction.objects(action='match', create_time__gte=date_to_int_time(start_d),
                               create_time__lte=date_to_int_time(end_d), remark__contains='start')
