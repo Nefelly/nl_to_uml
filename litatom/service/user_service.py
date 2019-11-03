@@ -58,6 +58,7 @@ from ..service import (
     GoogleService,
     FacebookService,
     BlockService,
+    FollowService,
     GlobalizationService,
     FirebaseService,
     MqService
@@ -99,6 +100,34 @@ class UserService(object):
         if user.finished_info:
             cls.refresh_status(str(user.id))
         return None, True
+
+    @classmethod
+    def search_user(cls, nickname):
+        res = []
+        if not nickname:
+            return res, True
+        cnt = 0
+        max_num = 10
+        objs = []
+        if len(nickname) <= 3:
+            obj = User.get_by_nickname(nickname)
+            if obj:
+                objs.append(obj)
+        else:
+            for _ in User.objects(nickname__contains=nickname):
+                objs.append(_)
+                cnt += 1
+                if cnt >= max_num:
+                    break
+        uids = [str(el.id) for el in objs]
+        online_info, status = cls.uids_online(uids)
+        if not status:
+            online_info = {}
+        for _ in objs:
+            basic_info = cls.get_basic_info(_)
+            basic_info['online'] = online_info.get(str(_.id), False)
+            res.append(basic_info)
+        return res, True
 
     @classmethod
     def _get_words_loc(cls, words):
@@ -729,7 +758,8 @@ class UserService(object):
             return USER_NOT_EXISTS, False
         basic_info = cls.get_basic_info(target_user)
         basic_info.update({
-            'followed': Follow.in_follow(user_id, target_user_id),
+            # 'followed': Follow.in_follow(user_id, target_user_id),
+            'followed': FollowService.in_follow(user_id, target_user_id) if target_user.follower > 0 else False,
             'blocked': Blocked.in_block(user_id, target_user_id),
             # 'is_blocked': Blocked.in_block(target_user_id, user_id),
             # 'is_followed': Follow.in_follow(target_user_id, user_id)

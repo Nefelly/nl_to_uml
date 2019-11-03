@@ -12,15 +12,18 @@ REDIS_USER_LOC = 'user_loc:{user_id}'
 REDIS_USER_REGION = 'user_region:{user_id}'
 REDIS_HUANXIN_USER = 'huanxin_user:{huanxin_id}'
 REDIS_FEED_ID_AGE = 'feed_id_age:{feed_id}'
+REDIS_AD_TIMES_LEFT = 'ad_times_left:{user_date}'
 
 # cache
 REDIS_USER_CACHE = 'user_cache:{user_id}'
 REDIS_USER_SETTING_CACHE = 'user_setting_cache:{user_id}'
+REDIS_USER_MODEL_CACHE = 'user_model_cache:{user_id}'
 REDIS_FEED_CACHE = 'feed_cache:{feed_id}'
 REDIS_AVATAR_CACHE = 'avatar_cache'
 REDIS_YOUTUBE_VIDEO_CACHE = 'youtube_video_cache:{region}'
 REDIS_FEED_LIKE_CACHE = 'feed_like_cache:{feed_id}'
 REDIS_USER_NOT_MESSAGE_CACHE = 'user_nomsg_cache:{user_id}'
+REDIS_ACCELERATE_CACHE = 'acclerate_cache:{user_id}'
 
 #pic check redis
 REDIS_PIC_CHECK_STATUS = 'pic_check_status:{}'
@@ -45,6 +48,8 @@ REDIS_UID_FAKE_ID = 'uid_fakeid:{user_id}'
 REDIS_ANOY_GENDER_ONLINE = 'anoy_online:{gender}'   # sorted set   # !!!
 REDIS_ANOY_GENDER_ONLINE_REGION = 'anoy_online:{gender}:{region}'   # sorted set   # !!!
 
+REDIS_ACCELERATE_REGION_TYPE_GENDER = 'accelerate_online:{match_type}:{region}:{gender}'
+
 REDIS_ANOY_CHECK_POOL = 'anoy_check_pool'   # sorted set
 REDIS_FAKE_ID_GENDER = 'fakeid_gender:{fake_id}'
 REDIS_FAKE_ID_AGE = 'fakeid_age:{fake_id}'
@@ -56,7 +61,6 @@ REDIS_MATCHED = 'matched:{fake_id}'   # 双方匹配上, 匹配动作 需要同�
 REDIS_JUDGE_LOCK = 'judge_lock:{fake_id}'   # 评价对方的接口, 用于防范被刷评价
 
 REDIS_USER_MESSAGES = 'user_messages:{user_id}'   #sortedset
-
 REDIS_HUANXIN_ACCESS_TOKEN = 'huanxin_access_token'
 REDIS_HUANXIN_ACCESS_TOKEN_EXPIRE = 'huanxin_access_token_expire'
 REDIS_LOCK = 'redis_lock:{key}'

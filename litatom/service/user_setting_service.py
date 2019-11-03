@@ -21,7 +21,15 @@ class UserSettingService(object):
 
     @classmethod
     def get_settings(cls, user_id=None):
-        res = {'need_login': True, 'max_voice_time': ONE_HOUR, 'pop_good_rate': True}
+        res = {
+            'need_login': True,
+            'max_voice_time': ONE_HOUR,
+            'pop_good_rate': True,
+            'ad_rule': {
+                'interval': 5,
+                'need_ad': True
+            }
+        }
         # need_pop = False
         # if user_id:
         #     userSetting = UserSetting.get_by_user_id(user_id)

@@ -19,7 +19,8 @@ from ....service import (
     AnoyMatchService,
     VoiceMatchService,
     VideoMatchService,
-    GlobalizationService
+    GlobalizationService,
+    AdService
 )
 from ....model import (
     YoutubeVideo
@@ -45,7 +46,10 @@ FUNC_SERVICE_FUNC = {
     'anoy_judge': 'judge',
     'get_tips': 'get_tips',
     'match_times_left': 'get_times_left',
-    'quit_match': 'quit_match'
+    'quit_match': 'quit_match',
+    'add_time_by_ad': 'add_time',
+    'accelerate_by_ad': 'accelerate',
+    'get_accelerate_info': 'accelerate_info'
 }
 
 MATCH_TYPE_SERVICE = {
@@ -64,7 +68,7 @@ def is_voice_match():
 
 def get_match_func(func_name):
     match_type = get_match_type()
-    service  = MATCH_TYPE_SERVICE.get(match_type)
+    service = MATCH_TYPE_SERVICE.get(match_type)
     return getattr(service, FUNC_SERVICE_FUNC.get(func_name))
 
 
@@ -124,6 +128,32 @@ def quit_match():
         return fail(data)
     return success(data)
 
+<<<<<<< HEAD
+=======
+@session_finished_required
+def add_time_by_ad():
+    data = request.json
+    user_id = request.user_id
+    data, status = AdService.verify_ad_viewed(user_id, data)
+    if not status:
+        return fail(data)
+    data, status = get_match_func(sys._getframe().f_code.co_name)(request.user_id)
+    if not status:
+        return fail(data)
+    return success(data)
+
+@session_finished_required
+def accelerate_by_ad():
+    data = request.json
+    user_id = request.user_id
+    data, status = AdService.verify_ad_viewed(user_id, data)
+    if not status:
+        return fail(data)
+    data, status = get_match_func(sys._getframe().f_code.co_name)(request.user_id)
+    if not status:
+        return fail(data)
+    return success(data)
+>>>>>>> feature-match-restruct
 
 def update_video(vid):
     region = GlobalizationService.get_region()
@@ -141,6 +171,12 @@ def video_list():
     data = []
     return success(data)
 
+@session_required
+def get_accelerate_info():
+    data, status = get_match_func(sys._getframe().f_code.co_name)(request.user_id)
+    if not status:
+        return fail(data)
+    return success(data)
 
 def video_info_list():
     # data = GlobalizationService.get_region_word('video_list')

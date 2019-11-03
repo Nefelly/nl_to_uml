@@ -57,7 +57,7 @@ class ReportService(object):
     def _should_block(cls, target_user_id, user_id):
         ts_now = int(time.time())
         objs = Report.objects(target_uid=target_user_id, create_ts__gte=(ts_now - 3 * ONE_DAY), dealed=False)
-        judge_num = 2
+        judge_num = 1
         cnt = 0
         uids = {user_id}
         if objs:

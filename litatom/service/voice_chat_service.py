@@ -20,6 +20,9 @@ from ..const import (
     ONE_MIN,
     ONE_DAY
 )
+from ..service import (
+    FollowService
+)
 
 redis_client = RedisClient()['lit']
 
@@ -53,7 +56,10 @@ class VoiceChatService(object):
 
         if Blocked.in_block(target_user_id, user_id):
             return u'you have been blocked', False
-        if not (Follow.in_follow(target_user_id, user_id) and Follow.in_follow(user_id, target_user_id)):
+        # if not (Follow.in_follow(target_user_id, user_id) and Follow.in_follow(user_id, target_user_id)):
+        #     return u'you should follow each other to launch a voice chat', False
+
+        if not (FollowService.in_follow(target_user_id, user_id) and FollowService.in_follow(user_id, target_user_id)):
             return u'you should follow each other to launch a voice chat', False
 
         if redis_client.get(REDIS_VOICE_CHAT_IN_CHAT.format(user_id=target_user_id)):

@@ -27,6 +27,7 @@ b.add_url_rule('/lit/user/read_message/<message_id>', 'user-message-read', endpo
 b.add_url_rule('/lit/user/firebase_token', 'user-firebase-token', endpoint.user.register_firebase, methods=['POST'])
 b.add_url_rule('/lit/user/firebase_push', 'user-firebase-push', endpoint.user.firebase_push, methods=['POST'])
 b.add_url_rule('/lit/user/query_online', 'user-query-online', endpoint.user.query_online, methods=['POST'])
+b.add_url_rule('/lit/user/search', 'user-search', endpoint.user.search_user)
 
 # admin
 b.add_url_rule('/lit/admin/index', 'admin-index', endpoint.admin.index)
@@ -102,6 +103,9 @@ b.add_url_rule('/lit/anoy_match/judge', 'anoy-match-judge', endpoint.anoy_match.
 b.add_url_rule('/lit/anoy_match/video_list', 'anoy-match-video-list', endpoint.anoy_match.video_list)
 b.add_url_rule('/lit/anoy_match/video_info_list', 'anoy-match-video-info-list', endpoint.anoy_match.video_info_list)
 b.add_url_rule('/lit/anoy_match/video/<vid>', 'anoy-match-update-video', endpoint.anoy_match.update_video, methods=['POST'])
+b.add_url_rule('/lit/anoy_match/add_time_by_ad', 'anoy-match-add-time-by-ad', endpoint.anoy_match.add_time_by_ad, methods=['POST'])
+b.add_url_rule('/lit/anoy_match/accelerate_by_ad', 'anoy-match-accelerate-by-ad', endpoint.anoy_match.accelerate_by_ad, methods=['POST'])
+b.add_url_rule('/lit/anoy_match/accelerate_info', 'anoy-match-accelerate-info', endpoint.anoy_match.get_accelerate_info)
 
 
 # debug
@@ -139,9 +143,11 @@ b.add_url_rule('/lit/unfollow/<other_user_id>', 'unfollow', endpoint.user_relati
 b.add_url_rule('/lit/following', 'following', endpoint.user_relations.following)
 b.add_url_rule('/lit/follower', 'follower', endpoint.user_relations.follower)
 
+b.add_url_rule('/lit/ad/times_left', 'ad-times-left', endpoint.ad.times_left)
+
 # voice_chat
-b.add_url_rule('/lit/voice_chat/invite/<target_user_id>', 'voice_chat-invite', endpoint.voice_chat.invite)
-b.add_url_rule('/lit/voice_chat/finish', 'finish_chat', endpoint.voice_chat.finish_chat)
-b.add_url_rule('/lit/voice_chat/accept/<target_user_id>', 'voice_chat-accept', endpoint.voice_chat.accept)
-b.add_url_rule('/lit/voice_chat/cancel', 'cancel_chat', endpoint.voice_chat.cancel)
-b.add_url_rule('/lit/voice_chat/reject/<target_user_id>', 'voice_chat-reject', endpoint.voice_chat.reject)
+# b.add_url_rule('/lit/voice_chat/invite/<target_user_id>', 'voice_chat-invite', endpoint.voice_chat.invite)
+# b.add_url_rule('/lit/voice_chat/finish', 'finish_chat', endpoint.voice_chat.finish_chat)
+# b.add_url_rule('/lit/voice_chat/accept/<target_user_id>', 'voice_chat-accept', endpoint.voice_chat.accept)
+# b.add_url_rule('/lit/voice_chat/cancel', 'cancel_chat', endpoint.voice_chat.cancel)
+# b.add_url_rule('/lit/voice_chat/reject/<target_user_id>', 'voice_chat-reject', endpoint.voice_chat.reject)

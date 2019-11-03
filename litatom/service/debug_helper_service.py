@@ -83,7 +83,7 @@ class DebugHelperService(object):
 
     @classmethod
     def get_fakeid_by_uid(cls, user_id):
-        return AnoyMatchService.create_fakeid(user_id)[0].get('fake_id')
+        return AnoyMatchService._get_anoy_id(User.get_by_id(user_id))[0]
 
 
     @classmethod
@@ -124,11 +124,6 @@ class DebugHelperService(object):
         pair = low_high_pair(fake_id1, fake_id2)
         del_low_high_pair(pair)
         return None, True
-
-    @classmethod
-    def feed_num(cls, user_id):
-        return 3
-
 
     @classmethod
     def debug_all_keys(cls, key=None):

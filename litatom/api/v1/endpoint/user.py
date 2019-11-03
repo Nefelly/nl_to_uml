@@ -109,10 +109,21 @@ def update_info():
         return fail(msg)
     return success()
 
+
 @session_required
 def get_user_info(target_user_id):
     user_id = request.user_id
     data, status = UserService.get_user_info(user_id, target_user_id)
+    if not status:
+        return fail(data)
+    return success(data)
+
+
+@session_required
+def search_user():
+    nickname = request.values.get('nickname')
+    # print nickname
+    data, status = UserService.search_user(nickname)
     if not status:
         return fail(data)
     return success(data)
