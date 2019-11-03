@@ -102,7 +102,7 @@ class UserService(object):
         return None, True
 
     @classmethod
-    def search_user(cls, nickname):
+    def search_user(cls, nickname, user_id):
         res = []
         if not nickname:
             return res, True
@@ -125,7 +125,9 @@ class UserService(object):
             online_info = {}
         for _ in objs:
             basic_info = cls.get_basic_info(_)
-            basic_info['online'] = online_info.get(str(_.id), False)
+            uid = str(_.id)
+            basic_info['online'] = online_info.get(uid, False)
+            basic_info['followed'] = FollowService.in_follow(user_id, uid)
             res.append(basic_info)
         return res, True
 

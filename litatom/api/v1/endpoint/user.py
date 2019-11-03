@@ -123,7 +123,7 @@ def get_user_info(target_user_id):
 def search_user():
     nickname = request.values.get('nickname')
     # print nickname
-    data, status = UserService.search_user(nickname)
+    data, status = UserService.search_user(nickname, request.user_id)
     if not status:
         return fail(data)
     return success(data)
