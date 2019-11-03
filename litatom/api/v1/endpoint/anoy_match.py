@@ -128,8 +128,7 @@ def quit_match():
         return fail(data)
     return success(data)
 
-<<<<<<< HEAD
-=======
+
 @session_finished_required
 def add_time_by_ad():
     data = request.json
