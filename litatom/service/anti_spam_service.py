@@ -4,6 +4,9 @@ import time
 import traceback
 import logging
 from ..redis import RedisClient
+from ..service import (
+    GlobalizationService
+)
 
 logger = logging.getLogger(__name__)
 
@@ -47,7 +50,8 @@ class DFAFilter(object):
 
     @classmethod
     def load(cls):
-        pass
+        for word in [u'大傻', u'大瓜', u'神']:
+            cls.add(word)
     
     @classmethod
     def is_spam_word(cls, word):
@@ -63,27 +67,30 @@ class DFAFilter(object):
                     if cls.DELIMIT not in level[char]:
                         level = level[char]
                     else:
-                        ret.append(repl * step_ins)
-                        start += step_ins - 1
-                        break
+                        return True
+                        # start += step_ins - 1
+                        # break
                 else:
                     ret.append(word[start])
                     break
             else:
                 ret.append(word[start])
             start += 1
-
-        return ''.join(ret)
+        return False
+        # return ''.join(ret)
 
 
 if __name__ == "__main__":
-    pass
+    DFAFilter.load()
+    text = [u'大傻子哦', u'神仙', u'你好']
     # gfw = DFAFilter()
     # path = wordfilter_path
     # gfw.parse(path)
     # text = "这是一个政治方面的新闻"
     # result = gfw.filter(text)
     #
+    for _ in text:
+        print text, DFAFilter.is_spam_word(_)
     # print(text)
     # print(result)
     # time2 = time.time()
