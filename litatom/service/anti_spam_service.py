@@ -90,7 +90,7 @@ if __name__ == "__main__":
     # result = gfw.filter(text)
     #
     for _ in text:
-        print text, DFAFilter.is_spam_word(_)
+        print _, DFAFilter.is_spam_word(_)
     # print(text)
     # print(result)
     # time2 = time.time()
