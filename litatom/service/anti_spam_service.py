@@ -3,6 +3,7 @@ import json
 import time
 import traceback
 import logging
+from ..model import SpamWord
 from ..redis import RedisClient
 from ..service import (
     GlobalizationService
@@ -27,12 +28,14 @@ class DFAFilter(object):
     DELIMIT = '\x00'
 
     @classmethod
-    def add(cls, keyword):
+    def add(cls, keyword, region):
         keyword = keyword.lower()
         chars = keyword.strip()
         if not chars:
             return
-        level = cls.KEYWORD_CHAINS
+        if not cls.KEYWORD_CHAINS.get(region):
+            cls.KEYWORD_CHAINS[region] = {}
+        level = cls.KEYWORD_CHAINS[region]
         for i in range(len(chars)):
             if chars[i] in level:
                 level = level[chars[i]]
@@ -50,16 +53,19 @@ class DFAFilter(object):
 
     @classmethod
     def load(cls):
-        for word in [u'大傻', u'大瓜', u'神']:
-            cls.add(word)
+        for region in GlobalizationService.REGIONS:
+            for _ in SpamWord.get_by_region(region):
+                cls.add(_.word, region)
+        # for word in [u'大傻', u'大瓜', u'神']:
+        #     cls.add(word)
     
     @classmethod
-    def is_spam_word(cls, word):
+    def is_spam_word(cls, word, region):
         word = word.lower()
         ret = []
         start = 0
         while start < len(word):
-            level = cls.KEYWORD_CHAINS
+            level = cls.KEYWORD_CHAINS[region]
             step_ins = 0
             for char in word[start:]:
                 if char in level:

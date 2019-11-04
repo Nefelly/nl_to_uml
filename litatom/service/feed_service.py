@@ -20,7 +20,8 @@ from ..const import (
     MAX_TIME,
     ONE_DAY,
     REMOVE_EXCHANGE,
-    ADD_EXCHANGE
+    ADD_EXCHANGE,
+    ONE_HOUR
 )
 
 from ..service import (
@@ -43,10 +44,18 @@ from ..model import (
 redis_client = RedisClient()['lit']
 
 class FeedService(object):
+
+    @classmethod
+    def should_add_to_square(cls, feed):
+        user_id = feed.user_id
+        judge_time = int(time.time()) - ONE_HOUR
+        return Feed.objects(user_id=user_id, create_time__gte=judge_time).count <= 3
+
     @classmethod
     def _on_add_feed(cls, feed):
         if not feed.pics:
-            cls._add_to_feed_pool(feed)
+            if cls.should_add_to_square(feed):
+                cls._add_to_feed_pool(feed)
         MqService.push(ADD_EXCHANGE,
                        {"feed_id": str(feed.id), "pics": feed.pics, "region_key": cls._redis_feed_region_key(REDIS_FEED_SQUARE_REGION)})
         # FollowingFeedService.add_feed(feed)
@@ -71,8 +80,9 @@ class FeedService(object):
                 feed.delete()
             else:
                 #  need region to send to this because of request env
-                redis_client.zadd(region_key,
-                                  {str(feed.id): feed.create_time})
+                if cls.should_add_to_square(feed):
+                    redis_client.zadd(region_key,
+                                      {str(feed.id): feed.create_time})
             FollowingFeedService.add_feed(feed)
 
     @classmethod
