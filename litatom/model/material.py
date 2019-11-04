@@ -153,6 +153,29 @@ class YoutubeVideo(Document):
         return videos
 
 
+class SpamWord(Document):
+    meta = {
+        'strict': False,
+        'alias': 'db_alias'
+    }
+
+    region = StringField(required=True)
+    word = StringField(required=False)
+    create_time = DateTimeField(required=True, default=datetime.datetime.now)
+
+    @classmethod
+    def create(cls, region, word):
+        obj = cls.objects(region=region, word=word).first()
+        if obj:
+            return
+        obj = cls(region=region, word=word)
+        obj.save()
+
+    @classmethod
+    def get_by_region(cls, region):
+        return cls.objects(region=region)
+
+
 class Wording(Document):
     meta = {
         'strict': False,

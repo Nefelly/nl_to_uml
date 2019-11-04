@@ -82,7 +82,7 @@ class DFAFilter(object):
 
 if __name__ == "__main__":
     DFAFilter.load()
-    text = [u'大傻子哦', u'神仙', u'你好']
+    text = [u'大傻子哦', u'神仙', u'你好', u'大人']
     # gfw = DFAFilter()
     # path = wordfilter_path
     # gfw.parse(path)

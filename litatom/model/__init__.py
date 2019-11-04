@@ -14,7 +14,8 @@ from .follow import (
 from .material import (
     Avatar,
     YoutubeVideo,
-    Wording
+    Wording,
+    SpamWord
 )
 from .report import (
     Report
