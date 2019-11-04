@@ -50,7 +50,8 @@ from ..model import (
     FaceBookBackup,
     RedisLock,
     ReferralCode,
-    LoginRecord
+    LoginRecord,
+    Report
 )
 from ..service import (
     SmsCodeService,
@@ -424,6 +425,9 @@ class UserService(object):
         for _ in report_user_ids:
             cls.msg_to_user(to_user_info, _)
             FirebaseService.send_to_user(_, u'your report succeed', to_user_info)
+        for _ in Report.objects(target_uid=reported_uid, dealed=False):
+            _.dealed = True
+            _.save()
 
     @classmethod
     def update_info(cls, user_id, data):
