@@ -10,8 +10,8 @@ from ..service import (
 )
 
 logger = logging.getLogger(__name__)
-
 redis_client = RedisClient()['lit']
+
 
 class AntiSpamService(object):
     '''
@@ -89,6 +89,9 @@ class DFAFilter(object):
             start += 1
         return False
         # return ''.join(ret)
+
+
+DFAFilter.load()
 
 
 if __name__ == "__main__":
