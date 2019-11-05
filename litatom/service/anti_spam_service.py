@@ -64,7 +64,7 @@ class DFAFilter(object):
         #     cls.add(word)
     
     @classmethod
-    def is_spam_word(cls, word, region):
+    def is_spam_word(cls, word, region=None):
         word = word.lower()
         ret = []
         start = 0
