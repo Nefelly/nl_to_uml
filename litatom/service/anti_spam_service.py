@@ -30,16 +30,17 @@ class DFAFilter(object):
     NOT_REGION = True
 
     @classmethod
-    def add(cls, keyword, region):
+    def add(cls, keyword, region=None):
         keyword = keyword.lower()
         chars = keyword.strip()
         if not chars:
             return
-        if not cls.KEYWORD_CHAINS.get(region):
-            cls.KEYWORD_CHAINS[region] = {}
-        level = cls.KEYWORD_CHAINS[region]
         if cls.NOT_REGION:
             level = cls.DEFAULT_KEYWORD_CHAIN
+        else:
+            if not cls.KEYWORD_CHAINS.get(region):
+                cls.KEYWORD_CHAINS[region] = {}
+            level = cls.KEYWORD_CHAINS[region]
         for i in range(len(chars)):
             if chars[i] in level:
                 level = level[chars[i]]
@@ -92,7 +93,7 @@ class DFAFilter(object):
 
 if __name__ == "__main__":
     DFAFilter.load()
-    text = [u'大傻子哦', u'神仙', u'你好', u'大人', 'das']
+    text = [u'大傻子哦', u'神仙', u'你好', u'大人', '👉👌💦u']
     # gfw = DFAFilter()
     # path = wordfilter_path
     # gfw.parse(path)
