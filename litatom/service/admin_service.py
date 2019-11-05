@@ -159,7 +159,6 @@ class AdminService(object):
                 return u'len(line) != len(fields), line:%r' % line, False
             conn = ','.join(['%s=\'%s\'' % (fields[i], line[i]) for i in range(len(line))])
             get = eval('%s.objects(%s).first()' % (table_name, conn))
-            print get
             if not get:
                 eval('%s(%s).save()' % (table_name, conn))
         return None, True
