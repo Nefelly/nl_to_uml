@@ -131,3 +131,8 @@ class AdminService(object):
             return u'wrong report id', False
         report.reject()
         return None, True
+
+    @classmethod
+    def batch_insert(cls, table_name, fields, main_key, insert_data):
+        print table_name, fields, main_key, insert_data
+        return None, True

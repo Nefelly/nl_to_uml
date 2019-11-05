@@ -253,3 +253,12 @@ def send_message_html():
 
 def batch_insert_html():
     return render_template('batch_insert.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
+
+def batch_insert():
+    data = request.json
+    fields = data.get("fields")
+    table_name = data.get("table_name")
+    main_key = data.get("main_key", "")
+    insert_data = data.get("insert_data")
+    msg, status = AdminService.batch_insert(table_name, fields, main_key, insert_data)
+
