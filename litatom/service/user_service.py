@@ -166,7 +166,7 @@ class UserService(object):
 
     @classmethod
     def alert_to_user(cls, user_id, alert_type=None):
-        msg = GlobalizationService.get_region_word('alert_word', request.region)
+        msg = GlobalizationService.get_region_word('alert_word')
         cls.msg_to_user(msg, user_id)
         should_block = UserModel.add_alert_num(user_id)
         if should_block:
