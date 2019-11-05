@@ -91,7 +91,6 @@ class UserSessionMixin(object):
         expire_time = 60 * ONE_DAY if self.phone else TWO_WEEKS
         redis_client.set(key, str(self.id), ex=expire_time)
 
-
     def clear_session(self):
         if not self.session:
             return
