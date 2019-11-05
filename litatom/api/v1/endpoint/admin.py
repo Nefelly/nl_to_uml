@@ -259,7 +259,7 @@ def batch_insert():
     fields = data.get("fields")
     table_name = data.get("table_name")
     main_key = data.get("main_key", "")
-    insert_data = data.get("insert_data")
+    insert_data = data.get("data")
     msg, status = AdminService.batch_insert(table_name, fields, main_key, insert_data)
     if status:
         return success()
