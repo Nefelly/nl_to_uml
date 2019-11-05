@@ -69,7 +69,7 @@ class DFAFilter(object):
         ret = []
         start = 0
         while start < len(word):
-            level = cls.KEYWORD_CHAINS[region] if cls.NOT_REGION else cls.DEFAULT_KEYWORD_CHAIN
+            level = cls.KEYWORD_CHAINS[region] if not cls.NOT_REGION else cls.DEFAULT_KEYWORD_CHAIN
             step_ins = 0
             for char in word[start:]:
                 if char in level:
