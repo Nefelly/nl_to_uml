@@ -25,7 +25,9 @@ class AntiSpamService(object):
 
 class DFAFilter(object):
     KEYWORD_CHAINS = {}
+    DEFAULT_KEYWORD_CHAIN = {}
     DELIMIT = '\x00'
+    NOT_REGION = True
 
     @classmethod
     def add(cls, keyword, region):
@@ -36,6 +38,8 @@ class DFAFilter(object):
         if not cls.KEYWORD_CHAINS.get(region):
             cls.KEYWORD_CHAINS[region] = {}
         level = cls.KEYWORD_CHAINS[region]
+        if cls.NOT_REGION:
+            level = cls.DEFAULT_KEYWORD_CHAIN
         for i in range(len(chars)):
             if chars[i] in level:
                 level = level[chars[i]]
@@ -65,7 +69,7 @@ class DFAFilter(object):
         ret = []
         start = 0
         while start < len(word):
-            level = cls.KEYWORD_CHAINS[region]
+            level = cls.KEYWORD_CHAINS[region] if cls.NOT_REGION else cls.DEFAULT_KEYWORD_CHAIN
             step_ins = 0
             for char in word[start:]:
                 if char in level:
@@ -88,7 +92,7 @@ class DFAFilter(object):
 
 if __name__ == "__main__":
     DFAFilter.load()
-    text = [u'大傻子哦', u'神仙', u'你好', u'大人']
+    text = [u'大傻子哦', u'神仙', u'你好', u'大人', 'das']
     # gfw = DFAFilter()
     # path = wordfilter_path
     # gfw.parse(path)

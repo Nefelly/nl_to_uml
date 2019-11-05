@@ -96,7 +96,6 @@ class AdminService(object):
                    'next_start': next_start
                }, True
 
-
     @classmethod
     def ban_user_by_report(cls, report_id, ban_time):
         report = Report.get_by_id(report_id)
