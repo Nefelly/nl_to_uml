@@ -660,6 +660,7 @@ class UserRecord(Document):
     }
     FORBIDDEN_ACTION = 'forbidden'
     AUTO_FORBIDDEN= 'autoForbid'
+    SPAM_FORBIDDEN = 'spamForbid'
     user_id = StringField(required=True)
     action = StringField(required=True)
     create_time = IntField(required=True)
@@ -682,6 +683,15 @@ class UserRecord(Document):
         obj = cls()
         obj.user_id = user_id
         obj.action = cls.AUTO_FORBIDDEN
+        obj.create_time = int(time.time())
+        obj.save()
+        return True
+
+    @classmethod
+    def add_spam_forbidden(cls, user_id):
+        obj = cls()
+        obj.user_id = user_id
+        obj.action = cls.SPAM_FORBIDDEN
         obj.create_time = int(time.time())
         obj.save()
         return True

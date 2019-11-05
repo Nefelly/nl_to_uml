@@ -33,7 +33,8 @@ from ..service import (
     GlobalizationService,
     UserMessageService,
     MqService,
-    QiniuService
+    QiniuService,
+    AntiSpamService
 )
 from ..model import (
     Feed,
@@ -175,6 +176,8 @@ class FeedService(object):
 
     @classmethod
     def create_feed(cls, user_id, content, pics=None, audios=None):
+        if content and AntiSpamService.is_spam_word(content):
+            UserService.alert_to_user(user_id)
         feed = Feed.create_feed(user_id, content, pics, audios)
         cls._on_add_feed(feed)
         # cls._add_to_feed_pool(feed)

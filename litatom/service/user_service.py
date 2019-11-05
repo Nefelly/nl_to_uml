@@ -50,7 +50,7 @@ from ..model import (
     FaceBookBackup,
     RedisLock,
     ReferralCode,
-    LoginRecord,
+    UserModel,
     Report
 )
 from ..service import (
@@ -62,7 +62,8 @@ from ..service import (
     FollowService,
     GlobalizationService,
     FirebaseService,
-    MqService
+    MqService,
+    AntiSpamService
 )
 
 sys_rnd = random.SystemRandom()
@@ -164,6 +165,16 @@ class UserService(object):
         return True
 
     @classmethod
+    def alert_to_user(cls, user_id, alert_type=None):
+        msg = GlobalizationService.get_region_word('alert_word', request.region)
+        cls.msg_to_user(msg, user_id)
+        should_block = UserModel.add_alert_num(user_id)
+        if should_block:
+            cls._forbid_action(user_id, 3 * ONE_DAY)
+            UserRecord.add_spam_forbidden(user_id)
+
+
+    @classmethod
     def _on_update_info(cls, user, data):
         cls.update_info_finished_cache(user)
         gender = data.get('gender', '')
@@ -179,6 +190,8 @@ class UserService(object):
             uid = str(user.id)
             nickname = data.get('nickname', '')
             bio = data.get('bio', '')
+            if AntiSpamService.is_spam_word(nickname) or AntiSpamService.is_spam_word(bio):
+                cls.alert_to_user(uid)
             if (bio or nickname) and GlobalizationService.get_region() == GlobalizationService.DEFAULT_REGION:
                 loc = cls._get_words_loc([nickname, bio])
                 if loc:
@@ -404,6 +417,9 @@ class UserService(object):
         for _ in feeds:
             _.delete()
             MqService.push(REMOVE_EXCHANGE, {"feed_id": str(_.id)})
+        for _ in Report.objects(target_uid=user_id, dealed=False):
+            _.dealed = True
+            _.save()
 
     @classmethod
     def forbid_user(cls, user_id, forbid_ts):
@@ -425,9 +441,6 @@ class UserService(object):
         for _ in report_user_ids:
             cls.msg_to_user(to_user_info, _)
             FirebaseService.send_to_user(_, u'your report succeed', to_user_info)
-        for _ in Report.objects(target_uid=reported_uid, dealed=False):
-            _.dealed = True
-            _.save()
 
     @classmethod
     def update_info(cls, user_id, data):
@@ -457,15 +470,12 @@ class UserService(object):
                 nick_name = trunc(nick_name, cls.NICKNAME_LEN_LIMIT)
             if cls.verify_nickname_exists(nick_name):
                 if not user.finished_info:
-                    LoginRecord.create('nicknameexists', user_id, nick_name)
                     nick_name = cls.choose_a_nickname_for_user(nick_name)
                     if cls.verify_nickname_exists(nick_name):
                         return u'nickname already exists', False
                 else:
                     return u'nickname already exists', False
             data['nickname'] = nick_name
-            if not user.finished_info:
-                LoginRecord.create('nicknamesucc', user_id)
         if data.get('avatar', ''):
             if not Avatar.valid_avatar(data.get('avatar')):
                 data.pop('avatar')

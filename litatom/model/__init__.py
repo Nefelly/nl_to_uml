@@ -53,7 +53,7 @@ from .admin import AdminUser
 from .fbbackup import FaceBookBackup
 from .globalization import RegionWord
 from .referral_code import ReferralCode
-from .user_model import LoginRecord
+from .user_model import UserModel
 from .anoy_online import AnoyOnline
 from ..db import DBManager
 
