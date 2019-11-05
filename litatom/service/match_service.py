@@ -214,8 +214,8 @@ class MatchService(object):
             if my_cnt > 1:
                 return None, False
 
-        accelerate_fakeids = redis_client.zrangebyscore(cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, other_gender), judge_time, MAX_TIME, 0, cls.MAX_CHOOSE_NUM)
-        other_fakeids = redis_client.zrangebyscore(cls.MATCH_KEY_BY_REGION_GENDER(other_gender), judge_time, MAX_TIME, 0, cls.MAX_CHOOSE_NUM)
+        accelerate_fakeids = redis_client.zrangebyscore(cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, other_gender), judge_time + 3, MAX_TIME, 0, cls.MAX_CHOOSE_NUM)
+        other_fakeids = redis_client.zrangebyscore(cls.MATCH_KEY_BY_REGION_GENDER(other_gender), judge_time + 3, MAX_TIME, 0, cls.MAX_CHOOSE_NUM)
         if not accelerate_fakeids and not other_fakeids:
             return None, False
 
