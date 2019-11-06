@@ -55,6 +55,7 @@ b.add_url_rule('/lit/admin/download_phone', 'admin-download_phone', endpoint.adm
 b.add_url_rule('/lit/admin/mail_alert', 'admin-mail-alert', endpoint.admin.mail_alert, methods=['POST'])
 b.add_url_rule('/lit/admin/stat_items', 'admin-stat_items', endpoint.admin.stat_items)
 b.add_url_rule('/lit/admin/journal', 'admin-journal', endpoint.admin.journal)
+b.add_url_rule('/lit/admin/add_stat_item', 'admin-add_stat_item', endpoint.admin.add_stat_item, methods=['POST'])
 
 # 图片
 b.add_url_rule('/lit/image/upload', 'image-upload', endpoint.oss.upload_image_from_file, methods=['POST'])

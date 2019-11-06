@@ -273,6 +273,7 @@ def stat_items():
         return success(data)
     return fail(data)
 
+
 def add_stat_item():
     data = request.json
     name = data.get("name")
@@ -283,6 +284,7 @@ def add_stat_item():
     if status:
         return success()
     return fail(msg)
+
 
 def journal():
     return current_app.send_static_file('journal.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
