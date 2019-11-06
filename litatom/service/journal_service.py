@@ -27,3 +27,12 @@ class JournalService(object):
             judge_field = ''
         StatItems.create(name, table_name, judge_field, expression)
         return None, True
+
+    @classmethod
+    def cal_by_id(cls, item_id):
+        item = StatItems.get_by_id(item_id)
+        return {
+            "id": item_id,
+            "num": 0,
+            "name": item.name
+        }

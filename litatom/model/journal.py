@@ -34,6 +34,10 @@ class StatItems(Document):
             obj.expression = expression
         obj.save()
 
+    @classmethod
+    def get_by_id(cls, item_id):
+        return cls.objects(id=item_id).first()
+
     def to_json(self, *args, **kwargs):
         return {
             "id": str(self.id),
@@ -48,4 +52,3 @@ class StatItems(Document):
         # tmp = json.loads(tmp)
         # tmp['id'] = str(self.id)
         # return tmp
-
