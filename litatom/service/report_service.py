@@ -67,9 +67,9 @@ class ReportService(object):
                 if _.uid not in uids:
                     uids.add(_.uid)
                     if _.reason == match_reason:
-                        cnt += 1
-                    else:
                         cnt += match_cnt
+                    else:
+                        cnt += 1
                     if cnt >= judge_num:
                         return True
         return False
