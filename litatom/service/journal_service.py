@@ -36,3 +36,7 @@ class JournalService(object):
             "num": 0,
             "name": item.name
         }
+    @classmethod
+    def delete_stat_item(cls, item_id):
+        StatItems.objects(id=item_id).delete()
+        return None, True

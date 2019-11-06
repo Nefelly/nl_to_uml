@@ -10,6 +10,7 @@
  <th>judge_field</th>
  <th>expression</th>
     <th>create_time</th>
+    <th>delete</th>
  </tr>
     <tr><td>插入新的统计项</td>
         <td><input id="name_area" name="name_area"></td>
@@ -24,6 +25,7 @@
     <td>{{item.judge_field}}</td>
     <td>{{item.expression}}</td>
     <td>{{item.create_time}}</td>
+    <td><button name='delete' @click='delete_item(item.id)'>delete</button></td>
 </tr>
 
 </table>
@@ -58,6 +60,24 @@ methods: {
             if (result.data.result === 0){alert('success!');}
             else{alert('failed');}
         })
+    },
+
+    delete_item: function(item_id){
+      var url = BASE_URL + 'admin/delete_stat_item/' + item_id;
+      this.$http.get(url).then(function(result){
+        console.log('!!!!!!', this.items1);
+        if (result.data.result === 0){alert('success!');}
+        else{alert('failed');}
+        let newItem1 = [];
+        this.items1.forEach(item => {
+          if (item.id !== item_id) {
+            newItem1.push(item)
+          }
+        })
+
+        this.items1 = newItem1
+
+      })
     },
 
     }

@@ -287,5 +287,12 @@ def add_stat_item():
     return fail(msg)
 
 
+def delete_stat_item(item_id):
+    msg, status = JournalService.delete_stat_item(item_id)
+    if status:
+        return success()
+    return fail(msg)
+
+
 def journal():
     return current_app.send_static_file('journal.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
