@@ -280,6 +280,7 @@ def add_stat_item():
     table_name = data.get("table_name")
     judge_field = data.get("judge_field", "")
     expression = data.get("expression")
+    print expression, "!" * 100
     msg, status = JournalService.add_stat_item(name, table_name, judge_field, expression)
     if status:
         return success()
