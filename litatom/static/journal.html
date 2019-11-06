@@ -54,7 +54,7 @@ methods: {
         table_name = document.getElementById('table_area').value;
         judge_field = document.getElementById('judge_field_area').value;
         expression = document.getElementById('expression_area').value;
-        this.$http.post(BASE_URL + 'admin/msg_to_region', {"name":stat_name, "table_name":table_name, "judge_field":judge_field, "expression":""}).then(function(result){
+        this.$http.post(BASE_URL + 'admin/add_stat_item', {"name":stat_name, "table_name":table_name, "judge_field":judge_field, "expression":""}).then(function(result){
             if (result.data.result === 0){alert('success!');}
             else{alert('failed');}
         })
