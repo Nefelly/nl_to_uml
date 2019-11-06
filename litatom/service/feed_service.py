@@ -50,12 +50,15 @@ class FeedService(object):
     def should_add_to_square(cls, feed):
         user_id = feed.user_id
         judge_time = int(time.time()) - ONE_HOUR
+        status = Feed.objects(user_id=user_id, create_time__gte=judge_time).count
+        print status
         return Feed.objects(user_id=user_id, create_time__gte=judge_time).count <= 3
 
     @classmethod
     def _on_add_feed(cls, feed):
         if not feed.pics:
             if cls.should_add_to_square(feed):
+                print ""
                 cls._add_to_feed_pool(feed)
         MqService.push(ADD_EXCHANGE,
                        {"feed_id": str(feed.id), "pics": feed.pics, "region_key": cls._redis_feed_region_key(REDIS_FEED_SQUARE_REGION)})
