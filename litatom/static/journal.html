@@ -11,7 +11,7 @@
  <th>expression</th>
     <th>create_time</th>
  </tr>
-    <tr><td></td>
+    <tr><td>插入新的统计项</td>
         <td><input id="name_area" name="name_area"></td>
         <td><input id="table_area" name="num"></td>
         <td><input id="judge_field_area" name="num"></td>
@@ -54,7 +54,7 @@ methods: {
         table_name = document.getElementById('table_area').value;
         judge_field = document.getElementById('judge_field_area').value;
         expression = document.getElementById('expression_area').value;
-        this.$http.post(BASE_URL + 'admin/add_stat_item', {"name":stat_name, "table_name":table_name, "judge_field":judge_field, "expression":""}).then(function(result){
+        this.$http.post(BASE_URL + 'admin/add_stat_item', {"name":stat_name, "table_name":table_name, "judge_field":judge_field, "expression":"expression"}).then(function(result){
             if (result.data.result === 0){alert('success!');}
             else{alert('failed');}
         })
