@@ -56,7 +56,7 @@ class FeedService(object):
     def _on_add_feed(cls, feed):
         if not feed.pics:
             if cls.should_add_to_square(feed):
-                print cls.should_add_to_square(feed)
+                print cls.should_add_to_square(feed), "!" * 100
                 cls._add_to_feed_pool(feed)
         MqService.push(ADD_EXCHANGE,
                        {"feed_id": str(feed.id), "pics": feed.pics, "region_key": cls._redis_feed_region_key(REDIS_FEED_SQUARE_REGION)})
@@ -69,7 +69,6 @@ class FeedService(object):
             for pic in pics:
                 reason = QiniuService.should_pic_block_from_file_id(pic)
                 if reason:
-                    print reason
                     break
         feed = Feed.get_by_id(feed_id)
         if feed:
