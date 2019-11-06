@@ -45,7 +45,7 @@ methods: {
       submitForm: function() {
         this.$http.get(BASE_URL + 'admin/stat_items').then(function(result){
         var data = result.data.data;
-	    this.items1 = data.objs;
+	    this.items1 = data;
 	      })
       },
 
