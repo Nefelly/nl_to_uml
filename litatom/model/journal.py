@@ -35,8 +35,16 @@ class StatItems(Document):
         obj.save()
 
     def to_json(self, *args, **kwargs):
-        tmp = super(StatItems, self).to_json(*args, **kwargs)
-        import json
-        tmp = json.loads(tmp)
-        tmp['id'] = str(self.id)
-        return tmp
+        return {
+            "id": str(self.id),
+            "name": self.name,
+            "create_time": str(self.create_time),
+            "judge_field": self.judge_field,
+            "expression": self.expression
+        }
+        # tmp = super(StatItems, self).to_json(*args, **kwargs)
+        # import json
+        # tmp = json.loads(tmp)
+        # tmp['id'] = str(self.id)
+        # return tmp
+
