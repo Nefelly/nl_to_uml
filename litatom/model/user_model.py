@@ -31,6 +31,7 @@ class UserModel(Document):
     @classmethod
     def add_alert_num(cls, user_id):
         ''' add alert num, return should block now'''
+        print "add alert num"
         obj = cls.get_by_user_id(user_id)
         if not obj:
             obj = cls(user_id=user_id, alert_num=1)
