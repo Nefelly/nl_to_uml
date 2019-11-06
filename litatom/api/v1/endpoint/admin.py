@@ -266,9 +266,13 @@ def batch_insert():
         return success()
     return fail(msg)
 
+
 def stat_items():
     data, status = JournalService.get_journal_items()
     if status:
         return success(data)
     return fail(data)
 
+
+def journal():
+    return current_app.send_static_file('journal.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
