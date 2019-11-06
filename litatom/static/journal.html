@@ -1,0 +1,107 @@
+<html>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://cdn.bootcss.com/vue-resource/1.5.1/vue-resource.js"></script>
+<div id="app-7">
+<table class="tb" border="1">
+<tr>
+ <th>id</th>
+ <th>name</th>
+ <th>table</th>
+ <th>judge_field</th>
+ <th>expression</th>
+    <th>create_time</th>
+ </tr>
+<tr v-for="item in items1">
+<td>{{item.id}}</td>
+<td><pre>{{item.name}}</pre></td>
+<td>{{item.table_name}}</td>
+    <td>{{item.judge_field}}</td>
+    <td>{{item.expression}}</td>
+    <td>{{item.create_time}}</td>
+</tr>
+    <tr><td></td> <td></td> <td></td><td></td> <td></td> <td></td></tr>
+</table>
+<!-- <button v-if="previous_start >= 0" name="previous_page" @click="previous_page()">previous page</button> -->
+</div>
+<script>
+    const BASE_URL = 'http://' + document.domain + '/api/sns/v1/lit/';
+var app7 = new Vue({
+  el: '#app-7',
+  data: {
+    items1: [],
+    base_url: BASE_URL,
+    next_start: 100000000000,
+    previous_start: -1
+  },
+created() {this.submitForm();},
+
+methods: {
+      submitForm: function() {
+        this.$http.get(BASE_URL + 'admin/stat_items').then(function(result){
+        var data = result.data.data;
+	this.items1 = data.objs;
+	      })
+      },
+    reject: function(report_id){
+      var url = BASE_URL + 'admin/reject/' + report_id;
+      this.$http.get(url).then(function(result){
+        console.log('!!!!!!', result.data);
+        if (result.data.result === 0){
+            let newItem1 = [];
+            this.items1.forEach(item => {
+                if (item.report_id !== report_id) {
+                newItem1.push(item)
+            }
+        })
+            this.items1 = newItem1
+        }
+        else{alert('failed');}
+      })
+
+    },
+    ban: function(report_id){
+      var url = BASE_URL + 'admin/ban/' + report_id;
+      this.$http.get(url).then(function(result){
+        console.log('!!!!!!', this.items1);
+        if (result.data.result === 0){alert('success!');}
+        else{alert('failed');}
+        let newItem1 = [];
+        this.items1.forEach(item => {
+          if (item.report_id !== report_id) {
+            newItem1.push(item)
+          }
+        })
+
+        this.items1 = newItem1
+
+      })
+    },
+
+
+    next_page: function() {
+        this.$http.get(BASE_URL + 'admin/query_reports', {params:{start_ts: this.next_start, loc:Loc, dealed:Dealed}}).then(function(result){
+            var data = result.data.data;
+            this.objs = data.objs;
+            this.items1 = this.objs;
+            this.next_start = data.next_start;
+            if(this.next_start===0){
+                this.previous_start = -1;
+            }
+        })
+    },
+
+    previous_page: function() {
+        this.$http.get(BASE_URL + 'admin/query_reports', {params:{start_pos: this.previous_start, loc:Loc}}).then(function(result){
+            var data = result.data.data;
+            this.feeds = data.feeds;
+            this.next_start = this.previous_start;
+            if(this.next_start===0){
+                this.previous_start = -1;
+            }
+
+        })
+    },
+    }
+})
+</script>
+</html>

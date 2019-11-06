@@ -43,7 +43,8 @@ from ....service import (
     FeedService,
     GlobalizationService,
     UserService,
-    AlertService
+    AlertService,
+    JournalService
 )
 from  ....const import (
     MAX_TIME,
@@ -264,3 +265,10 @@ def batch_insert():
     if status:
         return success()
     return fail(msg)
+
+def stat_items():
+    data, status = JournalService.get_journal_items()
+    if status:
+        return success(data)
+    return fail(data)
+

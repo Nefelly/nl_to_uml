@@ -10,6 +10,7 @@ from .firebase_service import FirebaseService
 from .huanxin_service import HuanxinService
 from .anti_spam_service import AntiSpamService
 from .user_setting_service import UserSettingService
+from .journal_service import JournalService
 from .following_feed_service import FollowingFeedService
 from .user_relation import (
     FollowService,

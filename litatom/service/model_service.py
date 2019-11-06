@@ -11,5 +11,4 @@ redis_client = RedisClient()['lit']
 
 class Service(object):
     '''
-    docs :https://developer.qiniu.com/censor/api/5588/image-censor
     '''
