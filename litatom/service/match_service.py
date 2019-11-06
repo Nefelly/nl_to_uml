@@ -224,7 +224,7 @@ class MatchService(object):
 
         cnt = 0
         matched_fakeid = None
-        for fake_id2 in accelerate_fakeids:
+        for fake_id2 in accelerate_fakeids:  #应该使用随机策略，因为排队诅咒会导致排队最久最先排到导致平均等待时间最长，且驱逐耐心较小的用户
             user_id2 = cls._uid_by_fake_id(fake_id2)
             if not redis_client.get(cls.TYPE_MATCH_BEFORE.format(low_high_fakeid=low_high_pair(fake_id, fake_id2))) and not BlockService.get_block_msg(user_id, user_id2):
                 matched_fakeid = fake_id2
