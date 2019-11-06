@@ -38,8 +38,10 @@ def create_feed():
     audios = data.get('audios')
     if not content and not pics and not audios:
         return jsonify(FailedLackOfField)
-    feed_id = FeedService.create_feed(request.user_id, content, pics, audios)
-    return success({'feed_id': feed_id})
+    feed_id, status = FeedService.create_feed(request.user_id, content, pics, audios)
+    if status:
+        return success({'feed_id': feed_id})
+    return fail(feed_id)
 
 
 @session_finished_required
