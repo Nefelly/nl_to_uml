@@ -172,6 +172,7 @@ class UserService(object):
         if should_block:
             cls._forbid_action(user_id, 3 * ONE_DAY)
             UserRecord.add_spam_forbidden(user_id)
+        return should_block
 
 
     @classmethod
