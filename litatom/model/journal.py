@@ -38,6 +38,7 @@ class StatItems(Document):
         return {
             "id": str(self.id),
             "name": self.name,
+            "table_name": self.table_name,
             "create_time": str(self.create_time),
             "judge_field": self.judge_field,
             "expression": self.expression
