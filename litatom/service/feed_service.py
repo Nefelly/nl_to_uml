@@ -56,7 +56,7 @@ class FeedService(object):
     def _on_add_feed(cls, feed):
         if not feed.pics:
             if cls.should_add_to_square(feed):
-                print ""
+                print cls.should_add_to_square(feed)
                 cls._add_to_feed_pool(feed)
         MqService.push(ADD_EXCHANGE,
                        {"feed_id": str(feed.id), "pics": feed.pics, "region_key": cls._redis_feed_region_key(REDIS_FEED_SQUARE_REGION)})
