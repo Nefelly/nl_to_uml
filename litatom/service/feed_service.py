@@ -50,9 +50,7 @@ class FeedService(object):
     def should_add_to_square(cls, feed):
         user_id = feed.user_id
         judge_time = int(time.time()) - ONE_HOUR
-        status = Feed.objects(user_id=user_id, create_time__gte=judge_time).count
-        print status
-        return Feed.objects(user_id=user_id, create_time__gte=judge_time).count <= 3
+        return Feed.objects(user_id=user_id, create_time__gte=judge_time).count() <= 3
 
     @classmethod
     def _on_add_feed(cls, feed):
