@@ -11,6 +11,12 @@
  <th>expression</th>
     <th>create_time</th>
  </tr>
+    <tr><td></td>
+        <td><input id="name_area" name="name_area"></td>
+        <td><input id="table_area" name="num"></td>
+        <td><input id="judge_field_area" name="num"></td>
+        <td><input id="expression_area" name="num"></td>
+        <td><button name='add_item' @click='add_item()'>add_item</button></td></tr>
 <tr v-for="item in items1">
 <td>{{item.id}}</td>
 <td><pre>{{item.name}}</pre></td>
@@ -19,7 +25,7 @@
     <td>{{item.expression}}</td>
     <td>{{item.create_time}}</td>
 </tr>
-    <tr><td></td> <td><input id="num_area" name="num"></td> <td></td><td></td> <td></td> <td><button name='add_item' @click='add_item()'>add_item</button></td></tr>
+
 </table>
 <!-- <button v-if="previous_start >= 0" name="previous_page" @click="previous_page()">previous page</button> -->
 </div>
@@ -42,65 +48,18 @@ methods: {
 	this.items1 = data.objs;
 	      })
       },
-    reject: function(report_id){
-      var url = BASE_URL + 'admin/reject/' + report_id;
-      this.$http.get(url).then(function(result){
-        console.log('!!!!!!', result.data);
-        if (result.data.result === 0){
-            let newItem1 = [];
-            this.items1.forEach(item => {
-                if (item.report_id !== report_id) {
-                newItem1.push(item)
-            }
-        })
-            this.items1 = newItem1
-        }
-        else{alert('failed');}
-      })
 
-    },
-    ban: function(report_id){
-      var url = BASE_URL + 'admin/ban/' + report_id;
-      this.$http.get(url).then(function(result){
-        console.log('!!!!!!', this.items1);
-        if (result.data.result === 0){alert('success!');}
-        else{alert('failed');}
-        let newItem1 = [];
-        this.items1.forEach(item => {
-          if (item.report_id !== report_id) {
-            newItem1.push(item)
-          }
-        })
-
-        this.items1 = newItem1
-
-      })
-    },
-
-
-    next_page: function() {
-        this.$http.get(BASE_URL + 'admin/query_reports', {params:{start_ts: this.next_start, loc:Loc, dealed:Dealed}}).then(function(result){
-            var data = result.data.data;
-            this.objs = data.objs;
-            this.items1 = this.objs;
-            this.next_start = data.next_start;
-            if(this.next_start===0){
-                this.previous_start = -1;
-            }
+    add_item: function() {
+        stat_name = document.getElementById('name_area').value;
+        table_name = document.getElementById('table_area').value;
+        judge_field = document.getElementById('judge_field_area').value;
+        expression = document.getElementById('expression_area').value;
+        this.$http.post(BASE_URL + 'admin/msg_to_region', {"name":stat_name, "table_name":table_name, "judge_field":judge_field, "expression":""}).then(function(result){
+            if (result.data.result === 0){alert('success!');}
+            else{alert('failed');}
         })
     },
 
-    previous_page: function() {
-        this.$http.get(BASE_URL + 'admin/query_reports', {params:{start_pos: this.previous_start, loc:Loc}}).then(function(result){
-            var data = result.data.data;
-            this.feeds = data.feeds;
-            this.next_start = this.previous_start;
-            if(this.next_start===0){
-                this.previous_start = -1;
-            }
-
-        })
-    },
     }
 })
 </script>

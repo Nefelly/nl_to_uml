@@ -273,6 +273,16 @@ def stat_items():
         return success(data)
     return fail(data)
 
+def add_stat_item():
+    data = request.json
+    name = data.get("name")
+    table_name = data.get("table_name")
+    judge_field = data.get("judge_field", "")
+    expression = data.get("expression")
+    msg, status = JournalService.add_stat_item(name, table_name, judge_field, expression)
+    if status:
+        return success()
+    return fail(msg)
 
 def journal():
     return current_app.send_static_file('journal.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
