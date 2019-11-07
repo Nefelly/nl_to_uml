@@ -57,7 +57,7 @@ methods: {
         judge_field = document.getElementById('judge_field_area').value;
         expression = document.getElementById('expression_area').value;
         this.$http.post(BASE_URL + 'admin/add_stat_item', {"name":stat_name, "table_name":table_name, "judge_field":judge_field, "expression":expression}).then(function(result){
-            if (result.data.result === 0){alert('success!');this.submitForm();}
+            if (result.data.result === 0){this.submitForm();}
             else{alert('failed');}
         })
     },
