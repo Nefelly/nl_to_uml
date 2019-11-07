@@ -88,7 +88,7 @@ class JournalService(object):
             time_str = "%s__gte=%r, %s__lte=%r" % (judge_field, zeroYestoday, judge_field, zeroToday)
         else:
             time_str = "%s__gte=%r, %s__lte=%r" % (judge_field, date_to_int_time(zeroYestoday), judge_field, date_to_int_time(zeroToday))
-        exc_str = '%s.objects(%s,%s).count()' % (time_str, expression)
+        exc_str = '%s.objects(%s,%s).count()' % (table_name, time_str, expression)
         print exc_str
         cnt = eval(exc_str)
         if not cnt:
