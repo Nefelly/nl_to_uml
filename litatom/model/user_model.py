@@ -36,7 +36,7 @@ class UserModel(Document):
             obj = cls(user_id=user_id, alert_num=1)
         else:
             obj.alert_num += 1
-            obj.save()
+        obj.save()
         if obj.alert_num != 0 and obj.alert_num % cls.ALERT_TIMES == 0:
             return True
         return False
