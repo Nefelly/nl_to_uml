@@ -37,6 +37,11 @@ def ensure_unicode(v):
     return unicode(v)  # convert anything not a string to unicode too
 
 
+def get_zero_today():
+    now = datetime.datetime.now()
+    return datetime.datetime(year=now.year, month=now.month, day=now.day)
+
+
 def trunc(v, length):
     v = ensure_unicode(v).encode('utf8')
     if len(v) > length:
@@ -50,6 +55,7 @@ def format_standard_date(time_data):
 
 def format_standard_time(time_data):
     return time_data.strftime('%Y-%m-%d %H:%M:%S')
+
 
 def trans_secs_to_time(secs):
     m, s = divmod(secs, 60)
@@ -65,6 +71,7 @@ def parse_standard_time(time_data_str):
 
 def next_date(d_time, d=1):
     return d_time + datetime.timedelta(days=d)
+
 
 def get_times_from_str(time_data_str):
     if len(time_data_str) == 8:
