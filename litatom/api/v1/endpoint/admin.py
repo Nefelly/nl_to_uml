@@ -43,7 +43,8 @@ from ....service import (
     FeedService,
     GlobalizationService,
     UserService,
-    AlertService
+    AlertService,
+    JournalService
 )
 from  ....const import (
     MAX_TIME,
@@ -161,6 +162,7 @@ def reject(report_id):
         return fail(data)
     return success(data)
 
+
 def get_user_id():
     phone = request.args.get('phone')
     target_loc = request.loc
@@ -171,6 +173,7 @@ def get_user_id():
             user_id = str(user.id)
             request.user_id = user_id
     return user_id
+
 
 def change_loc():
     phone = request.args.get('phone')
@@ -190,6 +193,7 @@ def unban():
     UserService.unban_user(get_user_id())
     return success()
 
+
 def change_avatar():
     nickname = request.args.get('nickname')
     user = User.get_by_nickname(nickname)
@@ -199,6 +203,7 @@ def change_avatar():
     user.save()
     return success()
 
+
 def mail_alert():
     data = request.json
     content = data.get('content', '')
@@ -207,6 +212,7 @@ def mail_alert():
         to_users = ['w326571@126.com', 'juzhongtian@gmail.com', '382365209@qq.com']
     AlertService.send_mail(to_users, content)
     return success({'to_users': to_users})
+
 
 def download_phone():
     date = request.args.get('date')
@@ -226,6 +232,7 @@ def download_phone():
     write_data_to_xls(name, ['name', 'phone'], res)
     return send_file(name, as_attachment=True)
 
+
 def msg_to_region():
     data = request.json
     region = data.get('region')
@@ -240,5 +247,52 @@ def msg_to_region():
         return success()
     return fail()
 
+
 def send_message_html():
     return render_template('send.html', regions=GlobalizationService.REGIONS), 200, {'Content-Type': 'text/html; charset=utf-8'}
+
+
+def batch_insert_html():
+    return render_template('batch_insert.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
+
+def batch_insert():
+    data = request.json
+    fields = data.get("fields")
+    table_name = data.get("table_name")
+    main_key = data.get("main_key", "")
+    insert_data = data.get("data")
+    msg, status = AdminService.batch_insert(table_name, fields, main_key, insert_data)
+    if status:
+        return success()
+    return fail(msg)
+
+
+def stat_items():
+    data, status = JournalService.get_journal_items()
+    if status:
+        return success(data)
+    return fail(data)
+
+
+def add_stat_item():
+    data = request.json
+    name = data.get("name")
+    table_name = data.get("table_name")
+    judge_field = data.get("judge_field", "")
+    expression = data.get("expression")
+    print expression, "!" * 100
+    msg, status = JournalService.add_stat_item(name, table_name, judge_field, expression)
+    if status:
+        return success()
+    return fail(msg)
+
+
+def delete_stat_item(item_id):
+    msg, status = JournalService.delete_stat_item(item_id)
+    if status:
+        return success()
+    return fail(msg)
+
+
+def journal():
+    return current_app.send_static_file('journal.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}

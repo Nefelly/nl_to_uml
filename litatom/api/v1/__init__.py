@@ -49,8 +49,15 @@ b.add_url_rule('/lit/admin/change_avatar', 'admin-change-avatar', endpoint.admin
 b.add_url_rule('/lit/admin/upload_apk', 'admin-upload_apk', endpoint.admin.upload_apk, methods=['POST'])
 b.add_url_rule('/lit/admin/msg_to_region', 'admin-to-region', endpoint.admin.msg_to_region, methods=['POST'])
 b.add_url_rule('/lit/admin/send_message', 'admin-send_message', endpoint.admin.send_message_html)
+b.add_url_rule('/lit/admin/batch_insert', 'admin-batch_insert', endpoint.admin.batch_insert_html)
+b.add_url_rule('/lit/admin/batch_insert_act', 'admin-batch_insert_act', endpoint.admin.batch_insert, methods=['POST'])
 b.add_url_rule('/lit/admin/download_phone', 'admin-download_phone', endpoint.admin.download_phone)
 b.add_url_rule('/lit/admin/mail_alert', 'admin-mail-alert', endpoint.admin.mail_alert, methods=['POST'])
+b.add_url_rule('/lit/admin/stat_items', 'admin-stat_items', endpoint.admin.stat_items)
+b.add_url_rule('/lit/admin/journal', 'admin-journal', endpoint.admin.journal)
+b.add_url_rule('/lit/admin/add_stat_item', 'admin-add_stat_item', endpoint.admin.add_stat_item, methods=['POST'])
+b.add_url_rule('/lit/admin/delete_stat_item/<item_id>', 'admin-delete_stat_item', endpoint.admin.delete_stat_item)
+
 
 # 图片
 b.add_url_rule('/lit/image/upload', 'image-upload', endpoint.oss.upload_image_from_file, methods=['POST'])

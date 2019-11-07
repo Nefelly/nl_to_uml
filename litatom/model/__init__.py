@@ -14,7 +14,8 @@ from .follow import (
 from .material import (
     Avatar,
     YoutubeVideo,
-    Wording
+    Wording,
+    SpamWord
 )
 from .report import (
     Report
@@ -47,12 +48,13 @@ from .message import (
 from .redis_lock import (
     RedisLock
 )
+from .journal import StatItems
 from .track import TrackChat
 from .admin import AdminUser
 from .fbbackup import FaceBookBackup
 from .globalization import RegionWord
 from .referral_code import ReferralCode
-from .user_model import LoginRecord
+from .user_model import UserModel
 from .anoy_online import AnoyOnline
 from ..db import DBManager
 

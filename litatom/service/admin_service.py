@@ -1,11 +1,13 @@
 # coding: utf-8
 import random
+import string
 import time
 import datetime
 from flask import (
     request
 )
 from mongoengine.queryset.visitor import Q
+from ..model import *
 from ..model import (
     AdminUser,
     Report,
@@ -94,7 +96,6 @@ class AdminService(object):
                    'next_start': next_start
                }, True
 
-
     @classmethod
     def ban_user_by_report(cls, report_id, ban_time):
         report = Report.get_by_id(report_id)
@@ -130,4 +131,33 @@ class AdminService(object):
         if not report:
             return u'wrong report id', False
         report.reject()
+        return None, True
+
+    @classmethod
+    def batch_insert(cls, table_name, fields, main_key, insert_data):
+        def check_valid_string(word):
+            chars = string.ascii_letters + '_' + string.digits
+            for chr in word:
+                if chr not in chars:
+                    return False
+            return True
+        NOT_ALLOWED = ["User", "Feed"]
+        table_name = table_name.strip()
+        fields = fields.strip().split("|")
+        main_key = main_key if main_key else ''
+        main_key = main_key.strip()
+        for el in fields + [table_name, main_key]:
+            if not check_valid_string(el):
+                return u'word: %s is invalid' % el, False
+        insert_data = insert_data.strip()
+        if table_name in NOT_ALLOWED:
+            return u'Insert into table:%s is not allowed' % table_name, False
+        lines = [el.split("\t") for el in insert_data.split("\n") if el]
+        for line in lines:
+            if len(line) != len(fields):
+                return u'len(line) != len(fields), line:%r' % line, False
+            conn = ','.join(['%s=\'%s\'' % (fields[i], line[i]) for i in range(len(line))])
+            get = eval('%s.objects(%s).first()' % (table_name, conn))
+            if not get:
+                eval('%s(%s).save()' % (table_name, conn))
         return None, True

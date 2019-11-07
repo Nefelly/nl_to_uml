@@ -12,31 +12,35 @@ from mongoengine import (
 )
 
 
-class LoginRecord(Document):
+class UserModel(Document):
     meta = {
         'strict': False,
         'alias': 'db_alias'
     }
-
-    result = StringField(required=True)
+    ALERT_TIMES = 2
     user_id = StringField(required=True)
-    nickname = StringField()
+    alert_num = IntField(required=True, default=0)
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
 
     @classmethod
-    def create(cls, result, user_id, nickname=""):
-        obj = cls()
-        obj.result = result
-        obj.user_id = user_id
+    def create(cls, user_id):
+        obj = cls(user_id=user_id, alert_num=1)
         obj.save()
         return str(obj.id)
 
     @classmethod
-    def get_by_id(cls, result_id):
-        if not bson.ObjectId.is_valid(result_id):
-            return None
-        obj = cls.objects(id=result_id).first()
-        if obj:
-            return json.loads(obj.result)
-        return {}
+    def add_alert_num(cls, user_id):
+        ''' add alert num, return should block now'''
+        obj = cls.get_by_user_id(user_id)
+        if not obj:
+            obj = cls(user_id=user_id, alert_num=1)
+        else:
+            obj.alert_num += 1
+        obj.save()
+        if obj.alert_num != 0 and obj.alert_num % cls.ALERT_TIMES == 0:
+            return True
+        return False
 
+    @classmethod
+    def get_by_user_id(cls, user_id):
+        return cls.objects(user_id=user_id).first()
