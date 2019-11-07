@@ -276,11 +276,10 @@ def stat_items():
 
 def add_stat_item():
     data = request.json
-    name = data.get("name")
-    table_name = data.get("table_name")
-    judge_field = data.get("judge_field", "")
-    expression = data.get("expression")
-    print expression, "!" * 100
+    name = data.get("name").strip()
+    table_name = data.get("table_name").strip()
+    judge_field = data.get("judge_field", "").strip()
+    expression = data.get("expression").strip()
     msg, status = JournalService.add_stat_item(name, table_name, judge_field, expression)
     if status:
         return success()
