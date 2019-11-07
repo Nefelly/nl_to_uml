@@ -20,6 +20,7 @@ class AntiSpamService(object):
             
     @classmethod
     def is_spam_word(cls, word):
+        return False
         return DFAFilter.is_spam_word(word)
 
 
