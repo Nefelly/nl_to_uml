@@ -110,7 +110,7 @@ class MatchService(object):
     def _remove_from_match_pool(cls, gender, fake_id):
         if not gender or not fake_id:
             return
-        uid = cls._uid_by_fake_id(fake_id)
+        # uid = cls._uid_by_fake_id(fake_id)
         # redis_client.delete(REDIS_ACCELERATE_CACHE.format(user_id=uid))
         return redis_client.zrem(cls.MATCH_KEY_BY_REGION_GENDER(gender), fake_id) or redis_client.zrem(cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender), fake_id)
 
@@ -157,7 +157,7 @@ class MatchService(object):
         return True if in_match else False
 
     @classmethod
-    def _create_match(cls, fake_id1, fake_id2, gender1):
+    def _create_match(cls, fake_id1, fake_id2, gender1, user_id, user_id2):
         pair = low_high_pair(fake_id1, fake_id2)
         redis_client.set(cls.TYPE_MATCHED.format(fake_id=fake_id2), fake_id1, cls.MATCH_INT)
         redis_client.set(cls.TYPE_MATCHED.format(fake_id=fake_id1), fake_id2, cls.MATCH_INT)
@@ -166,7 +166,8 @@ class MatchService(object):
         # 将其从正在匹配队列中删除
         cls._remove_from_match_pool(gender1, fake_id1)
         cls._remove_from_match_pool(cls.OTHER_GENDER_M.get(gender1), fake_id2)
-
+        redis_client.delete(REDIS_ACCELERATE_CACHE.format(user_id=user_id))
+        redis_client.delete(REDIS_ACCELERATE_CACHE.format(user_id=user_id2))
         cls._add_to_check_pool(fake_id1)
         cls._add_to_check_pool(fake_id2)
         return True
@@ -277,7 +278,7 @@ class MatchService(object):
             return None, False
         fake_id2_matched = redis_client.get(cls.TYPE_MATCHED.format(fake_id=matched_fakeid))
         if not fake_id2_matched or fake_id2_matched == fake_id:
-            cls._create_match(fake_id, matched_fakeid, gender)
+            cls._create_match(fake_id, matched_fakeid, gender, user_id, user_id2)
             return matched_fakeid, False
         return None, False
 
