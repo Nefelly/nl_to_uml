@@ -83,7 +83,7 @@ class JournalService(object):
             return cls._cal_by_others(expression)
         zeroToday = get_zero_today()
         zeroYestoday = next_date(zeroToday, -1)
-        is_int = isinstance(eval(table_name + '.' + judge_field) == IntField)
+        is_int = isinstance(eval(table_name + '.' + judge_field), IntField)
         if not is_int:
             time_str = "%s__gte=%r, %s__lte=%r" % (judge_field, zeroYestoday, judge_field, zeroToday)
         else:
