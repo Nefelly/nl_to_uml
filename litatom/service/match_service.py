@@ -93,13 +93,17 @@ class MatchService(object):
         assert False, NotImplementedError
 
     @classmethod
-    def _add_to_match_pool(cls, gender, fake_id):
+    def _add_to_match_pool(cls, gender, fake_id, user_id):
         # 进入匹配id池子
         if not gender or not fake_id:
             return
         int_time = int(time.time())
         # anoy_gender_key = REDIS_ANOY_GENDER_ONLINE.format(gender=gender)
-        anoy_gender_key = cls.MATCH_KEY_BY_REGION_GENDER(gender)
+        is_accelerate = cls._is_accelerate(user_id)
+        if not is_accelerate:
+            anoy_gender_key = cls.MATCH_KEY_BY_REGION_GENDER(gender)
+        else:
+            anoy_gender_key = cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender)
         redis_client.zadd(anoy_gender_key, {fake_id: int_time})
 
     @classmethod
@@ -107,7 +111,7 @@ class MatchService(object):
         if not gender or not fake_id:
             return
         uid = cls._uid_by_fake_id(fake_id)
-        redis_client.delete(REDIS_ACCELERATE_CACHE.format(user_id=uid))
+        # redis_client.delete(REDIS_ACCELERATE_CACHE.format(user_id=uid))
         return redis_client.zrem(cls.MATCH_KEY_BY_REGION_GENDER(gender), fake_id) or redis_client.zrem(cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender), fake_id)
 
     @classmethod
@@ -358,7 +362,7 @@ class MatchService(object):
         # 建立uid:fakeid索引
         redis_client.set(cls.TYPE_UID_FAKE_ID.format(user_id=user_id), fake_id, ex=cls.TOTAL_WAIT)
 
-        cls._add_to_match_pool(gender, fake_id)
+        cls._add_to_match_pool(gender, fake_id, user_id)
 
         # 进入匹配过期
         redis_client.set(cls.TYPE_FAKE_START.format(fake_id=fake_id), int(time.time()), cls.MATCH_WAIT)
