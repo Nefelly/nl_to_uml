@@ -26,7 +26,7 @@ class UserSettingService(object):
             'max_voice_time': ONE_HOUR,
             'pop_good_rate': True,
             'ad_rule': {
-                'interval': 5,
+                'interval': 1000,
                 'need_ad': True,
                 'voice_match_top': True,
                 'in_match': True,
