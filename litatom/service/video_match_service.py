@@ -72,8 +72,8 @@ class VideoMatchService(MatchService):
         return random.choice(vlist)
 
     @classmethod
-    def _create_match(cls, fake_id1, fake_id2, gender1):
-        status = super(VideoMatchService, cls)._create_match(fake_id1, fake_id2, gender1)
+    def _create_match(cls, fake_id1, fake_id2, gender1, user_id, user_id2):
+        status = super(VideoMatchService, cls)._create_match(fake_id1, fake_id2, gender1, user_id, user_id2)
         if not status:
             return False
         pair = low_high_pair(fake_id1, fake_id2)
