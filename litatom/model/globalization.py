@@ -130,7 +130,7 @@ class RegionWord(Document):
         'alert_word': {
             'en': u'Our system has noticed inappropriate behavior on your account. please keep positive. If you believe you’ve been incorrectly flagged, you can contact us by litatomwang@gmail.com',
             'vi': u'Hệ thống chúng tôi thông báo tài khoản của bạn có hành vi không phù hợp. Hãy cư xử văn minh trong cuộc trò chuyện của bạn. Nếu bạn cho rằng báo cáo này là sai hãy liên lạc với chúng tôi qua email litatomwang@gmail.com',
-            'th': u''
+            'th': u'"ระบบของเราสังเกตเห็นพฤติกรรมที่ไม่เหมาะสมในบัญชีของคุณโปรดประพฤติตามความเหมาะสมหากคุณคิดว่าคุณถูกตั้งค่าสถานะไม่ถูกต้อง คุณสามารถติดต่อเราอยู่ที่litatomwang@gmail.com"'
         }
     }
 
