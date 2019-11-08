@@ -88,8 +88,10 @@ def parse_standard_date(time_data_str):
 def time_str_by_ts(ts):
     return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(ts))
 
+
 def date_to_int_time(d):
     return int(time.mktime(d.timetuple()))
+
 
 def get_time_info(int_time, user_mode=False):
     time_now = int(time.time())
@@ -118,8 +120,10 @@ def now_date_key():
     # return (datetime.datetime.now() + datetime.timedelta(seconds=-2)).strftime('%Y-%m-%d') # for time latency reason
     return datetime.datetime.now().strftime('%Y-%m-%d') # for time latency reason
 
+
 def low_high_pair(id1, id2):
     return id1 + id2 if id1 < id2 else id2 + id1
+
 
 def unix_ts_string(ts):
     time_array = time.localtime(ts)
