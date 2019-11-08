@@ -93,21 +93,25 @@ class MatchService(object):
         assert False, NotImplementedError
 
     @classmethod
-    def _add_to_match_pool(cls, gender, fake_id):
+    def _add_to_match_pool(cls, gender, fake_id, user_id):
         # 进入匹配id池子
         if not gender or not fake_id:
             return
         int_time = int(time.time())
         # anoy_gender_key = REDIS_ANOY_GENDER_ONLINE.format(gender=gender)
-        anoy_gender_key = cls.MATCH_KEY_BY_REGION_GENDER(gender)
+        is_accelerate = cls._is_accelerate(user_id)
+        if not is_accelerate:
+            anoy_gender_key = cls.MATCH_KEY_BY_REGION_GENDER(gender)
+        else:
+            anoy_gender_key = cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender)
         redis_client.zadd(anoy_gender_key, {fake_id: int_time})
 
     @classmethod
     def _remove_from_match_pool(cls, gender, fake_id):
         if not gender or not fake_id:
             return
-        uid = cls._uid_by_fake_id(fake_id)
-        redis_client.delete(REDIS_ACCELERATE_CACHE.format(user_id=uid))
+        # uid = cls._uid_by_fake_id(fake_id)
+        # redis_client.delete(REDIS_ACCELERATE_CACHE.format(user_id=uid))
         return redis_client.zrem(cls.MATCH_KEY_BY_REGION_GENDER(gender), fake_id) or redis_client.zrem(cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender), fake_id)
 
     @classmethod
@@ -153,7 +157,7 @@ class MatchService(object):
         return True if in_match else False
 
     @classmethod
-    def _create_match(cls, fake_id1, fake_id2, gender1):
+    def _create_match(cls, fake_id1, fake_id2, gender1, user_id, user_id2):
         pair = low_high_pair(fake_id1, fake_id2)
         redis_client.set(cls.TYPE_MATCHED.format(fake_id=fake_id2), fake_id1, cls.MATCH_INT)
         redis_client.set(cls.TYPE_MATCHED.format(fake_id=fake_id1), fake_id2, cls.MATCH_INT)
@@ -162,7 +166,8 @@ class MatchService(object):
         # 将其从正在匹配队列中删除
         cls._remove_from_match_pool(gender1, fake_id1)
         cls._remove_from_match_pool(cls.OTHER_GENDER_M.get(gender1), fake_id2)
-
+        redis_client.delete(REDIS_ACCELERATE_CACHE.format(user_id=user_id))
+        redis_client.delete(REDIS_ACCELERATE_CACHE.format(user_id=user_id2))
         cls._add_to_check_pool(fake_id1)
         cls._add_to_check_pool(fake_id2)
         return True
@@ -273,7 +278,7 @@ class MatchService(object):
             return None, False
         fake_id2_matched = redis_client.get(cls.TYPE_MATCHED.format(fake_id=matched_fakeid))
         if not fake_id2_matched or fake_id2_matched == fake_id:
-            cls._create_match(fake_id, matched_fakeid, gender)
+            cls._create_match(fake_id, matched_fakeid, gender, user_id, user_id2)
             return matched_fakeid, False
         return None, False
 
@@ -358,7 +363,7 @@ class MatchService(object):
         # 建立uid:fakeid索引
         redis_client.set(cls.TYPE_UID_FAKE_ID.format(user_id=user_id), fake_id, ex=cls.TOTAL_WAIT)
 
-        cls._add_to_match_pool(gender, fake_id)
+        cls._add_to_match_pool(gender, fake_id, user_id)
 
         # 进入匹配过期
         redis_client.set(cls.TYPE_FAKE_START.format(fake_id=fake_id), int(time.time()), cls.MATCH_WAIT)
@@ -575,9 +580,9 @@ class MatchService(object):
         return True
 
     @classmethod
-    def get_queue_num(cls, user_id):
+    def get_queue_num(cls, user_id, is_accelerated=False):
         MAX_QUEUE_NUM = 100
-        is_accelerated = cls._is_accelerate(user_id)
+        # is_accelerated = cls._is_accelerate(user_id)
         fake_id = cls._fakeid_by_uid(user_id)
         judge_time = cls.get_judge_time()
         if not fake_id:
@@ -593,7 +598,8 @@ class MatchService(object):
 
     @classmethod
     def accelerate_info(cls, user_id):
-        queue_num = cls.get_queue_num(user_id)
+        is_accelerate = cls._is_accelerate(user_id)
+        queue_num = cls.get_queue_num(user_id, is_accelerate)
         # if cls._is_accelerate(user_id):
         #     queue_num = 1
         if queue_num < 3:
@@ -603,6 +609,7 @@ class MatchService(object):
         else:
             wait_time = 3
         return {
+            "is_accelerate": is_accelerate,
             "queue_number": queue_num,
             "wait_time": wait_time,
             "queue_info": u'Queuing number: %d, wait about %d minutes' % (queue_num, wait_time)
@@ -611,7 +618,7 @@ class MatchService(object):
     @classmethod
     def accelerate(cls, user_id):
         key = REDIS_ACCELERATE_CACHE.format(user_id=user_id)
-        redis_client.set(key, 1, cls.TOTAL_WAIT)
+        redis_client.set(key, 1, ONE_DAY)
         fake_id = cls._fakeid_by_uid(user_id)
         gender = UserService.get_gender(user_id)
         old_time = redis_client.zscore(cls.MATCH_KEY_BY_REGION_GENDER(gender), fake_id)

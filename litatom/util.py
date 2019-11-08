@@ -37,6 +37,11 @@ def ensure_unicode(v):
     return unicode(v)  # convert anything not a string to unicode too
 
 
+def get_zero_today():
+    now = datetime.datetime.now()
+    return datetime.datetime(year=now.year, month=now.month, day=now.day)
+
+
 def trunc(v, length):
     v = ensure_unicode(v).encode('utf8')
     if len(v) > length:
@@ -50,6 +55,7 @@ def format_standard_date(time_data):
 
 def format_standard_time(time_data):
     return time_data.strftime('%Y-%m-%d %H:%M:%S')
+
 
 def trans_secs_to_time(secs):
     m, s = divmod(secs, 60)
@@ -66,6 +72,7 @@ def parse_standard_time(time_data_str):
 def next_date(d_time, d=1):
     return d_time + datetime.timedelta(days=d)
 
+
 def get_times_from_str(time_data_str):
     if len(time_data_str) == 8:
         d_time = datetime.datetime.strptime(time_data_str, '%Y%m%d')
@@ -81,8 +88,10 @@ def parse_standard_date(time_data_str):
 def time_str_by_ts(ts):
     return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(ts))
 
+
 def date_to_int_time(d):
     return int(time.mktime(d.timetuple()))
+
 
 def get_time_info(int_time, user_mode=False):
     time_now = int(time.time())
@@ -111,8 +120,10 @@ def now_date_key():
     # return (datetime.datetime.now() + datetime.timedelta(seconds=-2)).strftime('%Y-%m-%d') # for time latency reason
     return datetime.datetime.now().strftime('%Y-%m-%d') # for time latency reason
 
+
 def low_high_pair(id1, id2):
     return id1 + id2 if id1 < id2 else id2 + id1
+
 
 def unix_ts_string(ts):
     time_array = time.localtime(ts)
