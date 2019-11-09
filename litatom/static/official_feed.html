@@ -106,7 +106,7 @@ methods: {
     add_to_top: function(feed){
       var url = BASE_URL + 'admin/add_to_top/' + feed.id;
       this.$http.get(url, {params:{loc:Loc}}).then(function(result){
-        if (result.data.result === 0){feed.in_hq=true;}
+        if (result.data.result === 0){feed.in_hq=true;this.onLoad();}
         else{alert('failed');}
       })
     },
@@ -114,7 +114,7 @@ methods: {
     remove_from_top: function(feed){
         var url = BASE_URL + 'admin/remove_from_top/' + feed.id;
         this.$http.get(url, {params:{loc:Loc}}).then(function(result){
-            if (result.data.result === 0){feed.in_hq=false;}
+            if (result.data.result === 0){feed.in_hq=false;this.onLoad();}
             else{alert('failed');}
         })
     },
