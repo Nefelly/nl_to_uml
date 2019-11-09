@@ -83,10 +83,12 @@ class AdminService(object):
     @classmethod
     def add_to_top(cls, feed_id):
         redis_client.set(REDIS_REGION_FEED_TOP.format(region=GlobalizationService.get_region()), feed_id, ONE_DAY)
+        return None, True
 
     @classmethod
     def remove_from_top(cls, feed_id):
         redis_client.delete(REDIS_REGION_FEED_TOP.format(region=GlobalizationService.get_region()))
+        return None, True
 
     @classmethod
     def get_official_feed(cls, user_id, start_ts, num):
