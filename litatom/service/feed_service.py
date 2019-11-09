@@ -11,7 +11,8 @@ from ..key import (
     REDIS_FEED_SQUARE_REGION,
     REDIS_FEED_HQ,
     REDIS_FEED_HQ_REGION,
-    REDIS_FEED_ID_AGE
+    REDIS_FEED_ID_AGE,
+    REDIS_REGION_FEED_TOP
 )
 from ..util import (
     get_time_info,
@@ -45,6 +46,7 @@ from ..model import (
 redis_client = RedisClient()['lit']
 
 class FeedService(object):
+    LATEST_TYPE = 'latest'
 
     @classmethod
     def should_add_to_square(cls, feed):
@@ -230,7 +232,7 @@ class FeedService(object):
         }, True
 
     @classmethod
-    def _feeds_by_pool(cls, redis_key, user_id, start_p, num):
+    def _feeds_by_pool(cls, redis_key, user_id, start_p, num, pool_type=None):
         if request.ip_should_filter:
             return {
                        'feeds': [],
@@ -241,6 +243,9 @@ class FeedService(object):
         max_loop_tms = 5
         has_next = False
         next_start = -1
+        top_id = None
+        if start_p == 0 and pool_type == cls.LATEST_TYPE:
+            top_id = redis_client.get(REDIS_REGION_FEED_TOP(region=GlobalizationService.get_region()))
         for i in range(max_loop_tms):
             tmp_feeds = redis_client.zrevrange(redis_key, start_p, start_p + num)
             has_next = False
@@ -252,9 +257,10 @@ class FeedService(object):
             if len(feeds) >= max(num - 3, 1) or not has_next:
                 break
             start_p = start_p + num
+        if top_id:
+            feeds = [top_id] + feeds
         feeds = map(Feed.get_by_id, feeds) if feeds else []
         feeds = [el for el in feeds if el]
-
         feeds = map(cls._feed_info, feeds, [user_id for el in feeds])
         return {
             'has_next': has_next,
@@ -264,7 +270,7 @@ class FeedService(object):
 
     @classmethod
     def feeds_by_square(cls, user_id, start_p=0, num=10):
-        return cls._feeds_by_pool(cls._redis_feed_region_key(REDIS_FEED_SQUARE_REGION), user_id, start_p, num)
+        return cls._feeds_by_pool(cls._redis_feed_region_key(REDIS_FEED_SQUARE_REGION), user_id, start_p, num, cls.LATEST_TYPE)
 
 
     @classmethod
