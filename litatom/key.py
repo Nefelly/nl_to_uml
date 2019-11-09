@@ -13,6 +13,7 @@ REDIS_USER_REGION = 'user_region:{user_id}'
 REDIS_HUANXIN_USER = 'huanxin_user:{huanxin_id}'
 REDIS_FEED_ID_AGE = 'feed_id_age:{feed_id}'
 REDIS_AD_TIMES_LEFT = 'ad_times_left:{user_date}'
+REDIS_REGION_FEED_TOP = 'region_feed_top:{region}'
 
 # cache
 REDIS_USER_CACHE = 'user_cache:{user_id}'

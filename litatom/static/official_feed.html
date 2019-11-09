@@ -1,0 +1,159 @@
+<html>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://cdn.bootcss.com/vue-resource/1.5.1/vue-resource.js"></script>
+<div id="app-7">
+<table class="tb" border="1">
+<tr>
+ <th>content</th>
+ <th>nickname</th>
+ <th>pictures</th>
+    <th>comment</th>
+    <th>like</th>
+ <th>time info</th>
+ <th>in_top</th>
+    <th>add_to_top</th>
+ </tr>
+<tr v-for="feed in feeds">
+<td>{{feed.content}}</td>
+<td>{{feed.user_info.nickname}}</td>
+<td
+  v-if="feed.pics.length > 0"
+   >
+  <img v-for="pic in feed.pics" width= "30%" :src="base_url +'simage/' + pic">
+</td>
+
+<td v-if="feed.pics.length === 0">
+no pictures
+</td>
+<td>{{feed.comment_num}}</td>
+    <td>{{feed.like_num}}</td>
+<td>{{feed.create_time.time_desc}}</td>
+    <td>{{String(feed.in_top)}}</td>
+<td v-if="feed.in_top === false">
+    <button name='add_to_top'  style="background:red" @click='add_to_top(feed)'>add_to_top</button>
+</td>
+<td v-if="feed.in_top">
+    <button name='remove_from_top'  style="background:skyblue" @click='remove_from_top(feed)'>remove_from_top</button>
+</td>
+</tr>
+</table>
+<!--<button v-if="previous_start >= 0" name="previous_page" @click="previous_page()">previous page</button>-->
+<!--<button v-if="next_start >= 0" name="next_page" @click="next_page()">next page</button>-->
+</div>
+<script>
+    console.log(document.domain)
+    function GetRequest() {
+        var url = location.search; //获取url中"?"符后的字串
+        var theRequest = new Object();
+        if (url.indexOf("?") != -1) {
+            var str = url.substr(1);
+            strs = str.split("&");
+            for(var i = 0; i < strs.length; i ++) {
+                theRequest[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
+            }
+        }
+        return theRequest;
+    }
+    var Request = new Object();
+    Request = GetRequest();
+    var Loc = Request['loc']
+    console.log(Request['loc'])
+//    var Loc = window.location.hash;
+//    console.log(Loc)
+  const BASE_URL = 'http://' + document.domain + '/api/sns/v1/lit/';
+var app7 = new Vue({
+  el: '#app-7',
+  data: {
+    feeds: [],
+    base_url: BASE_URL,
+    next_start: 0,
+      previous_start:-1
+  },
+created() {this.onLoad();},
+
+methods: {
+      onLoad: function() {
+        this.$http.get(BASE_URL + 'admin/get_official_feed', {params:{num: 10, loc:Loc}}).then(function(result){
+	    var data = result.data.data;
+	    this.feeds = data.feeds;
+	    this.previous_start = this.next_start;
+        this.next_start = data.next_start;
+	      })
+      },
+
+       delete_feed: function(feed){
+        var url = BASE_URL + 'admin/delete_feed/' + feed.id;
+        this.$http.get(url, {params:{loc:Loc}}).then(function(result){
+            console.log('!!!!!!', result.data);
+            if (result.data.result === 0){
+                this.feeds =  this.feeds.filter(el => el.id != feed.id);
+            }
+            else{alert('failed');}
+        })
+    },
+
+    ban_user: function(feed){
+        var url = BASE_URL + 'admin/ban_user_by_feed/' + feed.id;
+        this.$http.get(url, {params:{loc:Loc}}).then(function(result){
+            console.log('!!!!!!', result.data);
+            if (result.data.result === 0){
+                this.feeds =  this.feeds.filter(el => el.id != feed.id);
+            }
+            else{alert('failed');}
+        })
+    },
+
+    add_to_top: function(feed){
+      var url = BASE_URL + 'admin/add_to_top/' + feed.id;
+      this.$http.get(url, {params:{loc:Loc}}).then(function(result){
+        if (result.data.result === 0){feed.in_hq=true;}
+        else{alert('failed');}
+      })
+    },
+
+    remove_from_top: function(feed){
+        var url = BASE_URL + 'admin/remove_from_top/' + feed.id;
+        this.$http.get(url, {params:{loc:Loc}}).then(function(result){
+            if (result.data.result === 0){feed.in_hq=false;}
+            else{alert('failed');}
+        })
+    },
+
+    next_page: function() {
+        this.$http.get(BASE_URL + 'admin/feeds_square', {params:{start_pos: this.next_start, loc:Loc}}).then(function(result){
+            var data = result.data.data;
+            this.feeds = data.feeds;
+            this.next_start = data.next_start;
+            if(this.next_start===0){
+                this.previous_start = -1;
+            }
+            else if(this.previous_start - this.feeds.length <= 0){
+                this.previous_start = 0;
+            }
+            else{
+                this.previous_start = (this.next_start - this.feeds.length);
+            }
+        })
+    },
+
+    previous_page: function() {
+        this.$http.get(BASE_URL + 'admin/feeds_square', {params:{start_pos: this.previous_start, loc:Loc}}).then(function(result){
+            var data = result.data.data;
+            this.feeds = data.feeds;
+            this.next_start = this.previous_start;
+            if(this.next_start===0){
+                this.previous_start = -1;
+            }
+            else if(this.next_start - this.feeds.length <= 0){
+                this.previous_start = 0;
+            }
+            else{
+                this.previous_start = (this.next_start - this.feeds.length);
+            }
+        })
+    },
+
+}
+})
+</script>
+</html>

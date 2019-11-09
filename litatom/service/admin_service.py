@@ -22,13 +22,15 @@ from ..service import (
     GlobalizationService
 )
 from ..const import (
-    MAX_TIME
+    MAX_TIME,
+    ONE_DAY
 )
 from ..redis import RedisClient
 
 from ..key import (
     REDIS_USER_INFO_FINISHED,
-    REDIS_ADMIN_USER
+    REDIS_ADMIN_USER,
+    REDIS_REGION_FEED_TOP
 )
 
 sys_rnd = random.SystemRandom()
@@ -72,6 +74,47 @@ class AdminService(object):
         obj.pwd = pwd
         obj.create_time = datetime.datetime.now()
         obj.save()
+
+    @classmethod
+    def is_top(cls, feed_id):
+        top_feed_id = redis_client.get(REDIS_REGION_FEED_TOP.format(region=GlobalizationService.get_region()))
+        return top_feed_id == feed_id
+
+    @classmethod
+    def add_to_top(cls, feed_id):
+        redis_client.set(REDIS_REGION_FEED_TOP.format(region=GlobalizationService.get_region()), feed_id, ONE_DAY)
+
+    @classmethod
+    def remove_from_top(cls, feed_id):
+        redis_client.delete(REDIS_REGION_FEED_TOP.format(region=GlobalizationService.get_region()))
+
+    @classmethod
+    def get_official_feed(cls, user_id, start_ts, num):
+        region = GlobalizationService.get_region()
+        nickname = 'Lit official'
+        if region == GlobalizationService.REGION_TH:
+            nickname = 'Lit official(Vietnam)'
+        user = User.get_by_nickname(nickname)
+        if not user:
+            return u'user not exists', False
+        uid = str(user.id)
+        feeds = Feed.objects(user_id=uid, create_time__lte=start_ts).order_by('-create_time').limit(num + 1)
+        feeds = list(feeds)
+        # feeds.reverse()   # 时间顺序错误
+        has_next = False
+        if len(feeds) == num + 1:
+            has_next = True
+            next_start = feeds[-1].create_time
+            feeds = feeds[:-1]
+        res = []
+        for feed in feeds:
+            info = FeedService._feed_info(feed, user_id)
+            info['in_top'] = cls.is_top(str(feed.id))
+        return {
+                   'feeds': map(FeedService._feed_info, feeds, [user_id for el in feeds]),
+                   'has_next': has_next,
+                   'next_start': next_start
+               }, True
 
     @classmethod
     def query_reports(cls, start_ts, num=10, dealed=None):

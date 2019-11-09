@@ -57,6 +57,11 @@ b.add_url_rule('/lit/admin/stat_items', 'admin-stat_items', endpoint.admin.stat_
 b.add_url_rule('/lit/admin/journal', 'admin-journal', endpoint.admin.journal)
 b.add_url_rule('/lit/admin/add_stat_item', 'admin-add_stat_item', endpoint.admin.add_stat_item, methods=['POST'])
 b.add_url_rule('/lit/admin/delete_stat_item/<item_id>', 'admin-delete_stat_item', endpoint.admin.delete_stat_item)
+b.add_url_rule('/lit/admin/get_official_feed', 'admin-get_official_feed', endpoint.admin.get_official_feed)
+b.add_url_rule('/lit/admin/add_to_top/<feed_id>', 'admin-add_to_top', endpoint.admin.add_to_top)
+b.add_url_rule('/lit/admin/remove_from_top/<feed_id>', 'admin-remove_from_top', endpoint.admin.remove_from_top)
+b.add_url_rule('/lit/admin/official_feed', 'admin-official_feed', endpoint.admin.official_feed)
+
 
 
 # 图片

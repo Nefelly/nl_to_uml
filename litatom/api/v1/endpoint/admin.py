@@ -136,17 +136,49 @@ def feeds_square_for_admin():
         return success(data)
     return fail()
 
+
+def official_feed():
+    return current_app.send_static_file('official_feed.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
+
+
+def get_official_feed():
+    start_ts = request.args.get('start_ts')
+    num = request.args.get('num')
+    start_ts = int(start_ts) if start_ts and start_ts.isdigit() else MAX_TIME
+    num = int(num) if num and num.isdigit() else 10
+    data, status = AdminService.get_official_feed(request.user_id, start_ts, num)
+    if status:
+        return success(data)
+    return fail()
+
+
+def add_to_top(feed_id):
+    data, status = AdminService.add_to_top(feed_id, request.user_id)
+    if status:
+        return success()
+    return fail(data)
+
+
+def remove_from_top(feed_id):
+    data, status = AdminService.remove_from_top(feed_id, request.user_id)
+    if status:
+        return success()
+    return fail(data)
+
+
 def add_hq(feed_id):
     data, status = FeedService.add_hq(feed_id)
     if status:
         return success()
     return fail(data)
 
+
 def remove_from_hq(feed_id):
     data, status = FeedService.remove_from_hq(feed_id)
     if status:
         return success()
     return fail(data)
+
 
 def delete_feed(feed_id):
     request.is_admin = True
