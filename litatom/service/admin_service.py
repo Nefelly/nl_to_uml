@@ -100,7 +100,7 @@ class AdminService(object):
         uid = str(user.id)
         feeds = Feed.objects(user_id=uid, create_time__lte=start_ts).order_by('-create_time').limit(num + 1)
         feeds = list(feeds)
-        # feeds.reverse()   # 时间顺序错误
+        next_start = -1
         has_next = False
         if len(feeds) == num + 1:
             has_next = True
