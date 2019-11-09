@@ -95,7 +95,7 @@ class AdminService(object):
         region = GlobalizationService.get_region()
         nickname = 'Lit official'
         if region == GlobalizationService.REGION_VN:
-            nickname = 'Lit official(Vietnam)'
+            nickname = 'Lit official(vi)'
         user = User.get_by_nickname(nickname)
         if not user:
             return u'user not exists', False
