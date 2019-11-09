@@ -92,7 +92,7 @@ class AdminService(object):
     def get_official_feed(cls, user_id, start_ts, num):
         region = GlobalizationService.get_region()
         nickname = 'Lit official'
-        if region == GlobalizationService.REGION_TH:
+        if region == GlobalizationService.REGION_VN:
             nickname = 'Lit official(Vietnam)'
         user = User.get_by_nickname(nickname)
         if not user:
