@@ -110,8 +110,9 @@ class AdminService(object):
         for feed in feeds:
             info = FeedService._feed_info(feed, user_id)
             info['in_top'] = cls.is_top(str(feed.id))
+            res.append(info)
         return {
-                   'feeds': map(FeedService._feed_info, feeds, [user_id for el in feeds]),
+                   'feeds': res,
                    'has_next': has_next,
                    'next_start': next_start
                }, True
