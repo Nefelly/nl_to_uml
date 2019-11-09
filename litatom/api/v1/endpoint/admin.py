@@ -153,14 +153,14 @@ def get_official_feed():
 
 
 def add_to_top(feed_id):
-    data, status = AdminService.add_to_top(feed_id, request.user_id)
+    data, status = AdminService.add_to_top(feed_id)
     if status:
         return success()
     return fail(data)
 
 
 def remove_from_top(feed_id):
-    data, status = AdminService.remove_from_top(feed_id, request.user_id)
+    data, status = AdminService.remove_from_top(feed_id)
     if status:
         return success()
     return fail(data)
