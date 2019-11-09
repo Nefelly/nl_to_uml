@@ -245,7 +245,7 @@ class FeedService(object):
         next_start = -1
         top_id = None
         if start_p == 0 and pool_type == cls.LATEST_TYPE:
-            top_id = redis_client.get(REDIS_REGION_FEED_TOP(region=GlobalizationService.get_region()))
+            top_id = redis_client.get(REDIS_REGION_FEED_TOP.format(region=GlobalizationService.get_region()))
         for i in range(max_loop_tms):
             tmp_feeds = redis_client.zrevrange(redis_key, start_p, start_p + num)
             has_next = False
