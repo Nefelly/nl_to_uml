@@ -258,7 +258,7 @@ class FeedService(object):
                 break
             start_p = start_p + num
         if top_id:
-            feeds = [top_id] + feeds
+            feeds = [top_id] + [el for el in feeds if el != top_id]
         feeds = map(Feed.get_by_id, feeds) if feeds else []
         feeds = [el for el in feeds if el]
         feeds = map(cls._feed_info, feeds, [user_id for el in feeds])
