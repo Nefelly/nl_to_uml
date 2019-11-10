@@ -60,12 +60,11 @@ class JournalService(object):
     def _cal_by_others(cls, expression):
         m = cls.get_objids(expression)
         res_m = {}
-        print m, '!' * 10
         for k in m:
             res_m[k] = cls.cal_by_id(k)
         print res_m
         for el in res_m:
-            print res_m[el]
+            print res_m[el], '*****', el
             expression = expression.replace(el, str(res_m[el]['num']))
             print 'get over'
         return eval(expression)
