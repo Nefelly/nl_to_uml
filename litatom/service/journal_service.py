@@ -62,6 +62,7 @@ class JournalService(object):
         res_m = {}
         for k in m:
             res_m[k] = cls.cal_by_id(k)
+        print res_m
         for el in res_m:
             expression = expression.replace(el, str(res_m[k]['num']))
         return eval(expression)
