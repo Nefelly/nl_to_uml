@@ -60,6 +60,7 @@ class JournalService(object):
     def _cal_by_others(cls, expression):
         m = cls.get_objids(expression)
         res_m = {}
+        print m, '!' * 10
         for k in m:
             res_m[k] = cls.cal_by_id(k)
         print res_m
