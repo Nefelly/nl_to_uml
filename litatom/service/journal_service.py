@@ -4,6 +4,7 @@ import datetime
 import time
 import string
 import logging
+import bson
 from ..model import *
 from ..util import (
     get_zero_today,
@@ -41,8 +42,29 @@ class JournalService(object):
         return None, True
 
     @classmethod
+    def get_objids(cls, expression):
+        m = {}
+        chrs = set([chr(ord('0') + el) for el in range(10)] + [chr(ord('a') + el) for el in range(26)])
+        str_buff = ''
+        for _ in expression:
+            if _ in chrs:
+                str_buff += _
+                if len(str_buff) == 24:
+                    if bson.ObjectId.is_valid(str_buff):
+                        m[str_buff] = str_buff
+            else:
+                str_buff = ''
+        return m
+
+    @classmethod
     def _cal_by_others(cls, expression):
-        return 0.0
+        m = cls.get_objids(expression)
+        res_m = {}
+        for k in m:
+            res_m[k] = cls.cal_by_id(k)
+        for el in res_m:
+            expression = expression.replace(el, str(res_m[k]['num']))
+        return eval(expression)
 
     @classmethod
     def cal_by_id(cls, item_id):

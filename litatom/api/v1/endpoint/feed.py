@@ -63,6 +63,7 @@ def user_feeds(other_user_id):
         return success(data)
     return fail(data)
 
+
 @session_required
 def user_following_feeds():
     start_ts = request.args.get('start_ts')
