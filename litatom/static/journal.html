@@ -66,7 +66,7 @@ methods: {
 
     cal_item: function(item_id) {
         this.$http.get(BASE_URL + 'admin/journal_cal/' + item_id).then(function(result){
-            if (result.data.result === 0){alert(result.data.num)}
+            if (result.data.result === 0){alert(result.data.toString())}
             else{alert('failed');}
         })
     },

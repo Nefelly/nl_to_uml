@@ -103,24 +103,30 @@ class JournalService(object):
         judge_field = item.judge_field
         expression = item.expression
         if not item.table_name:
-            return cls._cal_by_others(expression)
-        zeroToday = get_zero_today()
-        zeroYestoday = next_date(zeroToday, -1)
-        is_int = isinstance(eval(table_name + '.' + judge_field), IntField)
-        if not is_int:
-            time_str = "%s__gte=%r, %s__lte=%r" % (judge_field, zeroYestoday, judge_field, zeroToday)
+            num =  cls._cal_by_others(expression)
+            return {
+                "id": item_id,
+                "num": num,
+                "name": item.name
+            }
         else:
-            time_str = "%s__gte=%r, %s__lte=%r" % (judge_field, date_to_int_time(zeroYestoday), judge_field, date_to_int_time(zeroToday))
-        exc_str = '%s.objects(%s,%s).count()' % (table_name, time_str, expression)
-        print exc_str
-        cnt = eval(exc_str)
-        if not cnt:
-            cnt = 0
-        return {
-            "id": item_id,
-            "num": cnt,
-            "name": item.name
-        }
+            zeroToday = get_zero_today()
+            zeroYestoday = next_date(zeroToday, -1)
+            is_int = isinstance(eval(table_name + '.' + judge_field), IntField)
+            if not is_int:
+                time_str = "%s__gte=%r, %s__lte=%r" % (judge_field, zeroYestoday, judge_field, zeroToday)
+            else:
+                time_str = "%s__gte=%r, %s__lte=%r" % (judge_field, date_to_int_time(zeroYestoday), judge_field, date_to_int_time(zeroToday))
+            exc_str = '%s.objects(%s,%s).count()' % (table_name, time_str, expression)
+            print exc_str
+            cnt = eval(exc_str)
+            if not cnt:
+                cnt = 0
+            return {
+                "id": item_id,
+                "num": cnt,
+                "name": item.name
+            }
 
     @classmethod
     def delete_stat_item(cls, item_id):
