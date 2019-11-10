@@ -66,6 +66,7 @@ class JournalService(object):
         for el in res_m:
             print res_m[k]
             expression = expression.replace(el, str(res_m[k]['num']))
+            print 'get over'
         return eval(expression)
 
     @classmethod
