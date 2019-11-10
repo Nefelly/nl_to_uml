@@ -138,8 +138,12 @@ class JournalService(object):
     @classmethod
     def out_port_result(cls, dst_addr):
         res_lst = []
+        cnt = 0
         for item in StatItems.objects():
             m = cls.cal_by_id(str(item.id))
             name, num = m['name'], m['num']
             res_lst.append([name, num])
-        write_data_to_xls(dst_addr, ['名字', '数量'], res_lst)
+            cnt += 1
+            if cnt >= 3:
+                break
+        write_data_to_xls(dst_addr, [u'名字', u'数量'], res_lst)
