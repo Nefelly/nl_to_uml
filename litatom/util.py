@@ -30,6 +30,10 @@ def passwdhash(passwd):
     m.update('hello world')
     return m.hexdigest()
 
+def ensure_path(path):
+    dir_name  = path[:path.rfind('/')]
+    if not os.path.exists(dir_name):
+        os.makedirs(dir_name)
 
 def ensure_unicode(v):
     if isinstance(v, str):

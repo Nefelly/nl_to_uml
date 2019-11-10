@@ -10,7 +10,9 @@ from ..util import (
     get_zero_today,
     next_date,
     date_to_int_time,
-    write_data_to_xls
+    write_data_to_xls,
+    ensure_path,
+    now_date_key
 )
 from mongoengine import (
     DateTimeField,
@@ -146,4 +148,6 @@ class JournalService(object):
             cnt += 1
             if cnt >= 3:
                 break
+        # dst_addr = '/data/statres/%s.xlsx' % now_date_key()
+        # ensure_path(dst_addr)
         write_data_to_xls(dst_addr, [u'名字', u'数量'], res_lst)
