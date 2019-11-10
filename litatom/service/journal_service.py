@@ -9,7 +9,8 @@ from ..model import *
 from ..util import (
     get_zero_today,
     next_date,
-    date_to_int_time
+    date_to_int_time,
+    write_data_to_xls
 )
 from mongoengine import (
     DateTimeField,
@@ -133,3 +134,12 @@ class JournalService(object):
     def delete_stat_item(cls, item_id):
         StatItems.objects(id=item_id).delete()
         return None, True
+
+    @classmethod
+    def out_port_result(cls, dst_addr):
+        res_lst = []
+        for item in StatItems.objects():
+            m = cls.cal_by_id(str(item.id))
+            name, num = m['name'], m['num']
+            res_lst.append([name, num])
+        write_data_to_xls(dst_addr, ['名字', '数量'], res_lst)
