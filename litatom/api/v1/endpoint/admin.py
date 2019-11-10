@@ -325,5 +325,12 @@ def delete_stat_item(item_id):
     return fail(msg)
 
 
+def journal_cal(item_id):
+    data = JournalService.cal_by_id(item_id)
+    if data:
+        return success(data)
+    return fail()
+
+
 def journal():
     return current_app.send_static_file('journal.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}

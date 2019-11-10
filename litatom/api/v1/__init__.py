@@ -61,6 +61,7 @@ b.add_url_rule('/lit/admin/get_official_feed', 'admin-get_official_feed', endpoi
 b.add_url_rule('/lit/admin/add_to_top/<feed_id>', 'admin-add_to_top', endpoint.admin.add_to_top)
 b.add_url_rule('/lit/admin/remove_from_top/<feed_id>', 'admin-remove_from_top', endpoint.admin.remove_from_top)
 b.add_url_rule('/lit/admin/official_feed', 'admin-official_feed', endpoint.admin.official_feed)
+b.add_url_rule('/lit/admin/journal_cal/<item_id>', 'admin-journal_cal', endpoint.admin.journal_cal)
 
 
 
