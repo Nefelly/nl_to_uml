@@ -15,7 +15,7 @@ def run():
     ensure_path(dst_addr)
     if not os.path.exists(dst_addr):
         JournalService.out_port_result(dst_addr)
-    AlertService.send_file('382365209@qq.com', dst_addr)
+    AlertService.send_file(["litatomwang@gmail.com", "w326571@126.com", '382365209@qq.com'], dst_addr)
 
 
 if __name__ == "__main__":
