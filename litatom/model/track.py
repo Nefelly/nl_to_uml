@@ -42,7 +42,7 @@ class TrackChat(Document):
 
 
 
-class TrackSpamRecord(object):
+class TrackSpamRecord(Document):
     """
         user's spam word history
         """
