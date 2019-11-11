@@ -41,7 +41,6 @@ class TrackChat(Document):
         }
 
 
-
 class TrackSpamRecord(Document):
     """
         user's spam word history
