@@ -659,8 +659,9 @@ class UserRecord(Document):
         'alias': 'db_alias'
     }
     FORBIDDEN_ACTION = 'forbidden'
-    AUTO_FORBIDDEN= 'autoForbid'
+    AUTO_FORBIDDEN = 'autoForbid'
     SPAM_FORBIDDEN = 'spamForbid'
+
     user_id = StringField(required=True)
     action = StringField(required=True)
     create_time = IntField(required=True)

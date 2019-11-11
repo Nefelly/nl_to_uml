@@ -177,7 +177,7 @@ class FeedService(object):
 
     @classmethod
     def create_feed(cls, user_id, content, pics=None, audios=None):
-        if content and AntiSpamService.is_spam_word(content):
+        if content and AntiSpamService.is_spam_word(content, user_id):
             should_block = UserService.alert_to_user(user_id)
             if should_block:
                 return u'spam words', False
@@ -345,7 +345,7 @@ class FeedService(object):
             UserMessageService.add_message(father_comment.user_id, user_id, UserMessageService.MSG_COMMENT, feed_id, content)
         else:
             UserMessageService.add_message(feed.user_id, user_id, UserMessageService.MSG_REPLY, feed_id, content)
-        is_spam = AntiSpamService.is_spam_word(content)
+        is_spam = AntiSpamService.is_spam_word(content, user_id)
         if is_spam:
             UserService.alert_to_user(user_id)
         feed.chg_comment_num(1)

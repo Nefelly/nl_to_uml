@@ -3,7 +3,10 @@ import json
 import time
 import traceback
 import logging
-from ..model import SpamWord
+from ..model import (
+    SpamWord,
+    TrackSpamRecord
+)
 from ..redis import RedisClient
 from ..service import (
     GlobalizationService
@@ -19,9 +22,11 @@ class AntiSpamService(object):
     '''
             
     @classmethod
-    def is_spam_word(cls, word):
-        return False
-        return DFAFilter.is_spam_word(word)
+    def is_spam_word(cls, word, user_id):
+        is_spam = DFAFilter.is_spam_word(word)
+        if is_spam:
+            TrackSpamRecord.create(word, user_id)
+        return is_spam
 
 
 class DFAFilter(object):

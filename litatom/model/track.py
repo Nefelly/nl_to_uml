@@ -1,6 +1,7 @@
 # coding: utf-8
 import datetime
 import bson
+import time
 from mongoengine import (
     BooleanField,
     DateTimeField,
@@ -38,3 +39,26 @@ class TrackChat(Document):
             'target_user_id': self.target_uid if self.target_uid else '',
             'create_time': format_standard_time(date_from_unix_ts(self.create_ts))
         }
+
+
+
+class TrackSpamRecord(object):
+    """
+        user's spam word history
+        """
+    meta = {
+        'strict': False,
+        'alias': 'db_alias'
+    }
+
+    user_id = StringField(required=True)
+    word = StringField(required=True)
+    create_time = IntField(required=True)
+
+    @classmethod
+    def create(cls, user_id, word):
+        obj = cls(user_id=user_id, word=word)
+        obj.create_time = int(time.time())
+        obj.save()
+        return True
+

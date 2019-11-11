@@ -191,7 +191,7 @@ class UserService(object):
             uid = str(user.id)
             nickname = data.get('nickname', '')
             bio = data.get('bio', '')
-            if AntiSpamService.is_spam_word(nickname) or AntiSpamService.is_spam_word(bio):
+            if AntiSpamService.is_spam_word(nickname, uid) or AntiSpamService.is_spam_word(bio, uid):
                 cls.alert_to_user(uid)
             if (bio or nickname) and GlobalizationService.get_region() == GlobalizationService.DEFAULT_REGION:
                 loc = cls._get_words_loc([nickname, bio])

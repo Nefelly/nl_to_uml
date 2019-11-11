@@ -17,7 +17,7 @@ class UserModel(Document):
         'strict': False,
         'alias': 'db_alias'
     }
-    ALERT_TIMES = 2
+    ALERT_TIMES = 3
     user_id = StringField(required=True)
     alert_num = IntField(required=True, default=0)
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
