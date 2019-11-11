@@ -2,6 +2,7 @@ import os
 import time
 import sys
 import fcntl
+import datetime
 import threading
 from pymongo import MongoClient
 from litatom.mq import (
@@ -20,6 +21,14 @@ conf_m = setting.DB_SETTINGS.get('DB_LIT')
 host = conf_m['host']
 db = host.split('/')[-1].split('?')[0]
 
+def judge_should_run():
+    d = datetime.datetime.now()
+    hour = d.hour
+    min = d.minute
+    now = hour * 60 + min
+    low = 9 * 60 + 59
+    high = 10 * 60 + 2
+    return now <= low or now > high
 
 class ConsumeFeed(MQConsumer):
     insert_pack = []
@@ -29,9 +38,9 @@ class ConsumeFeed(MQConsumer):
         payload = msg.get('payload', {})
         ConsumeFeed.insert_pack.append(payload)
         ConsumeFeed.num += 1
-        client = MongoClient(host).get_database(db).user_action
         try:
-            if ConsumeFeed.num >= 50:
+            if ConsumeFeed.num >= 50 and judge_should_run():
+                client = MongoClient(host).get_database(db).user_action
                 TrackActionService.pymongo_batch_insert(client, ConsumeFeed.insert_pack)
                 # print ConsumeFeed.insert_pack
                 ConsumeFeed.insert_pack = []
