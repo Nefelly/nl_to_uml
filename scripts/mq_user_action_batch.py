@@ -35,11 +35,13 @@ class ConsumeFeed(MQConsumer):
     num = 0
 
     def callback(self, msg):
+        if not judge_should_run():
+            time.sleep(1)
         payload = msg.get('payload', {})
         ConsumeFeed.insert_pack.append(payload)
         ConsumeFeed.num += 1
         try:
-            if ConsumeFeed.num >= 50 and judge_should_run():
+            if ConsumeFeed.num >= 50:
                 client = MongoClient(host).get_database(db).user_action
                 TrackActionService.pymongo_batch_insert(client, ConsumeFeed.insert_pack)
                 # print ConsumeFeed.insert_pack
