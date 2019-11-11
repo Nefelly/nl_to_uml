@@ -25,6 +25,9 @@ class AdService(object):
 
     @classmethod
     def times_left(cls, user_id):
+        return {
+                   'times_left': 0,
+        }, True
         now_date = now_date_key()
         match_left_key = REDIS_AD_TIMES_LEFT.format(user_date=user_id + now_date)
         redis_client.setnx(match_left_key, cls.MAX_TIMES)
