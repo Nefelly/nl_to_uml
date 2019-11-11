@@ -142,10 +142,13 @@ class JournalService(object):
         res_lst = []
         cnt = 0
         for item in StatItems.objects():
-            m = cls.cal_by_id(str(item.id))
-            name, num = m['name'], m['num']
-            res_lst.append([name, num])
-            cnt += 1
+            try:
+                m = cls.cal_by_id(str(item.id))
+                name, num = m['name'], m['num']
+                res_lst.append([name, num])
+                cnt += 1
+            except:
+                continue
             # if cnt >= 3:
             #     break
         # dst_addr = '/data/statres/%s.xlsx' % now_date_key()
