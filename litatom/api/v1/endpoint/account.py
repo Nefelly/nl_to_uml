@@ -46,7 +46,7 @@ def product_info():
 
 @session_required
 def pay_inform():
-    payload = request.json.data
+    payload = request.json
     data, status = AccountService.deposit_diamonds(request.user_id, payload)
     if not status:
         return fail(data)
@@ -55,7 +55,7 @@ def pay_inform():
 
 @session_required
 def buy_product():
-    product = request.json.data.get("product")
+    product = request.json.get("product")
     data, status = AccountService.buy_product(request.user_id, product)
     if not status:
         return fail(data)
