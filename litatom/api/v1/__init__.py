@@ -67,6 +67,7 @@ b.add_url_rule('/lit/admin/add_to_top/<feed_id>', 'admin-add_to_top', endpoint.a
 b.add_url_rule('/lit/admin/remove_from_top/<feed_id>', 'admin-remove_from_top', endpoint.admin.remove_from_top)
 b.add_url_rule('/lit/admin/official_feed', 'admin-official_feed', endpoint.admin.official_feed)
 b.add_url_rule('/lit/admin/journal_cal/<item_id>', 'admin-journal_cal', endpoint.admin.journal_cal)
+b.add_url_rule('/lit/admin/get_log/<user_id>', 'admin-get_log', endpoint.admin.get_log)
 
 
 
@@ -77,6 +78,8 @@ b.add_url_rule('/lit/image/<fileid>', 'get-image', endpoint.oss.get_image)
 b.add_url_rule('/lit/simage/<fileid>', 'get-simage', endpoint.oss.get_simage)
 b.add_url_rule('/lit/audio/upload', 'audio-upload', endpoint.oss.upload_audio_from_file, methods=['POST'])
 b.add_url_rule('/lit/audio/<fileid>', 'get-audio', endpoint.oss.get_audio)
+b.add_url_rule('/lit/log/upload', 'log-upload', endpoint.oss.upload_log_from_file, methods=['POST'])
+b.add_url_rule('/lit/log/<fileid>', 'get-log', endpoint.oss.get_log)
 b.add_url_rule('/lit/mp3audio/<fileid>', 'get-mp3audio', endpoint.oss.get_audio_mp3)
 
 # home

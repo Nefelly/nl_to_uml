@@ -39,6 +39,28 @@ class FirebaseService(object):
         return None, True
 
     @classmethod
+    def command_to_user(cls, user_id, data):
+        obj = FirebaseInfo.get_by_user_id(user_id)
+        if not obj:
+            return u'no firebase token', False
+        data = data
+        headers = {
+            'Content-Type': 'application/json; charset=utf-8',
+            'Authorization': 'key=%s' % cls.SERVER_KEY
+        }
+        try:
+            response = requests.post(cls.SEND_URL, verify=False, headers=headers, json=data).json()
+            print response
+            if response.get('failure', 1) == 1:
+                return u'send failed', False
+            return None, True
+        except Exception, e:
+            logger.error(traceback.format_exc())
+            # traceback.print_exc()
+            # logger.error('firebase send  error, user_id: %r, err: %r', user_id, e)
+            return u'send error', False
+
+    @classmethod
     def send_to_user(cls, user_id, title, body, topic='foo-bar'):
         obj = FirebaseInfo.get_by_user_id(user_id)
         if not obj:

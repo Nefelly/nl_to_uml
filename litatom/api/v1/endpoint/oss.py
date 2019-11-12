@@ -105,6 +105,37 @@ def get_audio(fileid):
         return Response('', mimetype='audio/AMR')   # 返回空流, 兼容错误
     return Response(content, mimetype='audio/AMR')
 
+
+@session_required
+def upload_log_from_file():
+    """
+    直接上传图片到云盘
+    目前只用来传实名认证图片
+    """
+    log_file = request.files.get('log')
+    if not log:
+        return jsonify(Failed)
+
+    fileid = AliOssService.upload_from_binary(log_file)
+    if not fileid:
+        return jsonify(Failed)
+    return jsonify({
+        'success': True,
+        'data': {
+            'fileid': fileid
+        }
+    })
+
+
+def get_log(fileid):
+    if fileid == 'null':
+        return jsonify(Failed)
+    content = AliOssService.get_binary_from_bucket(fileid)
+    if not content:
+        return Response('', mimetype='application/zip')   # 返回空流, 兼容错误
+    return Response(content, mimetype='application/zip')
+
+
 def get_audio_mp3(fileid):
     """https://blog.csdn.net/pj_developer/article/details/72778792"""
     if fileid == 'null':

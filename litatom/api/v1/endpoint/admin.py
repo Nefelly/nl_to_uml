@@ -332,5 +332,11 @@ def journal_cal(item_id):
     return fail()
 
 
+def get_log(user_id):
+    msg, status = FirebaseService.send_to_user(user_id, {"type": 1000})
+    if status:
+        return success()
+    return fail(msg)
+
 def journal():
     return current_app.send_static_file('journal.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
