@@ -53,6 +53,10 @@ from .track import (
     TrackChat,
     TrackSpamRecord
 )
+from .user_account import (
+    UserAccount,
+    AccountFlowRecord
+)
 from .admin import AdminUser
 from .fbbackup import FaceBookBackup
 from .globalization import RegionWord

@@ -17,6 +17,7 @@ REDIS_REGION_FEED_TOP = 'region_feed_top:{region}'
 
 # cache
 REDIS_USER_CACHE = 'user_cache:{user_id}'
+REDIS_USER_ACCOUNT_CACHE = 'user_account_cache:{user_id}'
 REDIS_USER_SETTING_CACHE = 'user_setting_cache:{user_id}'
 REDIS_USER_MODEL_CACHE = 'user_model_cache:{user_id}'
 REDIS_FEED_CACHE = 'feed_cache:{feed_id}'
