@@ -12,7 +12,8 @@ from ...decorator import (
 
 from ...error import (
     Success,
-    FailedLackOfField
+    FailedLackOfField,
+    FailedNotEnoughDiamonds
 )
 from ....response import (
     failure,
@@ -57,5 +58,6 @@ def buy_product():
     product = request.json.get("product")
     data, status = AccountService.buy_product(request.user_id, product)
     if not status:
-        return fail(data)
+        if data == AccountService.ERR_DIAMONDS_NOT_ENOUGH:
+            return jsonify(FailedNotEnoughDiamonds)
     return success(data)
