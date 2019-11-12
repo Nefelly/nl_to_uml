@@ -29,6 +29,11 @@ b.add_url_rule('/lit/user/firebase_push', 'user-firebase-push', endpoint.user.fi
 b.add_url_rule('/lit/user/query_online', 'user-query-online', endpoint.user.query_online, methods=['POST'])
 b.add_url_rule('/lit/user/search', 'user-search', endpoint.user.search_user)
 
+b.add_url_rule('/lit/account/account_info', 'account-account_info', endpoint.account.account_info)
+b.add_url_rule('/lit/account/products', 'account-product_info', endpoint.account.product_info)
+b.add_url_rule('/lit/account/pay_inform', 'account-pay_inform', endpoint.account.pay_inform, methods=['POST'])
+b.add_url_rule('/lit/account/buy_product', 'account-buy_product', endpoint.account.buy_product, methods=['POST'])
+
 # admin
 b.add_url_rule('/lit/admin/index', 'admin-index', endpoint.admin.index)
 b.add_url_rule('/lit/admin/admin_feeds', 'admin-admin-feeds', endpoint.admin.feeds_square_html)

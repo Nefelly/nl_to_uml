@@ -38,7 +38,7 @@ class ReportService(object):
             if target_user_id.startswith('love'):
                 target_user_id = UserService.uid_by_huanxin_id(target_user_id)
             report.target_uid = target_user_id
-            if cls._should_block(target_user_id, user_id, reason):
+            if cls._should_block(target_user_id, user_id, reason) and not UserService.is_official_account(target_user_id):
                 UserService.auto_forbid(target_user_id, 3 * ONE_DAY)
                 objs = Report.objects(target_uid=target_user_id, create_ts__gte=(ts_now - 3 * ONE_DAY))
                 send_uids = []

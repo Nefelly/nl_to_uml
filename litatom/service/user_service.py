@@ -63,7 +63,8 @@ from ..service import (
     GlobalizationService,
     FirebaseService,
     MqService,
-    AntiSpamService
+    AntiSpamService,
+    AccountService
 )
 
 sys_rnd = random.SystemRandom()
@@ -435,6 +436,13 @@ class UserService(object):
         return True
 
     @classmethod
+    def is_official_account(cls, user_id):
+        u = User.get_by_id(user_id)
+        if u and u.avatar == '5a6989ec-74a2-11e9-977f-00163e02deb4':
+            return True
+        return False
+
+    @classmethod
     def block_actions(cls, reported_uid, report_user_ids):
         target_user_nickname = cls.nickname_by_uid(reported_uid)
         to_user_info = u"Your report on the user %s  has been settled. %s's account is disabled. Thank you for your support of the Lit community." \
@@ -789,6 +797,7 @@ class UserService(object):
             return basic_info, True
         login_info = target_user.get_login_info()
         basic_info.update(login_info)
+        basic_info.update({"account_info": AccountService.get_user_account_info(user_id)})
         return basic_info, True
 
     @classmethod

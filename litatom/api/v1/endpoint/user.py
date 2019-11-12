@@ -25,7 +25,8 @@ from ..form import (
 from ....service import (
     UserService,
     UserMessageService,
-    FirebaseService
+    FirebaseService,
+    AccountService
 )
 from  ....const import (
     MAX_TIME
@@ -181,12 +182,47 @@ def firebase_push():
         return fail(data)
     return success()
 
+
 @session_finished_required
 def query_online():
     uids = request.json.get('user_ids', [])
     uids = uids[:100] + uids[-40:] if len(uids) > 140 else uids
     uids = list(set([_ for _ in uids if _]))
     data, status = UserService.uids_online(uids)
+    if not status:
+        return fail(data)
+    return success(data)
+
+
+@session_required
+def account_info():
+    data = AccountService.get_user_account_info(request.user_id)
+    if not data:
+        return fail()
+    return success(data)
+
+
+@session_required
+def product_info():
+    data, status = AccountService.get_product_info(request.user_id)
+    if not status:
+        return fail(data)
+    return success(data)
+
+
+@session_required
+def pay_inform():
+    payload = request.json.data
+    data, status = AccountService.deposit_diamonds(request.user_id, payload)
+    if not status:
+        return fail(data)
+    return success(data)
+
+
+@session_required
+def buy_product():
+    product = request.json.data.get("product")
+    data, status = AccountService.buy_product(request.user_id, product)
     if not status:
         return fail(data)
     return success(data)

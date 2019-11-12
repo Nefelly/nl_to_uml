@@ -24,6 +24,7 @@ from .ad_service import (
     AdService
 )
 from .user_filter_service import UserFilterService
+from .account_service import AccountService
 from .user_service import UserService
 from .voice_chat_service import VoiceChatService
 from .message_service import UserMessageService

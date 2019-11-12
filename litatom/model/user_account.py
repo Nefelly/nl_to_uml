@@ -32,10 +32,6 @@ class UserAccount(Document):
 
     @classmethod
     def get_by_user_id(cls, user_id):
-        return cls.objects(user_id=user_id).first()
-
-    @classmethod
-    def get_by_user_id(cls, user_id):
         cache_key = REDIS_USER_ACCOUNT_CACHE.format(user_id=user_id)
         cache_obj = redis_client.get(cache_key)
         if cache_obj:
@@ -66,17 +62,14 @@ class UserAccount(Document):
             return True
         obj = cls(user_id=user_id, diamonds=diamonds)
         obj.save()
-        return True
+        return obj
 
     @classmethod
-    def ensure_account(cls, user_id, diamonds=0):
+    def ensure_account(cls, user_id):
         obj = cls.get_by_user_id(user_id)
         if not obj:
-            cls.create_account(user_id, diamonds)
-        else:
-            obj.diamonds = diamonds
-            obj.save()
-        return True
+            cls.create_account(user_id)
+        return obj
 
 
 class AccountFlowRecord(Document):
