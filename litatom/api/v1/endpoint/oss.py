@@ -113,7 +113,7 @@ def upload_log_from_file():
     目前只用来传实名认证图片
     """
     log_file = request.files.get('log')
-    if not log:
+    if not log_file:
         return jsonify(Failed)
 
     fileid = AliOssService.upload_from_binary(log_file)
