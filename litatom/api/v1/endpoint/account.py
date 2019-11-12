@@ -36,7 +36,6 @@ def account_info():
     return success(data)
 
 
-@session_required
 def product_info():
     data, status = AccountService.get_product_info(request.user_id)
     if not status:
