@@ -43,6 +43,12 @@ class UserAccount(Document):
         return obj
 
     @classmethod
+    def get_account_info(cls, user_id):
+        obj = UserAccount.get_by_user_id(user_id)
+        diamonds = obj.diamonds if obj and obj.diamonds else 0
+        return {"diamonds": diamonds}
+
+    @classmethod
     def _disable_cache(cls, user_id):
         redis_client.delete(REDIS_USER_ACCOUNT_CACHE.format(user_id=user_id))
 

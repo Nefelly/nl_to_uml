@@ -51,7 +51,8 @@ from ..model import (
     RedisLock,
     ReferralCode,
     UserModel,
-    Report
+    Report,
+    UserAccount
 )
 from ..service import (
     SmsCodeService,
@@ -63,8 +64,7 @@ from ..service import (
     GlobalizationService,
     FirebaseService,
     MqService,
-    AntiSpamService,
-    AccountService
+    AntiSpamService
 )
 
 sys_rnd = random.SystemRandom()
@@ -797,7 +797,7 @@ class UserService(object):
             return basic_info, True
         login_info = target_user.get_login_info()
         basic_info.update(login_info)
-        basic_info.update({"account_info": AccountService.get_user_account_info(user_id)})
+        basic_info.update({"account_info": UserAccount.get_account_info(user_id)})
         return basic_info, True
 
     @classmethod

@@ -24,7 +24,6 @@ from .ad_service import (
     AdService
 )
 from .user_filter_service import UserFilterService
-from .account_service import AccountService
 from .user_service import UserService
 from .voice_chat_service import VoiceChatService
 from .message_service import UserMessageService
@@ -42,5 +41,6 @@ from .track_action_service import TrackActionService
 from .feedback_service import FeedbackService
 from .admin_service import AdminService
 from .palm_service import PalmService
+from .account_service import AccountService
 from .chat_record_service import ChatRecordService
 # from .mysql_sync_service import MysqlSyncService
