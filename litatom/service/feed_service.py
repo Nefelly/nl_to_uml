@@ -361,6 +361,8 @@ class FeedService(object):
     @classmethod
     def del_comment(cls, user_id, comment_id):
         comment = FeedComment.get_by_id(comment_id)
+        if not comment:
+            return u'comment not exists', False
         feed = Feed.get_by_id(comment.feed_id)
         if not comment or not feed or (user_id not in [comment.user_id, feed.user_id]):
             return u'not authorized', False
