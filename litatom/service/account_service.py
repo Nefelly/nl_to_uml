@@ -26,9 +26,7 @@ class AccountService(object):
 
     @classmethod
     def get_user_account_info(cls, user_id):
-        obj = UserAccount.get_by_user_id(user_id)
-        diamonds = obj.diamonds if obj.diamonds else 0
-        return {"diamonds": diamonds}
+        return UserAccount.get_account_info(user_id)
 
     @classmethod
     def change_diamonds(cls, user_id, diamonds):
