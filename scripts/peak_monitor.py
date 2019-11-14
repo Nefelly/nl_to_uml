@@ -20,7 +20,7 @@ def run():
         stat_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
         info = monitor_redis()
         f.write('%s\n%s\n' % (stat_time, info))
-        if datetime.datetime.minute > 10:
+        if datetime.datetime.now().minute > 10:
             f.close()
             break
 
