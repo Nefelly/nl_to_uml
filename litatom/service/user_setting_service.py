@@ -29,7 +29,7 @@ class UserSettingService(object):
                 'interval': 5,
                 'need_ad': True,
                 'voice_match_top': True,
-                'in_match': True,
+                'in_match': False,
                 'im': True
             }
         }
