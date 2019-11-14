@@ -288,7 +288,7 @@ class MatchService(object):
         now_date = now_date_key()
         match_left_key = cls.TYPE_USER_MATCH_LEFT.format(user_date=user_id + now_date)
         d = datetime.datetime.now()
-        should_stat = d.hour == 10 and 0 <= d.minute < 5
+        should_stat = d.hour == 22 and 0 <= d.minute < 5
         start = time.time() * 1000
         redis_client.setnx(match_left_key, cls.MATCH_TMS)
         redis_client.expire(match_left_key, ONE_DAY)
