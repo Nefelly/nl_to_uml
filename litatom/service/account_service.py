@@ -16,7 +16,7 @@ redis_client = RedisClient()['lit']
 class AccountService(object):
     '''
     '''
-    MONTH_MEMBER = 'month_member'
+    MONTH_MEMBER = 'week_member'
     ONE_MORE_TIME = 'one_more_time'
     PRODUCT_INFOS = {
         MONTH_MEMBER: 15,
