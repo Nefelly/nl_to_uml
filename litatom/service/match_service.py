@@ -287,9 +287,16 @@ class MatchService(object):
         # 匹配次数验证
         now_date = now_date_key()
         match_left_key = cls.TYPE_USER_MATCH_LEFT.format(user_date=user_id + now_date)
+        d = datetime.datetime.now()
+        should_stat = d.hour == 10 and 0 <= d.minute < 5 or 1
+        if should_stat:
+            start = time.time() * 1000
         redis_client.setnx(match_left_key, cls.MATCH_TMS)
         redis_client.expire(match_left_key, ONE_DAY)
         times_left = int(redis_client.get(match_left_key))
+        if should_stat:
+            redis_client.incrby('get_times', 1)
+            redis_client.incrby('using_times', int(time.time() * 1000  - start))
         if times_left <= 0:
             return u'Your match opportunity has run out, please try again tomorrow', False
         return times_left, True
