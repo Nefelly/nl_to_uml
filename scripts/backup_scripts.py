@@ -37,6 +37,8 @@ def stat_lang(objs):
 def stat_redis():
     t = ''
     m = {}
+    cnt = 0
+    tmp = 0
     k = open('/data/log/peak_monitor/peak_stat', 'r').read()
     for l in k.split('\n'):
              if '2019-11-14' in l:
@@ -46,7 +48,7 @@ def stat_redis():
                      sc = True
                      t = l
              if 'total_commands_processed' in l:
-                   if sc:
+                 if sc:
                          n = int(l.split(':')[1])
                  m[t] = n - tmp
                  tmp = n
