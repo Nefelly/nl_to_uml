@@ -33,7 +33,7 @@ class UserSettingService(object):
             'prior_voice': TYPE_VOICE_TENCENT,   # agora 声网
             'ad_rule': {
                 'interval': 5,
-                'prior_platform': 'google', # facebook
+                'prior_platform': 'facebook', # facebook
                 'need_ad': True,
                 'voice_match_top': True,
                 'in_match': False,
