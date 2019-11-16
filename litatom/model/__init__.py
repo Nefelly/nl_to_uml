@@ -61,7 +61,10 @@ from .admin import AdminUser
 from .fbbackup import FaceBookBackup
 from .globalization import RegionWord
 from .referral_code import ReferralCode
-from .user_model import UserModel
+from .user_model import (
+    UserModel,
+    Uuids
+)
 from .anoy_online import AnoyOnline
 from ..db import DBManager
 

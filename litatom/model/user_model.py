@@ -44,3 +44,20 @@ class UserModel(Document):
     @classmethod
     def get_by_user_id(cls, user_id):
         return cls.objects(user_id=user_id).first()
+
+
+class Uuids(Document):
+    meta = {
+        'strict': False,
+        'alias': 'db_alias'
+    }
+    uuid = StringField(required=True)
+    create_time = DateTimeField(required=True, default=datetime.datetime.now)
+
+    @classmethod
+    def create(cls, uuid):
+        obj = cls.objects(uuid=uuid).first()
+        if not obj:
+            obj = cls(uuid=uuid)
+            obj.save()
+        return str(obj.id)

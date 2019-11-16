@@ -9,10 +9,13 @@ from ..const import (
 from ..util import date_to_int_time
 from ..model import (
     User,
-    UserSetting
+    UserSetting,
+    Uuids
 )
 from ..const import (
-    ONE_HOUR
+    ONE_HOUR,
+    TYPE_VOICE_AGORA,
+    TYPE_VOICE_TENCENT
 )
 from ..service import GlobalizationService
 
@@ -21,12 +24,16 @@ class UserSettingService(object):
 
     @classmethod
     def get_settings(cls, user_id=None):
+        if not user_id and request.uuid:
+            Uuids.create(request.uuid)
         res = {
             'need_login': True,
             'max_voice_time': ONE_HOUR,
             'pop_good_rate': True,
+            'prior_voice': TYPE_VOICE_TENCENT,   # agora 声网
             'ad_rule': {
                 'interval': 5,
+                'prior_platform': 'google', # facebook
                 'need_ad': True,
                 'voice_match_top': True,
                 'in_match': True,

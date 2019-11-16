@@ -3,6 +3,9 @@ import time
 import datetime
 import random
 from hendrix.conf import setting
+from  flask import (
+    request
+)
 from ..redis import RedisClient
 from ..key import (
     REDIS_USER_VOICE_MATCH_LEFT,
@@ -14,12 +17,15 @@ from ..key import (
     REDIS_VOICE_MATCHED_BEFORE,
     REDIS_VOICE_MATCHED,
     REDIS_VOICE_FAKE_LIKE,
-    REDIS_VOICE_JUDGE_LOCK
+    REDIS_VOICE_JUDGE_LOCK,
+    REDIS_VOICE_SDK_TYPE
 )
 from ..const import (
     FIVE_MINS,
     BOY,
-    GIRL
+    GIRL,
+    TYPE_VOICE_TENCENT,
+    TYPE_VOICE_AGORA
 )
 from ..service import (
     GlobalizationService,
@@ -58,3 +64,31 @@ class VoiceMatchService(MatchService):
             'top_wording': GlobalizationService.get_region_word('voice_top_wording')
         }
         return data, True
+
+    @classmethod
+    def create_fakeid(cls, user_id):
+        res, status = super(VoiceMatchService, cls).anoy_match(user_id)
+        if not status:
+            return res, status
+        voice_type = request.args.get('voice_type', None)
+        if voice_type:
+            redis_client.set(REDIS_VOICE_SDK_TYPE.format(user_id), voice_type, ex=cls.TOTAL_WAIT)
+        return res, status
+
+    @classmethod
+    def anoy_match(cls, user_id):
+        res, status = super(VoiceMatchService, cls).anoy_match(user_id)
+        if not status:
+            return res, status
+        voice_type = TYPE_VOICE_AGORA
+        if redis_client.get(REDIS_VOICE_SDK_TYPE.format(user_id)) == TYPE_VOICE_TENCENT:
+            matched_id = res.get('matched_fake_id')
+            other_user_id = cls._uid_by_fake_id(matched_id)
+            if redis_client.get(REDIS_VOICE_SDK_TYPE.format(other_user_id)) == TYPE_VOICE_TENCENT:
+                voice_type = TYPE_VOICE_TENCENT
+        res.update(
+            {
+                'voice_type': voice_type
+            }
+        )
+        return res, True
