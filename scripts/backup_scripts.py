@@ -34,6 +34,25 @@ def stat_lang(objs):
              continue
      return m
 
+def stat_redis():
+    t = ''
+    m = {}
+    cnt = 0
+    tmp = 0
+    k = open('/data/log/peak_monitor/peak_stat', 'r').read()
+    for l in k.split('\n'):
+             if '2019-11-14' in l:
+                     if l != t:
+                             cnt += 1
+        
+                     sc = True
+                     t = l
+             if 'total_commands_processed' in l:
+                 if sc:
+                         n = int(l.split(':')[1])
+                 m[t] = n - tmp
+                 tmp = n
+                 sc = False
 
 def cal_country_num():
     m = {}

@@ -13,6 +13,9 @@ from ..const import (
     TEN_MINS,
     ONE_MIN
 )
+from ..model import (
+    User
+)
 from ..service import (
     TokenBucketService,
     GlobalizationService
@@ -83,6 +86,8 @@ class SmsCodeService(object):
         zone_phone = validate_phone_number(zone_phone, zone)
         if not zone_phone:
             return cls.ERR_WORONG_TELEPHONE, False
+        # if not User.get_by_phone(zone_phone):
+        #     return u'phone register is not support now, please try another', False
         if not TokenBucketService.get_token('send_lock' + zone_phone, 1, 1, 1, TEN_MINS, TEN_MINS):
             return '', True
         if zone.replace('+', '') == '86':

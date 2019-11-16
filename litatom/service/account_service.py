@@ -16,7 +16,7 @@ redis_client = RedisClient()['lit']
 class AccountService(object):
     '''
     '''
-    MONTH_MEMBER = 'month_member'
+    MONTH_MEMBER = 'week_member'
     ONE_MORE_TIME = 'one_more_time'
     PRODUCT_INFOS = {
         MONTH_MEMBER: 15,
@@ -26,9 +26,7 @@ class AccountService(object):
 
     @classmethod
     def get_user_account_info(cls, user_id):
-        obj = UserAccount.get_by_user_id(user_id)
-        diamonds = obj.diamonds if obj.diamonds else 0
-        return {"diamonds": diamonds}
+        return UserAccount.get_account_info(user_id)
 
     @classmethod
     def change_diamonds(cls, user_id, diamonds):

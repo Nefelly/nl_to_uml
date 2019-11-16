@@ -85,6 +85,7 @@ REDIS_VOICE_MATCHED = 'voice_matched:{fake_id}'   # 双方匹配上, 匹配动�
 REDIS_VOICE_FAKE_LIKE = 'voice_fake_like:{fake_id}'  # value fake_id
 REDIS_VOICE_JUDGE_LOCK = 'voice_judge_lock:{fake_id}'   # 评价对方的接口, 用于防范被刷评价
 REDIS_VOICE_GENDER_ONLINE_REGION = 'voice_online:{gender}:{region}'
+REDIS_VOICE_SDK_TYPE = 'voice_sdk_type:{user_id}'
 
 #voice chat
 REDIS_VOICE_CHAT_WAIT = 'voice_chat_wait:{user_id}'

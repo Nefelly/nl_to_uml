@@ -24,7 +24,8 @@ GENDERS = [BOY, GIRL]
 UNKNOWN_GENDER = 'unknown'
 INT_BOY = 1
 INT_GIRL = 0
-
+TYPE_VOICE_AGORA = 'agora'
+TYPE_VOICE_TENCENT = 'tencent'
 
 
 # 提示消息
