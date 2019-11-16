@@ -72,7 +72,7 @@ class VoiceMatchService(MatchService):
             return res, status
         voice_type = request.args.get('voice_type', None)
         if voice_type:
-            redis_client.set(REDIS_VOICE_SDK_TYPE.format(user_id), voice_type, ex=cls.TOTAL_WAIT)
+            redis_client.set(REDIS_VOICE_SDK_TYPE.format(user_id=user_id), voice_type, ex=cls.TOTAL_WAIT)
         return res, status
 
     @classmethod
@@ -81,10 +81,10 @@ class VoiceMatchService(MatchService):
         if not status:
             return res, status
         voice_type = TYPE_VOICE_AGORA
-        if redis_client.get(REDIS_VOICE_SDK_TYPE.format(user_id)) == TYPE_VOICE_TENCENT:
+        if redis_client.get(REDIS_VOICE_SDK_TYPE.format(user_id=user_id)) == TYPE_VOICE_TENCENT:
             matched_id = res.get('matched_fake_id')
             other_user_id = cls._uid_by_fake_id(matched_id)
-            if redis_client.get(REDIS_VOICE_SDK_TYPE.format(other_user_id)) == TYPE_VOICE_TENCENT:
+            if redis_client.get(REDIS_VOICE_SDK_TYPE.format(user_id=other_user_id)) == TYPE_VOICE_TENCENT:
                 voice_type = TYPE_VOICE_TENCENT
         res.update(
             {
