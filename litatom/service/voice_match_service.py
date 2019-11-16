@@ -67,7 +67,7 @@ class VoiceMatchService(MatchService):
 
     @classmethod
     def create_fakeid(cls, user_id):
-        res, status = super(VoiceMatchService, cls).anoy_match(user_id)
+        res, status = super(VoiceMatchService, cls).create_fakeid(user_id)
         if not status:
             return res, status
         voice_type = request.args.get('voice_type', None)
