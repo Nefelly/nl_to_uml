@@ -131,6 +131,11 @@ class RegionWord(Document):
             'en': u'Our system has noticed inappropriate behavior on your account. please keep positive. If you believe you’ve been incorrectly flagged, you can contact us by litatomwang@gmail.com',
             'vi': u'Hệ thống chúng tôi thông báo tài khoản của bạn có hành vi không phù hợp. Hãy cư xử văn minh trong cuộc trò chuyện của bạn. Nếu bạn cho rằng báo cáo này là sai hãy liên lạc với chúng tôi qua email litatomwang@gmail.com',
             'th': u'"ระบบของเราสังเกตเห็นพฤติกรรมที่ไม่เหมาะสมในบัญชีของคุณโปรดประพฤติตามความเหมาะสมหากคุณคิดว่าคุณถูกตั้งค่าสถานะไม่ถูกต้อง คุณสามารถติดต่อเราอยู่ที่litatomwang@gmail.com"'
+        },
+        'sms_could_not_register': {
+            'en': u'Registration of mobile phone is temporarily unavailable. Please register in other ways.',
+            'vi': u'Số điện thoại đăng nhập tạm thời không sử dụng được. Vui lòng sử dụng các hình thức đăng nhập khác',
+            'th': u'ไม่สามารถลงทะเบียนโทรศัพท์มือถือได้ชั่วคราว กรุณาลงทะเบียนด้วยวิธีอื่น'
         }
     }
 
