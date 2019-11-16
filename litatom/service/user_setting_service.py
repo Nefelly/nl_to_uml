@@ -57,7 +57,7 @@ class UserSettingService(object):
             "video_match": 1,
             "voice_match": 1
         }
-        if region != GlobalizationService.REGION_TH:
+        if region not in [GlobalizationService.REGION_TH, GlobalizationService.REGION_VN]:
             # if request.version != '2.5.3':
                 modules_open['video_match'] = 0
         res['modules_open'] = modules_open
