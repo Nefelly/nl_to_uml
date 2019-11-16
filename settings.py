@@ -58,8 +58,8 @@ DEFAULT_REDIS_SETTING = {
 
 
 REDIS_SETTINGS = {
-    'lit_old': r.get_json('REDIS_LIT', DEFAULT_REDIS_SETTING),
-    'lit': r.get_json('REDIS_ALI_LIT', DEFAULT_REDIS_SETTING),
+    'lit': r.get_json('REDIS_LIT', DEFAULT_REDIS_SETTING),
+    'lit_ali': r.get_json('REDIS_ALI_LIT', DEFAULT_REDIS_SETTING),
 
 }
 IS_DEV = r.get_bool('IS_DEV', False)
