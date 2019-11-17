@@ -124,25 +124,25 @@ class StatisticService(object):
                 girl_uids = redis_client.zrevrange(GlobalizationService._online_key_by_region_gender(GIRL), girl_start_p, girl_start_p + girl_num)
                 boy_uids = redis_client.zrevrange(GlobalizationService._online_key_by_region_gender(BOY), start_p, start_p + boy_num)
                 uids = girl_uids + boy_uids
-            # else:
-            #     uids = redis_client.zrevrange(key, start_p, start_p + num)
-            # temp_uid = request.user_id
-            # if temp_uid and temp_uid in uids:
-            #     temp_num = num + 1
-            #     uids = redis_client.zrevrange(key, start_p, start_p + temp_num)
-            #     uids = [uid for uid in uids if uid != temp_uid]
-            # uids = uids if uids else []
-            # has_next = False
-            # if gender == BOY and girl_strategy_on:
-            #     if len(boy_uids) == num + 1:
-            #         has_next = True
-            #         boy_uids = boy_uids[:-1]
-            #     uids = boy_uids[:-1] + girl_uids
-            #     random.shuffle(uids)
-            # else:
-            #     if len(uids) == num + 1:
-            #         has_next = True
-            #         uids = uids[:-1]
+            else:
+                uids = redis_client.zrevrange(key, start_p, start_p + num)
+            temp_uid = request.user_id
+            if temp_uid and temp_uid in uids:
+                temp_num = num + 1
+                uids = redis_client.zrevrange(key, start_p, start_p + temp_num)
+                uids = [uid for uid in uids if uid != temp_uid]
+            uids = uids if uids else []
+            has_next = False
+            if gender == BOY and girl_strategy_on:
+                if len(boy_uids) == num + 1:
+                    has_next = True
+                    boy_uids = boy_uids[:-1]
+                uids = boy_uids[:-1] + girl_uids
+                random.shuffle(uids)
+            else:
+                if len(uids) == num + 1:
+                    has_next = True
+                    uids = uids[:-1]
         temp_uid = request.user_id
         if temp_uid:
             # uids = [el for el in uids if UserFilterService.filter_by_age_gender(temp_uid, el)]
@@ -162,7 +162,7 @@ class StatisticService(object):
                         break
                     start_p = start_p + num
             else:
-                uids = []
+                # uids = []
                 for i in range(max_loop_tms):
                     temp_uids = redis_client.zrevrange(key, start_p, start_p + num)
                     has_next = False
