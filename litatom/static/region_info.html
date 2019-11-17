@@ -1,0 +1,95 @@
+<html>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://cdn.bootcss.com/vue-resource/1.5.1/vue-resource.js"></script>
+<div id="app-7">
+<table class="tb" border="1">
+<tr>
+ <th>id</th>
+ <th>name</th>
+ <th>table</th>
+ <th>judge_field</th>
+ <th>expression</th>
+    <th>create_time</th>
+    <th>delete</th>
+    <th>calculate</th>
+ </tr>
+    <tr><td>插入新的统计项</td>
+        <td><input id="name_area" name="name_area"></td>
+        <td><input id="table_area" name="num"></td>
+        <td><input id="judge_field_area" name="num"></td>
+        <td><input id="expression_area" name="num" style="width: 500px"></td>
+        <td><button name='add_item' @click='add_item()'>add_item</button></td></tr>
+<tr v-for="item in items1">
+<td>{{item.id}}</td>
+<td><pre>{{item.name}}</pre></td>
+<td>{{item.table_name}}</td>
+    <td>{{item.judge_field}}</td>
+    <td>{{item.expression}}</td>
+    <td>{{item.create_time}}</td>
+    <td><button name='delete' @click='delete_item(item.id)'>delete</button></td>
+    <td><button name='calculate' @click='cal_item(item.id)'>calculate</button></td>
+</tr>
+
+</table>
+<!-- <button v-if="previous_start >= 0" name="previous_page" @click="previous_page()">previous page</button> -->
+</div>
+<script>
+    const BASE_URL = 'http://' + document.domain + '/api/sns/v1/lit/';
+var app7 = new Vue({
+  el: '#app-7',
+  data: {
+    items1: [],
+    base_url: BASE_URL,
+    next_start: 100000000000,
+    previous_start: -1
+  },
+created() {this.submitForm();},
+
+methods: {
+      submitForm: function() {
+        this.$http.get(BASE_URL + 'admin/stat_items').then(function(result){
+        var data = result.data.data;
+	    this.items1 = data;
+	      })
+      },
+
+    add_item: function() {
+        stat_name = document.getElementById('name_area').value;
+        table_name = document.getElementById('table_area').value;
+        judge_field = document.getElementById('judge_field_area').value;
+        expression = document.getElementById('expression_area').value;
+        this.$http.post(BASE_URL + 'admin/add_stat_item', {"name":stat_name, "table_name":table_name, "judge_field":judge_field, "expression":expression}).then(function(result){
+            if (result.data.result === 0){this.submitForm();}
+            else{alert('failed');}
+        })
+    },
+
+    cal_item: function(item_id) {
+        this.$http.get(BASE_URL + 'admin/journal_cal/' + item_id).then(function(result){
+            if (result.data.result === 0){alert(result.data.data.num)}
+            else{alert('failed');}
+        })
+    },
+
+    delete_item: function(item_id){
+      var url = BASE_URL + 'admin/delete_stat_item/' + item_id;
+      this.$http.get(url).then(function(result){
+        console.log('!!!!!!', this.items1);
+        if (result.data.result === 0){}
+        else{alert('failed');}
+        let newItem1 = [];
+        this.items1.forEach(item => {
+          if (item.id !== item_id) {
+            newItem1.push(item)
+          }
+        })
+
+        this.items1 = newItem1
+
+      })
+    },
+
+    }
+})
+</script>
+</html>
