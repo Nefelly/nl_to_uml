@@ -162,6 +162,7 @@ class StatisticService(object):
                         break
                     start_p = start_p + num
             else:
+                uids = []
                 for i in range(max_loop_tms):
                     temp_uids = redis_client.zrevrange(key, start_p, start_p + num)
                     has_next = False
