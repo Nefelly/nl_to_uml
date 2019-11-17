@@ -37,7 +37,12 @@ class UserSettingService(object):
                 'need_ad': True,
                 'voice_match_top': True,
                 'in_match': False,
-                'im': True
+                'im': True,
+                'anti_spam_rule': {
+                    "times": 5,
+                    "time_interval": 60,
+                    "spam_interval": 60 * 120
+                }
             }
         }
         # need_pop = False
