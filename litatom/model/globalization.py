@@ -162,3 +162,10 @@ class RegionWord(Document):
         if obj:
             return obj.word
         return ''
+
+    @classmethod
+    def load(cls):
+        TAG_REGION_WORD = {}
+        for obj in cls.objects():
+            region = obj.region
+            tag = obj.tag

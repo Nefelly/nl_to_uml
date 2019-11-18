@@ -24,6 +24,14 @@ from . import const
 logger = logging.getLogger(__name__)
 
 
+def is_json(myjson):
+    try:
+        json_object = json.loads(myjson)
+    except ValueError, e:
+        return False
+    return True
+
+
 def passwdhash(passwd):
     m = hashlib.md5()
     m.update(passwd)
