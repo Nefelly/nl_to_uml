@@ -82,7 +82,7 @@ class AdminService(object):
 
     @classmethod
     def add_to_top(cls, feed_id):
-        redis_client.set(REDIS_REGION_FEED_TOP.format(region=GlobalizationService.get_region()), feed_id, ONE_DAY)
+        redis_client.set(REDIS_REGION_FEED_TOP.format(region=GlobalizationService.get_region()), feed_id, 30 * ONE_DAY)
         return None, True
 
     @classmethod
