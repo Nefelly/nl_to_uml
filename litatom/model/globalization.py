@@ -213,3 +213,5 @@ class RegionWord(Document):
                 tag_region_word[tag] = {}
             tag_region_word[tag][region] = word
         cls.TAG_REGION_WORD = tag_region_word
+
+RegionWord.load()
