@@ -1,5 +1,6 @@
 # coding: utf-8
 import datetime
+import json
 from mongoengine import (
     BooleanField, 
     DateTimeField, 
@@ -8,6 +9,7 @@ from mongoengine import (
     ListField, 
     StringField, 
 )
+from ..util import is_json
 
 
 class RegionWord(Document):
@@ -74,7 +76,7 @@ class RegionWord(Document):
             'india': u'Our system has noticed inappropriate behavior on your account. You’ve been restricted until %s. In the future please keep your chats positive. If you believe you’ve been incorrectly flagged,  you can contact our customer service team. ', 
             'id': u'Sistem kami mendeteksi perilaku yang kurang pantas pada akun Anda. Anda tidak dapat menggunakan aplikasi s/d %s. Mohon menjaga chat Anda dengan perilaku yang positif. Jika Anda merasa tidak melakukan hal berikut,  Anda dapat menghubungi tim kami.',
             'ko': u'나의 계좌에서 부적절한 행동을 알아챘습니다. %s까지 계좌 제한되셨습니다. 앞으로는 대화 내용을 긍정적으로 유지하세요. 플래그가 잘못 표시되었다고 생각하면고객 서비스 팀에 문의하십시오.'
-        }, 
+        },
         'reply_comment': {
             'vi': u'Trả lời bài viết của bạn', 
             'th': u'ตอบกลับโพสของคุณ', 
@@ -139,6 +141,26 @@ class RegionWord(Document):
         }
     }
 
+    REGION_BENCHMARK = 'en'
+
+    @classmethod
+    def is_valid_word(cls, region, tag, word):
+        if region == cls.REGION_BENCHMARK:
+            return None
+        obj = cls.objects(region=cls.REGION_BENCHMARK, tag=tag).first()
+        if not obj:
+            return u'tag not vailid, please retry later'
+        en_word = obj.word
+        is_json_en = is_json(en_word)
+        is_json_local = is_json(word)
+        if is_json_en != is_json_local:
+            return u'word json format not meet, please check if your word is json'
+        if not is_json_local:
+            place_holders = en_word.count('%s')
+            if place_holders != word.count('%s'):
+                return u'%%s number dismatch, please check'
+        return None
+
     @classmethod
     def add_or_mod(cls,  region,  tag,  word):
         obj = cls.objects(region=region,  tag=tag).first()
@@ -164,8 +186,30 @@ class RegionWord(Document):
         return ''
 
     @classmethod
+    def get_content(cls, word):
+        if is_json(word):
+            return json.loads(word)
+        return word
+
+    @classmethod
+    def adding(cls):
+        for tag in cls.TAG_REGION_WORD:
+            for region in cls.TAG_REGION_WORD[tag]:
+                word = cls.TAG_REGION_WORD[tag][region]
+                if not isinstance(word, str):
+                    word = json.dumps(word)
+                cls.add_or_mod(region, tag, word)
+
+    @classmethod
     def load(cls):
-        TAG_REGION_WORD = {}
+        tag_region_word = {}
+        tags = ['time_left', 'anoy_match_msg', 'voice_match_msg', 'voice_top_wording', 'like_feed', 'banned_warn',
+                'reply_comment', 'reply_feed', 'start_follow', 'other_ban_inform', 'app_introduce', 'video_list', 'bio', 'alert_word','sms_could_not_register' ]
         for obj in cls.objects():
             region = obj.region
             tag = obj.tag
+            word = cls.get_content(word)
+            if not tag_region_word.get(tag):
+                tag_region_word[tag] = {}
+            tag_region_word[tag][region] = word
+        cls.TAG_REGION_WORD = tag_region_word
