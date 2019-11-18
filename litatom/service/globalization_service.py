@@ -304,6 +304,18 @@ class GlobalizationService(object):
         return True
 
     @classmethod
+    def region_words(cls, region):
+        res = {}
+        en = RegionWord.REGION_BENCHMARK
+        for obj in RegionWord.objects(region=en):
+            tag = obj.tag
+            res[tag] = {}
+            res[tag][en] = RegionWord.get_content(obj.word)
+            other_word = RegionWord.word_by_region_tag(region, tag)
+            res[tag][region] = RegionWord.get_content(other_word)
+        return res
+
+    @classmethod
     def get_region_word(cls, tag, region=None):
         if not region:
             region = cls.get_region()
