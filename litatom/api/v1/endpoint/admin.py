@@ -338,5 +338,13 @@ def get_log(user_id):
         return success()
     return fail(msg)
 
+
+def region_words():
+    data, status = GlobalizationService.region_words()
+    if status:
+        return success(data)
+    return fail(data)
+
+
 def journal():
     return current_app.send_static_file('journal.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}

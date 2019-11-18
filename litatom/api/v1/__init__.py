@@ -68,6 +68,8 @@ b.add_url_rule('/lit/admin/remove_from_top/<feed_id>', 'admin-remove_from_top', 
 b.add_url_rule('/lit/admin/official_feed', 'admin-official_feed', endpoint.admin.official_feed)
 b.add_url_rule('/lit/admin/journal_cal/<item_id>', 'admin-journal_cal', endpoint.admin.journal_cal)
 b.add_url_rule('/lit/admin/get_log/<user_id>', 'admin-get_log', endpoint.admin.get_log)
+b.add_url_rule('/lit/admin/region_words', 'admin-region_words', endpoint.admin.region_words)
+
 
 
 
