@@ -314,7 +314,7 @@ class GlobalizationService(object):
             res[tag][en] = RegionWord.get_content(obj.word)
             other_word = RegionWord.word_by_region_tag(region, tag)
             print other_word
-            res[tag][region] = RegionWord.get_content(other_word)
+            res[tag][region] = other_word
         return res
 
     @classmethod
