@@ -30,7 +30,8 @@ class UserSettingService(object):
             'need_login': True,
             'max_voice_time': ONE_HOUR,
             'pop_good_rate': True,
-            'prior_voice': TYPE_VOICE_TENCENT,   # agora 声网
+            'prior_voice': TYPE_VOICE_TENCENT,   # agora 声网，
+            'phone_login_without_code': True,
             'ad_rule': {
                 'interval': 5,
                 'prior_platform': 'facebook', # facebook
@@ -41,7 +42,7 @@ class UserSettingService(object):
                 'anti_spam_rule': {
                     "times": 5,
                     "time_interval": 60,
-                    "spam_interval": 60 * 120
+                    "spam_interval": 60 * 2
                 }
             }
         }
