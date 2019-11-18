@@ -208,7 +208,7 @@ class RegionWord(Document):
         for obj in cls.objects():
             region = obj.region
             tag = obj.tag
-            word = cls.get_content(word)
+            word = cls.get_content(obj.word)
             if not tag_region_word.get(tag):
                 tag_region_word[tag] = {}
             tag_region_word[tag][region] = word
