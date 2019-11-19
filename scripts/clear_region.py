@@ -1,6 +1,12 @@
 import os
 import time
-from litatom.service import AnoyMatchService, VoiceMatchService, VideoMatchService, GlobalizationService
+from litatom.service import (
+    AnoyMatchService,
+    VoiceMatchService,
+    VideoMatchService,
+    GlobalizationService,
+    MaintainService
+)
 
 
 def clear():
@@ -19,4 +25,5 @@ if __name__ == "__main__":
     AnoyMatchService.clean_pools()
     VoiceMatchService.clean_pools()
     VideoMatchService.clean_pools()
+    MaintainService.clear_sortedset_by_region()
     print "ended at", time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))

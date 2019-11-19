@@ -81,7 +81,7 @@ class MaintainService(object):
 
 
     @classmethod
-    def clear_sortedset_by_region(cls, region):
+    def clear_sortedset_by_region(cls):
         cls.clean_anoy_check()
         cls.help_anoy_online()
         cls.clear_huanxin()
