@@ -346,5 +346,12 @@ def region_words():
     return fail(data)
 
 
+def ban_by_uid(user_id):
+    data, status = AdminService.ban_by_uid(user_id)
+    if status:
+        return success(data)
+    return fail(data)
+
+
 def journal():
     return current_app.send_static_file('journal.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}

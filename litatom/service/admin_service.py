@@ -160,6 +160,14 @@ class AdminService(object):
         return u'forbid error', False
 
     @classmethod
+    def ban_by_uid(cls, user_id):
+        num = Report.objects(uid=user_id).count()
+        if not num >= 2:
+            return u'user not reported too much', False
+        res = UserService.forbid_user(report.target_uid, 20 * ONE_DAY)
+        return None, True
+
+    @classmethod
     def ban_user_by_feed_id(cls, feed_id, ban_time):
         feed = Feed.get_by_id(feed_id)
         if not feed:
