@@ -3,13 +3,10 @@ import time
 from litatom.redis import RedisClient
 from litatom.service import GlobalizationService
 from litatom.key import (
-    REDIS_FEED_SQUARE,
     REDIS_FEED_SQUARE_REGION,
-    REDIS_FEED_HQ,
     REDIS_FEED_HQ_REGION,
     REDIS_ONLINE_GENDER,
     REDIS_ONLINE_GENDER_REGION,
-    REDIS_ONLINE,
     REDIS_ONLINE_REGION,
     REDIS_ANOY_GENDER_ONLINE,
     REDIS_ANOY_GENDER_ONLINE_REGION
@@ -19,6 +16,10 @@ from litatom.const import (
     BOY
 )
 
+REDIS_FEED_SQUARE = 'feed_square'   # !!!
+REDIS_ONLINE = 'online'   # !!!
+REDIS_ONLINE_GENDER = 'online:{gender}'   # !!!
+REDIS_FEED_HQ = 'feed_hq'   # !!!
 redis_client = RedisClient()['lit']
 
 def copy(src, dst):

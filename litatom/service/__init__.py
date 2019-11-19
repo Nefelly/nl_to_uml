@@ -42,5 +42,6 @@ from .feedback_service import FeedbackService
 from .admin_service import AdminService
 from .palm_service import PalmService
 from .account_service import AccountService
+from .maintain_service import MaintainService
 from .chat_record_service import ChatRecordService
 # from .mysql_sync_service import MysqlSyncService

@@ -7,9 +7,7 @@ from flask import (
 )
 from ..redis import RedisClient
 from ..key import (
-    REDIS_FEED_SQUARE,
     REDIS_FEED_SQUARE_REGION,
-    REDIS_FEED_HQ,
     REDIS_FEED_HQ_REGION,
     REDIS_FEED_ID_AGE,
     REDIS_REGION_FEED_TOP

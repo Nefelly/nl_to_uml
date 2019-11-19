@@ -221,6 +221,7 @@ def change_loc():
         return success()
     return fail(msg)
 
+
 def unban():
     UserService.unban_user(get_user_id())
     return success()

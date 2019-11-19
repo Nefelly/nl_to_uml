@@ -27,13 +27,8 @@ REDIS_FEED_LIKE_CACHE = 'feed_like_cache:{feed_id}'
 REDIS_USER_NOT_MESSAGE_CACHE = 'user_nomsg_cache:{user_id}'
 REDIS_ACCELERATE_CACHE = 'acclerate_cache:{user_id}'
 
-#pic check redis
-REDIS_PIC_CHECK_STATUS = 'pic_check_status:{}'
-
-REDIS_ONLINE_GENDER = 'online:{gender}'   # !!!
 REDIS_HUANXIN_ONLINE = 'huanxin_online'
 REDIS_ONLINE_GENDER_REGION = 'online:{gender}:{region}'
-REDIS_ONLINE = 'online'   # !!!
 REDIS_ONLINE_REGION = 'online:{region}'   # !!!
 
 REDIS_USER_LAST_ACT = 'uid_act:{user_id}'   # 用户最后一次动作时间
@@ -68,9 +63,7 @@ REDIS_HUANXIN_ACCESS_TOKEN_EXPIRE = 'huanxin_access_token_expire'
 REDIS_LOCK = 'redis_lock:{key}'
 
 # feed service
-REDIS_FEED_SQUARE = 'feed_square'   # !!!
 REDIS_FEED_SQUARE_REGION = 'feed_square:{region}'   # !!!
-REDIS_FEED_HQ = 'feed_hq'   # !!!
 REDIS_FEED_HQ_REGION = 'feed_hq:{region}'   # !!!
 
 # voice match

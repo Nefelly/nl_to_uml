@@ -32,9 +32,8 @@ from ..const import (
 
 from ..key import (
     REDIS_USER_INFO_FINISHED,
-    REDIS_ONLINE_GENDER,
+    REDIS_ONLINE_GENDER_REGION,
     REDIS_UID_GENDER,
-    REDIS_ONLINE,
     REDIS_HUANXIN_ONLINE
 )
 from ..model import (
@@ -568,7 +567,7 @@ class UserService(object):
         int_time = int(time.time())
         gender = cls.get_gender(user_id)
         if gender:
-            key = REDIS_ONLINE_GENDER.format(gender=gender)
+            key = REDIS_ONLINE_GENDER_REGION.format(gender=gender, region=GlobalizationService.get_region())
             redis_client.zadd(key, {user_id: int_time - ONLINE_LIVE - 10})
 
     @classmethod
