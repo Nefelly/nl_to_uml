@@ -533,7 +533,7 @@ class MatchService(object):
                     cls._destroy_fake_id(el)
                     print "match pool fake_id: %s destoryed" % el
                 to_rem_check = redis_client.zrangebyscore(cls.TYPE_ANOY_CHECK_POOL.format(gender=g), 0,  int_time - cls.MATCH_INT - wait_buff, 0, cls.MAX_CHOOSE_NUM)
-                for el in to_rem:
+                for el in to_rem + to_rem_check:
                     cls._destroy_fake_id(el, False)
                     print "check pool fake_id: %s destoryed" % el
 
