@@ -15,6 +15,7 @@ from litatom.model import (
 )
 from hendrix.conf import setting
 
+
 def get_ages():
     m = {}
     for _ in User.objects():
@@ -88,5 +89,5 @@ def stat_register_rate():
             mm.append(l)
     kk = [UserSetting.objects(uuid=el).count() for el in mm]
 
-    if __name__ == "__main__":
+if __name__ == "__main__":
     pass
