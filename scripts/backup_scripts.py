@@ -8,7 +8,11 @@ from litatom.mq import (
     MQProducer,
     MQConsumer
 )
-from litatom.model import *
+from litatom.model import (
+    UserSetting,
+    User,
+    Uuids
+)
 from hendrix.conf import setting
 
 def get_ages():
