@@ -43,7 +43,7 @@ class AdminUser(Document):
         ss = (td.microseconds + (td.seconds + td.days * 24 * 3600) * 10 ** 6) / 10 ** 6
         rs = sys_rnd.randint(10 ** 8, 10 ** 8 * 9)
         session = 'session.%d%d' % (ss, rs)
-        redis_client.set(REDIS_ADMIN_USER.format(session=session), self.user_name, TWO_WEEKS)
+        redis_client.set(REDIS_ADMIN_USER.format(session=session), self.user_name, ex=TWO_WEEKS)
         self.session = session
         self.save()
         return self.session

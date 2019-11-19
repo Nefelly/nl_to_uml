@@ -123,8 +123,9 @@ class GlobalizationService(object):
     todo: user loc set in redis
     '''
     @classmethod
-    def _online_key_by_region_gender(cls, gender=None):
-        region = cls.get_region()
+    def _online_key_by_region_gender(cls, gender=None, region=None):
+        if not region:
+            region = cls.get_region()
         if gender:
             return REDIS_ONLINE_GENDER_REGION.format(region=region, gender=gender)
         else:

@@ -2,12 +2,9 @@
 import time
 import random
 from ..redis import RedisClient
-# from ..key import (
-#     REDIS_ONLINE_GENDER,
-#     REDIS_ONLINE_GENDER_REGION,
-#     REDIS_ONLINE,
-#     REDIS_ONLINE_REGION
-# )
+from ..key import (
+    REDIS_ONLINE_CNT_CACHE
+)
 from flask import request
 from ..const import (
     GENDERS,
@@ -36,7 +33,27 @@ class StatisticService(object):
     MAX_SELECT_POOL = 1000
 
     @classmethod
+    def online_cnt_cache_key(cls, region, gender=None):
+        gender = 'NSET' if gender == None else gender
+        return REDIS_ONLINE_CNT_CACHE.format(region=region, gender=gender)
+
+    @classmethod
+    def refresh_online_cnts(cls):
+        judge_time = int(time.time()) - USER_ACTIVE
+        for r in GlobalizationService.REGIONS:
+            t_cnt = 0
+            for g in GENDERS:
+                key = GlobalizationService._online_key_by_region_gender(g, r)
+                num = redis_client.zcount(key, judge_time, MAX_TIME)
+                redis_client.set(cls.online_cnt_cache_key(r, g), num, ex=ONE_MIN)
+                t_cnt += num
+            redis_client.set(cls.online_cnt_cache_key(r), t_cnt, ex=ONE_MIN)
+
+    @classmethod
     def get_online_cnt(cls, gender=None):
+        cache_res = redis_client.get(cls.online_cnt_cache_key(GlobalizationService.get_region(), gender))
+        if cache_res:
+            return int(cache_res)
         judge_time = int(time.time()) - USER_ACTIVE
         if gender:
             # key = REDIS_ONLINE_GENDER.format(gender=gender)

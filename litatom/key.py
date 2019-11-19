@@ -26,6 +26,7 @@ REDIS_YOUTUBE_VIDEO_CACHE = 'youtube_video_cache:{region}'
 REDIS_FEED_LIKE_CACHE = 'feed_like_cache:{feed_id}'
 REDIS_USER_NOT_MESSAGE_CACHE = 'user_nomsg_cache:{user_id}'
 REDIS_ACCELERATE_CACHE = 'acclerate_cache:{user_id}'
+REDIS_ONLINE_CNT_CACHE = 'online_cnt_cache:{region}:{gender}'
 
 REDIS_HUANXIN_ONLINE = 'huanxin_online'
 REDIS_ONLINE_GENDER_REGION = 'online:{gender}:{region}'
