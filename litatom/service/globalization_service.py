@@ -329,5 +329,5 @@ class GlobalizationService(object):
             #     redis_client.set(cls._region_tag_key(region, tag), word)
         return word
 
-RegionWord.load()
+# RegionWord.load()
 
