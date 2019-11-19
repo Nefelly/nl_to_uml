@@ -8,7 +8,6 @@ from litatom.key import (
     REDIS_ONLINE_GENDER,
     REDIS_ONLINE_GENDER_REGION,
     REDIS_ONLINE_REGION,
-    REDIS_ANOY_GENDER_ONLINE,
     REDIS_ANOY_GENDER_ONLINE_REGION
 )
 from litatom.const import (
@@ -20,6 +19,7 @@ REDIS_FEED_SQUARE = 'feed_square'   # !!!
 REDIS_ONLINE = 'online'   # !!!
 REDIS_ONLINE_GENDER = 'online:{gender}'   # !!!
 REDIS_FEED_HQ = 'feed_hq'   # !!!
+REDIS_ANOY_GENDER_ONLINE = 'anoy_online:{gender}'
 redis_client = RedisClient()['lit']
 
 def copy(src, dst):

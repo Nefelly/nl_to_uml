@@ -42,7 +42,6 @@ REDIS_USER_MATCH_LEFT = 'user_match_left:{user_date}'   # 过期时间一天
 REDIS_FAKE_ID_UID = 'fakeid_uid:{fake_id}'
 REDIS_UID_FAKE_ID = 'uid_fakeid:{user_id}'
 
-REDIS_ANOY_GENDER_ONLINE = 'anoy_online:{gender}'   # sorted set   # !!!
 REDIS_ANOY_GENDER_ONLINE_REGION = 'anoy_online:{gender}:{region}'   # sorted set   # !!!
 
 REDIS_ACCELERATE_REGION_TYPE_GENDER = 'accelerate_online:{match_type}:{region}:{gender}'

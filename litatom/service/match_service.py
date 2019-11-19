@@ -98,7 +98,6 @@ class MatchService(object):
         if not gender or not fake_id:
             return
         int_time = int(time.time())
-        # anoy_gender_key = REDIS_ANOY_GENDER_ONLINE.format(gender=gender)
         is_accelerate = cls._is_accelerate(user_id)
         if not is_accelerate:
             anoy_gender_key = cls.MATCH_KEY_BY_REGION_GENDER(gender)

@@ -823,10 +823,10 @@ class UserService(object):
             # key = REDIS_ONLINE_GENDER.format(gender=gender)
             key = GlobalizationService._online_key_by_region_gender(gender)
             redis_client.zrem(key, user_id)
-            from ..key import REDIS_ANOY_GENDER_ONLINE
-            if user.huanxin and user.huanxin.user_id:
-                fake_id = user.huanxin.user_id
-                redis_client.zrem(REDIS_ANOY_GENDER_ONLINE.format(gender=gender), fake_id)
+            # from ..key import REDIS_ANOY_GENDER_ONLINE
+            # if user.huanxin and user.huanxin.user_id:
+            #     fake_id = user.huanxin.user_id
+            #     redis_client.zrem(REDIS_ANOY_GENDER_ONLINE.format(gender=gender), fake_id)
         if user.huanxin and user.huanxin.user_id:
             HuanxinService.delete_user(user.huanxin.user_id)
         redis_client.delete(REDIS_UID_GENDER.format(user_id=user_id))
