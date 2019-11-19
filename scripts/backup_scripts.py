@@ -1,6 +1,7 @@
 import os
 import time
 import sys
+import datetime
 import langid
 
 from litatom.mq import (
@@ -64,5 +65,24 @@ def cal_country_num():
     print m
 
 
-if __name__ == "__main__":
+def stat_register_rate():
+    ls = UserSetting.objects(create_time__gte=datetime.datetime(2019, 11, 18),
+                             create_time__lte=datetime.datetime(2019, 11, 19)).distinct('uuid')
+    ts = Uuids.objects(create_time__gte=datetime.datetime(2019, 11, 18),
+                       create_time__lte=datetime.datetime(2019, 11, 19)).distinct('uuid')
+    m = {}
+    cnt = 0
+    for l in ls:
+        if l in m:
+            cnt += 1
+    uids = [UserSetting.get_by_user_id(str(el.id)) for el in
+            User.objects(create_time__gte=datetime.datetime(2019, 11, 18), create_time__lte=datetime.datetime(2019, 11, 19))]
+    ms = [el.uuid for el in uids]
+    mm = []
+    for l in ms:
+        if l not in m:
+            mm.append(l)
+    kk = [UserSetting.objects(uuid=el).count() for el in mm]
+
+    if __name__ == "__main__":
     pass

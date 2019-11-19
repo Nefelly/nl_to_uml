@@ -559,8 +559,8 @@ class UserService(object):
             key = GlobalizationService._online_key_by_region_gender(gender)
             redis_client.zadd(key, {user_id: int_time})
             redis_client.zadd(GlobalizationService._online_key_by_region_gender(), {user_id: int_time})
-            if int_time % 100 == 0:
-                redis_client.zremrangebyscore(key, -1, int_time - ONLINE_LIVE)
+            # if int_time % 100 == 0:
+            #     redis_client.zremrangebyscore(key, -1, int_time - ONLINE_LIVE)
 
     @classmethod
     def set_not_online(cls, user_id):
