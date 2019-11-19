@@ -273,6 +273,11 @@ class User(Document, UserSessionMixin):
         return int(res) if res != NO_SET else 0
 
     @classmethod
+    def batch_age_by_user_ids(cls, target_uids):
+        pass
+        return
+
+    @classmethod
     def change_age(cls, user_id):
         key = REDIS_KEY_USER_AGE.format(user_id=user_id)
         redis_client.delete(key)
