@@ -4,7 +4,10 @@ import time
 import traceback
 import logging
 from ..service import (
-    GlobalizationService
+    GlobalizationService,
+    AnoyMatchService,
+    VoiceMatchService,
+    VideoMatchService
 )
 from ..key import (
     REDIS_VOICE_ANOY_CHECK_POOL,
@@ -73,12 +76,15 @@ class MaintainService(object):
     @classmethod
     def help_anoy_online(cls):
         for r in GlobalizationService.REGIONS:
-            for k in [REDIS_ANOY_GENDER_ONLINE_REGION, REDIS_VOICE_GENDER_ONLINE_REGION, REDIS_VIDEO_GENDER_ONLINE_REGION, REDIS_ACCELERATE_REGION_TYPE_GENDER]:
-                for g in GENDERS:
+            for g in GENDERS:
+                for k in [REDIS_ANOY_GENDER_ONLINE_REGION, REDIS_VOICE_GENDER_ONLINE_REGION, REDIS_VIDEO_GENDER_ONLINE_REGION]:
                     key = k.format(region=r, gender=g)
                     if redis_client.zcard(key) > cls.JUDGE_CNT:
                         redis_client.zremrangebyscore(key, 0, int(time.time()) - ONE_DAY)
-
+                for t in [AnoyMatchService.MATCH_TYPE, VoiceMatchService.MATCH_TYPE, VideoMatchService.MATCH_TYPE]:
+                    key = REDIS_ACCELERATE_REGION_TYPE_GENDER.format(match_type=t, region=r, gender=g)
+                    if redis_client.zcard(key) > cls.JUDGE_CNT:
+                        redis_client.zremrangebyscore(key, 0, int(time.time()) - ONE_DAY)
 
     @classmethod
     def clear_sortedset_by_region(cls):
