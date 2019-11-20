@@ -309,7 +309,7 @@ class GlobalizationService(object):
         en = RegionWord.REGION_BENCHMARK
         for obj in RegionWord.objects(region=en):
             tag = obj.tag
-            res[tag] = {}
+            res[tag] = {'name': tag}
             res[tag][en] = RegionWord.get_content(obj.word)
             other_word = RegionWord.word_by_region_tag(region, tag)
             print other_word
