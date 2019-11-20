@@ -352,7 +352,7 @@ def region_words():
 def ban_by_uid(user_id):
     data, status = AdminService.ban_by_uid(user_id)
     if status:
-        return success(data)
+        return success()
     return fail(data)
 
 
