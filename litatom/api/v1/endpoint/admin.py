@@ -140,6 +140,8 @@ def feeds_square_for_admin():
 def official_feed():
     return current_app.send_static_file('official_feed.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
 
+def admin_words():
+    return current_app.send_static_file('region_info.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
 
 def get_official_feed():
     start_ts = request.args.get('start_ts')
