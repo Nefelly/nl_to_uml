@@ -164,7 +164,7 @@ class AdminService(object):
         num = Report.objects(uid=user_id).count()
         if not num >= 2:
             return u'user not reported too much', False
-        res = UserService.forbid_user(report.target_uid, 20 * ONE_DAY)
+        res = UserService.forbid_user(user_id, 20 * ONE_DAY)
         return None, True
 
     @classmethod
