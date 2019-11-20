@@ -3,6 +3,7 @@ import time
 from flask import (
     request
 )
+import json
 from ..redis import RedisClient
 from ..model import (
     RegionWord,
@@ -312,7 +313,8 @@ class GlobalizationService(object):
             res[tag] = {'name': tag}
             res[tag][en] = RegionWord.get_content(obj.word)
             other_word = RegionWord.word_by_region_tag(region, tag)
-            print other_word
+            if not isinstance(other_word, str):
+                other_word = json.dumps(other_word)
             res[tag]['other_word'] = other_word
         return res, True
 
