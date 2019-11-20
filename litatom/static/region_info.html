@@ -20,7 +20,7 @@
 <tr v-for="item in items1">
 <td>{{item.name}}}</td>
 <td><pre>{{item.en}}</pre></td>
-<td><input value='{item.other_word}'></td>
+<td><input value='' + {{item.other_word}}></td>
 
     <td><button name='delete' @click='delete_item(item.id)'>delete</button></td>
     <td><button name='calculate' @click='cal_item(item.id)'>calculate</button></td>
