@@ -11,19 +11,20 @@
  <th>modify</th>
     <th>delete</th>
  </tr>
-    <tr><td>tag name</td>
-        <td><input id="name_area" name="name_area"></td>
-        <td><input id="table_area" name="num"></td>
-        <td><input id="judge_field_area" name="num"></td>
-        <td><input id="expression_area" name="num" style="width: 500px"></td>
-        <td><button name='add_item' @click='add_item()'>add_item</button></td></tr>
+<!--    <tr>-->
+<!--        <td>tag name</td>-->
+<!--        <td><input id="name_area" name="name_area"></td>-->
+<!--        <td><input id="table_area" name="num"></td>-->
+<!--        <td><input id="judge_field_area" name="num"></td>-->
+<!--        <td><input id="expression_area" name="num" style="width: 500px"></td>-->
+<!--        <td><button name='add_item' @click='add_item()'>add_item</button></td>-->
+<!--    </tr>-->
 <tr v-for="item in items1">
 <td>{{item.name}}</td>
 <td width="100px">{{item.en}}</td>
 <td><input width="100px" :value='item.other_word'></td>
-
-    <td><button name='delete' @click='delete_item(item.id)'>delete</button></td>
-    <td><button name='calculate' @click='cal_item(item.id)'>calculate</button></td>
+<td><button name='delete' @click='delete_item(item.id)'>delete</button></td>
+<td><button name='calculate' @click='cal_item(item.id)'>calculate</button></td>
 </tr>
 
 </table>
