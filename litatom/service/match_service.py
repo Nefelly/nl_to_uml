@@ -40,7 +40,8 @@ from ..service import (
     FollowService,
     BlockService,
     GlobalizationService,
-    StatisticService
+    StatisticService,
+    AccountService
 )
 from ..model import User
 redis_client = RedisClient()['lit']
@@ -53,6 +54,7 @@ class MatchService(object):
     MAX_CHOOSE_NUM = 40
     MATCH_TMS = 20 if not setting.IS_DEV else 1000
     OTHER_GENDER_M = {BOY: GIRL, GIRL: BOY}
+    MAX_TIMES = 99999
 
     TYPE_ANOY_CHECK_POOL = REDIS_ANOY_CHECK_POOL
     TYPE_FAKE_ID_UID = REDIS_FAKE_ID_UID
@@ -284,6 +286,8 @@ class MatchService(object):
     @classmethod
     def _match_left_verify(cls, user_id):
         # 匹配次数验证
+        if AccountService.is_member(user_id):
+            return cls.MAX_TIMES, True
         now_date = now_date_key()
         match_left_key = cls.TYPE_USER_MATCH_LEFT.format(user_date=user_id + now_date)
         d = datetime.datetime.now()
@@ -299,10 +303,12 @@ class MatchService(object):
         times, status = cls._match_left_verify(user_id)
         if not status:
             return cls.MATCH_TMS
-        return cls.MATCH_TMS - times
+        return max(cls.MATCH_TMS - times, 0)
 
     @classmethod
     def _decr_match_left(cls, user_id):
+        # if AccountService.is_member(user_id):
+        #     return
         now_date = now_date_key()
         match_left_key = cls.TYPE_USER_MATCH_LEFT.format(user_date=user_id + now_date)
         if not redis_client.get(match_left_key):
@@ -312,6 +318,8 @@ class MatchService(object):
 
     @classmethod
     def _incr_match_left(cls, user_id, num=1):
+        # if AccountService.is_member(user_id):
+        #     return
         now_date = now_date_key()
         match_left_key = cls.TYPE_USER_MATCH_LEFT.format(user_date=user_id + now_date)
         if not redis_client.get(match_left_key):

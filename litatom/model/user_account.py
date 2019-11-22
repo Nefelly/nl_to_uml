@@ -28,6 +28,7 @@ class UserAccount(Document):
     }
     user_id = StringField(required=True)
     diamonds = IntField(required=False)
+    membership_time = IntField(required=True, default=0)
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
 
     @classmethod
@@ -91,3 +92,9 @@ class AccountFlowRecord(Document):
     money = FloatField(required=True, default=0)
     diamonds = StringField(required=False)
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
+
+    @classmethod
+    def create(cls, user_id, action, diamonds=0, money=0):
+        obj = cls(user_id=user_id, action=action, diamonds=diamonds, money=money)
+        obj.save()
+        return obj
