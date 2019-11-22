@@ -287,9 +287,7 @@ class MysqlSyncService(object):
         judge_time = int(time.time()) - 3600 * 24 * 2
         judge = 'SELECT MAX(create_time) FROM UserAction;'
         tm = cls.fetch_one(judge)
-        print tm
         if tm > judge_time:
-            print 'get in'
             sql = 'delete from UserAction where create_time < %d' % judge_time
             '''
             ALTER table `UserAction` modify action Varchar(50);
