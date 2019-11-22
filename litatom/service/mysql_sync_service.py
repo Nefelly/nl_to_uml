@@ -283,6 +283,12 @@ class MysqlSyncService(object):
                 break
 
     @classmethod
+    def clear_table(cls):
+        judge_time = int(time.time()) - 3600 * 24 * 2
+        sql = 'delete from UserAction where create_time < %d' % judge_time
+        cls.execute(sql)
+
+    @classmethod
     def run_all(cls):
         escape_tbs = ['TrackChat', 'UserMessage', 'HuanxinMessage']
         for tb in cls.get_tables().values():
@@ -298,6 +304,7 @@ class MysqlSyncService(object):
                 print '!' * 100
                 print 'table: %s Error' % tb.__name__, e
                 continue
+        cls.clear_table()
 
     @classmethod
     def c(cls):
