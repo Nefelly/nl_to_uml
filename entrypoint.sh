@@ -28,6 +28,8 @@ for key in envf['litatom_envvars']:
 for key in envf['litatom_envvars_json']:
     with open('.env/' + key, 'w') as f:
         f.write(json.dumps(envf['litatom_envvars_json'][key]))
+if os.path.exists('.env/DB_LIT_BACK'):
+  os.system("cp .env/DB_LIT_BACK .env/DB_LIT')
 EOF
 
 #exec chpst -e .env bin/serve.py
