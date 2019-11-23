@@ -121,6 +121,36 @@ class MysqlSyncService(object):
                 print n , fs
 
     @classmethod
+    def try_modify_table(cls, c):
+        tb_name = c.__name__
+        query_exists = "select 1 from information_schema.tables where table_name ='%s';" % tb_name
+        exists = cls.fetch_all(query_exists)
+        if not exists:
+            return
+        mysql_columns = cls.get_table_colums(c)
+        to_up = []
+        for name, t in cls.table_fields(c).items():
+            if name not in mysql_columns:
+                to_up.append([name, t])
+        for name, t in to_up:
+            sql = 'ALTER TABLE %s ADD COLUMN %s %s;' % (tb_name, name, cls.MONGO_MYSQL[t])
+            print sql
+            cls.execute(sql)
+
+
+    @classmethod
+    def get_table_colums(cls, c):
+        tb_name = c.__name__
+        sql = "select COLUMN_NAME from information_schema.COLUMNS where table_name = '%s';" % tb_name
+        res = cls.fetch_all(sql)
+        columns = []
+        for el in res:
+            columns += el.values()
+        columns = [el for el in columns if el != 'id']
+        return columns
+
+
+    @classmethod
     def gen_ddl(cls, c):
         def gen_filed(name, t):
             return "`%s` %s," % (name, cls.MONGO_MYSQL[t])
@@ -304,6 +334,7 @@ class MysqlSyncService(object):
                 continue
             try:
                 cls.create_table(tb)
+                cls.try_modify_table(tb)
                 cls.update_tb(tb)
                 print '*' * 100
                 print 'table: %s updated' % tb.__name__
