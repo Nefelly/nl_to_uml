@@ -10,6 +10,9 @@ from ..model import (
 from ..const import (
     ONE_WEEK
 )
+from ..service import (
+    MatchService
+)
 from ..redis import RedisClient
 
 logger = logging.getLogger(__name__)
@@ -70,6 +73,7 @@ class AccountService(object):
         if member_type == cls.WEEK_MEMBER:
             user_account.membership_time = old_membership_time + ONE_WEEK
             user_account.save()
+        MatchService.set_member_match_left(user_id)
         return None
 
     @classmethod

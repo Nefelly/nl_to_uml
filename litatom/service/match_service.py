@@ -287,12 +287,12 @@ class MatchService(object):
     @classmethod
     def _match_left_verify(cls, user_id):
         # 匹配次数验证
-        if AccountService.is_member(user_id):
-            return cls.MAX_TIMES, True
+        # if AccountService.is_member(user_id):
+        #     return cls.MAX_TIMES, True
         now_date = now_date_key()
         match_left_key = cls.TYPE_USER_MATCH_LEFT.format(user_date=user_id + now_date)
-        d = datetime.datetime.now()
-        redis_client.setnx(match_left_key, cls.MATCH_TMS)
+        default_match_times = cls.MATCH_TMS if not AccountService.is_member(user_id) else cls.MATCH_TMS
+        redis_client.setnx(match_left_key, default_match_times)
         redis_client.expire(match_left_key, ONE_DAY)
         times_left = int(redis_client.get(match_left_key))
         if times_left <= 0:
@@ -313,9 +313,27 @@ class MatchService(object):
         now_date = now_date_key()
         match_left_key = cls.TYPE_USER_MATCH_LEFT.format(user_date=user_id + now_date)
         if not redis_client.get(match_left_key):
-            redis_client.setnx(match_left_key, cls.MATCH_TMS)
+            default_match_times = cls.MATCH_TMS if not AccountService.is_member(user_id) else cls.MATCH_TMS
+            redis_client.setnx(match_left_key, default_match_times)
+            # redis_client.setnx(match_left_key, cls.MATCH_TMS)
             redis_client.expire(match_left_key, ONE_DAY)
         redis_client.decr(match_left_key)
+
+    @classmethod
+    def set_member_match_left(cls, user_id):
+        '''
+        需要更改保存以获取用户已经匹配的次数
+        :param user_id:
+        :return:
+        '''
+        now_date = now_date_key()
+        match_left_key = cls.TYPE_USER_MATCH_LEFT.format(user_date=user_id + now_date)
+        redis_client.delete(match_left_key)
+        # if not left_tms:
+        #     return
+        # left_tms = int(left_tms)
+        # if left_tms < cls.MATCH_TMS:
+        #     new_tms = cls.MATCH_TMS -
 
     @classmethod
     def _incr_match_left(cls, user_id, num=1):
@@ -324,7 +342,9 @@ class MatchService(object):
         now_date = now_date_key()
         match_left_key = cls.TYPE_USER_MATCH_LEFT.format(user_date=user_id + now_date)
         if not redis_client.get(match_left_key):
-            redis_client.setnx(match_left_key, cls.MATCH_TMS)
+            default_match_times = cls.MATCH_TMS if not AccountService.is_member(user_id) else cls.MATCH_TMS
+            redis_client.setnx(match_left_key, default_match_times)
+            # redis_client.setnx(match_left_key, cls.MATCH_TMS)
             redis_client.expire(match_left_key, ONE_DAY)
         redis_client.incrby(match_left_key, num)
 
@@ -490,7 +510,7 @@ class MatchService(object):
             times = msg
         return {
             'wording': GlobalizationService.get_region_word('time_left') % times,
-            'times': times
+            'times': times if times < cls.MATCH_TMS/2 else cls.FAKE_MAX_TIME
             }
 
     @classmethod
