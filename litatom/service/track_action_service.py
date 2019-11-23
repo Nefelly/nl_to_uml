@@ -16,10 +16,10 @@ class TrackActionService(object):
     MQ_INSERT = True
 
     @classmethod
-    def create_action(cls, user_id, action, other_user_id=None, amount=None, remark=None):
+    def create_action(cls, user_id, action, other_user_id=None, amount=None, remark=None, version=None):
         if cls.MQ_INSERT:
             MqService.push(USER_ACTION_EXCHANGE,
-                           {"args": cPickle.dumps([user_id, action, other_user_id, amount, remark, datetime.datetime.now(), int(time.time())])}
+                           {"args": cPickle.dumps([user_id, action, other_user_id, amount, remark, version, datetime.datetime.now(), int(time.time())])}
                             # {
                             #         "user_id": user_id,
                             #         "action": action,
@@ -30,14 +30,14 @@ class TrackActionService(object):
                             # }
                            )
             return True
-        return cls._create_action(user_id, action, other_user_id, amount, remark)
+        return cls._create_action(user_id, action, other_user_id, amount, remark, version)
 
     @classmethod
     def pymongo_batch_insert(cls, collection, payload_list):
         insert_pack = []
         for el in payload_list:
             lst = cPickle.loads(str(el.get('args')))  # str  because mq encoded
-            user_id, action, other_user_id, amount, remark, create_date, create_time = tuple(lst)
+            user_id, action, other_user_id, amount, remark, version, create_date, create_time = tuple(lst)
             # user_id = el.get('user_id')
             # action = el.get('action')
             # other_user_id = el.get('other_user_id')
@@ -49,14 +49,15 @@ class TrackActionService(object):
                 "create_time": create_time,
                 "remark": remark,
                 "other_user_id": other_user_id,
-                "user_id": user_id
+                "user_id": user_id,
+                "version": version
             })
             # print insert_pack
         collection.insert_many(insert_pack, ordered=False)
 
 
     @classmethod
-    def _create_action(cls, user_id, action, other_user_id=None, amount=None, remark=None):
+    def _create_action(cls, user_id, action, other_user_id=None, amount=None, remark=None, version=None):
         userAction = UserAction()
         userAction.user_id = user_id
         userAction.action = action
@@ -66,6 +67,8 @@ class TrackActionService(object):
             userAction.other_user_id = other_user_id
         if amount:
             userAction.amount = amount
+        if version:
+            userAction.version = version
         userAction.create_time = int(time.time())
         userAction.create_date = datetime.datetime.now()
         userAction.save()

@@ -639,6 +639,7 @@ class UserAction(Document):
     other_user_id = StringField()
     amount = IntField()
     remark = StringField()
+    version = StringField()
     create_date = DateTimeField()
     create_time = IntField(required=True)
 
