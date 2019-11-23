@@ -129,7 +129,7 @@ class MysqlSyncService(object):
             return
         mysql_columns = cls.get_table_colums(c)
         to_up = []
-        for name, t in cls.table_fields(c).itmes():
+        for name, t in cls.table_fields(c).items():
             if name not in mysql_columns:
                 to_up.append([name, t])
         for name, t in to_up:
