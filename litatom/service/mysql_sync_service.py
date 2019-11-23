@@ -334,6 +334,7 @@ class MysqlSyncService(object):
                 continue
             try:
                 cls.create_table(tb)
+                cls.try_modify_table(tb)
                 cls.update_tb(tb)
                 print '*' * 100
                 print 'table: %s updated' % tb.__name__
