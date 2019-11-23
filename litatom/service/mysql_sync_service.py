@@ -135,7 +135,7 @@ class MysqlSyncService(object):
         for name, t in to_up:
             sql = 'ALTER TABLE %s ADD COLUMN %s %s;' % (tb_name, name, cls.MONGO_MYSQL[t])
             print sql
-            # cls.execute(sql)
+            cls.execute(sql)
 
 
     @classmethod
