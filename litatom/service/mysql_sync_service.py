@@ -124,7 +124,7 @@ class MysqlSyncService(object):
     def try_modify_table(cls, c):
         tb_name = c.__name__
         query_exists = "select 1 from information_schema.tables where table_name ='%s';" % tb_name
-        exists = cls.query_all(query_exists)
+        exists = cls.fetch_all(query_exists)
         if not exists:
             return
         mysql_columns = cls.get_table_colums(c)
@@ -132,9 +132,10 @@ class MysqlSyncService(object):
         for name, t in cls.table_fields(c).itmes():
             if name not in mysql_columns:
                 to_up.append([name, t])
-        for name, t in  to_up:
+        for name, t in to_up:
             sql = 'ALTER TABLE %s ADD COLUMN %s %s;' % (tb_name, name, cls.MONGO_MYSQL[t])
-            cls.execute(sql)
+            print sql
+            # cls.execute(sql)
 
 
     @classmethod
