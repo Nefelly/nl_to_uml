@@ -102,12 +102,13 @@ class LitatomRequest(flask.Request):
 
     @cached_property
     def version(self):
-        ua = self.headers.get('User-Agent', '')
-        for ua_content in ua.split(' '):
-            if ua_content.startswith('Version/'):
-                version = ua_content[len('Version/'):].strip()
-                return version
-        return ''
+        return self.values.get('version')
+        # ua = self.headers.get('User-Agent', '')
+        # for ua_content in ua.split(' '):
+        #     if ua_content.startswith('Version/'):
+        #         version = ua_content[len('Version/'):].strip()
+        #         return version
+        # return ''
 
     @cached_property
     def manufactor_and_device(self):
