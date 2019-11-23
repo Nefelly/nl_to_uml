@@ -1,6 +1,6 @@
 # coding: utf-8
 import time
-from  flask import (
+from flask import (
     request
 )
 from ..const import (
