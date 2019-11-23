@@ -36,7 +36,7 @@ class UserSettingService(object):
                 'interval': 5,
                 'prior_platform': 'facebook', # facebook
                 'need_ad': True,
-                'banner_ad_type': 2,   # 1：native_ad, 2: banner_ad, 3: banner_native_ad
+                'banner_ad_type': 1,   # 1：active_ad, 2: banner_ad, 3: banner_native_ad
                 'voice_match_top': True,
                 'in_match': False,
                 'im': True,
