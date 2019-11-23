@@ -40,6 +40,9 @@ class UserSettingService(object):
                 'voice_match_top': True,
                 'in_match': False,
                 'im': True,
+                'home_list': True,
+                'user_feed': True,
+                'chat_list': True,
                 'anti_spam_rule': {
                     "times": 5,
                     "time_interval": 60,
