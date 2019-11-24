@@ -12,6 +12,17 @@ litatom_envvars_json:
     waitQueueTimeoutMS: 8100
     waitQueueMultiple: 5
     maxIdleTimeMS: 600000
+  DB_ALI_LIT:
+    host: "mongodb://ll:11@s-j6cd6965fea69d74.mongodb.rds.aliyuncs.com/lit?authsource=lit"
+    port: 3717
+    alias: ali_lit
+    maxPoolSize: 80
+    socketTimeoutMS: 8000
+    connectTimeoutMS: 3000
+    serverSelectionTimeoutMS: 8000
+    waitQueueTimeoutMS: 8100
+    waitQueueMultiple: 5
+    maxIdleTimeMS: 600000
   DB_DEV_LIT:
     host: "mongodb://test:11@47.244.141.151/testlit?authsource=testlit"
     port: 27017

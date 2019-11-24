@@ -7,6 +7,7 @@ _envvars = [
     'SENTRY_DSN',
     'DB_LIT',
     'DB_DEV_LIT',
+    'DB_ALI_LIT',
     'DB_HUANXIN_MESSAGE',
     'REDIS_SNS_TAG_LIKE',
     'ELASTICSEARCH_SNS_POI',
