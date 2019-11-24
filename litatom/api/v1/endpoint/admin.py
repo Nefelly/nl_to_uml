@@ -363,8 +363,10 @@ def change_setting():
         return success()
     return fail(data)
 
+
 def mod_setting():
     return current_app.send_static_file('modify_settings.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
+
 
 def journal():
     return current_app.send_static_file('journal.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
