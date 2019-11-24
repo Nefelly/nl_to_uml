@@ -3,9 +3,9 @@
 <script src="https://cdn.bootcss.com/vue-resource/1.5.1/vue-resource.js"></script>
 
     <div id="app-7">
-    <div><button name='update' @click='update()'>update</button></div>
     <div>data:<textarea id="setting_data" name="data" style="width:1700px; height:700px;", value=""></textarea></div>
-
+<!--    <div><button name='update' @click='update()'>update</button></div>-->
+    <div><button name='insert' @click='insert()'>insert</button></div>
     </div>
 <script>
   const BASE_URL = 'http://' + document.domain + '/api/sns/v1/lit/';
@@ -22,18 +22,27 @@ methods: {
         this.$http.get(BASE_URL + 'home/settings').then(function(result){
         var data = result.data.data;
 	    var jstring = JSON.stringify(data) ;// 建议用这个
-            console.log(jstring);
+            // console.log(jstring);
         document.getElementById('setting_data').value = jstring;
-
 	      })
       },
-    update: function() {
+
+    insert: function() {
         data = document.getElementById('setting_data').value;
         this.$http.post(BASE_URL + 'admin/change_setting', {"data":data}).then(function(result){
             if (result.data.result === 0){alert('success!');}
             else{alert('failed');}
         })
     },
+
+    //   update: function() {
+    //     data = document.getElementById('setting_data').value;
+    //     this.$http.post(BASE_URL + 'admin/change_setting', {"data":data}).then(function(result){
+    //         if (result.data.result === 0){alert('success!');}
+    //         else{alert('failed');}
+    //     })
+    // },
+
     }
 })
 </script>
