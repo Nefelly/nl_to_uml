@@ -358,7 +358,7 @@ def ban_by_uid(user_id):
 
 
 def change_setting():
-    data, status = UserSettingService.change_setting(request.json.data)
+    data, status = UserSettingService.change_setting(request.json)
     if status:
         return success()
     return fail(data)
