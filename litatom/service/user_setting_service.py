@@ -93,7 +93,7 @@ class UserSettingService(object):
                 else:
                     for key in cached_setting:
                         if isinstance(cached_setting[key], dict):
-                            if len(cached_setting[key].keys()) < len(res):
+                            if len(cached_setting[key].keys()) < len(res[key].keys()):
                                 should_change = True
 
                                 print should_change, '555444'
