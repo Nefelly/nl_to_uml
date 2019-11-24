@@ -51,6 +51,7 @@ class UserSettingService(object):
                 'im': True,
                 'home_list': True,
                 'user_feed': True,
+                'user_feed_ad_type': 2,
                 'chat_list': True,
                 'anti_spam_rule': {
                     "times": 5,
