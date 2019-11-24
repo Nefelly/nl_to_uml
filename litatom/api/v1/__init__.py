@@ -72,6 +72,7 @@ b.add_url_rule('/lit/admin/region_words', 'admin-region_words', endpoint.admin.r
 b.add_url_rule('/lit/admin/admin_words', 'admin-admin_words', endpoint.admin.admin_words)
 b.add_url_rule('/lit/admin/ban_by_uid/<user_id>', 'admin-ban_by_uid', endpoint.admin.ban_by_uid)
 b.add_url_rule('/lit/admin/change_setting', 'admin-change_setting', endpoint.admin.change_setting, methods=['POST'])
+b.add_url_rule('/lit/admin/mod_setting', 'admin-mod_setting', endpoint.admin.mod_setting)
 
 
 # 图片
