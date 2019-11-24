@@ -1,0 +1,66 @@
+<html>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://cdn.bootcss.com/vue-resource/1.5.1/vue-resource.js"></script>
+
+    <div id="app-7">
+    <div><button name='update' @click='update()'>update</button></div>
+    <div>data:<textarea id="setting_data" name="data" style="width:1700px; height:700px;", value=""></textarea></div>
+
+    </div>
+<script>
+    function GetRequest() {
+        var url = location.search; //获取url中"?"符后的字串
+        var theRequest = new Object();
+        if (url.indexOf("?") != -1) {
+            var str = url.substr(1);
+            strs = str.split("&");
+            for(var i = 0; i < strs.length; i ++) {
+                theRequest[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
+            }
+        }
+        return theRequest;
+    }
+    var Request = new Object();
+    Request = GetRequest();
+    var Loc = Request['loc']
+    console.log(Request['loc'])
+    var Dealed = Request['dealed']
+    if(!Loc){
+        Loc='TH'
+    };
+  const BASE_URL = 'http://' + document.domain + '/api/sns/v1/lit/';
+var app7 = new Vue({
+  el: '#app-7',
+  data: {
+    items1: [],
+    base_url: BASE_URL
+  },
+created() {this.submitForm();},
+
+methods: {
+      submitForm: function() {
+        this.$http.get(BASE_URL + 'home/settings' + '&loc=' + Loc).then(function(result){
+        var data = result.data.data;
+	    var jstring = JSON.stringify(data) ;// 建议用这个
+        document.getElementById('setting_data').value = jstring;
+
+	      })
+      },
+    update: function() {
+        data = document.getElementById('setting_data').value;
+        var obj = eval("("+data+")");
+        var obj = JSON.parse(data)；
+        this.$http.post(BASE_URL + 'admin/change_setting', obj).then(function(result){
+            if (result.data.result === 0){alert('success!');}
+            else{alert('failed');}
+        })
+    },
+    }
+})
+</script>
+<style lang="stylus">
+    .column-direction
+        display flex
+        flex-direction column
+</style>
+</html>
