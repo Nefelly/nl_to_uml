@@ -19,7 +19,7 @@ created() {this.submitForm();},
 
 methods: {
       submitForm: function() {
-        this.$http.get(BASE_URL + 'home/settings' + '?loc=' + Loc).then(function(result){
+        this.$http.get(BASE_URL + 'home/settings').then(function(result){
         var data = result.data.data;
 	    var jstring = JSON.stringify(data) ;// 建议用这个
             console.log(jstring);
