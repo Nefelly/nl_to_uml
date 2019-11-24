@@ -48,7 +48,8 @@ methods: {
 	      })
       },
     update: function() {
-        data = document.getElementById('setting_data').value;
+        var data = document.getElementById('setting_data').value;
+        console.log(data);
         var obj = eval("("+data+")");
         var obj = JSON.parse(data);
         this.$http.post(BASE_URL + 'admin/change_setting', obj).then(function(result){
