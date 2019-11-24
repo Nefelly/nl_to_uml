@@ -104,3 +104,6 @@ REDIS_VIDEO_GENDER_ONLINE_REGION = 'video_online:{gender}:{region}'
 REDIS_VIDEO_CHAT_WAIT = 'video_chat_wait:{user_id}'
 REDIS_VIDEO_CHAT_CALLED = 'video_chat_called:{user_id}'
 REDIS_VIDEO_CHAT_IN_CHAT = 'video_chat_in_chat:{user_id}'
+
+# dev owned
+REDIS_SETTINGS_KEYS = 'dev_settings'

@@ -1,26 +1,35 @@
 # coding: utf-8
 import time
+import json
 from flask import (
     request
 )
-from ..const import (
-    ONE_DAY
-)
+from hendrix.conf import setting
 from ..util import date_to_int_time
 from ..model import (
     User,
     UserSetting,
     Uuids
 )
+from ..redis import RedisClient
 from ..const import (
     ONE_HOUR,
     TYPE_VOICE_AGORA,
     TYPE_VOICE_TENCENT
 )
-from ..service import GlobalizationService
+from ..key import (
+    REDIS_SETTINGS_KEYS
+)
 
+from ..service import GlobalizationService
+redis_client = RedisClient()['lit']
 
 class UserSettingService(object):
+
+    @classmethod
+    def change_setting(cls, data):
+        redis_client.set(REDIS_SETTINGS_KEYS, json.dumps(data))
+        return True
 
     @classmethod
     def get_settings(cls, user_id=None):
@@ -67,8 +76,29 @@ class UserSettingService(object):
             "video_match": 1,
             "voice_match": 1
         }
+
+        res['modules_open'] = modules_open
+        if setting.IS_DEV:
+            should_change = False
+            cached_setting_str = redis_client.get(REDIS_SETTINGS_KEYS)
+            if not cached_setting_str:
+                should_change = True
+            else:
+                cached_setting = json.loads(cached_setting_str)
+                if len(cached_setting.keys()) < len(res.keys):
+                    should_change = True
+                else:
+                    for key in cached_setting:
+                        if isinstance(cached_setting[key], dict):
+                            if len(cached_setting[key].keys()) < len(res):
+                                should_change = True
+                                break
+            if should_change:
+                redis_client.delete(REDIS_SETTINGS_KEYS)
+                redis_client.set(REDIS_SETTINGS_KEYS, json.dumps(res))
+            else:
+                res = cached_setting
         if region not in [GlobalizationService.REGION_TH]:
             # if request.version != '2.5.3':
-                modules_open['video_match'] = 0
-        res['modules_open'] = modules_open
+               res['modules_open']['video_match'] = 0
         return res
