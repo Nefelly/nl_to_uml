@@ -49,10 +49,7 @@ methods: {
       },
     update: function() {
         var data = document.getElementById('setting_data').value;
-        console.log(data);
-        var obj = eval("("+data+")");
-        var obj = JSON.parse(data);
-        this.$http.post(BASE_URL + 'admin/change_setting', obj).then(function(result){
+        this.$http.post(BASE_URL + 'admin/change_setting', {"data":data}).then(function(result){
             if (result.data.result === 0){alert('success!');}
             else{alert('failed');}
         })
