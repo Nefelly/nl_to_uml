@@ -42,6 +42,7 @@ methods: {
         this.$http.get(BASE_URL + 'home/settings' + '&loc=' + Loc).then(function(result){
         var data = result.data.data;
 	    var jstring = JSON.stringify(data) ;// 建议用这个
+            console.log(jstring);
         document.getElementById('setting_data').value = jstring;
 
 	      })
@@ -49,7 +50,7 @@ methods: {
     update: function() {
         data = document.getElementById('setting_data').value;
         var obj = eval("("+data+")");
-        var obj = JSON.parse(data)；
+        var obj = JSON.parse(data);
         this.$http.post(BASE_URL + 'admin/change_setting', obj).then(function(result){
             if (result.data.result === 0){alert('success!');}
             else{alert('failed');}
