@@ -28,6 +28,7 @@ methods: {
       },
 
     insert: function() {
+        console.log("get in!!!!!");
         data = document.getElementById('setting_data').value;
         this.$http.post(BASE_URL + 'admin/change_setting', {"data":data}).then(function(result){
             if (result.data.result === 0){alert('success!');}
