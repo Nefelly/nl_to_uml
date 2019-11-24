@@ -85,7 +85,7 @@ class UserSettingService(object):
                 should_change = True
             else:
                 cached_setting = json.loads(cached_setting_str)
-                if len(cached_setting.keys()) < len(res.keys):
+                if len(cached_setting.keys()) < len(res.keys()):
                     should_change = True
                 else:
                     for key in cached_setting:
