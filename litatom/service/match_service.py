@@ -510,7 +510,7 @@ class MatchService(object):
             times = msg
         return {
             'wording': GlobalizationService.get_region_word('time_left') % times,
-            'times': times if times < cls.MATCH_TMS/2 else cls.FAKE_MAX_TIME
+            'times': times if times < cls.MAX_TIMES/2 else cls.FAKE_MAX_TIME
             }
 
     @classmethod
