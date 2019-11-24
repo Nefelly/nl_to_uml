@@ -29,7 +29,7 @@ class UserSettingService(object):
     @classmethod
     def change_setting(cls, data):
         redis_client.set(REDIS_SETTINGS_KEYS, json.dumps(data))
-        return True
+        return None, True
 
     @classmethod
     def get_settings(cls, user_id=None):

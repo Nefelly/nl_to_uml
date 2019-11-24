@@ -71,8 +71,7 @@ b.add_url_rule('/lit/admin/get_log/<user_id>', 'admin-get_log', endpoint.admin.g
 b.add_url_rule('/lit/admin/region_words', 'admin-region_words', endpoint.admin.region_words)
 b.add_url_rule('/lit/admin/admin_words', 'admin-admin_words', endpoint.admin.admin_words)
 b.add_url_rule('/lit/admin/ban_by_uid/<user_id>', 'admin-ban_by_uid', endpoint.admin.ban_by_uid)
-
-
+b.add_url_rule('/lit/admin/change_setting', 'admin-change_setting', endpoint.admin.change_setting, methods=['POST'])
 
 
 # 图片

@@ -44,7 +44,8 @@ from ....service import (
     GlobalizationService,
     UserService,
     AlertService,
-    JournalService
+    JournalService,
+    UserSettingService
 )
 from  ....const import (
     MAX_TIME,
@@ -351,6 +352,13 @@ def region_words():
 
 def ban_by_uid(user_id):
     data, status = AdminService.ban_by_uid(user_id)
+    if status:
+        return success()
+    return fail(data)
+
+
+def change_setting():
+    data, status = UserSettingService.change_setting(request.json.data)
     if status:
         return success()
     return fail(data)
