@@ -3,9 +3,9 @@
 <script src="https://cdn.bootcss.com/vue-resource/1.5.1/vue-resource.js"></script>
 
     <div id="app-7">
+    <div><button name='update' @click='update()'>update</button></div>
     <div>data:<textarea id="setting_data" name="data" style="width:1700px; height:700px;"></textarea></div>
 <!--    <div><button name='update' @click='update()'>update</button></div>-->
-    <div><button name='insert' @click='insert()'>insert</button></div>
     </div>
 <script>
   const BASE_URL = 'http://' + document.domain + '/api/sns/v1/lit/';
@@ -27,7 +27,7 @@ methods: {
         document.getElementById('setting_data').value = jstring;
 	      })
       },
-    insert: function() {
+    update: function() {
         console.log("get in!!!!!");
         data = document.getElementById('setting_data').value;
         var obj = eval("("+data+")");
