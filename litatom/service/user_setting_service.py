@@ -88,13 +88,18 @@ class UserSettingService(object):
                 cached_setting = json.loads(cached_setting_str)
                 if len(cached_setting.keys()) < len(res.keys()):
                     should_change = True
+
+                    print should_change, '555555a'
                 else:
                     for key in cached_setting:
                         if isinstance(cached_setting[key], dict):
                             if len(cached_setting[key].keys()) < len(res):
                                 should_change = True
+
+                                print should_change, '555444'
                                 break
             if should_change:
+                print should_change, '555555'
                 redis_client.delete(REDIS_SETTINGS_KEYS)
                 redis_client.set(REDIS_SETTINGS_KEYS, json.dumps(res))
             else:
