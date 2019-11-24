@@ -93,9 +93,10 @@ class AdminService(object):
     @classmethod
     def get_official_feed(cls, user_id, start_ts, num):
         region = GlobalizationService.get_region()
-        nickname = 'Lit official'
-        if region == GlobalizationService.REGION_VN:
-            nickname = 'Lit official(vi)'
+        # nickname = 'Lit official'
+        nickname = 'Lit official(%s)' % region
+        # if region == GlobalizationService.REGION_VN:
+        #     nickname = 'Lit official(vi)'
         user = User.get_by_nickname(nickname)
         if not user:
             return u'user not exists', False
