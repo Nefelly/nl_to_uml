@@ -85,9 +85,10 @@ class JournalService(object):
         num = cal_exp(expression)
         loc_cnts = {"num": num}
         for loc in cls.USER_LOC:
-            loc_cnts[loc] = 0
-
-        return
+            for el in res_m:
+                expression = expression.replace(el, str(res_m[el][loc]))
+                loc_cnts[loc] = cal_exp(expression)
+        return loc_cnts
 
     @classmethod
     def cal_by_id(cls, item_id):
@@ -127,10 +128,9 @@ class JournalService(object):
         judge_field = item.judge_field
         expression = item.expression
         if not item.table_name:
-            num, loc_cnts = cls._cal_by_others(expression)
+            loc_cnts = cls._cal_by_others(expression)
             res = {
                 "id": item_id,
-                "num": num,
                 "name": item.name
             }
             res.update(loc_cnts)
