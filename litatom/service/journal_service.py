@@ -30,6 +30,15 @@ class JournalService(object):
     '''
     '''
 
+    USER_LOC = {}
+    LOC_STATED = ['TH', 'VN']
+    CACHED_RES = {}
+
+    @classmethod
+    def load_user_loc(cls):
+        for obj in UserSetting.objects():
+            cls.USER_LOC[obj.user_id] = obj.lang
+
     @classmethod
     def get_journal_items(cls):
         res = []
@@ -62,16 +71,28 @@ class JournalService(object):
 
     @classmethod
     def _cal_by_others(cls, expression):
+        def cal_exp(expression):
+            try:
+                return cal_exp(expression)
+            except:
+                return 0
         m = cls.get_objids(expression)
         res_m = {}
         for k in m:
             res_m[k] = cls.cal_by_id(k)
         for el in res_m:
             expression = expression.replace(el, str(res_m[el]['num']))
-        return eval(expression)
+        num = cal_exp(expression)
+        loc_cnts = {"num": num}
+        for loc in cls.USER_LOC:
+            loc_cnts[loc] = 0
+
+        return
 
     @classmethod
     def cal_by_id(cls, item_id):
+        if cls.CACHED_RES.get(item_id):
+            return cls.CACHED_RES[item_id]
         def check_valid_string(word):
             chars = string.ascii_letters + '_' + string.digits
             for chr in word:
@@ -106,12 +127,13 @@ class JournalService(object):
         judge_field = item.judge_field
         expression = item.expression
         if not item.table_name:
-            num =  cls._cal_by_others(expression)
-            return {
+            num, loc_cnts = cls._cal_by_others(expression)
+            res = {
                 "id": item_id,
                 "num": num,
                 "name": item.name
             }
+            res.update(loc_cnts)
         else:
             zeroToday = get_zero_today()
             zeroYestoday = next_date(zeroToday, -1)
@@ -126,11 +148,28 @@ class JournalService(object):
             cnt = eval(exc_str)
             if not cnt:
                 cnt = 0
-            return {
+            loc_cnts = {}
+            for loc in cls.USER_LOC:
+                loc_cnts[loc] = 0
+            if cnt and cnt < 1000000:
+                for obj in eval('%s.objects(%s,%s)' % (table_name, time_str, expression)):
+                    if table_name == 'User':
+                        user_id = str(obj.id)
+                    elif table_name == 'Report':
+                        user_id = str(obj.target_uid)
+                    else:
+                        user_id = obj.user_id
+                    loc = cls.USER_LOC.get(user_id)
+                    if loc and loc in loc_cnts:
+                        loc_cnts[loc] += 1
+            res = {
                 "id": item_id,
                 "num": cnt,
                 "name": item.name
             }
+            res.update(loc_cnts)
+        cls.CACHED_RES[item_id] = res
+        return res
 
     @classmethod
     def delete_stat_item(cls, item_id):
@@ -139,6 +178,7 @@ class JournalService(object):
 
     @classmethod
     def out_port_result(cls, dst_addr):
+        cls.load_user_loc()
         res_lst = []
         cnt = 0
         for item in StatItems.objects():
@@ -153,4 +193,4 @@ class JournalService(object):
             #     break
         # dst_addr = '/data/statres/%s.xlsx' % now_date_key()
         # ensure_path(dst_addr)
-        write_data_to_xls(dst_addr, [u'名字', u'数量'], res_lst)
+        write_data_to_xls(dst_addr, [u'名字', u'数量', u'TH', u'VN'], res_lst)

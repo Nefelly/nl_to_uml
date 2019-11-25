@@ -96,7 +96,7 @@ def query_region():
 
 def user_info():
     user_id = request.user_id
-    from ....service import  UserService
+    from ....service import UserService
     phone = request.args.get('phone')
     if not user_id:
         if phone and phone.startswith('86'):
