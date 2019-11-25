@@ -41,9 +41,10 @@ def _get_db_setting(envvar, db, alias=None):
     url = r.get_json(envvar, default)
     return url
 
+
 CB_ENABLED = False
 
-METRICS_SCHEMAS = {'litatom':{'a': {'a': 'a'}}}   # no use
+METRICS_SCHEMAS = {'litatom': {'a': {'a': 'a'}}}   # no use
 
 DB_SETTINGS = {
     'DB_LIT': _get_db_setting('DB_LIT', 'lit', 'lit'),
