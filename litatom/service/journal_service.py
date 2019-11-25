@@ -187,7 +187,6 @@ class JournalService(object):
                 name, num = m['name'], m['num']
                 region_cnt = [m[loc] for loc in cls.USER_LOC]
                 res_lst.append([name, num] + region_cnt)
-                print res_lst
                 cnt += 1
             except:
                 continue
@@ -195,4 +194,5 @@ class JournalService(object):
             #     break
         # dst_addr = '/data/statres/%s.xlsx' % now_date_key()
         # ensure_path(dst_addr)
+        print res_lst
         write_data_to_xls(dst_addr, [u'名字', u'数量', u'TH', u'VN'], res_lst)
