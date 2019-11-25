@@ -5,7 +5,6 @@ litatom_envvars_json:
   DB_LIT:
     host: "mongodb://ll:11@172.31.138.46/lit?authsource=lit"
     port: 27017
-    alias: abc
     maxPoolSize: 80
     socketTimeoutMS: 30000
     connectTimeoutMS: 30000
@@ -16,6 +15,7 @@ litatom_envvars_json:
   DB_ALI_LIT:
     host: "mongodb://ll:11@s-j6cd6965fea69d74.mongodb.rds.aliyuncs.com/lit?authsource=lit"
     port: 3717
+    alias: ali_lit
     maxPoolSize: 80
     socketTimeoutMS: 8000
     connectTimeoutMS: 3000
