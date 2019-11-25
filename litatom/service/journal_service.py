@@ -69,7 +69,7 @@ class JournalService(object):
         return m
 
     @classmethod
-    def _cal_by_others(cls, expression):
+    def _cal_by_others(cls, expression, need_loc=True):
         def cal_exp(exp):
             try:
                 return eval(exp)
@@ -85,11 +85,12 @@ class JournalService(object):
             print expression, tmp_exp, el, res_m[el]['num']
         num = cal_exp(tmp_exp)
         loc_cnts = {"num": num}
-        for loc in cls.LOC_STATED:
-            tmp_exp = expression
-            for el in res_m:
-                tmp_exp = tmp_exp.replace(el, str(res_m[el][loc]))
-            loc_cnts[loc] = cal_exp(tmp_exp)
+        if need_loc:
+            for loc in cls.LOC_STATED:
+                tmp_exp = expression
+                for el in res_m:
+                    tmp_exp = tmp_exp.replace(el, str(res_m[el][loc]))
+                loc_cnts[loc] = cal_exp(tmp_exp)
         return loc_cnts
 
     @classmethod
@@ -130,7 +131,7 @@ class JournalService(object):
         judge_field = item.judge_field
         expression = item.expression
         if not item.table_name:
-            loc_cnts = cls._cal_by_others(expression)
+            loc_cnts = cls._cal_by_others(expression, need_loc)
             res = {
                 "id": item_id,
                 "name": item.name
@@ -151,19 +152,20 @@ class JournalService(object):
             if not cnt:
                 cnt = 0
             loc_cnts = {}
-            for loc in cls.LOC_STATED:
-                loc_cnts[loc] = 0
-            if cnt and cnt < 1000000:
-                for obj in eval('%s.objects(%s,%s)' % (table_name, time_str, expression)):
-                    if table_name == 'User':
-                        user_id = str(obj.id)
-                    elif table_name == 'Report':
-                        user_id = str(obj.target_uid)
-                    else:
-                        user_id = obj.user_id
-                    loc = cls.USER_LOC.get(user_id)
-                    if loc and loc in loc_cnts:
-                        loc_cnts[loc] += 1
+            if need_loc:
+                for loc in cls.LOC_STATED:
+                    loc_cnts[loc] = 0
+                if cnt and cnt < 1000000:
+                    for obj in eval('%s.objects(%s,%s)' % (table_name, time_str, expression)):
+                        if table_name == 'User':
+                            user_id = str(obj.id)
+                        elif table_name == 'Report':
+                            user_id = str(obj.target_uid)
+                        else:
+                            user_id = obj.user_id
+                        loc = cls.USER_LOC.get(user_id)
+                        if loc and loc in loc_cnts:
+                            loc_cnts[loc] += 1
             res = {
                 "id": item_id,
                 "num": cnt,

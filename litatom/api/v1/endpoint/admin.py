@@ -330,7 +330,7 @@ def delete_stat_item(item_id):
 
 
 def journal_cal(item_id):
-    data = JournalService.cal_by_id(item_id)
+    data = JournalService.cal_by_id(item_id, False)
     if data:
         return success(data)
     return fail()
