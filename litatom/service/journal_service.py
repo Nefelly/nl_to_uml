@@ -89,7 +89,6 @@ class JournalService(object):
             tmp_exp = expression
             for el in res_m:
                 tmp_exp = tmp_exp.replace(el, str(res_m[el][loc]))
-            print tmp_exp
             loc_cnts[loc] = cal_exp(tmp_exp)
         return loc_cnts
 
