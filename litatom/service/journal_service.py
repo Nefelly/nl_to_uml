@@ -73,7 +73,7 @@ class JournalService(object):
     def _cal_by_others(cls, expression):
         def cal_exp(expression):
             try:
-                return cal_exp(expression)
+                return eval(expression)
             except:
                 return 0
         m = cls.get_objids(expression)
@@ -194,5 +194,5 @@ class JournalService(object):
             #     break
         # dst_addr = '/data/statres/%s.xlsx' % now_date_key()
         # ensure_path(dst_addr)
-        print res_lst
+        # print res_lst
         write_data_to_xls(dst_addr, [u'名字', u'数量', u'TH', u'VN'], res_lst)
