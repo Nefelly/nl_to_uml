@@ -55,7 +55,6 @@ class JournalService(object):
 
     @classmethod
     def get_objids(cls, expression):
-
         m = {}
         chrs = set([chr(ord('0') + el) for el in range(10)] + [chr(ord('a') + el) for el in range(26)])
         str_buff = ''
