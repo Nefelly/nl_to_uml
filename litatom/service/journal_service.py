@@ -92,7 +92,7 @@ class JournalService(object):
         return loc_cnts
 
     @classmethod
-    def cal_by_id(cls, item_id):
+    def cal_by_id(cls, item_id, need_loc=True):
         if cls.CACHED_RES.get(item_id):
             return cls.CACHED_RES[item_id]
         def check_valid_string(word):
@@ -183,15 +183,15 @@ class JournalService(object):
         res_lst = []
         cnt = 0
         for item in StatItems.objects():
-            # try:
+            try:
                 m = cls.cal_by_id(str(item.id))
                 name, num = m['name'], m['num']
                 region_cnt = [m[loc] for loc in cls.LOC_STATED]
                 res_lst.append([name, num] + region_cnt)
                 cnt += 1
-            # except Exception, e:
-            #     print e
-            #     continue
+            except Exception, e:
+                print e
+                continue
             # if cnt >= 3:
             #     break
         # dst_addr = '/data/statres/%s.xlsx' % now_date_key()
