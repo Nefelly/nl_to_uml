@@ -84,7 +84,7 @@ class JournalService(object):
             expression = expression.replace(el, str(res_m[el]['num']))
         num = cal_exp(expression)
         loc_cnts = {"num": num}
-        for loc in cls.USER_LOC:
+        for loc in cls.LOC_STATED:
             for el in res_m:
                 expression = expression.replace(el, str(res_m[el][loc]))
                 loc_cnts[loc] = cal_exp(expression)
@@ -149,7 +149,7 @@ class JournalService(object):
             if not cnt:
                 cnt = 0
             loc_cnts = {}
-            for loc in cls.USER_LOC:
+            for loc in cls.LOC_STATED:
                 loc_cnts[loc] = 0
             if cnt and cnt < 1000000:
                 for obj in eval('%s.objects(%s,%s)' % (table_name, time_str, expression)):
@@ -185,7 +185,7 @@ class JournalService(object):
             try:
                 m = cls.cal_by_id(str(item.id))
                 name, num = m['name'], m['num']
-                region_cnt = [m[loc] for loc in cls.USER_LOC]
+                region_cnt = [m[loc] for loc in cls.LOC_STATED]
                 res_lst.append([name, num] + region_cnt)
                 cnt += 1
             except:
