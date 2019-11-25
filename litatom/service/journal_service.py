@@ -92,9 +92,6 @@ class JournalService(object):
         return loc_cnts
 
     @classmethod
-    # def cal_
-
-    @classmethod
     def cal_by_id(cls, item_id):
         if cls.CACHED_RES.get(item_id):
             return cls.CACHED_RES[item_id]
