@@ -32,7 +32,7 @@ def back():
 
 def clean_old_records():
     global query_time
-    UserAction.objects(create_time__lte=query_time).delete()
+    # UserAction.objects(create_time__lte=query_time).delete()
 
 
 if __name__ == "__main__":
