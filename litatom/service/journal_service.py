@@ -71,9 +71,9 @@ class JournalService(object):
 
     @classmethod
     def _cal_by_others(cls, expression):
-        def cal_exp(expression):
+        def cal_exp(exp):
             try:
-                return eval(expression)
+                return eval(exp)
             except:
                 return 0
         m = cls.get_objids(expression)
@@ -87,8 +87,12 @@ class JournalService(object):
         for loc in cls.LOC_STATED:
             for el in res_m:
                 tmp_exp = expression.replace(el, str(res_m[el][loc]))
-                loc_cnts[loc] = cal_exp(tmp_exp)
+            print tmp_exp
+            loc_cnts[loc] = cal_exp(tmp_exp)
         return loc_cnts
+
+    @classmethod
+    # def cal_
 
     @classmethod
     def cal_by_id(cls, item_id):
