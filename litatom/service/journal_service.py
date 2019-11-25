@@ -187,6 +187,7 @@ class JournalService(object):
                 name, num = m['name'], m['num']
                 region_cnt = [m[loc] for loc in cls.USER_LOC]
                 res_lst.append([name, num] + region_cnt)
+                print res_lst
                 cnt += 1
             except:
                 continue

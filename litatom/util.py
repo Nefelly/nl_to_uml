@@ -191,6 +191,7 @@ def write_data_to_xls(name, tb_heads, datas):
         datas = [datas]
     for i in range(len(datas)):
         for j in range(len(datas[i])):
+
             sheet1.write(i + 1, j, datas[i][j])
     f.save(name)
 
