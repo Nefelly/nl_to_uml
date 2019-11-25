@@ -185,7 +185,8 @@ class JournalService(object):
             try:
                 m = cls.cal_by_id(str(item.id))
                 name, num = m['name'], m['num']
-                res_lst.append([name, num])
+                region_cnt = [m[loc] for loc in cls.USER_LOC]
+                res_lst.append([name, num] + region_cnt)
                 cnt += 1
             except:
                 continue
