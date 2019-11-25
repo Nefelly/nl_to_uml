@@ -46,7 +46,8 @@ CB_ENABLED = False
 METRICS_SCHEMAS = {'litatom':{'a': {'a': 'a'}}}   # no use
 
 DB_SETTINGS = {
-    'DB_LIT': _get_db_setting('DB_ALI_LIT', 'lit', 'ali_lit'),
+    'DB_LIT': _get_db_setting('DB_LIT', 'lit', 'lit'),
+    'DB_ALI_LIT': _get_db_setting('DB_ALI_LIT', 'lit', 'ali_lit'),
     'dev_lit': _get_db_setting('DB_DEV_LIT', 'lit', 'dev_lit'),  # envar, db, alias,
     'huanxin_message': _get_db_setting('DB_HUANXIN_MESSAGE', 'huanxin_message', 'huanxin_message')
 }
