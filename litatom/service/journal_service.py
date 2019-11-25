@@ -192,7 +192,8 @@ class JournalService(object):
                 region_cnt = [m[loc] for loc in cls.LOC_STATED]
                 res_lst.append([name, num] + region_cnt)
                 cnt += 1
-            except:
+            except Exception, e:
+                print e
                 continue
             # if cnt >= 3:
             #     break
