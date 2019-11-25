@@ -81,6 +81,7 @@ class JournalService(object):
             res_m[k] = cls.cal_by_id(k)
         for el in res_m:
             tmp_exp = expression.replace(el, str(res_m[el]['num']))
+            print expression, tmp_exp, el, res_m[el]['num']
         num = cal_exp(tmp_exp)
         loc_cnts = {"num": num}
         for loc in cls.LOC_STATED:
