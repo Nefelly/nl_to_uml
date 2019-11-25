@@ -36,7 +36,7 @@ class JournalService(object):
 
     @classmethod
     def load_user_loc(cls):
-        for obj in UserSetting.objects().limit(100):
+        for obj in UserSetting.objects():
             cls.USER_LOC[obj.user_id] = obj.lang
 
     @classmethod
