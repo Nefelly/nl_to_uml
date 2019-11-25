@@ -1,10 +1,13 @@
 # coding: utf-8
 import time
 import json
+import random
 import StringIO
 import gzip
 import requests
 
+
+sys_rnd = random.SystemRandom()
 from ..redis import RedisClient
 
 from ..key import (
@@ -36,6 +39,12 @@ class VoiceChatService(object):
             redis_client.delete(REDIS_VOICE_CHAT_IN_CHAT.format(user_id=other_user_id))
         redis_client.delete(self_key)
         return None, True
+
+    @classmethod
+    def get_roomid(cls, loveid_a, loveid_b):
+        pair = [loveid_a, loveid_b] if loveid_a[-5:] > loveid_b[-5:] else [loveid_b, loveid_a]
+        str_room_id = "%d%s%s" % ((pair[0] * 10 + pair[1]) % 20, pair[0][-4:], pair[0][-4:])
+        return int(str_room_id), True
 
     @classmethod
     def invite(cls, user_id, target_user_id):

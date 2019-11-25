@@ -48,6 +48,15 @@ def reject(target_user_id):
         return fail(data)
     return success(data)
 
+@session_required
+def get_roomid():
+    data = request.json
+    love_id1 = data.get('love_id1')
+    love_id2 = data.get('love_id2')
+    data, status = VoiceChatService.get_roomid(love_id1, love_id2)
+    if not status:
+        return fail(data)
+    return success(data)
 
 @session_required
 def finish_chat():
