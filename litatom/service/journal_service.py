@@ -81,13 +81,13 @@ class JournalService(object):
         for k in m:
             res_m[k] = cls.cal_by_id(k)
         for el in res_m:
-            expression = expression.replace(el, str(res_m[el]['num']))
-        num = cal_exp(expression)
+            tmp_exp = expression.replace(el, str(res_m[el]['num']))
+        num = cal_exp(tmp_exp)
         loc_cnts = {"num": num}
         for loc in cls.LOC_STATED:
             for el in res_m:
-                expression = expression.replace(el, str(res_m[el][loc]))
-                loc_cnts[loc] = cal_exp(expression)
+                tmp_exp = expression.replace(el, str(res_m[el][loc]))
+                loc_cnts[loc] = cal_exp(tmp_exp)
         return loc_cnts
 
     @classmethod
