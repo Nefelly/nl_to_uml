@@ -247,7 +247,7 @@ class JournalService(object):
                 avr_cnt = []
                 for loc in cls.LOC_STATED:
                     if daily_m[loc]:
-                        avr_cnt.append(region_cnt.get(loc, 0)/daily_m[loc])
+                        avr_cnt.append(m.get(loc, 0)/daily_m[loc])
                     else:
                         avr_cnt.append(0)
                 res_lst.append([name, num] + region_cnt + [num/daily_m['num'] + avr_cnt])
