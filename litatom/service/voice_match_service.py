@@ -29,7 +29,8 @@ from ..const import (
 )
 from ..service import (
     GlobalizationService,
-    MatchService
+    MatchService,
+    VoiceChatService
 )
 redis_client = RedisClient()['lit']
 
@@ -81,14 +82,15 @@ class VoiceMatchService(MatchService):
         if not status:
             return res, status
         voice_type = TYPE_VOICE_AGORA
+        matched_id = res.get('matched_fake_id')
         if redis_client.get(REDIS_VOICE_SDK_TYPE.format(user_id=user_id)) == TYPE_VOICE_TENCENT:
-            matched_id = res.get('matched_fake_id')
             other_user_id = cls._uid_by_fake_id(matched_id)
             if redis_client.get(REDIS_VOICE_SDK_TYPE.format(user_id=other_user_id)) == TYPE_VOICE_TENCENT:
                 voice_type = TYPE_VOICE_TENCENT
         res.update(
             {
-                'voice_type': voice_type
+                'voice_type': voice_type,
+                'room_id': VoiceChatService.get_roomid(matched_id, cls._fakeid_by_uid(user_id))
             }
         )
         return res, True

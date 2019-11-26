@@ -42,9 +42,12 @@ class VoiceChatService(object):
 
     @classmethod
     def get_roomid(cls, loveid_a, loveid_b):
-        pair = [loveid_a, loveid_b] if loveid_a[-5:] > loveid_b[-5:] else [loveid_b, loveid_a]
-        str_room_id = "%d%s%s" % (int(pair[0][-5] + pair[1][-5]) % 21, pair[0][-4:], pair[1][-4:])
-        return int(str_room_id), True
+        try:
+            pair = [loveid_a, loveid_b] if loveid_a[-5:] > loveid_b[-5:] else [loveid_b, loveid_a]
+            str_room_id = "%d%s%s" % (int(pair[0][-5] + pair[1][-5]) % 21, pair[0][-4:], pair[1][-4:])
+            return int(str_room_id), True
+        except Exception, e:
+            return ''
 
     @classmethod
     def invite(cls, user_id, target_user_id):
