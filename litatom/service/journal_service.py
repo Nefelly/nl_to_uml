@@ -240,7 +240,7 @@ class JournalService(object):
         cnt = 0
         daily_m = cls.daily_active(StatItems.objects(name=u'抽样日活').first())
         for item in StatItems.objects():
-            try:
+            # try:
                 m = cls.cal_by_id(str(item.id))
                 name, num = m['name'], m['num']
                 region_cnt = [m[loc] for loc in cls.LOC_STATED]
@@ -252,9 +252,9 @@ class JournalService(object):
                         avr_cnt.append(0)
                 res_lst.append([name, num] + region_cnt + [num/daily_m['num'] + avr_cnt])
                 cnt += 1
-            except Exception, e:
-                print e
-                continue
+            # except Exception, e:
+            #     print e
+            #     continue
             # if cnt >= 3:
             #     break
         # dst_addr = '/data/statres/%s.xlsx' % now_date_key()
