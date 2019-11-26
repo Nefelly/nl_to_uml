@@ -218,6 +218,7 @@ class User(Document, UserSessionMixin):
         #     if self.tencent_user_sig:
         #         return self.tencent_user_sig
         api = TLSSigAPIv2.TLSSigAPIv2(self.SDKAPPID, self.KEY)
+        print str(self.id)
         sig = api.gen_sig(str(self.id), self.TENCENT_SIG_EXPIRE)
         # self.tencent_user_sig = sig
         # self.user_sig_expire_at = time_now + self.TENCENT_SIG_EXPIRE
