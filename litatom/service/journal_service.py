@@ -121,11 +121,12 @@ class JournalService(object):
         return loc_cnts
 
     @classmethod
-    def _get_time_str(cls, table_name, judge_field, date=datetime.datetime(2019, 11, 16)):
+    def _get_time_str(cls, table_name, judge_field, date=None):
         if date:
             zeroToday = date
         else:
             zeroToday = get_zero_today()
+        # zeroToday = datetime.datetime(2019, 11, 16)
         zeroYestoday = next_date(zeroToday, -1)
         is_int = isinstance(eval(table_name + '.' + judge_field), IntField)
         if not is_int:
