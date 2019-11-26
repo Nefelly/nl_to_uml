@@ -29,7 +29,7 @@ redis_client = RedisClient()['lit']
 class JournalService(object):
     '''
     '''
-    IS_TESTING = False
+    IS_TESTING = True
 
     USER_LOC = {}
     LOC_STATED = ['TH', 'VN']
@@ -188,7 +188,10 @@ class JournalService(object):
         else:
             time_str = cls._get_time_str(table_name, judge_field)
             expression = '' if not expression else expression
-            exc_str = '%s.objects(%s,%s).count()' % (table_name, time_str, expression)
+            if not cls.IS_TESTING:
+                exc_str = '%s.objects(%s,%s).count()' % (table_name, time_str, expression)
+            else:
+                exc_str = '%s.objects(%s,%s).limit(1000).count()' % (table_name, time_str, expression)
             print exc_str
             cnt = eval(exc_str)
             if not cnt:
@@ -202,7 +205,10 @@ class JournalService(object):
                 for loc in cls.LOC_STATED:
                     loc_cnts[loc] = 0
                 if cnt and cnt < 1000000:
-                    for obj in eval('%s.objects(%s,%s)' % (table_name, time_str, expression)):
+                    eval_str = '%s.objects(%s,%s)' % (table_name, time_str, expression)
+                    if cls.IS_TESTING:
+                        eval_str += '.limit(1000)'
+                    for obj in eval(eval_str):
                         if table_name == 'User':
                             user_id = str(obj.id)
                         elif table_name in table_user_id:
