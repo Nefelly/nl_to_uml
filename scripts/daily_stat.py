@@ -13,6 +13,7 @@ from litatom.util import (
 
 def run():
     dst_addr = '/data/statres/%s.xlsx' % (datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
+    dst_addr = '/data/statres/2019-11-15.xlsx'
     ensure_path(dst_addr)
     if not os.path.exists(dst_addr) or 1:
         JournalService.out_port_result(dst_addr)
