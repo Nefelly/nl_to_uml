@@ -1,6 +1,7 @@
 import os
 import sys
 import fcntl
+import datetime
 from hendrix.conf import setting
 from litatom.service import AlertService, JournalService
 import time
@@ -11,7 +12,7 @@ from litatom.util import (
 )
 
 def run():
-    dst_addr = '/data/statres/%s.xlsx' % now_date_key()
+    dst_addr = '/data/statres/%s.xlsx' % (datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
     ensure_path(dst_addr)
     if not os.path.exists(dst_addr) or 1:
         JournalService.out_port_result(dst_addr)
