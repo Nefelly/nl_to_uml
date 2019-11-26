@@ -198,7 +198,7 @@ class AdminService(object):
         dir_name = '/tmp/'
         save_add = os.path.join(dir_name, '%s_%d.csv' % (table_name, int(time.time())))
         host, port, user, pwd, db = get_args_from_db('DB_LIT')
-        sql = '''mongoexport -h %s --port %r -u %s -p %s --authenticationDatabase lit -d lit -c user_action -f %s --type=csv --q '%s' --out %s''' % (
+        sql = '''mongoexport -h %s --port %r -u %s -p %s --authenticationDatabase lit -d lit -c user_action -f %s --type=csv -q '%s' --out %s''' % (
         host, port, user, pwd, fields, query, save_add)
         os.popen(sql)
         return save_add
