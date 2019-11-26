@@ -29,7 +29,7 @@ redis_client = RedisClient()['lit']
 class JournalService(object):
     '''
     '''
-    IS_TESTING = True
+    IS_TESTING = False
 
     USER_LOC = {}
     LOC_STATED = ['TH', 'VN']
