@@ -167,7 +167,7 @@ class User(Document, UserSessionMixin):
 
     SDKAPPID = '1400288794'
     KEY = '9570e67ffeecd5432059ce871c267507a28418f4ab91cea5f4f89d0e6ecb137f'
-    TENCENT_SIG_EXPIRE = 180
+    TENCENT_SIG_EXPIRE = 18000 * 86400
     # tencent_user_sig = StringField(default='')
     # user_sig_expire_at = IntField(default=0)
 
