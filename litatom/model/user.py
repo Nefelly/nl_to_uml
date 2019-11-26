@@ -166,7 +166,7 @@ class User(Document, UserSessionMixin):
     JUDGES = ['nasty', 'boring', 'like']
 
     SDKAPPID = '1400288794'
-    KEY = '9570e67ffeecd5432059ce871c267507a28418f4ab91cea5f4f89d0e6ecb137f'
+    KEY = '2e038d10eb669c5e20e772e0fe57affe8160cd0c388a8ce2a4fcbf319b7dbdd6'
     TENCENT_SIG_EXPIRE = 18000 * 86400
     # tencent_user_sig = StringField(default='')
     # user_sig_expire_at = IntField(default=0)
