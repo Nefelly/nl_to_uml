@@ -2,6 +2,7 @@
 import random
 import string
 import time
+import os
 import datetime
 from flask import (
     request
@@ -13,6 +14,9 @@ from ..model import (
     Report,
     Feed,
     User
+)
+from ..util import (
+    get_args_from_db
 )
 from ..service import (
     UserService,
@@ -188,6 +192,16 @@ class AdminService(object):
             return u'wrong report id', False
         report.reject()
         return None, True
+
+    @classmethod
+    def mongo_gen_csv(cls, table_name, query, fields):
+        dir_name = '/tmp/'
+        save_add = os.path.join(dir_name, '%s_%d.csv' % (table_name, int(time.time())))
+        host, port, user, pwd, db = get_args_from_db('DB_LIT')
+        sql = '''mongoexport -h %s --port %r -u %s -p %s --authenticationDatabase lit -d lit -c user_action -f %s --type=csv --q '%s' --out %s''' % (
+        host, port, user, pwd, fields, query, save_add)
+        os.popen(sql)
+        return save_add
 
     @classmethod
     def batch_insert(cls, table_name, fields, main_key, insert_data):
