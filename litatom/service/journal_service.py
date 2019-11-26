@@ -61,10 +61,10 @@ class JournalService(object):
         judge_field = item.judge_field
         time_str = cls._get_time_str(table_name, judge_field)
         exc_str = '%s.objects(%s).distinct("user_id")' % (table_name, time_str)
-        cnt = 0
+        cnt = 0.0
         loc_cnts = {}
         for loc in cls.LOC_STATED:
-            loc_cnts[loc] = 0
+            loc_cnts[loc] = 0.0
         for user_id in eval(exc_str):
             cnt += 1
             loc = cls.USER_LOC.get(user_id)
@@ -238,12 +238,19 @@ class JournalService(object):
         cls.load_user_loc()
         res_lst = []
         cnt = 0
+        daily_m = cls.daily_active(StatItems.objects(name=u'抽样日活').first())
         for item in StatItems.objects():
             try:
                 m = cls.cal_by_id(str(item.id))
                 name, num = m['name'], m['num']
                 region_cnt = [m[loc] for loc in cls.LOC_STATED]
-                res_lst.append([name, num] + region_cnt)
+                avr_cnt = []
+                for loc in cls.LOC_STATED:
+                    if daily_m[loc]:
+                        avr_cnt.append(region_cnt.get(loc, 0)/daily_m[loc])
+                    else:
+                        avr_cnt.append(0)
+                res_lst.append([name, num] + region_cnt + [num/daily_m['num'] + avr_cnt])
                 cnt += 1
             except Exception, e:
                 print e
