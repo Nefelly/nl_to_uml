@@ -121,7 +121,7 @@ class JournalService(object):
         return loc_cnts
 
     @classmethod
-    def _get_time_str(cls, table_name, judge_field, date=None):
+    def _get_time_str(cls, table_name, judge_field, date=datetime.datetime(2019, 11, 16)):
         if date:
             zeroToday = date
         else:
