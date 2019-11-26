@@ -174,7 +174,7 @@ class User(Document, UserSessionMixin):
     TYPES = [GOOGLE_TYPE, FACEBOOK_TYPE]
     JUDGES = ['nasty', 'boring', 'like']
 
-    SDKAPPID = '1400288794'
+    SDKAPPID = '1400283930'
     KEY = '2e038d10eb669c5e20e772e0fe57affe8160cd0c388a8ce2a4fcbf319b7dbdd6'
     TENCENT_SIG_EXPIRE = 18000 * 86400
     # tencent_user_sig = StringField(default='')
@@ -219,7 +219,7 @@ class User(Document, UserSessionMixin):
         #         return self.tencent_user_sig
         api = TLSSigAPIv2.TLSSigAPIv2(self.SDKAPPID, self.KEY)
         print str(self.id)
-        sig = api.gen_sig(str(self.id))
+        sig = api.gen_sig(str(self.id), 604800)
         # self.tencent_user_sig = sig
         # self.user_sig_expire_at = time_now + self.TENCENT_SIG_EXPIRE
         # self.save()
