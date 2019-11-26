@@ -29,6 +29,7 @@ redis_client = RedisClient()['lit']
 class JournalService(object):
     '''
     '''
+    IS_TESTING = False
 
     USER_LOC = {}
     LOC_STATED = ['TH', 'VN']
@@ -36,7 +37,11 @@ class JournalService(object):
 
     @classmethod
     def load_user_loc(cls):
-        for obj in UserSetting.objects():
+        if not cls.IS_TESTING:
+            objs = UserSetting.objects()
+        else:
+            objs = UserSetting.objects().limit(1000)
+        for obj in objs:
             cls.USER_LOC[obj.user_id] = obj.lang
 
     @classmethod
@@ -63,7 +68,7 @@ class JournalService(object):
         for user_id in eval(exc_str):
             cnt += 1
             loc = cls.USER_LOC.get(user_id)
-            if loc:
+            if loc in cls.LOC_STATED:
                 loc_cnts[loc] += 1
         res["num"] = cnt
         res.update(loc_cnts)
