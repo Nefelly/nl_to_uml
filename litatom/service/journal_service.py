@@ -60,9 +60,8 @@ class JournalService(object):
         loc_cnts = {}
         for loc in cls.LOC_STATED:
             loc_cnts[loc] = 0
-        for obj in eval(exc_str):
+        for user_id in eval(exc_str):
             cnt += 1
-            user_id = obj.user_id
             loc = cls.USER_LOC.get(user_id)
             if loc:
                 loc_cnts[loc] += 1
@@ -243,4 +242,4 @@ class JournalService(object):
         # dst_addr = '/data/statres/%s.xlsx' % now_date_key()
         # ensure_path(dst_addr)
         # print res_lst
-        write_data_to_xls(dst_addr, [u'名字', u'数量', u'TH', u'VN'], res_lst)
+        write_data_to_xls(dst_addr, [u'名字', u'数量'] + cls.LOC_STATED + [el + 'avr' for el in cls.LOC_STATED], res_lst)
