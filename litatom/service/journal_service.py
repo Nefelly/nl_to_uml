@@ -261,4 +261,4 @@ class JournalService(object):
         # dst_addr = '/data/statres/%s.xlsx' % now_date_key()
         # ensure_path(dst_addr)
         # print res_lst
-        write_data_to_xls(dst_addr, [u'名字', u'数量'] + cls.LOC_STATED + [el + 'avr' for el in cls.LOC_STATED], res_lst)
+        write_data_to_xls(dst_addr, [u'名字', u'数量'] + cls.LOC_STATED + ['total avr'] + [el + 'avr' for el in cls.LOC_STATED], res_lst)
