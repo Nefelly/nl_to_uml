@@ -47,7 +47,7 @@ class VoiceChatService(object):
             str_room_id = "%d%s%s" % (int(pair[0][-5] + pair[1][-5]) % 21, pair[0][-4:], pair[1][-4:])
             return int(str_room_id), True
         except Exception, e:
-            return ''
+            return '', True
 
     @classmethod
     def invite(cls, user_id, target_user_id):
