@@ -154,6 +154,15 @@ class SocialAccountInfo(EmbeddedDocument):
         obj = cls(other_id=other_id, extra_data=json.dumps(payload))
         return obj
 
+def base64_decode_url(base64_data):
+    import base64
+    """ base url decode 实现"""
+    base64_data_str = bytes.decode(base64_data)
+    base64_data_str = base64_data_str.replace('*', '+')
+    base64_data_str = base64_data_str.replace('-', '/')
+    base64_data_str = base64_data_str.replace('_', '=')
+    raw_data = base64.b64decode(base64_data_str)
+    return raw_data
 
 class User(Document, UserSessionMixin):
     meta = {
@@ -451,6 +460,7 @@ class User(Document, UserSessionMixin):
 
         }
 
+
     def get_login_info(self):
         return {
             'session': self.session_id,
@@ -458,7 +468,7 @@ class User(Document, UserSessionMixin):
             'is_first_login': not self.logined,
             'create_time': date_to_int_time(self.create_time),
             'huanxin': HuanxinAccount.get_info(self.huanxin),
-            'user_sig': self.user_sig
+            'user_sig': base64_decode_url(self.user_sig)
         }
 
 
