@@ -375,6 +375,8 @@ def mongo_gen_csv():
     fields = data.get("fields")
     file_name, status = AdminService.mongo_gen_csv(table_name, query, fields)
     # return success()
+    if not os.path.exists(file_name):
+        return fail("error file not exists")
     if not status:
         return send_file(file_name, as_attachment=True)
     else:
