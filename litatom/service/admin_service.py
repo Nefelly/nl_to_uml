@@ -200,6 +200,7 @@ class AdminService(object):
         host, port, user, pwd, db = get_args_from_db('DB_LIT')
         sql = '''mongoexport -h %s --port %r -u %s -p %s --authenticationDatabase lit -d lit -c user_action -f %s --type=csv -q '%s' --out %s''' % (
         host, port, user, pwd, fields, query, save_add)
+        print sql
         os.popen(sql)
         return save_add, True
 
