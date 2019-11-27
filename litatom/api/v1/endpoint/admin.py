@@ -380,7 +380,7 @@ def mongo_gen_csv():
     if status:
         return send_file(file_name, as_attachment=True)
     else:
-        fail(file_name)
+        return fail(file_name)
 
 
 
