@@ -10,7 +10,8 @@ from flask import (
     render_template,
     current_app,
     send_file,
-    Flask
+    Flask,
+    Response
 
 )
 
@@ -378,6 +379,7 @@ def mongo_gen_csv():
     if not os.path.exists(file_name):
         return fail("error file not exists")
     if status:
+        return Response(open(file_name).read(), mimetype='text/csv')
         return send_file(file_name, as_attachment=True)
     else:
         return fail(file_name)
