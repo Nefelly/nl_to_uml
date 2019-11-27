@@ -25,7 +25,7 @@ methods: {
         fields = document.getElementById('fields').value;
         data = document.getElementById('query_data').value;
         // this.$http.post(BASE_URL + 'admin/mongo_gen_csv', {"table_name":table_name, "fields":fields, "query":data});
-        window.open(BASE_URL + 'admin/mongo_gen_csv', {params:{table_name: table_name, fields:fields, query:data}})
+        window.open(encodeURI(BASE_URL + 'admin/mongo_gen_csv?table_name=' + table_name + '&fields=' + fields + '&query=' + data))
     },
     }
 })
