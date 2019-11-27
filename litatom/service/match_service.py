@@ -269,6 +269,7 @@ class MatchService(object):
                         near_new.append(el_fake_id)
                     else:
                         near_old.append(el_fake_id)
+            print 'get herrrrrrr'
             user1_out_wait = cls._is_out_wait_time(fake_id, gender)
             to_scan = near_new + near_old
             near_num = len(to_scan)
