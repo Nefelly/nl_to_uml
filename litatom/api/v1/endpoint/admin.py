@@ -367,13 +367,23 @@ def change_setting():
 def mod_setting():
     return current_app.send_static_file('modify_settings.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
 
+
 def mongo_gen_csv():
     data = request.json
     table_name = data.get("table_name")
     query = data.get("query")
     fields = data.get("fields")
-    file_name = AdminService.mongo_gen_csv(table_name, query, fields)
-    return send_file(file_name, as_attachment=True)
+    file_name, status = AdminService.mongo_gen_csv(table_name, query, fields)
+    if not status:
+        return send_file(file_name, as_attachment=True)
+    else:
+        fail(file_name)
+
+
+
+def mongo_gen_csv_page():
+    return current_app.send_static_file('mongo_gen_csv.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
+
 
 def journal():
     return current_app.send_static_file('journal.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}

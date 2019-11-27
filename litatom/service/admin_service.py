@@ -201,7 +201,7 @@ class AdminService(object):
         sql = '''mongoexport -h %s --port %r -u %s -p %s --authenticationDatabase lit -d lit -c user_action -f %s --type=csv -q '%s' --out %s''' % (
         host, port, user, pwd, fields, query, save_add)
         os.popen(sql)
-        return save_add
+        return save_add, True
 
     @classmethod
     def batch_insert(cls, table_name, fields, main_key, insert_data):
