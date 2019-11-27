@@ -383,7 +383,6 @@ def mongo_gen_csv():
         return fail(file_name)
 
 
-
 def mongo_gen_csv_page():
     return current_app.send_static_file('mongo_gen_csv.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
 
