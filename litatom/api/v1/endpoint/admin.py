@@ -377,7 +377,7 @@ def mongo_gen_csv():
     # return success()
     if not os.path.exists(file_name):
         return fail("error file not exists")
-    if not status:
+    if status:
         return send_file(file_name, as_attachment=True)
     else:
         fail(file_name)
