@@ -40,7 +40,7 @@ def get_args_from_db(db_name):
     user_pwd = conn_url.split('://')[1].split('@')[0]
     user, pwd = user_pwd.split(':')
     host = conn_url.split('@')[1].split('/')[0]
-    db = host.split("=")[-1]
+    db = conn_url.split("=")[-1]
     return host, port, user, pwd, db
 
 
