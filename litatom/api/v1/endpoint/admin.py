@@ -369,7 +369,7 @@ def mod_setting():
 
 
 def mongo_gen_csv():
-    data = request.values
+    data = request.json
     table_name = data.get("table_name")
     query = data.get("query")
     fields = data.get("fields")
