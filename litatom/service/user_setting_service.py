@@ -25,17 +25,7 @@ from ..service import GlobalizationService
 redis_client = RedisClient()['lit']
 
 class UserSettingService(object):
-
-    @classmethod
-    def change_setting(cls, data):
-        redis_client.set(REDIS_SETTINGS_KEYS, json.dumps(data))
-        return None, True
-
-    @classmethod
-    def get_settings(cls, user_id=None):
-        if not user_id and request.uuid:
-            Uuids.create(request.uuid)
-        res = {
+    DEFAULT_SETTING = {
             'need_login': True,
             'max_voice_time': ONE_HOUR,
             'pop_good_rate': True,
@@ -58,9 +48,46 @@ class UserSettingService(object):
                     "times": 5,
                     "time_interval": 60,
                     "spam_interval": 60 * 2
+                },
+                'modules_open': {
+                    "soul_match": 1,
+                    "video_match": 1,
+                    "voice_match": 1
                 }
             }
         }
+
+
+    @classmethod
+    def change_setting(cls, data):
+        setting_string = json.dumps(data)
+        if not cls._valid_cache_str(setting_string):
+            return 'Not valud setting', False
+        redis_client.set(REDIS_SETTINGS_KEYS, setting_string)
+        return None, True
+
+    @classmethod
+    def _valid_cache_str(cls, cached_setting_str):
+        res = cls.DEFAULT_SETTING
+        if not cached_setting_str:
+            return False
+        else:
+            cached_setting = json.loads(cached_setting_str)
+            if len(cached_setting.keys()) < len(res.keys()):
+                return False
+            else:
+                for key in cached_setting:
+                    if isinstance(cached_setting[key], dict):
+                        if len(cached_setting[key].keys()) < len(res[key].keys()):
+                            return False
+        return True
+
+
+    @classmethod
+    def get_settings(cls, user_id=None):
+        if not user_id and request.uuid:
+            Uuids.create(request.uuid)
+        res = cls.DEFAULT_SETTING
         # need_pop = False
         # if user_id:
         #     userSetting = UserSetting.get_by_user_id(user_id)
@@ -73,39 +100,14 @@ class UserSettingService(object):
         #             userSetting.save()
         # res['pop_good_rate'] = need_pop
         region = GlobalizationService.get_region()
-        modules_open = {
-            "soul_match": 1,
-            "video_match": 1,
-            "voice_match": 1
-        }
-
-        res['modules_open'] = modules_open
         if setting.IS_DEV:
-            should_change = False
             cached_setting_str = redis_client.get(REDIS_SETTINGS_KEYS)
-            if not cached_setting_str:
-                should_change = True
-            else:
-                cached_setting = json.loads(cached_setting_str)
-                if len(cached_setting.keys()) < len(res.keys()):
-                    should_change = True
-
-                    print should_change, '555555a'
-                else:
-                    for key in cached_setting:
-                        if isinstance(cached_setting[key], dict):
-                            if len(cached_setting[key].keys()) < len(res[key].keys()):
-                                should_change = True
-
-                                print should_change, '555444'
-                                break
-            if should_change:
-                print should_change, '555555'
+            if not cls._valid_cache_str(cached_setting_str):
                 redis_client.delete(REDIS_SETTINGS_KEYS)
                 redis_client.set(REDIS_SETTINGS_KEYS, json.dumps(res))
             else:
-                res = cached_setting
+                res = json.loads(cached_setting_str)
+
         if region not in [GlobalizationService.REGION_TH]:
-            # if request.version != '2.5.3':
                res['modules_open']['video_match'] = 0
         return res
