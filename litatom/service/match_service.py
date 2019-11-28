@@ -202,6 +202,8 @@ class MatchService(object):
     def _is_out_wait_time(cls, fake_id, gender):
         score = redis_client.zscore(cls.MATCH_KEY_BY_REGION_GENDER(gender), fake_id)
         time_now = int(time.time())
+        if not score:
+            return True
         wait = 7
         if time_now - score > wait:
             return True
