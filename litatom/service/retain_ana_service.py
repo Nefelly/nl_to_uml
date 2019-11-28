@@ -59,6 +59,10 @@ class RetainAnaService(object):
 
     @classmethod
     def load_dicts(cls):
+        def get_action(action, remark):
+            if len(remark) > 23:
+                return action
+            return '%s_%s' % (action, remark)
         time_str, low_time, high_time = cls._get_time_str('UserSetting', 'create_time', -2)
         action_time_str, action_low_time, action_high_time = cls._get_time_str('UserAction', 'create_time', -2)
         action_ytime_str, action_ylow_time, action_yhigh_time = cls._get_time_str('UserAction', 'create_time', -1)
@@ -67,10 +71,10 @@ class RetainAnaService(object):
             user_id = obj.user_id
             cls.USER_LOC[user_id] = loc
             day2_actions = UserAction.objects(user_id=user_id, create_time__gte=action_low_time, create_time__lte=action_high_time)
-            cls.DAY2BEFORE_ACT[user_id] = ['%s' % (action.action) for action in day2_actions] if day2_actions else ['None']
+            cls.DAY2BEFORE_ACT[user_id] = [get_action(action.action, action.remark) for action in day2_actions] if day2_actions else ['None']
             yestoday_acts = UserAction.objects(user_id=user_id, create_time__gte=action_ylow_time, create_time__lte=action_yhigh_time)
             if yestoday_acts:
-                cls.YESTODAY_ACT[user_id] = ['%s' % (action.action) for action in yestoday_acts]
+                cls.YESTODAY_ACT[user_id] = [get_action(action.action, action.remark) for action in yestoday_acts]
 
     @classmethod
     def get_res(cls, dst_addr):
@@ -126,5 +130,5 @@ class RetainAnaService(object):
             user_id = losing_users[i]
             lst = [user_id] + cls.DAY2BEFORE_ACT.get(user_id, [])[-254:]
             res.append(lst)
-        print res
+        # print res
         write_data_to_xls(dst_addr, tb_head, res)
