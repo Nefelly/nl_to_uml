@@ -66,10 +66,10 @@ class RetainAnaService(object):
             loc = obj.lang
             user_id = obj.user_id
             cls.USER_LOC[user_id] = loc
-            cls.DAY2BEFORE_ACT[user_id] = ['%s_%s' % (action.action, action.remark) for action in UserAction.objects(user_id=user_id, create_time__gte=action_low_time, create_time__lte=action_high_time)]
+            cls.DAY2BEFORE_ACT[user_id] = ['%s' % (action.action) for action in UserAction.objects(user_id=user_id, create_time__gte=action_low_time, create_time__lte=action_high_time)]
             yestoday_acts = UserAction.objects(user_id=user_id, create_time__gte=action_ylow_time, create_time__lte=action_yhigh_time)
             if yestoday_acts:
-                cls.YESTODAY_ACT[user_id] = ['%s_%s' % (action.action, action.remark) for action in yestoday_acts]
+                cls.YESTODAY_ACT[user_id] = ['%s' % (action.action) for action in yestoday_acts]
 
     @classmethod
     def get_res(cls, dst_addr):
