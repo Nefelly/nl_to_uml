@@ -31,6 +31,11 @@ class UserSettingService(object):
             'pop_good_rate': True,
             'prior_voice': TYPE_VOICE_TENCENT,   # agora 声网，
             'phone_login_without_code': True,
+            'modules_open': {
+                "soul_match": 1,
+                "video_match": 1,
+                "voice_match": 1
+            },
             'ad_rule': {
                 'interval': 5,
                 'prior_platform': 'facebook', # facebook
@@ -49,11 +54,6 @@ class UserSettingService(object):
                     "time_interval": 60,
                     "spam_interval": 60 * 2
                 },
-                'modules_open': {
-                    "soul_match": 1,
-                    "video_match": 1,
-                    "voice_match": 1
-                }
             }
         }
 
