@@ -124,6 +124,7 @@ class RetainAnaService(object):
         # print res
         for i in range(min(100, len(losing_users))):
             user_id = losing_users[i]
-            lst = [user_id] + cls.DAY2BEFORE_ACT.get(user_id, [])[-250:]
+            lst = [user_id] + cls.DAY2BEFORE_ACT.get(user_id, [])[-254:]
+            res.append(lst)
         print res
         write_data_to_xls(dst_addr, tb_head, res)
