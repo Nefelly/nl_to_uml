@@ -119,4 +119,5 @@ class RetainAnaService(object):
         res += get_write_line('total', totals)
         res += get_write_line('retain', retains)
         res += get_write_line('losing', losings)
+        print res
         write_data_to_xls(dst_addr, tb_head, res)
