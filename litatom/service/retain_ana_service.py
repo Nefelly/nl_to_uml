@@ -98,6 +98,7 @@ class RetainAnaService(object):
                 last_act_num[el] = round(last_act_num[el]/total_last, decimal_num)
             return total_acts, act_num, total_last, last_act_num
 
+        cls.load_dicts()
         losing_users = [user_id for user_id in cls.DAY2BEFORE_ACT if user_id not in cls.YESTODAY_ACT]
         retain_users = [user_id for user_id in cls.DAY2BEFORE_ACT if user_id in cls.YESTODAY_ACT]
         totals = get_res_by_user_ids(cls.DAY2BEFORE_ACT.keys())
