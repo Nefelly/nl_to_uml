@@ -115,7 +115,7 @@ class RetainAnaService(object):
                 last.append(last_act_num.get(el, 0))
             return [total, last]
         print actions
-        tb_head = ['name', u'总数', 'actions']
+        tb_head = ['name', u'总数'] + actions
         res = []
         res += get_write_line('total', totals)
         res += get_write_line('retain', retains)
