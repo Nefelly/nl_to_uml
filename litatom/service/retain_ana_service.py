@@ -111,6 +111,7 @@ class RetainAnaService(object):
         retains = get_res_by_user_ids(retain_users)
         losings = get_res_by_user_ids(losing_users)
         actions = totals[1].keys()
+
         def get_write_line(name, lsts):
             total_acts, act_num, total_last, last_act_num = lsts
             total = [name + '_total', total_acts]
