@@ -121,8 +121,9 @@ class RetainAnaService(object):
         res += get_write_line('total', totals)
         res += get_write_line('retain', retains)
         res += get_write_line('losing', losings)
-        print res
+        # print res
         for i in range(min(100, len(losing_users))):
             user_id = losing_users[i]
             res.append([user_id] + cls.DAY2BEFORE_ACT.get(user_id, []))
+        print res
         write_data_to_xls(dst_addr, tb_head, res)
