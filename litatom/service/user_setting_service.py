@@ -78,6 +78,7 @@ class UserSettingService(object):
             else:
                 for key in cached_setting:
                     if isinstance(cached_setting[key], dict):
+                        print key, len(cached_setting[key].keys())
                         if len(cached_setting[key].keys()) < len(res[key].keys()):
                             return False
         return True
@@ -107,7 +108,6 @@ class UserSettingService(object):
                 redis_client.set(REDIS_SETTINGS_KEYS, json.dumps(res))
             else:
                 res = json.loads(cached_setting_str)
-
         if region not in [GlobalizationService.REGION_TH]:
                res['modules_open']['video_match'] = 0
         return res
