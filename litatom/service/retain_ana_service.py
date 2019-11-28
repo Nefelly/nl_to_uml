@@ -60,6 +60,7 @@ class RetainAnaService(object):
     @classmethod
     def load_dicts(cls):
         def get_action(action, remark):
+            return action
             if len(remark) > 23:
                 return action
             return '%s_%s' % (action, remark)
