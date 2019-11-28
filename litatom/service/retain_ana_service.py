@@ -62,7 +62,7 @@ class RetainAnaService(object):
         time_str, low_time, high_time = cls._get_time_str('UserSetting', 'create_time', -2)
         action_time_str, action_low_time, action_high_time = cls._get_time_str('UserAction', 'create_time', -2)
         action_ytime_str, action_ylow_time, action_yhigh_time = cls._get_time_str('UserAction', 'create_time', -1)
-        for obj in UserSetting.objects(create_time__gte=low_time, create_time__lte=high_time).limit(300):
+        for obj in UserSetting.objects(create_time__gte=low_time, create_time__lte=high_time).limit(30):
             loc = obj.lang
             user_id = obj.user_id
             cls.USER_LOC[user_id] = loc
