@@ -199,6 +199,15 @@ class MatchService(object):
         }
 
     @classmethod
+    def _is_out_wait_time(cls, fake_id, gender):
+        score = redis_client.zscore(cls.MATCH_KEY_BY_REGION_GENDER(gender), fake_id)
+        time_now = int(time.time())
+        wait = 7
+        if time_now - score > wait:
+            return True
+        return False
+
+    @classmethod
     def _match(cls, fake_id, gender):
         '''
         return matched fake_id, if this match info has been set up
@@ -259,9 +268,17 @@ class MatchService(object):
                         near_new.append(el_fake_id)
                     else:
                         near_old.append(el_fake_id)
-
-            for fake_id2 in near_new + near_old + far_new + far_old:
+            user1_out_wait = cls._is_out_wait_time(fake_id, gender)
+            to_scan = near_new + near_old
+            near_num = len(to_scan)
+            if user1_out_wait:
+                to_scan = to_scan + far_new + far_old
+            for i in range(len(to_scan)):
                 # fake_id2 = random.choice(other_fakeids)
+                fake_id2 = to_scan[i]
+                if i >= near_num:
+                    if not cls._is_out_wait_time(fake_id2, other_gender):
+                        continue
                 user_id2 = cls._uid_by_fake_id(fake_id2)
                 # user2_age = UserService.uid_age(user_id2)
                 # if cnt < try_tms - 1 and abs(user_age - user2_age) > 3:

@@ -5,6 +5,7 @@ exec 2>&1
 
 #source /data/lit/bin/activate&&pip install langid
 #source /data/lit/bin/activate&&pip install pillow
+source /data/lit/bin/activate&&pip install tls-sig-api-v2
 #cd /data/litatom
 
 python <<EOF

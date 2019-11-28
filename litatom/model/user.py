@@ -12,6 +12,7 @@ import urlparse
 import re
 import json
 import bson
+import TLSSigAPIv2
 from hendrix.conf import setting
 from hendrix.util import Enum
 from mongoengine import (
@@ -153,6 +154,15 @@ class SocialAccountInfo(EmbeddedDocument):
         obj = cls(other_id=other_id, extra_data=json.dumps(payload))
         return obj
 
+def base64_decode_url(base64_data):
+    import base64
+    """ base url decode 实现"""
+    base64_data_str = bytes.decode(base64_data)
+    base64_data_str = base64_data_str.replace('*', '+')
+    base64_data_str = base64_data_str.replace('-', '/')
+    base64_data_str = base64_data_str.replace('_', '=')
+    raw_data = base64.b64decode(base64_data_str)
+    return raw_data
 
 class User(Document, UserSessionMixin):
     meta = {
@@ -163,6 +173,12 @@ class User(Document, UserSessionMixin):
     FACEBOOK_TYPE = 'facebook'
     TYPES = [GOOGLE_TYPE, FACEBOOK_TYPE]
     JUDGES = ['nasty', 'boring', 'like']
+
+    SDKAPPID = '1400288794'
+    KEY = '9570e67ffeecd5432059ce871c267507a28418f4ab91cea5f4f89d0e6ecb137f'
+    TENCENT_SIG_EXPIRE = 18000 * 86400
+    # tencent_user_sig = StringField(default='')
+    # user_sig_expire_at = IntField(default=0)
 
     nickname = StringField()
     avatar = StringField()
@@ -194,6 +210,19 @@ class User(Document, UserSessionMixin):
             self.save()
             return False
         return True
+
+    @property
+    def user_sig(self):
+        # time_now = int(time.time())
+        # if self.user_sig_expire_at > time_now:
+        #     if self.tencent_user_sig:
+        #         return self.tencent_user_sig
+        api = TLSSigAPIv2.TLSSigAPIv2(self.SDKAPPID, self.KEY)
+        sig = api.gen_sig(self.huanxin.user_id, self.TENCENT_SIG_EXPIRE)
+        # self.tencent_user_sig = sig
+        # self.user_sig_expire_at = time_now + self.TENCENT_SIG_EXPIRE
+        # self.save()
+        return sig
 
     @classmethod
     def get_user_id_by_session(cls, sid):
@@ -431,13 +460,15 @@ class User(Document, UserSessionMixin):
 
         }
 
+
     def get_login_info(self):
         return {
             'session': self.session_id,
             'finished_info': self.finished_info,
             'is_first_login': not self.logined,
             'create_time': date_to_int_time(self.create_time),
-            'huanxin': HuanxinAccount.get_info(self.huanxin)
+            'huanxin': HuanxinAccount.get_info(self.huanxin),
+            'user_sig': self.user_sig
         }
 
 
@@ -473,11 +504,11 @@ class UserSetting(Document):
         'strict': False,
         'alias': 'db_alias'
     }
-
     user_id = StringField(required=True, unique=True)
     lang = StringField(required=True, default='')
     uuid = StringField()
     loc_change_times = IntField(default=0)
+
     good_rate_times = IntField(default=0)
     online_limit = EmbeddedDocumentField(OnlineLimit)
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
