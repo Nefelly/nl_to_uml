@@ -81,7 +81,7 @@ class RetainAnaService(object):
             for uid in user_ids:
                 acts = cls.DAY2BEFORE_ACT[uid]
                 total_acts += len(acts)
-                last_act = acts[-1] if acts else 'None'
+                last_act = acts[-1]
                 if last_act not in last_act_num:
                     last_act_num[last_act] = 1
                 else:
