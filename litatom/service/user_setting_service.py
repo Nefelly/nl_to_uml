@@ -107,6 +107,7 @@ class UserSettingService(object):
                 redis_client.set(REDIS_SETTINGS_KEYS, json.dumps(res))
             else:
                 res = json.loads(cached_setting_str)
+        print region, "!" * 100, region not in [GlobalizationService.REGION_TH]
         if region not in [GlobalizationService.REGION_TH]:
                res['modules_open']['video_match'] = 0
         return res
