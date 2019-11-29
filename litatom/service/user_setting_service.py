@@ -1,6 +1,7 @@
 # coding: utf-8
 import time
 import json
+import copy
 from flask import (
     request
 )
@@ -86,7 +87,7 @@ class UserSettingService(object):
     def get_settings(cls, user_id=None):
         if not user_id and request.uuid:
             Uuids.create(request.uuid)
-        res = cls.DEFAULT_SETTING
+        res = copy.copy(cls.DEFAULT_SETTING)
         # need_pop = False
         # if user_id:
         #     userSetting = UserSetting.get_by_user_id(user_id)
