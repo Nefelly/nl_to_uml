@@ -107,5 +107,5 @@ class UserSettingService(object):
             else:
                 res = json.loads(cached_setting_str)
         if region not in [GlobalizationService.REGION_TH]:
-               res['modules_open']['video_match'] = 0
+               res['modules_open']['video_match'] = 1
         return res
