@@ -27,3 +27,24 @@ def stat_distribute():
     uccc = [counts[el] for el in counts]
     uccc_counts = Counter(uccc)
     print uccc_counts
+
+def huanxin():
+    a = UserAction.objects(remark='UserNotLogin',
+                           create_time__gte=date_to_int_time(datetime.datetime(2019, 11, 24, 17)),
+                           create_time__lte=date_to_int_time(datetime.datetime(2019, 11, 24, 19)))
+
+    def f(e):
+        return [User.get_by_id(e.user_id).huanxin.user_id, e.create_date]
+
+    r = map(f, a)
+
+    m = {}
+    us = [el[0] for el in r]
+    res = HuanxinService.is_user_online(us)
+    tt = []
+    for el in r:
+        m[el[0]] = el[1]
+
+    for e in res:
+        if res[e]:
+            tt.append([e, m[e]])
