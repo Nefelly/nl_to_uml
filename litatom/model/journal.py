@@ -50,6 +50,7 @@ class StatItems(Document):
             "id": str(self.id),
             "name": self.name,
             "table_name": self.table_name,
+            "stat_type": self.stat_type,
             "create_time": str(self.create_time),
             "judge_field": self.judge_field,
             "expression": self.expression
