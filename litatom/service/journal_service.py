@@ -30,6 +30,7 @@ class JournalService(object):
     '''
     '''
     IS_TESTING = False
+    DATE_DIS = datetime.timedelta(hours=0)
 
     USER_LOC = {}
     LOC_STATED = ['TH', 'VN']
@@ -127,7 +128,7 @@ class JournalService(object):
         else:
             zeroToday = get_zero_today()
         # zeroToday = datetime.datetime(2019, 11, 16)
-        zeroYestoday = next_date(zeroToday, -1)
+        zeroYestoday = next_date(zeroToday, -1) + cls.DATE_DIS
         is_int = isinstance(eval(table_name + '.' + judge_field), IntField)
         if not is_int:
             time_str = "%s__gte=%r, %s__lte=%r" % (judge_field, zeroYestoday, judge_field, zeroToday)
@@ -238,9 +239,10 @@ class JournalService(object):
     def out_port_result(cls, dst_addr):
         cls.load_user_loc()
         res_lst = []
+        cls.DATE_DIS = datetime.timedelta(hours=0)
         cnt = 0
         daily_m = cls.daily_active(StatItems.objects(name=u'抽样日活').first())
-        for item in StatItems.objects():
+        for item in StatItems.get_items_by_type(StatItems.BUSINESS_TYPE):
             try:
                 m = cls.cal_by_id(str(item.id))
                 name, num = m['name'], m['num']
@@ -264,5 +266,34 @@ class JournalService(object):
         write_data_to_xls(dst_addr, [u'名字', u'数量'] + cls.LOC_STATED + ['total avr'] + [el + 'avr' for el in cls.LOC_STATED], res_lst)
 
     @classmethod
-    def ad_res(cls):
+    def ad_res(cls, dst_addr):
+        # cls.load_user_loc()
+        res_lst = []
+        cnt = 0
+        daily_m = cls.daily_active(StatItems.objects(name=u'抽样日活').first())
+        cls.DATE_DIS = datetime.timedelta(hours=-16)
+        for item in StatItems.get_items_by_type(StatItems.AD_TYPE):
+            try:
+                m = cls.cal_by_id(str(item.id))
+                name, num = m['name'], m['num']
+                region_cnt = [m[loc] for loc in cls.LOC_STATED]
+                avr_cnt = []
+                for loc in cls.LOC_STATED:
+                    if daily_m[loc]:
+                        avr_cnt.append(m.get(loc, 0) / daily_m[loc])
+                    else:
+                        avr_cnt.append(0)
+                res_lst.append([name, num] + region_cnt + [num / daily_m['num']] + avr_cnt)
+                cnt += 1
+            except Exception, e:
+                print e
+                continue
+            # if cnt >= 3:
+            #     break
+        # dst_addr = '/data/statres/%s.xlsx' % now_date_key()
+        # ensure_path(dst_addr)
+        # print res_lst
+        write_data_to_xls(dst_addr,
+                          [u'名字', u'数量'] + cls.LOC_STATED + ['total avr'] + [el + 'avr' for el in cls.LOC_STATED],
+                          res_lst)
         return

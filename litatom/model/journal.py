@@ -19,10 +19,13 @@ class StatItems(Document):
     '''
     统计表设计
     '''
+    AD_TYPE = 'ad'
+    BUSINESS_TYPE = 'business'
     name = StringField(required=True)
     table_name = StringField(required=True)
     judge_field = StringField()
     expression = StringField()
+    stat_type = StringField(required=True, default=BUSINESS_TYPE)
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
 
     @classmethod
@@ -33,6 +36,10 @@ class StatItems(Document):
         if expression:
             obj.expression = expression
         obj.save()
+
+    @classmethod
+    def get_items_by_type(cls, item_type):
+        return cls.objects(stat_type=item_type)
 
     @classmethod
     def get_by_id(cls, item_id):
