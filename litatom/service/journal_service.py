@@ -46,9 +46,9 @@ class JournalService(object):
             cls.USER_LOC[obj.user_id] = obj.lang
 
     @classmethod
-    def get_journal_items(cls):
+    def get_journal_items(cls, stat_type):
         res = []
-        for el in StatItems.objects():
+        for el in StatItems.get_items_by_type(stat_type):
             res.append(el.to_json())
         return res, True
 
@@ -76,10 +76,10 @@ class JournalService(object):
         return res
 
     @classmethod
-    def add_stat_item(cls, name, table_name, judge_field, expression):
+    def add_stat_item(cls, name, table_name, stat_type, judge_field, expression):
         if not judge_field:
             judge_field = ''
-        StatItems.create(name, table_name, judge_field, expression)
+        StatItems.create(name, table_name, stat_type, judge_field, expression)
         return None, True
 
     @classmethod

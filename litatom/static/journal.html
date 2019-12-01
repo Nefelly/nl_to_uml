@@ -48,10 +48,10 @@
     }
     var Request = new Object();
     Request = GetRequest();
-    var item_type = Request['item_type']
-    console.log(Request['item_type'])
-    if(!Loc){
-        Loc='business'
+    var stat_type = Request['stat_type']
+    console.log(Request['stat_type'])
+    if(!stat_type){
+        stat_type='business'
     }
     const BASE_URL = 'http://' + document.domain + '/api/sns/v1/lit/';
 var app7 = new Vue({
@@ -66,7 +66,7 @@ created() {this.submitForm();},
 
 methods: {
       submitForm: function() {
-        this.$http.get(BASE_URL + 'admin/stat_items?item_type=' + item_type).then(function(result){
+        this.$http.get(BASE_URL + 'admin/stat_items?stat_type=' + stat_type).then(function(result){
         var data = result.data.data;
 	    this.items1 = data;
 	      })
@@ -77,7 +77,7 @@ methods: {
         table_name = document.getElementById('table_area').value;
         judge_field = document.getElementById('judge_field_area').value;
         expression = document.getElementById('expression_area').value;
-        this.$http.post(BASE_URL + 'admin/add_stat_item', {"name":stat_name, "table_name":table_name, "judge_field":judge_field, "expression":expression, "item_type": item_type}).then(function(result){
+        this.$http.post(BASE_URL + 'admin/add_stat_item', {"name":stat_name, "table_name":table_name, "judge_field":judge_field, "expression":expression, "stat_type": stat_type}).then(function(result){
             if (result.data.result === 0){this.submitForm();}
             else{alert('failed');}
         })

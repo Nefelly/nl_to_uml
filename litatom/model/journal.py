@@ -29,8 +29,8 @@ class StatItems(Document):
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
 
     @classmethod
-    def create(cls, name, table_name, judge_field='', expression=''):
-        obj = cls(name=name, table_name=table_name)
+    def create(cls, name, table_name, stat_type, judge_field='', expression=''):
+        obj = cls(name=name, table_name=table_name, stat_type=stat_type)
         if judge_field:
             obj.judge_field =judge_field
         if expression:

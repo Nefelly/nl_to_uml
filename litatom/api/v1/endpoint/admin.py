@@ -305,6 +305,7 @@ def batch_insert():
 
 
 def stat_items():
+    stat_type = request.values.get("stat_type")
     data, status = JournalService.get_journal_items()
     if status:
         return success(data)
@@ -317,7 +318,8 @@ def add_stat_item():
     table_name = data.get("table_name").strip()
     judge_field = data.get("judge_field", "").strip()
     expression = data.get("expression").strip()
-    msg, status = JournalService.add_stat_item(name, table_name, judge_field, expression)
+    stat_type = data.get("stat_type", "business")
+    msg, status = JournalService.add_stat_item(name, table_name, stat_type, judge_field, expression)
     if status:
         return success()
     return fail(msg)
