@@ -34,6 +34,25 @@
 <!-- <button v-if="previous_start >= 0" name="previous_page" @click="previous_page()">previous page</button> -->
 </div>
 <script>
+     function GetRequest() {
+        var url = location.search; //获取url中"?"符后的字串
+        var theRequest = new Object();
+        if (url.indexOf("?") != -1) {
+            var str = url.substr(1);
+            strs = str.split("&");
+            for(var i = 0; i < strs.length; i ++) {
+                theRequest[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
+            }
+        }
+        return theRequest;
+    }
+    var Request = new Object();
+    Request = GetRequest();
+    var item_type = Request['item_type']
+    console.log(Request['item_type'])
+    if(!Loc){
+        Loc='business'
+    }
     const BASE_URL = 'http://' + document.domain + '/api/sns/v1/lit/';
 var app7 = new Vue({
   el: '#app-7',
@@ -47,7 +66,7 @@ created() {this.submitForm();},
 
 methods: {
       submitForm: function() {
-        this.$http.get(BASE_URL + 'admin/stat_items').then(function(result){
+        this.$http.get(BASE_URL + 'admin/stat_items?item_type=' + item_type).then(function(result){
         var data = result.data.data;
 	    this.items1 = data;
 	      })
@@ -58,7 +77,7 @@ methods: {
         table_name = document.getElementById('table_area').value;
         judge_field = document.getElementById('judge_field_area').value;
         expression = document.getElementById('expression_area').value;
-        this.$http.post(BASE_URL + 'admin/add_stat_item', {"name":stat_name, "table_name":table_name, "judge_field":judge_field, "expression":expression}).then(function(result){
+        this.$http.post(BASE_URL + 'admin/add_stat_item', {"name":stat_name, "table_name":table_name, "judge_field":judge_field, "expression":expression, "item_type": item_type}).then(function(result){
             if (result.data.result === 0){this.submitForm();}
             else{alert('failed');}
         })
