@@ -111,7 +111,7 @@ class GlobalizationService(object):
         'IN': REGION_IN,
         'ID': REGION_ID,
         'th': REGION_TH,
-        'CN': REGION_TH,
+        'CN': REGION_EN,
         #'INN': REGION_IN_NOCORE
         'INN': REGION_IN,
         'TEST': REGION_EN,
