@@ -169,7 +169,7 @@ class HuanxinService(object):
                         if _[k] == u'success':
                             res[k] = True
                         else:
-                            logger.error('lst:%r, m:%r, k:%r', lst, m, k)
+                            logger.error('lst:%r, k:%r', lst, k)
                     break
                 except Exception, e:
                     logger.error(traceback.format_exc())
