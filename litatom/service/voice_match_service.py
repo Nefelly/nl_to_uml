@@ -91,7 +91,7 @@ class VoiceMatchService(MatchService):
         room_id, status = VoiceChatService.get_roomid(matched_id, cls._fakeid_by_uid(user_id))
         res.update(
             {
-                'voice_type': voice_type,
+                'voice_type': TYPE_VOICE_TENCENT,
                 'room_id': room_id
             }
         )
