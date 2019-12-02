@@ -19,12 +19,10 @@ from hendrix.conf import setting
 
 
 class ConsumeMq(MQConsumer):
-    insert_pack = []
-    num = 0
-    judge_num = 50 if not setting.IS_DEV else 1
     def callback(self, msg):
         payload = msg.get('payload', {})
         try:
+            print payload
             AsyncCmdService.execute(payload)
         except Exception, e:
             import traceback
