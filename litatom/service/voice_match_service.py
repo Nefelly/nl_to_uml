@@ -95,3 +95,12 @@ class VoiceMatchService(MatchService):
             }
         )
         return res, True
+
+    @classmethod
+    def _destroy_fake_id(cls, fake_id, need_remove_from_pool=True):
+        super(VoiceMatchService, cls).anoy_match(fake_id, need_remove_from_pool)
+        if not fake_id:
+            return
+        user_id = redis_client.get(cls.TYPE_FAKE_ID_UID.format(fake_id=fake_id))
+        if user_id:
+            redis_client.delete(REDIS_VOICE_SDK_TYPE.format(user_id=user_id))
