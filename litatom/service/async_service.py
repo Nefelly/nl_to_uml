@@ -36,5 +36,6 @@ class AsyncCmdService(object):
     def execute(cls, payload):
         cmd_type = payload.get('cmd_type')
         args = payload.get('args')
+        args = cPickle.loads(args)
         if cmd_type == cls.BATCH_SEND:
             UserService.msg_to_region_users(*args)
