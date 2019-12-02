@@ -10,9 +10,6 @@ import cPickle
 from ..const import (
     COMMANDS_EXCHANGE
 )
-from ..service import (
-    UserService
-)
 from ..redis import RedisClient
 
 logger = logging.getLogger(__name__)
@@ -23,6 +20,7 @@ class AsyncCmdService(object):
     '''
     '''
     BATCH_SEND = 'batch_send'
+    HUANXIN_SEND = 'huanxin_send'
     @classmethod
     def push_msg(cls, cmd_type, args):
         payload = {
@@ -39,4 +37,8 @@ class AsyncCmdService(object):
         args = cPickle.loads(str(args))
         print cmd_type, args
         if cmd_type == cls.BATCH_SEND:
+            from ..service import UserService
             UserService.msg_to_region_users(*args)
+        elif cmd_type == cls.HUANXIN_SEND:
+            from ..service import HuanxinService
+            HuanxinService.batch_send_msgs(*args)

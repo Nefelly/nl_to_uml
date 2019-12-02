@@ -1,4 +1,5 @@
 # flake8: noqa
+from .async_service import AsyncCmdService
 from .token_bucket_service import TokenBucketService
 from .ip2address_service import Ip2AddressService
 from .youtube_service import YoutubeService
@@ -43,7 +44,6 @@ from .track_action_service import TrackActionService
 from .feedback_service import FeedbackService
 from .admin_service import AdminService
 from .palm_service import PalmService
-from .async_service import AsyncCmdService
 from .maintain_service import MaintainService
 from .chat_record_service import ChatRecordService
 # from .mysql_sync_service import MysqlSyncService

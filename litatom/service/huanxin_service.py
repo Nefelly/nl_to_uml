@@ -147,8 +147,14 @@ class HuanxinService(object):
         }
         res = {}
         query_lsts = []
-        for i in range((len(user_names) + query_limits - 1)/query_limits):
-            query_lsts.append(user_names[i * query_limits: (i + 1) * query_limits])
+        if len(user_names) > query_limits:
+            from ..service import AsyncCmdService
+            for i in range((len(user_names) + query_limits - 1)/query_limits):
+                query_lsts.append(user_names[i * query_limits: (i + 1) * query_limits])
+                AsyncCmdService.push_msg(AsyncCmdService.HUANXIN_SEND, [msg, user_names])
+            return {}
+        else:
+            query_lsts = [user_names]
         for lst in query_lsts:
             data = {
                "target_type" : "users", # users 给用户发消息。chatgroups: 给群发消息，chatrooms: 给聊天室发消息
