@@ -72,6 +72,7 @@ class VoiceMatchService(MatchService):
         if not status:
             return res, status
         voice_type = request.args.get('voice_type', None)
+        print voice_type
         if voice_type:
             redis_client.set(REDIS_VOICE_SDK_TYPE.format(user_id=user_id), voice_type, ex=cls.TOTAL_WAIT)
         return res, status
@@ -94,6 +95,7 @@ class VoiceMatchService(MatchService):
                 'room_id': room_id
             }
         )
+        print res
         return res, True
 
     @classmethod
