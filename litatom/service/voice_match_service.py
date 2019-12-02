@@ -95,7 +95,6 @@ class VoiceMatchService(MatchService):
                 'room_id': room_id
             }
         )
-        print res
         return res, True
 
     @classmethod
