@@ -325,6 +325,7 @@ class UserService(object):
             return False
         huanxin_ids = cls._huanxin_ids_by_region(region)
         if number and number > 0:
+            number = min(len(huanxin_ids), number)
             huanxin_ids = random.sample(huanxin_ids, number)
         #huanxin_ids = [u'love123879348711830']   # joey
         res = HuanxinService.batch_send_msgs(msg, huanxin_ids, officail_user.huanxin.user_id)

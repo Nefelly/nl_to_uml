@@ -38,8 +38,8 @@ class StatItems(Document):
         obj.save()
 
     @classmethod
-    def get_items_by_type(cls, item_type):
-        return cls.objects(stat_type=item_type)
+    def get_items_by_type(cls, stat_type):
+        return cls.objects(stat_type=stat_type)
 
     @classmethod
     def get_by_id(cls, item_id):
@@ -50,6 +50,7 @@ class StatItems(Document):
             "id": str(self.id),
             "name": self.name,
             "table_name": self.table_name,
+            "stat_type": self.stat_type,
             "create_time": str(self.create_time),
             "judge_field": self.judge_field,
             "expression": self.expression

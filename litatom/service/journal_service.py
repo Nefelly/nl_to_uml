@@ -101,6 +101,8 @@ class JournalService(object):
     def _cal_by_others(cls, expression, need_loc=True):
         def cal_exp(exp):
             try:
+                if '/' in exp:
+                    return round(eval(exp), 4)
                 return eval(exp)
             except:
                 return 0
@@ -250,7 +252,7 @@ class JournalService(object):
                 avr_cnt = []
                 for loc in cls.LOC_STATED:
                     if daily_m[loc]:
-                        avr_cnt.append(m.get(loc, 0)/daily_m[loc])
+                        avr_cnt.append(round(m.get(loc, 0)/daily_m[loc]), 4)
                     else:
                         avr_cnt.append(0)
                 res_lst.append([name, num] + region_cnt + [num/daily_m['num']] + avr_cnt)
@@ -280,7 +282,7 @@ class JournalService(object):
                 avr_cnt = []
                 for loc in cls.LOC_STATED:
                     if daily_m[loc]:
-                        avr_cnt.append(m.get(loc, 0) / daily_m[loc])
+                        avr_cnt.append(round(m.get(loc, 0) / daily_m[loc]), 4)
                     else:
                         avr_cnt.append(0)
                 res_lst.append([name, num] + region_cnt + [num / daily_m['num']] + avr_cnt)

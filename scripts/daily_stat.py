@@ -18,6 +18,9 @@ def run():
     if not os.path.exists(dst_addr) or 1:
         JournalService.out_port_result(dst_addr)
     AlertService.send_file(["litatomwang@gmail.com", "w326571@126.com", '382365209@qq.com'], dst_addr)
+    ad_addr = '/data/statres/%sad.xlsx' % (datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
+    JournalService.ad_res(ad_addr)
+    AlertService.send_file(["litatomwang@gmail.com", "w326571@126.com", '382365209@qq.com'], ad_addr)
 
 
 if __name__ == "__main__":

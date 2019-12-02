@@ -3,16 +3,15 @@
 <script src="https://cdn.bootcss.com/vue-resource/1.5.1/vue-resource.js"></script>
 
     <div id="app-7">
+        <div><button name='send_message' @click='send_message()'>send_message</button></div>
     <div>region:<select id="region" name="region" size="10" multiple="multiple">
         {% for region in regions %}
         <option value="{{region}}">{{region}} </option>
         {% endfor %}
     </select>
         </div>
-
-    <div>message:<textarea id="message_area" name="message"></textarea></div>
     <div>数量:<input id="num_area" name="num"></div>
-    <div><button name='send_message' @click='send_message()'>send_message</button></div>>
+    <div>message:<textarea id="message_area" name="message" style="width:1000px; height:300px;"></textarea></div>
     </div>
 <script>
   const BASE_URL = 'http://' + document.domain + '/api/sns/v1/lit/';
