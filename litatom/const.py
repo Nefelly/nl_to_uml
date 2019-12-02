@@ -10,6 +10,7 @@ REMOVE_EXCHANGE = 'remove_feed'
 ADD_EXCHANGE = 'add_feed'
 
 USER_ACTION_EXCHANGE = 'user_action_exchange'
+COMMANDS_EXCHANGE = 'commands_exchange'
 #
 # PIC_UPLOAD_EXCHANGE = 'feed_check'
 
