@@ -101,6 +101,8 @@ class JournalService(object):
     def _cal_by_others(cls, expression, need_loc=True):
         def cal_exp(exp):
             try:
+                if '/' in exp:
+                    return round(eval(exp), 4)
                 return eval(exp)
             except:
                 return 0
