@@ -93,16 +93,16 @@ class MQProducer(object):
                     body=message,
                     properties=self.properties
                 )
-        # try:
+        try:
             send()
-        # except Exception, e:
-        #     logger.info('retry publish rabbitmq message caused by: %r', e)
-        #     try:
-        #         send()
-        #     except Exception:
-        #         logger.exception('Publish rabbitmq message faild')
-        #         if not self.ignore_err:
-        #             raise
+        except Exception, e:
+            logger.info('retry publish rabbitmq message caused by: %r', e)
+            try:
+                send()
+            except Exception:
+                logger.exception('Publish rabbitmq message faild')
+                if not self.ignore_err:
+                    raise
 
 
 class MQConsumer(object):
