@@ -151,6 +151,7 @@ class HuanxinService(object):
             from ..service import AsyncCmdService
             for i in range((len(user_names) + query_limits - 1)/query_limits):
                 query_lsts.append(user_names[i * query_limits: (i + 1) * query_limits])
+                print user_names[i * query_limits: (i + 1) * query_limits]
                 AsyncCmdService.push_msg(AsyncCmdService.HUANXIN_SEND, [msg, user_names[i * query_limits: (i + 1) * query_limits]])
             return {}
         else:
