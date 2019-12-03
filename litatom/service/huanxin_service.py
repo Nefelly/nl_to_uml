@@ -147,6 +147,7 @@ class HuanxinService(object):
         }
         res = {}
         query_lsts = []
+        msg = str(msg)
         if len(user_names) > query_limits:
             from ..service import AsyncCmdService
             for i in range((len(user_names) + query_limits - 1)/query_limits):
