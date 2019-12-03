@@ -28,11 +28,12 @@ def back():
     sql = '''mongoexport -h %s --port %r -u %s -p %s --authenticationDatabase lit -d lit -c user_action -o %s -q '{"create_time": {$lt:%s}}' 2>&1 &''' % (host, port, user, pwd, save_add, query_time)
     print sql
     os.system(sql)
+    print 'exe end'
 
 
 def clean_old_records():
     global query_time
-    # UserAction.objects(create_time__lte=query_time).delete()
+    UserAction.objects(create_time__lte=query_time).delete()
 
 
 if __name__ == "__main__":
