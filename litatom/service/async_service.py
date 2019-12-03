@@ -11,6 +11,7 @@ from ..const import (
     COMMANDS_EXCHANGE
 )
 from ..redis import RedisClient
+from ..util import ensure_unicode
 
 logger = logging.getLogger(__name__)
 
@@ -25,9 +26,8 @@ class AsyncCmdService(object):
     def push_msg(cls, cmd_type, args):
         payload = {
             'cmd_type': cmd_type,
-            'args': str(cPickle.dumps(args))
+            'args': ensure_unicode(cPickle.dumps(args))
         }
-        print payload
         MqService.push(COMMANDS_EXCHANGE, payload)
         return True
 
