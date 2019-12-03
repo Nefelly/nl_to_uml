@@ -27,6 +27,7 @@ class AsyncCmdService(object):
             'cmd_type': cmd_type,
             'args': cPickle.dumps(args)
         }
+        print payload
         MqService.push(COMMANDS_EXCHANGE, payload)
         return True
 
@@ -34,6 +35,7 @@ class AsyncCmdService(object):
     def execute(cls, payload):
         cmd_type = payload.get('cmd_type')
         args = payload.get('args')
+        print args
         args = cPickle.loads(str(args))
         print cmd_type, args
         if cmd_type == cls.BATCH_SEND:
