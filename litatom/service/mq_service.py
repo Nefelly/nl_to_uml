@@ -21,7 +21,7 @@ class MqService(object):
     """
     @classmethod
     def push(cls, exchange, payload):
-        # try:
+        try:
             MQProducer(
                 'tasks',
                 setting.DEFAULT_MQ_HOST,
@@ -31,8 +31,8 @@ class MqService(object):
                 exchange=exchange,
                 vhost=setting.DEFAULT_MQ_VHOST
             ).publish(payload)
-        # except Exception, e:
-        #     logging.error(e)
+        except Exception, e:
+            logging.error(e)
 
 
     @classmethod
