@@ -28,18 +28,14 @@ class AsyncCmdService(object):
             'cmd_type': cmd_type,
             'args': cPickle.dumps(args)
         }
-        payload = json.dumps(payload)
         MqService.push(COMMANDS_EXCHANGE, payload)
         return True
 
     @classmethod
     def execute(cls, payload):
-        payload = json.loads(payload)
         cmd_type = payload.get('cmd_type')
         args = payload.get('args')
-        print args
         args = cPickle.loads(str(args))
-        print cmd_type, args
         if cmd_type == cls.BATCH_SEND:
             from ..service import UserService
             UserService.msg_to_region_users(*args)
