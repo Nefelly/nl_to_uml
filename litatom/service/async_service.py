@@ -26,13 +26,15 @@ class AsyncCmdService(object):
     def push_msg(cls, cmd_type, args):
         payload = {
             'cmd_type': cmd_type,
-            'args': cPickle.dumps(args, 1)
+            'args': cPickle.dumps(args)
         }
+        payload = json.dumps(payload)
         MqService.push(COMMANDS_EXCHANGE, payload)
         return True
 
     @classmethod
     def execute(cls, payload):
+        payload = json.loads(payload)
         cmd_type = payload.get('cmd_type')
         args = payload.get('args')
         print args
