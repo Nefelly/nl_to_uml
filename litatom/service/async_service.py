@@ -26,7 +26,7 @@ class AsyncCmdService(object):
     def push_msg(cls, cmd_type, args):
         payload = {
             'cmd_type': cmd_type,
-            'args': ensure_unicode(cPickle.dumps(args))
+            'args': cPickle.dumps(args)
         }
         MqService.push(COMMANDS_EXCHANGE, payload)
         return True
