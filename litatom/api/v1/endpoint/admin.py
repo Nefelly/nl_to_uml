@@ -280,7 +280,7 @@ def msg_to_region():
         num = int(num)
     if not region or not msg:
         return fail('lake of field')
-    res = AsyncCmdService.push_msg(AsyncCmdService.BATCH_SEND, [region, msg, num])
+    res = AsyncCmdService.push_msg(AsyncCmdService.BATCH_SEND, [region, str(msg), num])
     # res = UserService.msg_to_region_users(region, msg, num)
     if res:
         return success()
