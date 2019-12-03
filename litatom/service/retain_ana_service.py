@@ -99,13 +99,13 @@ class RetainAnaService(object):
                     else:
                         act_num[act] += 1
             decimal_num = 4
-            for el in act_num:
-                # act_num[el] = round(act_num[el]/total_acts, decimal_num)
-                act_num[el] = round(act_num[el], decimal_num)
             total_last = len(user_ids) * 1.0
+            for el in act_num:
+                act_num[el] = round(act_num[el]/total_last, decimal_num)
+                # act_num[el] = round(act_num[el], decimal_num)
             for el in last_act_num:
-                # last_act_num[el] = round(last_act_num[el]/total_last, decimal_num)
-                last_act_num[el] = round(last_act_num[el], decimal_num)
+                last_act_num[el] = round(last_act_num[el]/total_last, decimal_num)
+                # last_act_num[el] = round(last_act_num[el], decimal_num)
             return total_acts, act_num, total_last, last_act_num
 
         cls.load_dicts()
