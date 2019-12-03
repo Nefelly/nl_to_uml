@@ -3,6 +3,9 @@ import json
 import time
 import traceback
 import logging
+from ..model import (
+    FollowingFeed
+)
 from ..service import (
     GlobalizationService,
     AnoyMatchService,
@@ -85,6 +88,21 @@ class MaintainService(object):
                     key = REDIS_ACCELERATE_REGION_TYPE_GENDER.format(match_type=t, region=r, gender=g)
                     if redis_client.zcard(key) > cls.JUDGE_CNT:
                         redis_client.zremrangebyscore(key, 0, int(time.time()) - ONE_DAY)
+
+    @classmethod
+    def clear_following_feed(cls):
+        maintain_num = 300
+        clear_interval = 100
+        judge_num = maintain_num + clear_interval
+        ids = FollowingFeed.objects().distinct('user_id')
+        clear_cnt = 0
+        for _ in ids:
+            cnt = FollowingFeed.objects(user_id=_).count()
+            if cnt > judge_num:
+                FollowingFeed.objects(user_id=_).order_by('-feed_create_time').skip(maintain_num).delete()
+                clear_cnt += 1
+                if clear_cnt % 100 == 0:
+                    print clear_cnt
 
     @classmethod
     def clear_sortedset_by_region(cls):
