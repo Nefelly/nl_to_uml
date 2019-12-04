@@ -39,7 +39,10 @@ class JournalService(object):
 
     @classmethod
     def load_user_loc(cls):
+        cnt = 0
         for loc in cls.LOC_STATED:
+            cnt += 1
+            print cnt, len(cls.LOC_STATED)
             new_loc = cls._get_new_loc(loc)
             if new_loc not in cls.LOC_STATED:
                 cls.LOC_STATED.append(new_loc)
