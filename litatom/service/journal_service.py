@@ -29,7 +29,7 @@ redis_client = RedisClient()['lit']
 class JournalService(object):
     '''
     '''
-    IS_TESTING = True
+    IS_TESTING = False
     DATE_DIS = datetime.timedelta(hours=0)
 
     USER_LOC = {}
@@ -40,10 +40,7 @@ class JournalService(object):
     @classmethod
     def load_user_loc(cls):
         to_append = []
-        cnt = 0
         for loc in cls.LOC_STATED:
-            cnt += 1
-            print cnt, len(cls.LOC_STATED)
             to_append.append(cls._get_new_loc(loc))
         cls.LOC_STATED += to_append
         if not cls.IS_TESTING:
