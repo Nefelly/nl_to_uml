@@ -21,12 +21,15 @@ class FollowingFeedService(object):
 
     @classmethod
     def add_following(cls, user_id, followed_user_id):
-        cls._add_following(user_id, followed_user_id)
+        ''' history message need not to added '''
+        return
+        # cls._add_following(user_id, followed_user_id)
 
     @classmethod
     def _remove_following(cls, user_id, followed_user_id):
-        for feed in Feed.get_by_user_id(followed_user_id):
-            FollowingFeed.delete_feed(user_id, feed)
+        FollowingFeed.objects(user_id=user_id, followed_user_id=followed_user_id).delete()
+        # for feed in Feed.get_by_user_id(followed_user_id):
+        #     FollowingFeed.delete_feed(user_id, feed)
 
     @classmethod
     def remove_following(cls, user_id, followed_user_id):
