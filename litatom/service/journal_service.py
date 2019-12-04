@@ -29,7 +29,7 @@ redis_client = RedisClient()['lit']
 class JournalService(object):
     '''
     '''
-    IS_TESTING = False
+    IS_TESTING = True
     DATE_DIS = datetime.timedelta(hours=0)
 
     USER_LOC = {}
@@ -259,10 +259,12 @@ class JournalService(object):
     @classmethod
     def out_port_result(cls, dst_addr):
         cls.load_user_loc()
+        print 'load succ', cls.LOC_STATED
         res_lst = []
         cls.DATE_DIS = datetime.timedelta(hours=0)
         cnt = 0
         daily_m = cls.daily_active(StatItems.objects(name=u'抽样日活').first())
+        print 'load daily_m'
         for item in StatItems.get_items_by_type(StatItems.BUSINESS_TYPE):
             try:
                 m = cls.cal_by_id(str(item.id))
