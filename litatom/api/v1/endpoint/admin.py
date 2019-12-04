@@ -370,7 +370,7 @@ def change_setting():
 
 
 def mod_setting():
-    return current_app.send_static_file('modify_settings.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
+    return current_app.send_static_file('modify_settings1.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
 
 
 def mongo_gen_csv():
