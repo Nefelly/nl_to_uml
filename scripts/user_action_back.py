@@ -25,7 +25,7 @@ def back():
     query_time = int(time.time()) - keep_time
     save_add = "%s/%s" % (save_dir, (datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y-%m-%d'))
     ensure_path(save_add)
-    sql = '''nohup mongoexport -h %s --port %r -u %s -p %s --authenticationDatabase lit -d lit -c user_action -o %s -q '{"create_time": {$lt:%s}}' &''' % (host, port, user, pwd, save_add, query_time)
+    sql = '''setsid mongoexport -h %s --port %r -u %s -p %s --authenticationDatabase lit -d lit -c user_action -o %s -q '{"create_time": {$lt:%s}}' &''' % (host, port, user, pwd, save_add, query_time)
     print sql
     os.popen(sql)
     print 'exe end'
