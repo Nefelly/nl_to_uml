@@ -32,6 +32,7 @@ class AlertService(object):
     @classmethod
     def send_file(cls, to, file_add, subject='stat'):
         message = MIMEMultipart()
+        subject = file_add
 
         att2 = MIMEText(open(file_add, 'rb').read(), 'base64', 'utf-8')
         att2["Content-Type"] = 'application/octet-stream'
