@@ -27,7 +27,8 @@ def back():
     ensure_path(save_add)
     sql = '''setsid mongoexport -h %s --port %r -u %s -p %s --authenticationDatabase lit -d lit -c user_action -o %s -q '{"create_time": {$lt:%s}}' &''' % (host, port, user, pwd, save_add, query_time)
     print sql
-    os.popen(sql)
+    res = os.system(sql)
+    print res
     print 'exe end'
 
 
