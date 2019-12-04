@@ -33,17 +33,25 @@ class JournalService(object):
     DATE_DIS = datetime.timedelta(hours=0)
 
     USER_LOC = {}
+    NEW_USER_LOC = {}
     LOC_STATED = ['TH', 'VN']
     CACHED_RES = {}
 
     @classmethod
     def load_user_loc(cls):
+        for loc in cls.LOC_STATED:
+            new_loc = cls._get_new_loc(loc)
+            if new_loc not in cls.LOC_STATED:
+                cls.LOC_STATED.append(new_loc)
         if not cls.IS_TESTING:
             objs = UserSetting.objects()
         else:
             objs = UserSetting.objects().limit(1000)
         for obj in objs:
             cls.USER_LOC[obj.user_id] = obj.lang
+        new_users = eval('UserSetting.objects(%s)' % cls._get_time_str('UserSetting', 'create_time'))
+        for obj in new_users:
+            cls.NEW_USER_LOC[obj.user_id] = obj.lang
 
     @classmethod
     def get_journal_items(cls, stat_type):
@@ -51,6 +59,10 @@ class JournalService(object):
         for el in StatItems.get_items_by_type(stat_type):
             res.append(el.to_json())
         return res, True
+
+    @classmethod
+    def _get_new_loc(cls, loc):
+        return 'new_' + loc
 
     @classmethod
     def daily_active(cls, item, date=None):
@@ -71,6 +83,9 @@ class JournalService(object):
             loc = cls.USER_LOC.get(user_id)
             if loc in cls.LOC_STATED:
                 loc_cnts[loc] += 1
+            new_loc = cls.NEW_USER_LOC.get(user_id)
+            if new_loc in cls.LOC_STATED:
+                loc_cnts[cls._get_new_loc(new_loc)] += 1
         res["num"] = cnt
         res.update(loc_cnts)
         return res
@@ -208,6 +223,7 @@ class JournalService(object):
             if need_loc:
                 for loc in cls.LOC_STATED:
                     loc_cnts[loc] = 0
+                    loc_cnts[cls._get_new_loc(loc)] = 0.0
                 if cnt and cnt < 1000000:
                     eval_str = '%s.objects(%s,%s)' % (table_name, time_str, expression)
                     if cls.IS_TESTING:
@@ -223,6 +239,9 @@ class JournalService(object):
                         loc = cls.USER_LOC.get(user_id)
                         if loc and loc in loc_cnts:
                             loc_cnts[loc] += 1
+                        new_loc = cls.NEW_USER_LOC.get(user_id)
+                        if new_loc in cls.LOC_STATED:
+                            loc_cnts[cls._get_new_loc(new_loc)] += 1
             res = {
                 "id": item_id,
                 "num": cnt,
