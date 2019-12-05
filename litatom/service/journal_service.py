@@ -43,6 +43,8 @@ class JournalService(object):
         to_append = []
         for loc in cls.LOC_STATED:
             to_append.append(cls._get_new_loc(loc))
+        for loc in cls.LOC_STATED:
+            to_append.append(cls._get_count_loc(loc))
         cls.LOC_STATED += to_append
         if not cls.IS_TESTING:
             objs = UserSetting.objects()
@@ -66,6 +68,10 @@ class JournalService(object):
         return 'new_' + loc
 
     @classmethod
+    def _get_count_loc(cls, loc):
+        return 'new_count_' + loc
+
+    @classmethod
     def daily_active(cls, item, date=None):
         res = {
             "id": str(item.id),
@@ -87,6 +93,7 @@ class JournalService(object):
             new_loc = cls.NEW_USER_LOC.get(user_id)
             if new_loc in cls.LOC_STATED:
                 loc_cnts[cls._get_new_loc(new_loc)] += 1
+                loc_cnts[cls._get_count_loc(new_loc)] += 1
         res["num"] = cnt
         res.update(loc_cnts)
         return res
@@ -227,10 +234,12 @@ class JournalService(object):
                 for loc in cls.LOC_STATED:
                     loc_cnts[loc] = 0
                     loc_cnts[cls._get_new_loc(loc)] = 0.0
+                    loc_cnts[cls._get_count_loc(loc)] = 0.0
                 if cnt and cnt < 1000000:
                     eval_str = '%s.objects(%s,%s)' % (table_name, time_str, expression)
                     if cls.IS_TESTING:
                         eval_str += '.limit(1000)'
+                    new_user_acted = {}
                     for obj in eval(eval_str):
                         if table_name == 'User':
                             user_id = str(obj.id)
@@ -245,6 +254,9 @@ class JournalService(object):
                         new_loc = cls.NEW_USER_LOC.get(user_id)
                         if new_loc in cls.LOC_STATED:
                             loc_cnts[cls._get_new_loc(new_loc)] += 1
+                            if not new_user_acted.get(user_id):
+                                loc_cnts[cls._get_count_loc(new_loc)] += 1
+                                new_user_acted[user_id] = 1
             res = {
                 "id": item_id,
                 "num": cnt,
