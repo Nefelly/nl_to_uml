@@ -12,9 +12,8 @@ from litatom.util import (
     now_date_key
 )
 
-def run():
-    stat_date = None
-    stat_date = datetime.datetime(2019, 11, 27)
+def run(stat_date=None):
+    # stat_date = datetime.datetime(2019, 11, 27)
     if stat_date:
         JournalService.ZERO_TODAY = stat_date
         dst_addr = '/data/statres/%s.xlsx' % (stat_date - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
@@ -30,5 +29,9 @@ def run():
 
 
 if __name__ == "__main__":
-    run()
-
+    if len(sys.argv) < 2:
+        run()
+    else:
+        date_str = sys.argv[1]
+        stat_date = datetime.datetime.strptime(sys.argv[1], '%Y-%m-%d')
+        run(stat_date)
