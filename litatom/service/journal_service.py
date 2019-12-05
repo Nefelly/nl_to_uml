@@ -29,7 +29,7 @@ redis_client = RedisClient()['lit']
 class JournalService(object):
     '''
     '''
-    IS_TESTING = False
+    IS_TESTING = True
     DATE_DIS = datetime.timedelta(hours=0)
 
     USER_LOC = {}
