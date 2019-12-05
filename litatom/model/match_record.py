@@ -24,11 +24,12 @@ class MatchRecord(Document):
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
 
     @classmethod
-    def create(cls, user_id1, user_id2, ):
-        obj = cls()
-        if user_id1 < user_id2:
-            user_id1
-        return str(obj.id)
+    def create(cls, user_id1, user_id2):
+        pass
+        # obj = cls()
+        # if user_id1 < user_id2:
+        #     user_id1
+        # return str(obj.id)
 
     @classmethod
     def get_by_id(cls, result_id):
