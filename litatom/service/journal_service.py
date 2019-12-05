@@ -144,7 +144,7 @@ class JournalService(object):
             zeroToday = date
         else:
             zeroToday = get_zero_today()
-        # zeroToday = datetime.datetime(2019, 11, 16)
+        zeroToday = datetime.datetime(2019, 11, 27)
         zeroYestoday = next_date(zeroToday, -1) + cls.DATE_DIS
         is_int = isinstance(eval(table_name + '.' + judge_field), IntField)
         if not is_int:
