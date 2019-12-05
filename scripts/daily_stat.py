@@ -34,4 +34,5 @@ if __name__ == "__main__":
     else:
         date_str = sys.argv[1]
         stat_date = datetime.datetime.strptime(sys.argv[1], '%Y-%m-%d')
+        print stat_date
         run(stat_date)
