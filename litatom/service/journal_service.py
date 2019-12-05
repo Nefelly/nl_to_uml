@@ -36,6 +36,7 @@ class JournalService(object):
     NEW_USER_LOC = {}
     LOC_STATED = ['TH', 'VN']
     CACHED_RES = {}
+    ZERO_TODAY = None
 
     @classmethod
     def load_user_loc(cls):
@@ -144,7 +145,9 @@ class JournalService(object):
             zeroToday = date
         else:
             zeroToday = get_zero_today()
-        zeroToday = datetime.datetime(2019, 11, 29)
+        if cls.ZERO_TODAY:
+            zeroToday = cls.ZERO_TODAY
+        # zeroToday = datetime.datetime(2019, 11, 29)
         zeroYestoday = next_date(zeroToday, -1) + cls.DATE_DIS
         is_int = isinstance(eval(table_name + '.' + judge_field), IntField)
         if not is_int:

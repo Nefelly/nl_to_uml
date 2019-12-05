@@ -5,6 +5,7 @@ import datetime
 from hendrix.conf import setting
 from litatom.service import AlertService, JournalService
 import time
+import datetime
 from litatom.util import (
     write_data_to_xls,
     ensure_path,
@@ -12,8 +13,13 @@ from litatom.util import (
 )
 
 def run():
-    dst_addr = '/data/statres/%s.xlsx' % (datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
-    dst_addr = '/data/statres/2019-11-28.xlsx'
+    stat_date = None
+    stat_date = datetime.datetime(2019, 11, 27)
+    if stat_date:
+        JournalService.ZERO_TODAY = stat_date
+        dst_addr = '/data/statres/%s.xlsx' % (stat_date - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
+    else:
+        dst_addr = '/data/statres/%s.xlsx' % (datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
     ensure_path(dst_addr)
     if not os.path.exists(dst_addr) or 1:
         JournalService.out_port_result(dst_addr)
