@@ -43,7 +43,10 @@ from ..service import (
     StatisticService,
     AccountService
 )
-from ..model import User
+from ..model import (
+    User,
+    MatchRecord
+)
 redis_client = RedisClient()['lit']
 
 
@@ -124,6 +127,23 @@ class MatchService(object):
         redis_client.zadd(cls.TYPE_ANOY_CHECK_POOL, {fake_id: int_time})
 
     @classmethod
+    def _clear_match_pair(cls, fake_id, other_fakeid, leave_fake_id=None):
+        pair = low_high_pair(fake_id, other_fakeid)
+        key = cls.TYPE_MATCH_PAIR.format(low_high_fakeid=pair)
+        match_time = redis_client.get(key)
+        if not match_time:
+            return
+        match_time = int(match_time)
+        user_id1 = cls._uid_by_fake_id(fake_id)
+        user_id2 = cls._uid_by_fake_id(other_fakeid)
+        if not leave_fake_id:
+            quit_user = None
+        else:
+            quit_user = user_id1 if leave_fake_id == fake_id else user_id2
+        MatchRecord.create(user_id1, user_id2, cls.MATCH_TYPE, quit_user, match_time, int(time.time()) - match_time)
+        redis_client.delete(key)
+
+    @classmethod
     def _destroy_fake_id(cls, fake_id, need_remove_from_pool=True):
         if not fake_id:
             return
@@ -144,8 +164,9 @@ class MatchService(object):
                 redis_client.delete(cls.TYPE_FAKE_START.format(fake_id=other_fakeid))
                 redis_client.delete(cls.TYPE_MATCHED.format(fake_id=fake_id))
                 redis_client.delete(cls.TYPE_MATCHED.format(fake_id=other_fakeid))
-                pair = low_high_pair(fake_id, other_fakeid)
-                redis_client.delete(cls.TYPE_MATCH_PAIR.format(low_high_fakeid=pair))
+                cls._clear_match_pair(fake_id, other_fakeid)
+                # pair = low_high_pair(fake_id, other_fakeid)
+                # redis_client.delete(cls.TYPE_MATCH_PAIR.format(low_high_fakeid=pair))
                 # redis_client.delete(REDIS_FAKE_LIKE.format(fake_id=fake_id))
                 # redis_client.delete(REDIS_FAKE_LIKE.format(fake_id=other_fakeid))
             if not cls._remove_from_match_pool(BOY, fake_id):
@@ -160,10 +181,11 @@ class MatchService(object):
 
     @classmethod
     def _create_match(cls, fake_id1, fake_id2, gender1, user_id, user_id2):
+        time_now = int(time.time())
         pair = low_high_pair(fake_id1, fake_id2)
         redis_client.set(cls.TYPE_MATCHED.format(fake_id=fake_id2), fake_id1, cls.MATCH_INT)
         redis_client.set(cls.TYPE_MATCHED.format(fake_id=fake_id1), fake_id2, cls.MATCH_INT)
-        redis_client.set(cls.TYPE_MATCH_PAIR.format(low_high_fakeid=pair), 1, cls.MATCH_INT)
+        redis_client.set(cls.TYPE_MATCH_PAIR.format(low_high_fakeid=pair), time_now, cls.MATCH_INT)
         redis_client.set(cls.TYPE_MATCH_BEFORE.format(low_high_fakeid=pair), 1, ONE_DAY)
         # 将其从正在匹配队列中删除
         cls._remove_from_match_pool(gender1, fake_id1)
@@ -180,8 +202,9 @@ class MatchService(object):
         if not fake_id2:
             cls._destroy_fake_id(fake_id, True)
             return True
-        pair = low_high_pair(fake_id, fake_id2)
-        redis_client.delete(cls.TYPE_MATCH_PAIR.format(low_high_fakeid=pair))
+        cls._clear_match_pair(fake_id, fake_id2, fake_id)
+        # pair = low_high_pair(fake_id, fake_id2)
+        # redis_client.delete(cls.TYPE_MATCH_PAIR.format(low_high_fakeid=pair))
         cls._destroy_fake_id(fake_id, True)
         cls._destroy_fake_id(fake_id2, True)
         # map(cls._destroy_fake_id, [fake_id, fake_id2])

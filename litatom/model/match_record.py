@@ -18,25 +18,21 @@ class MatchRecord(Document):
         'alias': 'db_alias'
     }
 
-    low_user_id = StringField(required=True)
-    high_user_id = StringField(required=True)
+    user_id1 = StringField(required=True)
+    user_id2 = StringField(required=True)
+    match_type = StringField(required=True)
+    quit_user = StringField()
     match_succ_time = IntField()
+    inter_time = IntField()
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
 
     @classmethod
-    def create(cls, user_id1, user_id2):
-        pass
-        # obj = cls()
-        # if user_id1 < user_id2:
-        #     user_id1
-        # return str(obj.id)
-
-    @classmethod
-    def get_by_id(cls, result_id):
-        if not bson.ObjectId.is_valid(result_id):
-            return None
-        obj = cls.objects(id=result_id).first()
-        if obj:
-            return json.loads(obj.result)
-        return {}
-
+    def create(cls, user_id1, user_id2, match_type, quit_user, match_succ_time, inter_time):
+        obj = cls()
+        obj.user_id1 = user_id1
+        obj.user_id2 = user_id2
+        obj.match_type = match_type
+        obj.quit_user = quit_user
+        obj.match_succ_time = match_succ_time
+        obj.inter_time = inter_time
+        obj.save()

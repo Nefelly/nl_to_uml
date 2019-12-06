@@ -65,6 +65,7 @@ from .user_model import (
     UserModel,
     Uuids
 )
+from .match_record import MatchRecord
 from .anoy_online import AnoyOnline
 from ..db import DBManager
 
