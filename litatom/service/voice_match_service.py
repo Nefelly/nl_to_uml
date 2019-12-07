@@ -72,6 +72,8 @@ class VoiceMatchService(MatchService):
         if not status:
             return res, status
         voice_type = request.args.get('voice_type', None)
+        if request.version < '2.6.6':
+            return res, status
         if voice_type:
             redis_client.set(REDIS_VOICE_SDK_TYPE.format(user_id=user_id), voice_type, ex=cls.TOTAL_WAIT)
         return res, status
