@@ -11,7 +11,8 @@ from litatom.mq import (
 from litatom.model import (
     UserSetting,
     User,
-    Uuids
+    Uuids,
+    MatchRecord
 )
 from hendrix.conf import setting
 
@@ -84,7 +85,7 @@ def stat_avr_time():
                 mm[u2].append(_.inter_time)
         
 
-    def stat_register_rate():
+def stat_register_rate():
     ls = UserSetting.objects(create_time__gte=datetime.datetime(2019, 11, 18),
                              create_time__lte=datetime.datetime(2019, 11, 19)).distinct('uuid')
     ts = Uuids.objects(create_time__gte=datetime.datetime(2019, 11, 18),
