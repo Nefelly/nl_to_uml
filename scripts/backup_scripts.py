@@ -69,8 +69,22 @@ def cal_country_num():
         m[c] += 1
     print m
 
+def stat_avr_time():
+    mm = {}
+    for _ in MatchRecord.objects(quit_user__ne=None):
+             u1 = _.user_id1
+             u2 = _.user_id2
+             if not mm.get(u1):
+                mm[u1] = [_.inter_time]
+             else:
+                mm[u1].append(_.inter_time)
+             if not mm.get(u2):
+                mm[u2] = [_.inter_time]
+             else:
+                mm[u2].append(_.inter_time)
+        
 
-def stat_register_rate():
+    def stat_register_rate():
     ls = UserSetting.objects(create_time__gte=datetime.datetime(2019, 11, 18),
                              create_time__lte=datetime.datetime(2019, 11, 19)).distinct('uuid')
     ts = Uuids.objects(create_time__gte=datetime.datetime(2019, 11, 18),
