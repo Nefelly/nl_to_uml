@@ -34,6 +34,7 @@ class UserMessageService(object):
     MSG_FOLLOW = 'follow'
     MSG_REPLY = 'reply'
     MSG_COMMENT = 'comment'
+    MSG_VISIT_FEED = 'visit'
     
     MSG_MESSAGE_M = {
         MSG_LIKE: 'like your post',
@@ -59,7 +60,8 @@ class UserMessageService(object):
             cls.MSG_LIKE: 'like_feed',
             cls.MSG_FOLLOW: 'start_follow',
             cls.MSG_COMMENT: 'reply_comment',
-            cls.MSG_REPLY: 'reply_feed'
+            cls.MSG_REPLY: 'reply_feed',
+            cls.MSG_VISIT_FEED: 'visit_feed'
         }.get(m_type)
         return GlobalizationService.get_region_word(tag_word)
 
