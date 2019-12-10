@@ -15,6 +15,9 @@ REDIS_FEED_ID_AGE = 'feed_id_age:{feed_id}'
 REDIS_AD_TIMES_LEFT = 'ad_times_left:{user_date}'
 REDIS_REGION_FEED_TOP = 'region_feed_top:{region}'
 
+# rate control
+REDIS_VISIT_RATE = 'visit_rate:{user_id}'
+
 # cache
 REDIS_USER_CACHE = 'user_cache:{user_id}'
 REDIS_USER_ACCOUNT_CACHE = 'user_account_cache:{user_id}'

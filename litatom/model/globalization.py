@@ -152,7 +152,7 @@ class RegionWord(Document):
             'vi': u'Số điện thoại đăng nhập tạm thời không sử dụng được. Vui lòng sử dụng các hình thức đăng nhập khác',
             'th': u'ไม่สามารถลงทะเบียนโทรศัพท์มือถือได้ชั่วคราว กรุณาลงทะเบียนด้วยวิธีอื่น',
         },
-        'visit_feed': {
+        'visit_home': {
             'en': u'visited your profile👣',
             'vi': u'đã ghé thăm tường nhà bạn 👣',
             'th': u'เข้าเยี่ยมชมโปรไฟล์ของคุณ👣',
