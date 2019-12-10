@@ -156,6 +156,7 @@ class UserMessageService(object):
 
     @classmethod
     def should_push(cls, user_id):
+        return True
         if not cls._should_push_hour():
             return False
         key = REDIS_VISIT_RATE.format(user_id=user_id)
@@ -165,6 +166,7 @@ class UserMessageService(object):
         if int(time.time()) - online_time < ONE_HOUR:
             return False
         redis_client.set(key, 1, cls.PUSH_INTERVAL)
+        return True
 
     @classmethod
     def _should_push_hour(cls):
