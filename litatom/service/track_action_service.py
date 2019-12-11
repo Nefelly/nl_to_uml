@@ -58,20 +58,7 @@ class TrackActionService(object):
 
     @classmethod
     def _create_action(cls, user_id, action, other_user_id=None, amount=None, remark=None, version=None):
-        userAction = UserAction()
-        userAction.user_id = user_id
-        userAction.action = action
-        if remark:
-            userAction.remark = remark
-        if other_user_id:
-            userAction.other_user_id = other_user_id
-        if amount:
-            userAction.amount = amount
-        if version:
-            userAction.version = version
-        userAction.create_time = int(time.time())
-        userAction.create_date = datetime.datetime.now()
-        userAction.save()
+        UserAction.create(user_id, action, other_user_id, amount, remark, version)
         return True
 
     @classmethod

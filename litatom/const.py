@@ -28,6 +28,9 @@ INT_GIRL = 0
 TYPE_VOICE_AGORA = 'agora'
 TYPE_VOICE_TENCENT = 'tencent'
 
+# 后端action
+ACTION_ACCOST_OVER = 'accost_over'
+
 
 # 提示消息
 OPERATE_TOO_OFTEN = u'you have operate too quick, please try later~'

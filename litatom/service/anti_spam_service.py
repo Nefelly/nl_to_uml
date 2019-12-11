@@ -5,7 +5,8 @@ import traceback
 import logging
 from ..model import (
     SpamWord,
-    TrackSpamRecord
+    TrackSpamRecord,
+    UserAction
 )
 from ..redis import RedisClient
 from ..service import (
@@ -15,7 +16,8 @@ from ..key import (
     REDIS_ACCOST_RATE
 )
 from ..const import (
-    ONE_MIN
+    ONE_MIN,
+    ACTION_ACCOST_OVER
 )
 
 logger = logging.getLogger(__name__)
@@ -49,6 +51,7 @@ class AntiSpamService(object):
         else:
             res = int(res)
             if res <= 0:
+                UserAction.create(user_id, ACTION_ACCOST_OVER)
                 return cls.ACCOST_BAN
             else:
                 redis_client.decr(key)
