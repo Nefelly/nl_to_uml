@@ -11,6 +11,12 @@ from ..redis import RedisClient
 from ..service import (
     GlobalizationService
 )
+from ..key import (
+    REDIS_ACCOST_RATE
+)
+from ..const import (
+    ONE_MIN
+)
 
 logger = logging.getLogger(__name__)
 redis_client = RedisClient()['lit']
@@ -20,7 +26,11 @@ class AntiSpamService(object):
     '''
     docs :https://developer.qiniu.com/censor/api/5588/image-censor
     '''
-            
+    ACCOST_PASS = 'pass'
+    ACCOST_BAN = 'ban'
+    ACCOST_NEED_VIDEO = 'need_video'
+    ACCOST_INTER = 5 * ONE_MIN
+
     @classmethod
     def is_spam_word(cls, word, user_id):
         is_spam = DFAFilter.is_spam_word(word)
@@ -28,6 +38,20 @@ class AntiSpamService(object):
             TrackSpamRecord.create(word, user_id)
         return is_spam
 
+    @classmethod
+    def can_accost(cls, user_id):
+        key = REDIS_ACCOST_RATE.format(user_id=user_id)
+        rate = 5
+        res = redis_client.get(key)
+        if not res:
+            redis_client.set(key, rate, cls.ACCOST_INTER)
+            return cls.ACCOST_PASS
+        else:
+            if res <= 0:
+                return cls.ACCOST_BAN
+            else:
+                redis_client.decr(key)
+                return cls.ACCOST_PASS
 
 class DFAFilter(object):
     KEYWORD_CHAINS = {}

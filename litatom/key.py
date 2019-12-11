@@ -17,6 +17,7 @@ REDIS_REGION_FEED_TOP = 'region_feed_top:{region}'
 
 # rate control
 REDIS_VISIT_RATE = 'visit_rate:{user_id}'
+REDIS_ACCOST_RATE = 'accost_rate:{user_id}'
 
 # cache
 REDIS_USER_CACHE = 'user_cache:{user_id}'
