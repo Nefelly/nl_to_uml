@@ -36,7 +36,7 @@ from flask import (
 redis_client = RedisClient()['lit']
 
 class UserMessageService(object):
-    PUSH_INTERVAL = 5 * ONE_MIN
+    PUSH_INTERVAL = 5 * ONE_HOUR
     MSG_LIKE = 'like'
     MSG_FOLLOW = 'follow'
     MSG_REPLY = 'reply'
