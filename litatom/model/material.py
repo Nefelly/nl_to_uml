@@ -16,7 +16,8 @@ from ..const import (
 )
 from ..key import (
     REDIS_AVATAR_CACHE,
-    REDIS_YOUTUBE_VIDEO_CACHE
+    REDIS_YOUTUBE_VIDEO_CACHE,
+    REDIS_SPAM_WORD_CACHE
 )
 redis_client = RedisClient()['lit']
 
@@ -174,6 +175,33 @@ class SpamWord(Document):
     @classmethod
     def get_by_region(cls, region):
         return cls.objects(region=region)
+
+    @classmethod
+    def _disable_cache(cls, region):
+        redis_client.delete(REDIS_SPAM_WORD_CACHE.format(region=region))
+
+    def save(self, *args, **kwargs):
+        super(SpamWord, self).save(*args, **kwargs)
+        if getattr(self, 'id', ''):
+            self._disable_cache(self.region)
+
+    def delete(self, *args, **kwargs):
+        super(SpamWord, self).delete(*args, **kwargs)
+        if getattr(self, 'id', ''):
+            self._disable_cache(self.region)
+
+    @classmethod
+    def get_spam_words(cls, region):
+        cache_key = REDIS_SPAM_WORD_CACHE.format(region=region)
+        cache_obj = redis_client.get(cache_key)
+        if cache_obj:
+            return cPickle.loads(cache_obj)
+        words = []
+        objs = cls.objects(region=region)
+        for obj in objs:
+            words.append(obj.word)
+        redis_client.set(cache_key, cPickle.dumps(words))
+        return words
 
 
 class Wording(Document):

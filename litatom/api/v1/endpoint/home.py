@@ -38,7 +38,8 @@ from ....service import (
     GlobalizationService,
     UserFilterService,
     FeedService,
-    UserSettingService
+    UserSettingService,
+    AntiSpamService
 )
 
 logger = logging.getLogger(__name__)
@@ -114,6 +115,12 @@ def get_wording():
         word_type = u'thai_wait'
     wording = Wording.get_word_type(word_type)
     return success(wording)
+
+def get_spam_word():
+    res, status = AntiSpamService.get_spam_words(GlobalizationService.get_region())
+    if not status:
+        return fail(res)
+    return success(res)
 
 def settings():
     return success(UserSettingService.get_settings(request.user_id))

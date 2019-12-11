@@ -57,6 +57,14 @@ class AntiSpamService(object):
                 redis_client.decr(key)
                 return cls.ACCOST_PASS
 
+    @classmethod
+    def get_spam_words(cls, region):
+        lst = SpamWord.get_spam_words(region)
+        if not lst:
+            return 'not spam words', False
+        return {'spam_words': lst}, True
+
+
 class DFAFilter(object):
     KEYWORD_CHAINS = {}
     DEFAULT_KEYWORD_CHAIN = {}
