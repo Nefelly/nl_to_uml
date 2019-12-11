@@ -43,11 +43,11 @@ class AntiSpamService(object):
         key = REDIS_ACCOST_RATE.format(user_id=user_id)
         rate = 5
         res = redis_client.get(key)
-        print res
         if not res:
             redis_client.set(key, rate, cls.ACCOST_INTER)
             return cls.ACCOST_PASS
         else:
+            res = int(res)
             if res <= 0:
                 return cls.ACCOST_BAN
             else:
