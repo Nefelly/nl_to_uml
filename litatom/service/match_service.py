@@ -33,14 +33,17 @@ from ..const import (
     PROFILE_NOT_COMPLETE,
     NOT_IN_MATCH,
     ONE_MIN,
-    CAN_MATCH_ONLINE
+    CAN_MATCH_ONLINE,
+    USER_MODEL_EXCHANGE
 )
 from ..service import (
     UserService,
     FollowService,
     BlockService,
     GlobalizationService,
-    StatisticService
+    StatisticService,
+    StatisticService,
+    MqService
 )
 from ..model import (
     User,
@@ -139,7 +142,8 @@ class MatchService(object):
             quit_user = None
         else:
             quit_user = user_id1 if leave_fake_id == fake_id else user_id2
-        MatchRecord.create(user_id1, user_id2, cls.MATCH_TYPE, quit_user, match_time, int(time.time()) - match_time)
+        obj = MatchRecord.create(user_id1, user_id2, cls.MATCH_TYPE, quit_user, match_time, int(time.time()) - match_time)
+        MqService.push(USER_MODEL_EXCHANGE, {'model_type': 'match', 'data': obj.to_json()})
         redis_client.delete(key)
 
     @classmethod

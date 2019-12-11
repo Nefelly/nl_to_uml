@@ -36,3 +36,4 @@ class MatchRecord(Document):
         obj.match_succ_time = match_succ_time
         obj.inter_time = inter_time
         obj.save()
+        return obj
