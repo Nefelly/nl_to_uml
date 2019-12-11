@@ -41,7 +41,7 @@ class AntiSpamService(object):
     @classmethod
     def can_accost(cls, user_id):
         key = REDIS_ACCOST_RATE.format(user_id=user_id)
-        rate = 5
+        rate = 5 - 1   # the first time is used
         res = redis_client.get(key)
         if not res:
             redis_client.set(key, rate, cls.ACCOST_INTER)
