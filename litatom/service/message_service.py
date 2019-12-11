@@ -21,7 +21,8 @@ from ..key import (
     REDIS_VISIT_RATE
 )
 from ..const import (
-    ONE_HOUR
+    ONE_HOUR,
+    ONE_MIN
 )
 from ..util import get_time_info
 from ..service import (
@@ -35,7 +36,7 @@ from flask import (
 redis_client = RedisClient()['lit']
 
 class UserMessageService(object):
-    PUSH_INTERVAL = 5 * ONE_HOUR
+    PUSH_INTERVAL = 5 * ONE_MIN
     MSG_LIKE = 'like'
     MSG_FOLLOW = 'follow'
     MSG_REPLY = 'reply'
@@ -156,7 +157,7 @@ class UserMessageService(object):
 
     @classmethod
     def should_push(cls, user_id):
-        return True
+        # return True
         if not cls._should_push_hour():
             return False
         key = REDIS_VISIT_RATE.format(user_id=user_id)
