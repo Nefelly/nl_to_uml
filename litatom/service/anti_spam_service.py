@@ -51,7 +51,7 @@ class AntiSpamService(object):
         else:
             res = int(res)
             if res <= 0:
-                UserAction.create(user_id, ACTION_ACCOST_OVER)
+                UserAction.create(user_id, ACTION_ACCOST_OVER, None, None, ACTION_ACCOST_OVER)
                 return cls.ACCOST_BAN
             else:
                 redis_client.decr(key)
