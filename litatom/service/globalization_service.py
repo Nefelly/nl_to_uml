@@ -104,6 +104,10 @@ class GlobalizationService(object):
     # }
 
     DEFAULT_REGION = REGION_EN
+    BIG_REGIONS = {
+        REGION_VN: LOC_VN,
+        REGION_TH: LOC_TH
+    }
 
     LOC_REGION = {
         'TH': REGION_TH,

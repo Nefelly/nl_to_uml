@@ -193,9 +193,10 @@ class UserService(object):
             bio = data.get('bio', '')
             if AntiSpamService.is_spam_word(nickname, uid) or AntiSpamService.is_spam_word(bio, uid):
                 cls.alert_to_user(uid)
-            if (bio or nickname) and GlobalizationService.get_region() == GlobalizationService.DEFAULT_REGION:
+            # if (bio or nickname) and GlobalizationService.get_region() == GlobalizationService.DEFAULT_REGION:
+            if (bio or nickname) and GlobalizationService.get_region() not in GlobalizationService.BIG_REGIONS:
                 loc = cls._get_words_loc([nickname, bio])
-                if loc:
+                if loc in GlobalizationService.BIG_REGIONS.values():
                     userSetting = UserSetting.get_by_user_id(uid)
                     if not userSetting or userSetting.loc_change_times <= 1:
                         GlobalizationService.change_loc(uid, loc)

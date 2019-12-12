@@ -22,10 +22,10 @@ def back():
     user, pwd = user_pwd.split(':')
     host = conn_url.split('@')[1].split('/')[0]
     global query_time
-    query_time = int(time.time()) - keep_time + 100000
+    # query_time = int(time.time()) - keep_time
     save_add = "%s/%s" % (save_dir, (datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y-%m-%d'))
     ensure_path(save_add)
-    sql = '''/opt/mongodb/bin/mongoexport -h %s --port %r -u %s -p %s --authenticationDatabase lit -d lit -c user_action -o %s -q '{"create_time": {$lt:%s}}' 2>&1 &''' % (host, port, user, pwd, save_add, query_time)
+    sql = '''/opt/mongodb/bin/mongoexport -h %s --port %r -u %s -p %s --authenticationDatabase lit -d lit -c user_action -o %s -q '{"create_time": {$lt:%d}}' 2>&1 &''' % (host, port, user, pwd, save_add, query_time)
     print sql
     os.system(sql)
     print 'exe end'

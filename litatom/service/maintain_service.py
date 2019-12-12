@@ -4,7 +4,8 @@ import time
 import traceback
 import logging
 from ..model import (
-    FollowingFeed
+    FollowingFeed,
+    UserMessage
 )
 from ..service import (
     GlobalizationService,
@@ -103,6 +104,12 @@ class MaintainService(object):
                 clear_cnt += 1
                 if clear_cnt % 100 == 0:
                     print clear_cnt
+
+    @classmethod
+    def clear_UserMessages(cls):
+        keep = 7 * 86400
+        judge_time = int(time.time()) - keep
+        UserMessage.objects(create_time__lte=judge_time).delete()
 
     @classmethod
     def clear_sortedset_by_region(cls):

@@ -674,6 +674,24 @@ class UserAction(Document):
     create_date = DateTimeField()
     create_time = IntField(required=True)
 
+    @classmethod
+    def create(cls, user_id, action, other_user_id=None, amount=None, remark=None, version=None):
+        userAction = cls()
+        userAction.user_id = user_id
+        userAction.action = action
+        if remark:
+            userAction.remark = remark
+        if other_user_id:
+            userAction.other_user_id = other_user_id
+        if amount:
+            userAction.amount = amount
+        if version:
+            userAction.version = version
+        userAction.create_time = int(time.time())
+        userAction.create_date = datetime.datetime.now()
+        userAction.save()
+        return True
+
     def to_json(self):
         res = {}
         for attr in self._fields:

@@ -1,5 +1,6 @@
 # coding: utf-8
 import time
+import datetime
 from ..model import (
     UserMessage,
 )
@@ -16,7 +17,12 @@ from ..const import (
     ONLINE_LIVE
 )
 from ..key import (
-    REDIS_USER_NOT_MESSAGE_CACHE
+    REDIS_USER_NOT_MESSAGE_CACHE,
+    REDIS_VISIT_RATE
+)
+from ..const import (
+    ONE_HOUR,
+    ONE_MIN
 )
 from ..util import get_time_info
 from ..service import (
@@ -30,10 +36,12 @@ from flask import (
 redis_client = RedisClient()['lit']
 
 class UserMessageService(object):
+    PUSH_INTERVAL = 5 * ONE_HOUR
     MSG_LIKE = 'like'
     MSG_FOLLOW = 'follow'
     MSG_REPLY = 'reply'
     MSG_COMMENT = 'comment'
+    MSG_VISIT_HOME = 'visit'
     
     MSG_MESSAGE_M = {
         MSG_LIKE: 'like your post',
@@ -59,7 +67,8 @@ class UserMessageService(object):
             cls.MSG_LIKE: 'like_feed',
             cls.MSG_FOLLOW: 'start_follow',
             cls.MSG_COMMENT: 'reply_comment',
-            cls.MSG_REPLY: 'reply_feed'
+            cls.MSG_REPLY: 'reply_feed',
+            cls.MSG_VISIT_HOME: 'visit_home'
         }.get(m_type)
         return GlobalizationService.get_region_word(tag_word)
 
@@ -137,3 +146,30 @@ class UserMessageService(object):
             message += ': "%s"' % content
         FirebaseService.send_to_user(user_id, related_nickname, message)
         return obj_id
+
+    @classmethod
+    def visit_message(cls, user_id, related_user_id):
+        if not related_user_id or user_id == related_user_id:
+            return False
+        if not cls.should_push(user_id):
+            return False
+        cls.add_message(user_id, related_user_id, cls.MSG_VISIT_HOME)
+
+    @classmethod
+    def should_push(cls, user_id):
+        # return True
+        if not cls._should_push_hour():
+            return False
+        key = REDIS_VISIT_RATE.format(user_id=user_id)
+        if redis_client.get(key):
+            return False
+        online_time = UserService.uid_online_time(user_id)
+        if int(time.time()) - online_time < ONE_HOUR:
+            return False
+        redis_client.set(key, 1, cls.PUSH_INTERVAL)
+        return True
+
+    @classmethod
+    def _should_push_hour(cls):
+        hour_now = datetime.datetime.now().hour
+        return hour_now > 9

@@ -26,7 +26,8 @@ from ....service import (
     UserService,
     UserMessageService,
     FirebaseService,
-    AccountService
+    AccountService,
+    AntiSpamService
 )
 from  ....const import (
     MAX_TIME
@@ -115,6 +116,7 @@ def update_info():
 def get_user_info(target_user_id):
     user_id = request.user_id
     data, status = UserService.get_user_info(user_id, target_user_id)
+    UserMessageService.visit_message(target_user_id, user_id)
     if not status:
         return fail(data)
     return success(data)
@@ -129,6 +131,16 @@ def search_user():
         return fail(data)
     return success(data)
 
+
+@session_required
+def accost():
+    status = AntiSpamService.can_accost(request.user_id)
+    if not status:
+        return fail()
+    res = {
+        'status': status
+    }
+    return success(res)
 
 def get_avatars():
     data = UserService.get_avatars()
