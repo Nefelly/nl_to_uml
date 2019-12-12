@@ -32,6 +32,7 @@ class AntiSpamService(object):
     ACCOST_BAN = 'ban'
     ACCOST_NEED_VIDEO = 'need_video'
     ACCOST_INTER = 5 * ONE_MIN
+    ACCOST_RATE = 5
 
     @classmethod
     def is_spam_word(cls, word, user_id):
@@ -43,7 +44,7 @@ class AntiSpamService(object):
     @classmethod
     def can_accost(cls, user_id):
         key = REDIS_ACCOST_RATE.format(user_id=user_id)
-        rate = 5 - 1   # the first time is used
+        rate = cls.ACCOST_RATE - 1   # the first time is used
         res = redis_client.get(key)
         if not res:
             redis_client.set(key, rate, cls.ACCOST_INTER)
@@ -56,6 +57,12 @@ class AntiSpamService(object):
             else:
                 redis_client.decr(key)
                 return cls.ACCOST_PASS
+
+    @classmethod
+    def reset_accost(cls, user_id, data):
+        key = REDIS_ACCOST_RATE.format(user_id=user_id)
+        redis_client.set(key, cls.ACCOST_RATE, cls.ACCOST_INTER)
+        return None, True
 
     @classmethod
     def get_spam_words(cls, region):

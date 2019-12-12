@@ -174,6 +174,7 @@ b.add_url_rule('/lit/following', 'following', endpoint.user_relations.following)
 b.add_url_rule('/lit/follower', 'follower', endpoint.user_relations.follower)
 
 b.add_url_rule('/lit/ad/times_left', 'ad-times-left', endpoint.ad.times_left)
+b.add_url_rule('/lit/ad/reset_accost', 'ad-reset_accost', endpoint.ad.reset_accost, methods=['POST'])
 
 # voice_chat
 # b.add_url_rule('/lit/voice_chat/invite/<target_user_id>', 'voice_chat-invite', endpoint.voice_chat.invite)
