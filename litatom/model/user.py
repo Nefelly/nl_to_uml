@@ -566,58 +566,6 @@ class UserSetting(Document):
         return True
 
 
-class UserModel(Document):
-    meta = {
-        'strict': False,
-        'alias': 'db_alias'
-    }
-
-    user_id = StringField(required=True, unique=True)
-    create_time = DateTimeField(required=True, default=datetime.datetime.now)
-
-    @classmethod
-    def get_by_user_id(cls, user_id):
-        cache_key = REDIS_USER_MODEL_CACHE.format(user_id=user_id)
-        cache_obj = redis_client.get(cache_key)
-        if cache_obj:
-            return cPickle.loads(cache_obj)
-        obj = cls.objects(user_id=user_id).first()
-        redis_client.set(cache_key, cPickle.dumps(obj), USER_ACTIVE)
-        return obj
-
-    @classmethod
-    def _disable_cache(cls, user_id):
-        redis_client.delete(REDIS_USER_MODEL_CACHE.format(user_id=user_id))
-
-    def save(self, *args, **kwargs):
-        if getattr(self, 'user_id', ''):
-            self._disable_cache(str(self.user_id))
-        super(UserModel, self).save(*args, **kwargs)
-
-    def delete(self, *args, **kwargs):
-        if getattr(self, 'user_id', ''):
-            self._disable_cache(str(self.user_id))
-        super(UserModel, self).delete(*args, **kwargs)
-
-    @classmethod
-    def create_model(cls, user_id):
-        if cls.get_by_user_id(user_id):
-            return True
-        obj = cls()
-        obj.user_id = user_id
-        obj.save()
-        return True
-
-    @classmethod
-    def ensure_model(cls, user_id):
-        obj = cls.get_by_user_id(user_id)
-        if not obj:
-            cls.create_model(user_id)
-        else:
-            pass
-        return True
-
-
 class UserAddressList(Document):
     '''
     user's daily records

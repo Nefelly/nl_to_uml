@@ -2,6 +2,7 @@
 import time
 import datetime
 import random
+import cPickle
 from hendrix.conf import setting
 from ..redis import RedisClient
 from ..key import (
@@ -143,7 +144,7 @@ class MatchService(object):
         else:
             quit_user = user_id1 if leave_fake_id == fake_id else user_id2
         obj = MatchRecord.create(user_id1, user_id2, cls.MATCH_TYPE, quit_user, match_time, int(time.time()) - match_time)
-        MqService.push(USER_MODEL_EXCHANGE, {'model_type': 'match', 'data': obj.to_json()})
+        MqService.push(USER_MODEL_EXCHANGE, {'model_type': 'match', 'data': cPickle.dumps(obj)})
         redis_client.delete(key)
 
     @classmethod
