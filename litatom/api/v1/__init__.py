@@ -80,6 +80,7 @@ b.add_url_rule('/lit/admin/mongo_gen_csv_page', 'admin-mongo_gen_csv_page', endp
 
 # 图片
 b.add_url_rule('/lit/image/upload', 'image-upload', endpoint.oss.upload_image_from_file, methods=['POST'])
+b.add_url_rule('/lit/image/chat_upload', 'image-upload', endpoint.oss.upload_image_from_file, methods=['POST'])
 # b.add_url_rule('/lit/image/<fileid>', 'get-image', endpoint.oss.get_image)
 b.add_url_rule('/lit/image/<fileid>', 'get-image', endpoint.oss.get_image)
 b.add_url_rule('/lit/simage/<fileid>', 'get-simage', endpoint.oss.get_simage)
