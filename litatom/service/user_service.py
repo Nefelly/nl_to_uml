@@ -179,6 +179,7 @@ class UserService(object):
     def report_spam(cls, user_id, word):
         TrackSpamRecord.create(word, user_id)
         cls.alert_to_user(user_id)
+        return None, True
 
     @classmethod
     def _on_update_info(cls, user, data):
