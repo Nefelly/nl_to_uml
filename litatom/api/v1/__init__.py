@@ -112,6 +112,7 @@ b.add_url_rule('/lit/home/download', 'home-download', endpoint.home.download_app
 b.add_url_rule('/lit/home/upload_address_list', 'home-upload_address_list', endpoint.home.upload_address_list, methods=['POST'])
 b.add_url_rule('/lit/home/address_list', 'home-get_address_list', endpoint.home.get_address_list)
 b.add_url_rule('/lit/home/spam_words', 'home-spam_words', endpoint.home.get_spam_word)
+b.add_url_rule('/lit/home/report_spam', 'home-report_spam', endpoint.home.report_spam, methods=['POST'])
 
 # huanxin
 b.add_url_rule('/lit/huanxin/<target_user_id>', 'huanxin-get-info', endpoint.huanxin.get_user_info)

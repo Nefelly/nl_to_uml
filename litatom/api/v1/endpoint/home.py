@@ -39,7 +39,8 @@ from ....service import (
     UserFilterService,
     FeedService,
     UserSettingService,
-    AntiSpamService
+    AntiSpamService,
+    UserService
 )
 
 logger = logging.getLogger(__name__)
@@ -121,6 +122,16 @@ def get_spam_word():
     if not status:
         return fail(res)
     return success(res)
+
+
+@session_required
+def report_spam():
+    data = request.json
+    word = data.get('word')
+    data, status = UserService.report_spam(request.user_id, word)
+    if not status:
+        return fail(data)
+    return success(data)
 
 def settings():
     return success(UserSettingService.get_settings(request.user_id))
