@@ -90,7 +90,7 @@ class AccountFlowRecord(Document):
     user_id = StringField(required=True)
     action = StringField(required=True)
     money = FloatField(required=True, default=0)
-    diamonds = StringField(required=False)
+    diamonds = IntField(required=False)
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
 
     @classmethod
