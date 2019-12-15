@@ -36,7 +36,7 @@ class AntiSpamService(object):
     ACCOST_INTER = 5 * ONE_MIN
     ACCOST_RATE = 5
     ACCOST_STOP_INTER = 10 * ONE_MIN
-    ACCOST_STOP_RATE = 20
+    ACCOST_STOP_RATE = 19
 
 
     @classmethod
