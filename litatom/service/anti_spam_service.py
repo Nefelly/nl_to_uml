@@ -36,7 +36,7 @@ class AntiSpamService(object):
     ACCOST_INTER = 5 * ONE_MIN
     ACCOST_RATE = 5
     ACCOST_STOP_INTER = 10 * ONE_MIN
-    ACCOST_STOP_RATE = 19
+    ACCOST_STOP_RATE = 20
 
 
     @classmethod
@@ -65,19 +65,19 @@ class AntiSpamService(object):
         rate = cls.ACCOST_RATE - 1   # the first time is used
         res = redis_client.get(key)
         if not res:
-            redis_client.set(key, rate, cls.ACCOST_INTER)
             if should_stop():
                 return cls.ACCOST_BAN
+            redis_client.set(key, rate, cls.ACCOST_INTER)
             return cls.ACCOST_PASS
         else:
+            if should_stop():
+                return cls.ACCOST_BAN
             res = int(res)
             if res <= 0:
                 UserAction.create(user_id, ACTION_ACCOST_OVER, None, None, ACTION_ACCOST_OVER)
                 return cls.ACCOST_NEED_VIDEO
             else:
                 redis_client.decr(key)
-                if should_stop():
-                    return cls.ACCOST_BAN
                 return cls.ACCOST_PASS
 
     @classmethod
