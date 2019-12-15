@@ -70,13 +70,13 @@ class AntiSpamService(object):
             redis_client.set(key, rate, cls.ACCOST_INTER)
             return cls.ACCOST_PASS
         else:
-            if should_stop():
-                return cls.ACCOST_BAN
             res = int(res)
             if res <= 0:
                 UserAction.create(user_id, ACTION_ACCOST_OVER, None, None, ACTION_ACCOST_OVER)
                 return cls.ACCOST_NEED_VIDEO
             else:
+                if should_stop():
+                    return cls.ACCOST_BAN
                 redis_client.decr(key)
                 return cls.ACCOST_PASS
 
