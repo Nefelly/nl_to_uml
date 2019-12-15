@@ -30,6 +30,7 @@ TYPE_VOICE_TENCENT = 'tencent'
 
 # 后端action
 ACTION_ACCOST_OVER = 'accost_over'
+ACTION_ACCOST_STOP = 'accost_stop'
 
 
 # 提示消息

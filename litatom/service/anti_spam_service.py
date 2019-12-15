@@ -18,7 +18,8 @@ from ..key import (
 )
 from ..const import (
     ONE_MIN,
-    ACTION_ACCOST_OVER
+    ACTION_ACCOST_OVER,
+    ACTION_ACCOST_STOP
 )
 
 logger = logging.getLogger(__name__)
@@ -56,16 +57,17 @@ class AntiSpamService(object):
             else:
                 stop_num = int(stop_num)
                 if stop_num <= 0:
+                    UserAction.create(user_id, ACTION_ACCOST_STOP, None, None, ACTION_ACCOST_STOP)
                     return True
                 redis_client.decr(stop_key)
                 return False
-        if should_stop():
-            return cls.ACCOST_BAN
         key = REDIS_ACCOST_RATE.format(user_id=user_id)
         rate = cls.ACCOST_RATE - 1   # the first time is used
         res = redis_client.get(key)
         if not res:
             redis_client.set(key, rate, cls.ACCOST_INTER)
+            if should_stop():
+                return cls.ACCOST_BAN
             return cls.ACCOST_PASS
         else:
             res = int(res)
