@@ -52,7 +52,7 @@ class AntiSpamService(object):
             stop_key = REDIS_ACCOST_STOP_RATE.format(user_id=user_id)
             stop_num = redis_client.get(stop_key)
             if not stop_num:
-                redis_client.set(key, cls.ACCOST_STOP_RATE - 1, cls.ACCOST_STOP_INTER)
+                redis_client.set(stop_key, cls.ACCOST_STOP_RATE - 1, cls.ACCOST_STOP_INTER)
                 return False
             else:
                 stop_num = int(stop_num)
@@ -76,6 +76,8 @@ class AntiSpamService(object):
                 return cls.ACCOST_NEED_VIDEO
             else:
                 redis_client.decr(key)
+                if should_stop():
+                    return cls.ACCOST_BAN
                 return cls.ACCOST_PASS
 
     @classmethod
