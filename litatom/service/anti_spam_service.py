@@ -13,7 +13,8 @@ from ..service import (
     GlobalizationService
 )
 from ..key import (
-    REDIS_ACCOST_RATE
+    REDIS_ACCOST_RATE,
+    REDIS_ACCOST_STOP_RATE
 )
 from ..const import (
     ONE_MIN,
@@ -33,6 +34,9 @@ class AntiSpamService(object):
     ACCOST_NEED_VIDEO = 'need_video'
     ACCOST_INTER = 5 * ONE_MIN
     ACCOST_RATE = 5
+    ACCOST_STOP_INTER = 10 * ONE_MIN
+    ACCOST_STOP_RATE = 20
+
 
     @classmethod
     def is_spam_word(cls, word, user_id):
@@ -43,6 +47,20 @@ class AntiSpamService(object):
 
     @classmethod
     def can_accost(cls, user_id):
+        def should_stop():
+            stop_key = REDIS_ACCOST_STOP_RATE.format(user_id=user_id)
+            stop_num = redis_client.get(stop_key)
+            if not stop_num:
+                redis_client.set(key, cls.ACCOST_STOP_RATE - 1, cls.ACCOST_STOP_INTER)
+                return False
+            else:
+                stop_num = int(stop_num)
+                if stop_num <= 0:
+                    return True
+                redis_client.decr(stop_key)
+                return False
+        if should_stop():
+            return cls.ACCOST_BAN
         key = REDIS_ACCOST_RATE.format(user_id=user_id)
         rate = cls.ACCOST_RATE - 1   # the first time is used
         res = redis_client.get(key)
