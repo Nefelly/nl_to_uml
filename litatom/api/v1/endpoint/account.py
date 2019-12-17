@@ -44,6 +44,12 @@ def product_info():
     return success(data)
 
 
+def diamond_products():
+    data, status = AccountService.diamond_products(request.user_id)
+    if not status:
+        return fail(data)
+    return success(data)
+
 @session_required
 def pay_inform():
     payload = request.json

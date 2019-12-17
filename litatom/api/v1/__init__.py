@@ -34,6 +34,7 @@ b.add_url_rule('/lit/account/account_info', 'account-account_info', endpoint.acc
 b.add_url_rule('/lit/account/products', 'account-product_info', endpoint.account.product_info)
 b.add_url_rule('/lit/account/pay_inform', 'account-pay_inform', endpoint.account.pay_inform, methods=['POST'])
 b.add_url_rule('/lit/account/buy_product', 'account-buy_product', endpoint.account.buy_product, methods=['POST'])
+b.add_url_rule('/lit/account/diamond_products', 'account-diamond_products', endpoint.account.diamond_products)
 
 # admin
 b.add_url_rule('/lit/admin/index', 'admin-index', endpoint.admin.index)
@@ -80,6 +81,7 @@ b.add_url_rule('/lit/admin/mongo_gen_csv_page', 'admin-mongo_gen_csv_page', endp
 
 # 图片
 b.add_url_rule('/lit/image/upload', 'image-upload', endpoint.oss.upload_image_from_file, methods=['POST'])
+b.add_url_rule('/lit/image/chat_upload', 'image-upload', endpoint.oss.upload_image_from_file, methods=['POST'])
 # b.add_url_rule('/lit/image/<fileid>', 'get-image', endpoint.oss.get_image)
 b.add_url_rule('/lit/image/<fileid>', 'get-image', endpoint.oss.get_image)
 b.add_url_rule('/lit/simage/<fileid>', 'get-simage', endpoint.oss.get_simage)
@@ -112,6 +114,7 @@ b.add_url_rule('/lit/home/download', 'home-download', endpoint.home.download_app
 b.add_url_rule('/lit/home/upload_address_list', 'home-upload_address_list', endpoint.home.upload_address_list, methods=['POST'])
 b.add_url_rule('/lit/home/address_list', 'home-get_address_list', endpoint.home.get_address_list)
 b.add_url_rule('/lit/home/spam_words', 'home-spam_words', endpoint.home.get_spam_word)
+b.add_url_rule('/lit/home/report_spam', 'home-report_spam', endpoint.home.report_spam, methods=['POST'])
 
 # huanxin
 b.add_url_rule('/lit/huanxin/<target_user_id>', 'huanxin-get-info', endpoint.huanxin.get_user_info)
@@ -174,6 +177,7 @@ b.add_url_rule('/lit/following', 'following', endpoint.user_relations.following)
 b.add_url_rule('/lit/follower', 'follower', endpoint.user_relations.follower)
 
 b.add_url_rule('/lit/ad/times_left', 'ad-times-left', endpoint.ad.times_left)
+b.add_url_rule('/lit/ad/reset_accost', 'ad-reset_accost', endpoint.ad.reset_accost, methods=['POST'])
 
 # voice_chat
 # b.add_url_rule('/lit/voice_chat/invite/<target_user_id>', 'voice_chat-invite', endpoint.voice_chat.invite)

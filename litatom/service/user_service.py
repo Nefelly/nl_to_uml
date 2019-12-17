@@ -51,7 +51,8 @@ from ..model import (
     ReferralCode,
     UserModel,
     Report,
-    UserAccount
+    UserAccount,
+    TrackSpamRecord
 )
 from ..service import (
     SmsCodeService,
@@ -174,6 +175,11 @@ class UserService(object):
             UserRecord.add_spam_forbidden(user_id)
         return should_block
 
+    @classmethod
+    def report_spam(cls, user_id, word):
+        TrackSpamRecord.create(word, user_id)
+        cls.alert_to_user(user_id)
+        return None, True
 
     @classmethod
     def _on_update_info(cls, user, data):
