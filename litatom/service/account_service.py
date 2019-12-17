@@ -10,10 +10,16 @@ from ..model import (
 from ..const import (
     ONE_WEEK
 )
-# from ..service import (
-#     MatchService
-# )
+from ..service import (
+    MatchService,
+    AnoyMatchService,
+    VoiceMatchService,
+    VideoMatchService
+)
 from ..redis import RedisClient
+from flask import (
+    request
+)
 
 logger = logging.getLogger(__name__)
 redis_client = RedisClient()['lit']
@@ -92,9 +98,19 @@ class AccountService(object):
             return u'product must be one of: %s' % (','.join(cls.PRODUCT_INFOS.keys())), False
         diamonds = cls.PRODUCT_INFOS.get(product)
         if product in cls.MEMBER_SHIPS:
-            err_msg = cls.buy_product(user_id, product)
+            err_msg = cls.buy_member_ship(user_id, product)
             if err_msg:
                 return err_msg, False
+        elif product == cls.ACCELERATE:
+            match_type = request.args.get('match_type', '')
+            m = {
+                'video': VideoMatchService,
+                'voice': VoiceMatchService,
+                'text': AnoyMatchService
+            }
+            data, status = getattr(m.get(match_type, AnoyMatchService), 'accelerate')(user_id)
+            if not status:
+                return data, False
         err_msg = cls.change_diamonds(user_id, -diamonds)
         if err_msg:
             return err_msg, False
