@@ -36,7 +36,7 @@ class AccountService(object):
     @classmethod
     def diamond_products(cls, user_id):
         return {
-            'asf123': 1,
+            'android.test.purchased': 10,
             'asfd324': 5,
             '324asd': 15
         }, True
