@@ -24,12 +24,22 @@ class AccountService(object):
     '''
     WEEK_MEMBER = 'week_member'
     ONE_MORE_TIME = 'one_more_time'
+    ACCELERATE = 'accelerate'
     PRODUCT_INFOS = {
         WEEK_MEMBER: 15,
-        ONE_MORE_TIME: 1
+        ONE_MORE_TIME: 1,
+        ACCELERATE: 1
     }
     MEMBER_SHIPS = [WEEK_MEMBER]
     ERR_DIAMONDS_NOT_ENOUGH = 'not enough diamonds, please deposit first.'
+
+    @classmethod
+    def diamond_products(cls, user_id):
+        return {
+            'asf123': 1,
+            'asfd324': 5,
+            '324asd': 15
+        }, True
 
     @classmethod
     def get_user_account_info(cls, user_id):
