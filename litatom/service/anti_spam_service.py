@@ -19,7 +19,8 @@ from ..key import (
 from ..const import (
     ONE_MIN,
     ACTION_ACCOST_OVER,
-    ACTION_ACCOST_STOP
+    ACTION_ACCOST_STOP,
+    ACTION_ACCOST_NEED_VIDEO
 )
 
 logger = logging.getLogger(__name__)
@@ -72,7 +73,7 @@ class AntiSpamService(object):
         else:
             res = int(res)
             if res <= 0:
-                UserAction.create(user_id, ACTION_ACCOST_OVER, None, None, ACTION_ACCOST_OVER)
+                UserAction.create(user_id, ACTION_ACCOST_NEED_VIDEO, None, None, ACTION_ACCOST_NEED_VIDEO)
                 return cls.ACCOST_NEED_VIDEO
             else:
                 if should_stop():
