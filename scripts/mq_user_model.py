@@ -29,7 +29,7 @@ class ConsumeMq(MQConsumer):
             print payload
             model_type = payload.get('model_type', '')
             if model_type == 'match':
-                obj = cPickle.loads(payload.get('data'))
+                obj = cPickle.loads(str(payload.get('data')))
                 UserModelService.cal_match(obj)
         except Exception, e:
             import traceback
