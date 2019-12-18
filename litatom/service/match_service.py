@@ -310,7 +310,7 @@ class MatchService(object):
             inds = min(len(uids), len(uid_scores))
             for i in range(inds):
                 fakeid_scores.append([to_scan[i], uid_scores[i][1]])
-            fake_ids = sorted(fakeid_scores, key=lambda x: -x[1])
+            fake_ids = [el[0] for el in sorted(fakeid_scores, key=lambda x: -x[1])]
             to_scan = fake_ids
             for i in range(len(to_scan)):
                 # fake_id2 = random.choice(other_fakeids)
