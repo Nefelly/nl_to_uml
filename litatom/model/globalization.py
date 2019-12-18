@@ -157,6 +157,12 @@ class RegionWord(Document):
             'vi': u'đã ghé thăm tường nhà bạn 👣',
             'th': u'เข้าเยี่ยมชมโปรไฟล์ของคุณ👣',
             'ja': u'があなたのプロフィールを訪問した👣'
+        },
+        'queue_inform': {
+            'en': u'Queuing number %d，Wait about %d minute(s)',
+            'vi': u'Đang xếp hàng đợi ở thứ tự %d, vui lòng đợi khoảng %d phút',
+            'th': u'กำลังรอ %d คิว ประมาณ %d นาที',
+            'ja': u'今は%d番です。%d分間お待ちください。'
         }
 
     }

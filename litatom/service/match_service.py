@@ -683,7 +683,7 @@ class MatchService(object):
             "is_accelerate": is_accelerate,
             "queue_number": queue_num,
             "wait_time": wait_time,
-            "queue_info": u'Queuing number: %d, wait about %d minutes' % (queue_num, wait_time)
+            "queue_info": GlobalizationService.get_region_word('queue_inform') % (queue_num, wait_time)
         }, True
 
     @classmethod
