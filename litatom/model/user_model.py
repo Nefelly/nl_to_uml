@@ -31,11 +31,13 @@ class UserModel(Document):
         'alias': 'db_alias'
     }
     ALERT_TIMES = 3
+    DEFAULT_SCORE = -1
     user_id = StringField(required=True)
     alert_num = IntField(required=True, default=0)
     match_times = IntField(default=0)
     total_match_inter = FloatField(default=0)
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
+
 
     @classmethod
     def create(cls, user_id):
@@ -48,7 +50,7 @@ class UserModel(Document):
     @cached_property
     def avr_match(self):
         if self.match_times == 0:
-            return -1
+            return self.DEFAULT_SCORE
         return self.total_match_inter / self.match_times
 
     @classmethod
@@ -60,6 +62,27 @@ class UserModel(Document):
         obj = cls.objects(user_id=user_id).first()
         redis_client.set(cache_key, cPickle.dumps(obj), USER_ACTIVE)
         return obj
+
+    @classmethod
+    def batch_get_by_user_ids(cls, user_ids):
+        keys = [REDIS_USER_MODEL_CACHE.format(user_id=_) for _ in user_ids]
+        m = {}
+        for uid, obj in zip(user_ids, redis_client.mget(keys)):
+            m[uid] = obj
+        return m
+
+    @classmethod
+    def batch_get_score(cls, user_ids):
+        res = []
+        m = cls.batch_get_by_user_ids(user_ids[:100])
+        for _ in user_ids:
+            obj = m.get(_)
+            if obj:
+                score = obj.avr_match
+            else:
+                score = cls.DEFAULT_SCORE
+            res.append([_, score])
+        return res
 
     @classmethod
     def _disable_cache(cls, user_id):

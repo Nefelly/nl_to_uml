@@ -48,7 +48,8 @@ from ..service import (
 )
 from ..model import (
     User,
-    MatchRecord
+    MatchRecord,
+    UserModel
 )
 redis_client = RedisClient()['lit']
 
@@ -303,6 +304,14 @@ class MatchService(object):
             near_num = len(to_scan)
             if user1_out_wait:
                 to_scan = to_scan + far_new + far_old
+            uids = cls._batch_uids_by_fake_id(to_scan)
+            uid_scores = UserModel.batch_get_score(uids)
+            fakeid_scores = []
+            inds = min(len(uids), len(uid_scores))
+            for i in range(inds):
+                fakeid_scores.append([to_scan[i], uid_scores[i][1]])
+            fake_ids = sorted(fakeid_scores, key=lambda x: -x[1])
+            to_scan = fake_ids
             for i in range(len(to_scan)):
                 # fake_id2 = random.choice(other_fakeids)
                 fake_id2 = to_scan[i]
@@ -568,6 +577,10 @@ class MatchService(object):
     @classmethod
     def _uid_by_fake_id(cls, fake_id):
         return redis_client.get(cls.TYPE_FAKE_ID_UID.format(fake_id=fake_id))
+
+    @classmethod
+    def _batch_uids_by_fake_id(cls, fake_ids):
+        return redis_client.mget([cls.TYPE_FAKE_ID_UID.format(fake_id=_) for _ in fake_ids])
 
     @classmethod
     def _fakeid_by_uid(cls, user_id):
