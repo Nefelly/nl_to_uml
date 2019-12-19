@@ -141,7 +141,10 @@ def check_pic():
     url = data.get('url')
     if not url:
         return success()
+
     reason = QiniuService.should_pic_block_from_url(url)
+    print url
+    print 'reason', reason
     if reason:
         data, status = UserService.report_spam(request.user_id, url)
         if not status:
