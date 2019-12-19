@@ -1,8 +1,5 @@
 # coding: utf-8
-import time
-import random
 from ..redis import RedisClient
-
 from ..model import (
     OnlineLimit,
     UserSetting,
