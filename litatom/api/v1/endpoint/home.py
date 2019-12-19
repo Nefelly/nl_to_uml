@@ -40,7 +40,8 @@ from ....service import (
     FeedService,
     UserSettingService,
     AntiSpamService,
-    UserService
+    UserService,
+    QiniuService
 )
 
 logger = logging.getLogger(__name__)
@@ -132,6 +133,22 @@ def report_spam():
     if not status:
         return fail(data)
     return success(data)
+
+
+@session_required
+def check_pic():
+    data = request.json
+    url = data.get('url')
+    if not url:
+        return success()
+    reason = QiniuService.should_pic_block_from_url(url)
+    if reason:
+        data, status = UserService.report_spam(request.user_id, url)
+        if not status:
+            return fail(data)
+        return success(data)
+    return success()
+
 
 def settings():
     return success(UserSettingService.get_settings(request.user_id))
