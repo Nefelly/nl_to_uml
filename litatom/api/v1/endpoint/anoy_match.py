@@ -153,6 +153,8 @@ def accelerate_by_ad():
         return fail(data)
     return success(data)
 
+
+
 def update_video(vid):
     region = GlobalizationService.get_region()
     status = YoutubeVideo.create(vid, region, request.json)

@@ -28,7 +28,6 @@ from .ad_service import (
 )
 from .user_filter_service import UserFilterService
 from .user_service import UserService
-from .account_service import AccountService
 from .voice_chat_service import VoiceChatService
 from .message_service import UserMessageService
 from .qiniu_service import QiniuService
@@ -45,6 +44,7 @@ from .track_action_service import TrackActionService
 from .feedback_service import FeedbackService
 from .admin_service import AdminService
 from .palm_service import PalmService
+from .account_service import AccountService
 from .maintain_service import MaintainService
 from .chat_record_service import ChatRecordService
 # from .mysql_sync_service import MysqlSyncService

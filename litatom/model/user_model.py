@@ -3,6 +3,7 @@ import datetime
 import json
 import bson
 import cPickle
+from hendrix.conf import setting
 from mongoengine import (
     BooleanField,
     DateTimeField,
@@ -30,8 +31,9 @@ class UserModel(Document):
         'strict': False,
         'alias': 'db_alias'
     }
-    ALERT_TIMES = 3
+
     DEFAULT_SCORE = -1
+    ALERT_TIMES = 3 if not setting.IS_DEV else 1000
     user_id = StringField(required=True)
     alert_num = IntField(required=True, default=0)
     match_times = IntField(default=0)
