@@ -141,10 +141,7 @@ def check_pic():
     url = data.get('url')
     if not url:
         return success()
-
     reason = QiniuService.should_pic_block_from_url(url)
-    print url
-    print 'reason', reason
     if reason:
         data, status = UserService.report_spam(request.user_id, url)
         if not status:
@@ -155,6 +152,7 @@ def check_pic():
 
 def settings():
     return success(UserSettingService.get_settings(request.user_id))
+
 
 def check_version():
     version_now = '2.5.6'
@@ -173,6 +171,7 @@ def check_version():
             'need_update': False,
         }
     return success(data)
+
 
 @session_finished_required
 def report():
@@ -257,6 +256,7 @@ def track_action():
         return success()
     return fail()
 
+
 def index():
     return current_app.send_static_file('index.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
 
@@ -264,9 +264,11 @@ def index():
 def privacy():
     return render_template('ppAndTos.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
 
+
 def rules():
     f_name = 'rules_%s.html' % GlobalizationService.get_region()
     return render_template(f_name), 200, {'Content-Type': 'text/html; charset=utf-8'}
+
 
 @session_required
 def action_by_user_id():
