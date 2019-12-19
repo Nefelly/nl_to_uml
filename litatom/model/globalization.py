@@ -163,6 +163,12 @@ class RegionWord(Document):
             'vi': u'Đang xếp hàng đợi ở thứ tự %d, vui lòng đợi khoảng %d phút',
             'th': u'กำลังรอ %d คิว ประมาณ %d นาที',
             'ja': u'今は%d番です。%d分間お待ちください。'
+        },
+        'filter_inform': {
+            'en': u'Filtering will take effect in matching scenarios and recommended user lists',
+            'vi': u'Sự chọn lọc sẽ giúp hiệu quả hơn giữa các điều kiện ghép đôi và danh sách người dùng được đề nghị ',
+            'th': u'การเลือกตัวกรองจะมีผลต่อการแมช์และรายชื่อผู้ใช้ที่แนะนำ',
+            'ja': u'フィルターはマッチングとおすすめのユーザーリストにある'
         }
 
     }

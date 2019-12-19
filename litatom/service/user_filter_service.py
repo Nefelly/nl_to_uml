@@ -8,6 +8,9 @@ from ..model import (
     UserSetting,
     User
 )
+from ..service import (
+    GlobalizationService
+)
 
 redis_client = RedisClient()['lit']
 
@@ -18,16 +21,17 @@ class UserFilterService(object):
     def online_filter(cls, user_id, age_low, age_high, gender):
         obj = OnlineLimit.make(age_low, age_high, gender)
         user_setting = UserSetting.get_by_user_id(user_id)
+        msg = GlobalizationService.get_region_word('filter_inform')
         if user_setting:
             user_setting.online_limit = obj
             user_setting.save()
-            return None, True
+            return msg, True
         else:
             user_setting = UserSetting()
             user_setting.user_id = user_id
             user_setting.online_limit = obj
             user_setting.save()
-            return None, True
+            return msg, True
 
     @classmethod
     def is_gender_filtered(cls, user_id):
