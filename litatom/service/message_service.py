@@ -163,9 +163,9 @@ class UserMessageService(object):
         key = REDIS_VISIT_RATE.format(user_id=user_id)
         if redis_client.get(key):
             return False
-        online_time = UserService.uid_online_time(user_id)
-        if int(time.time()) - online_time < ONE_HOUR:
-            return False
+        # online_time = UserService.uid_online_time(user_id)
+        # if int(time.time()) - online_time < ONE_HOUR:
+        #     return False
         redis_client.set(key, 1, cls.PUSH_INTERVAL)
         return True
 
