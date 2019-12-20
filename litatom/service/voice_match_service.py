@@ -54,7 +54,7 @@ class VoiceMatchService(MatchService):
     TYPE_MATCH_PAIR = REDIS_VOICE_MATCH_PAIR
     TYPE_JUDGE_LOCK = REDIS_VOICE_JUDGE_LOCK
     MATCH_TYPE = 'voice'
-    MATCH_KEY_BY_REGION_GENDER = GlobalizationService.voice_match_key_by_region_gender
+    # MATCH_KEY_BY_REGION_GENDER = GlobalizationService.voice_match_key_by_region_gender
 
     @classmethod
     def get_tips(cls):
