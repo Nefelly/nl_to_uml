@@ -403,12 +403,10 @@ class MatchService(object):
 
     @classmethod
     def _incr_match_left(cls, user_id, num=1):
-        # if AccountService.is_member(user_id):
-        #     return
         now_date = now_date_key()
         match_left_key = cls.TYPE_USER_MATCH_LEFT.format(user_date=user_id + now_date)
         if not redis_client.get(match_left_key):
-            default_match_times = cls.MATCH_TMS if not AccountService.is_member(user_id) else cls.MATCH_TMS
+            default_match_times = cls.MATCH_TMS if not cls._is_member(user_id) else cls.MATCH_TMS
             redis_client.setnx(match_left_key, default_match_times)
             # redis_client.setnx(match_left_key, cls.MATCH_TMS)
             redis_client.expire(match_left_key, ONE_DAY)
