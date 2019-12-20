@@ -25,7 +25,8 @@ from ..const import (
     BOY,
     GIRL,
     TYPE_VOICE_TENCENT,
-    TYPE_VOICE_AGORA
+    TYPE_VOICE_AGORA,
+    CODE_PRIOR_VOICE
 )
 from ..service import (
     GlobalizationService,
@@ -85,7 +86,7 @@ class VoiceMatchService(MatchService):
             return res, status
         voice_type = TYPE_VOICE_AGORA
         matched_id = res.get('matched_fake_id')
-        if redis_client.get(REDIS_VOICE_SDK_TYPE.format(user_id=user_id)) == TYPE_VOICE_TENCENT:
+        if CODE_PRIOR_VOICE == TYPE_VOICE_TENCENT and redis_client.get(REDIS_VOICE_SDK_TYPE.format(user_id=user_id)) == TYPE_VOICE_TENCENT:
             other_user_id = cls._uid_by_fake_id(matched_id)
             if redis_client.get(REDIS_VOICE_SDK_TYPE.format(user_id=other_user_id)) == TYPE_VOICE_TENCENT:
                 voice_type = TYPE_VOICE_TENCENT
