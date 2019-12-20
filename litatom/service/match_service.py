@@ -75,9 +75,9 @@ class MatchService(object):
     TYPE_FAKE_LIKE = REDIS_FAKE_LIKE
     TYPE_MATCH_PAIR = REDIS_MATCH_PAIR
     TYPE_JUDGE_LOCK = REDIS_JUDGE_LOCK
-    MATCH_KEY_BY_REGION_GENDER = GlobalizationService.match_key_by_region_type_gender_homo
-
     MATCH_TYPE = 'anoy'
+    MATCH_KEY_BY_REGION_GENDER = lambda gender, is_homo: GlobalizationService.match_key_by_region_type_gender_homo(MATCH_TYPE, gender, is_homo)
+
     ACCELERATE_KEY_BY_TYPE_REGION_GENDER = GlobalizationService.accelerate_match_key_by_region_type_gender_homo
 
     @classmethod
@@ -87,7 +87,7 @@ class MatchService(object):
     @classmethod
     def get_anoy_count(cls, gender):
         judge_time = cls.get_judge_time()
-        return redis_client.zcount(cls.MATCH_KEY_BY_REGION_GENDER(gender), judge_time, MAX_TIME) + \
+        return redis_client.zcount(cls.MATCH_KEY_BY_REGION_GENDER(gender, cls), judge_time, MAX_TIME) + \
                redis_client.zcount(cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender), judge_time, MAX_TIME)
 
     @classmethod
