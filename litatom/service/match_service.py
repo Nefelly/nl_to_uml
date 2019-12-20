@@ -76,7 +76,7 @@ class MatchService(object):
     TYPE_MATCH_PAIR = REDIS_MATCH_PAIR
     TYPE_JUDGE_LOCK = REDIS_JUDGE_LOCK
     MATCH_TYPE = 'anoy'
-    MATCH_KEY_BY_REGION_GENDER = lambda gender, is_homo: GlobalizationService.match_key_by_region_type_gender_homo(MATCH_TYPE, gender, is_homo)
+    MATCH_KEY_BY_REGION_GENDER = lambda gender, is_homo: GlobalizationService.match_key_by_region_type_gender_homo('anoy', gender, is_homo)
 
     ACCELERATE_KEY_BY_TYPE_REGION_GENDER = GlobalizationService.accelerate_match_key_by_region_type_gender_homo
 
