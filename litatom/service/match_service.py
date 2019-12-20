@@ -78,7 +78,7 @@ class MatchService(object):
     MATCH_KEY_BY_REGION_GENDER = GlobalizationService.match_key_by_region_type_gender_homo
 
     MATCH_TYPE = 'anoy'
-    ACCELERATE_KEY_BY_TYPE_REGION_GENDER = GlobalizationService.accelerate_match_key_by_region_type_gender
+    ACCELERATE_KEY_BY_TYPE_REGION_GENDER = GlobalizationService.accelerate_match_key_by_region_type_gender_homo
 
     @classmethod
     def get_judge_time(cls):

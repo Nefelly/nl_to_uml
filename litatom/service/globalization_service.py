@@ -174,6 +174,12 @@ class GlobalizationService(object):
         return REDIS_ACCELERATE_REGION_TYPE_GENDER.format(match_type=match_type, region=region, gender=gender)
 
     @classmethod
+    def accelerate_match_key_by_region_type_gender_homo(cls, match_type, gender, is_homo=False):
+        region = cls.get_region()
+        homo = '' if not is_homo else 'homo'
+        return REDIS_ACCELERATE_HOMO_REGION_TYPE_GENDER.format(match_type=match_type, region=region, gender=gender, homo=homo)
+
+    @classmethod
     def voice_match_key_by_region_gender(cls, gender):
         region = cls.get_region()
         return REDIS_VOICE_GENDER_ONLINE_REGION.format(region=region, gender=gender)
