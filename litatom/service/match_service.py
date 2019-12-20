@@ -113,6 +113,7 @@ class MatchService(object):
         is_accelerate = cls._is_accelerate(user_id)
         is_homo = UserFilterService.is_homo(user_id, gender)
         if not is_accelerate:
+            print type(cls.MATCH_KEY_BY_REGION_GENDER)
             anoy_gender_key = cls.MATCH_KEY_BY_REGION_GENDER(gender, is_homo)
         else:
             anoy_gender_key = cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender)
