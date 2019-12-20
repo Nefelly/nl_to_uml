@@ -479,9 +479,10 @@ class OnlineLimit(EmbeddedDocument):
     age_low = IntField()
     age_high = IntField()
     gender = StringField()
+    is_new = BooleanField(default=False)
 
     @classmethod
-    def make(cls, age_low, age_high, gender):
+    def make(cls, age_low, age_high, gender, is_new):
         obj = cls()
         if age_low:
             obj.age_low = age_low
@@ -489,6 +490,7 @@ class OnlineLimit(EmbeddedDocument):
             obj.age_high = age_high
         if gender:
             obj.gender = gender
+        obj.is_new = is_new
         return obj
 
     def to_json(self):

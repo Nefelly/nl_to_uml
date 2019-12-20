@@ -15,8 +15,8 @@ class UserFilterService(object):
     HIGHEST_AGE = 25
 
     @classmethod
-    def online_filter(cls, user_id, age_low, age_high, gender):
-        obj = OnlineLimit.make(age_low, age_high, gender)
+    def online_filter(cls, user_id, age_low, age_high, gender, is_new=False):
+        obj = OnlineLimit.make(age_low, age_high, gender, is_new)
         user_setting = UserSetting.get_by_user_id(user_id)
         msg = {"message": GlobalizationService.get_region_word('filter_inform')}
         msg = None
@@ -49,6 +49,12 @@ class UserFilterService(object):
             return {},  True
         return user_setting.online_limit.to_json(), True
 
+    @classmethod
+    def is_homo(cls, user_id, gender):
+        user_setting = UserSetting.get_by_user_id(user_id)
+        if not user_setting or not user_setting.online_limit or user_setting.online_limit.gender != gender:
+            return False
+        return True
 
     @classmethod
     def batch_filter_by_age_gender(cls, user_id, target_uids):

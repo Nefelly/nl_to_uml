@@ -89,7 +89,8 @@ def online_filter():
     age_low = limits.get('age_low', None)
     age_high = limits.get('age_high', None)
     gender_limit = limits.get('gender', '')
-    data, status = UserFilterService.online_filter(request.user_id, age_low, age_high, gender_limit)
+    is_new = limits.get('is_new', False)
+    data, status = UserFilterService.online_filter(request.user_id, age_low, age_high, gender_limit, is_new)
     if status:
         return success(data)
     return fail(data)

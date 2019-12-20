@@ -39,6 +39,7 @@ from ..const import (
 )
 from ..service import (
     UserService,
+    UserFilterService,
     FollowService,
     BlockService,
     GlobalizationService,
@@ -74,8 +75,9 @@ class MatchService(object):
     TYPE_FAKE_LIKE = REDIS_FAKE_LIKE
     TYPE_MATCH_PAIR = REDIS_MATCH_PAIR
     TYPE_JUDGE_LOCK = REDIS_JUDGE_LOCK
-    MATCH_KEY_BY_REGION_GENDER = GlobalizationService.anoy_match_key_by_region_gender
-    MATCH_TYPE = 'soul'
+    MATCH_KEY_BY_REGION_GENDER = GlobalizationService.match_key_by_region_type_gender_homo
+
+    MATCH_TYPE = 'anoy'
     ACCELERATE_KEY_BY_TYPE_REGION_GENDER = GlobalizationService.accelerate_match_key_by_region_type_gender
 
     @classmethod
@@ -109,8 +111,9 @@ class MatchService(object):
             return
         int_time = int(time.time())
         is_accelerate = cls._is_accelerate(user_id)
+        is_homo = UserFilterService.is_homo(user_id, gender)
         if not is_accelerate:
-            anoy_gender_key = cls.MATCH_KEY_BY_REGION_GENDER(gender)
+            anoy_gender_key = cls.MATCH_KEY_BY_REGION_GENDER(gender, is_homo)
         else:
             anoy_gender_key = cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender)
         redis_client.zadd(anoy_gender_key, {fake_id: int_time})
@@ -433,10 +436,12 @@ class MatchService(object):
         gender = UserService.get_gender(user_id)
         if not gender:
             return PROFILE_NOT_COMPLETE, False
+
         user_id = str(user.id)
         msg, status = cls._match_left_verify(user_id)
         if not status:
             return msg, False
+
         old_fake_id = redis_client.get(cls.TYPE_UID_FAKE_ID.format(user_id=user_id))
         if old_fake_id:
             cls._destroy_fake_id(old_fake_id)

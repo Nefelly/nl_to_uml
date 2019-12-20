@@ -50,8 +50,10 @@ REDIS_FAKE_ID_UID = 'fakeid_uid:{fake_id}'
 REDIS_UID_FAKE_ID = 'uid_fakeid:{user_id}'
 
 REDIS_ANOY_GENDER_ONLINE_REGION = 'anoy_online:{gender}:{region}'   # sorted set   # !!!
+REDIS_TYPE_GENDER_HOMO_ONLINE_REGION = '{match_type}_{homo}online:{gender}:{region}'
 
 REDIS_ACCELERATE_REGION_TYPE_GENDER = 'accelerate_online:{match_type}:{region}:{gender}'
+REDIS_ACCELERATE_HOMO_REGION_TYPE_GENDER = 'accelerate_{homo}online:{match_type}:{region}:{gender}'
 
 REDIS_ANOY_CHECK_POOL = 'anoy_check_pool'   # sorted set
 REDIS_FAKE_ID_GENDER = 'fakeid_gender:{fake_id}'
