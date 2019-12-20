@@ -76,7 +76,7 @@ class MatchService(object):
     TYPE_MATCH_PAIR = REDIS_MATCH_PAIR
     TYPE_JUDGE_LOCK = REDIS_JUDGE_LOCK
     MATCH_TYPE = 'anoy'
-    MATCH_KEY_BY_REGION_GENDER = lambda gender, is_homo: GlobalizationService.match_key_by_region_type_gender_homo('anoy', gender, is_homo)
+    MATCH_KEY_BY_REGION_GENDER = GlobalizationService.match_key_by_region_type_gender_homo
 
     ACCELERATE_KEY_BY_TYPE_REGION_GENDER = GlobalizationService.accelerate_match_key_by_region_type_gender_homo
 
@@ -114,7 +114,7 @@ class MatchService(object):
         is_homo = UserFilterService.is_homo(user_id, gender)
         if not is_accelerate:
             print type(cls.MATCH_KEY_BY_REGION_GENDER), '!' * 100
-            anoy_gender_key = cls.MATCH_KEY_BY_REGION_GENDER(gender, is_homo)
+            anoy_gender_key = cls.MATCH_KEY_BY_REGION_GENDER(cls.MATCH_TYPE, gender, is_homo)
         else:
             anoy_gender_key = cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender)
         redis_client.zadd(anoy_gender_key, {fake_id: int_time})
