@@ -57,19 +57,30 @@ class UserFilterService(object):
         return True
 
     @classmethod
-    def batch_filter_by_age_gender(cls, user_id, target_uids):
+    def batch_filter_by_age(cls, user_id, target_uids):
         res = []
         user_setting = UserSetting.get_by_user_id(user_id)
         if not user_setting or not user_setting.online_limit:
             return target_uids
         limits = user_setting.online_limit
-        uid_ages = User.batch_age_by_user_ids(target_uids)
-        for uid, age in uid_ages:
+        uid_ages_m = User.batch_age_by_user_ids(target_uids)
+        for uid in target_uids:
+            age = uid_ages_m[age]
             if limits.age_low and age < limits.age_low:
                 continue
             if limits.age_high and limits.age_high != cls.HIGHEST_AGE and age > limits.age_high:
                 res.append(uid)
         return res
+
+    @classmethod
+    def batch_filter_two_way(cls, user_id, target_uids):
+        target_uids = cls.batch_filter_by_age(user_id, target_uids)
+        if not target_uids:
+            return target_uids
+        user_age = User.age_by_user_id(user_id)
+        user_settings_m = UserSetting.batch_get_by_user_ids(target_uids)
+        res = []
+
 
     @classmethod
     def filter_by_age_gender(cls, user_id, target_uid):

@@ -303,6 +303,13 @@ class User(Document, UserSessionMixin):
 
     @classmethod
     def batch_age_by_user_ids(cls, target_uids):
+        keys = [REDIS_KEY_USER_AGE.format(user_id=_) for _ in target_uids]
+        m = {}
+        for uid, age in zip(target_uids, redis_client.mget(keys)):
+            if not age:
+                age = cls.age_by_user_id(uid)
+            m[uid] = age
+        return m
         pass
         return
 
@@ -526,6 +533,16 @@ class UserSetting(Document):
         # redis_client.incr('setting_cache_miss_cnt')
         redis_client.set(cache_key, cPickle.dumps(obj), USER_ACTIVE)
         return obj
+
+    @classmethod
+    def batch_get_by_user_ids(cls, user_ids):
+        keys = [REDIS_USER_SETTING_CACHE.format(user_id=_) for _ in user_ids]
+        m = {}
+        for uid, obj in zip(user_ids, redis_client.mget(keys)):
+            if not obj:
+                obj = cls.get_by_user_id(uid)
+            m[uid] = obj
+        return m
 
     @classmethod
     def _disable_cache(cls, user_id):
