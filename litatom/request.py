@@ -13,7 +13,9 @@ from .model import User
 from .service import (
     AdminService,
     Ip2AddressService,
-    GlobalizationService
+    GlobalizationService,
+    UserFilterService,
+    UserService
 )
 
 class LitatomRequest(flask.Request):
@@ -212,6 +214,14 @@ class LitatomRequest(flask.Request):
         if user_id:
             self.has_user_session = True
         return user_id
+
+    @cached_property
+    def is_homo(self):
+        return UserFilterService.is_homo(self.user_id, self.gender)
+
+    @cached_property
+    def gender(self):
+        return UserService.get_gender(self.user_id)
 
     @cached_property
     def admin_user_name(self):
