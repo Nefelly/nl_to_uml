@@ -717,6 +717,7 @@ class MatchService(object):
         redis_client.set(key, 1, ONE_DAY)
         fake_id = cls._fakeid_by_uid(user_id)
         gender = UserService.get_gender(user_id)
+        print fake_id, cls.MATCH_KEY_BY_REGION_GENDER(gender), '!' * 100
         old_time = redis_client.zscore(cls.MATCH_KEY_BY_REGION_GENDER(gender), fake_id)
         if old_time:
             redis_client.zrem(cls.MATCH_KEY_BY_REGION_GENDER(gender), fake_id)
