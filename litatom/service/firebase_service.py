@@ -43,12 +43,19 @@ class FirebaseService(object):
         obj = FirebaseInfo.get_by_user_id(user_id)
         if not obj:
             return u'no firebase token', False
-        data = data
         headers = {
             'Content-Type': 'application/json; charset=utf-8',
             'Authorization': 'key=%s' % cls.SERVER_KEY
         }
         try:
+            data = {
+                'topic': 'cmd',
+                'notification': {
+                    'title': 'hello',
+                    'body': data
+                },
+                'to': obj.user_token
+            }
             response = requests.post(cls.SEND_URL, verify=False, headers=headers, json=data).json()
             print response
             if response.get('failure', 1) == 1:
