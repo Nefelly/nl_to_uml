@@ -92,7 +92,6 @@ def online_filter():
     is_new = limits.get('is_new', False)
     if not isinstance(is_new, bool) and is_new == u'True':
         is_new = is_new == 'True'
-    print is_new, '**' * 100, type(is_new), isinstance(is_new, str)
     data, status = UserFilterService.online_filter(request.user_id, age_low, age_high, gender_limit, is_new)
     if status:
         return success(data)
