@@ -173,6 +173,12 @@ class AdminService(object):
         return None, True
 
     @classmethod
+    def ban_reporter(cls, user_id):
+        num = Report.objects(uid=user_id).delete()
+        res = UserService.forbid_user(user_id, 20 * ONE_DAY)
+        return None, True
+
+    @classmethod
     def ban_user_by_feed_id(cls, feed_id, ban_time):
         feed = Feed.get_by_id(feed_id)
         if not feed:

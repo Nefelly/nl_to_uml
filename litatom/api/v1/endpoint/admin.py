@@ -362,6 +362,13 @@ def ban_by_uid(user_id):
     return fail(data)
 
 
+def ban_reporter(user_id):
+    data, status = AdminService.ban_reporter(user_id)
+    if status:
+        return success()
+    return fail(data)
+
+
 def change_setting():
     data, status = UserSettingService.change_setting(request.json)
     if status:
