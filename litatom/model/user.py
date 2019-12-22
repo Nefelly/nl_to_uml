@@ -173,6 +173,7 @@ class User(Document, UserSessionMixin):
     FACEBOOK_TYPE = 'facebook'
     TYPES = [GOOGLE_TYPE, FACEBOOK_TYPE]
     JUDGES = ['nasty', 'boring', 'like']
+    DEFUALT_AGE = 0
 
     SDKAPPID = '1400288794'
     KEY = '9570e67ffeecd5432059ce871c267507a28418f4ab91cea5f4f89d0e6ecb137f'
@@ -293,16 +294,17 @@ class User(Document, UserSessionMixin):
         key = REDIS_KEY_USER_AGE.format(user_id=user_id)
         res = redis_client.get(key)
         if res == NO_SET:
-            return 0
+            return cls.DEFUALT_AGE
         elif not res:
             user = cls.get_by_id(user_id)
             if not user:
-                return 0
+                return cls.DEFUALT_AGE
             res = user._set_age_cache()
-        return int(res) if res != NO_SET else 0
+        return int(res) if res != NO_SET else cls.DEFUALT_AGE
 
     @classmethod
     def batch_age_by_user_ids(cls, target_uids):
+        target_uids = [_ for _ in target_uids if _]
         keys = [REDIS_KEY_USER_AGE.format(user_id=_) for _ in target_uids]
         m = {}
         for uid, age in zip(target_uids, redis_client.mget(keys)):
@@ -310,8 +312,6 @@ class User(Document, UserSessionMixin):
                 age = cls.age_by_user_id(uid)
             m[uid] = age
         return m
-        pass
-        return
 
     @classmethod
     def change_age(cls, user_id):
@@ -536,6 +536,7 @@ class UserSetting(Document):
 
     @classmethod
     def batch_get_by_user_ids(cls, user_ids):
+        user_ids = [_ for _ in user_ids if _]
         keys = [REDIS_USER_SETTING_CACHE.format(user_id=_) for _ in user_ids]
         m = {}
         for uid, obj in zip(user_ids, redis_client.mget(keys)):

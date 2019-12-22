@@ -36,7 +36,8 @@ from ..const import (
     NOT_IN_MATCH,
     ONE_MIN,
     CAN_MATCH_ONLINE,
-    USER_MODEL_EXCHANGE
+    USER_MODEL_EXCHANGE,
+    ALL_FILTER
 )
 from ..service import (
     UserService,
@@ -243,6 +244,13 @@ class MatchService(object):
         return False
 
     @classmethod
+    def _filter_fakeids(cls, user_id, fakeids):
+        uids = cls._batch_uids_by_fake_id(fakeids)
+        filtered_uids = UserFilterService.batch_filter_two_way(user_id, uids)
+
+        return fakeids
+
+    @classmethod
     def _match(cls, fake_id, gender):
         '''
         return matched fake_id, if this match info has been set up
@@ -275,6 +283,10 @@ class MatchService(object):
 
         user_id = cls._uid_by_fake_id(fake_id)
         user_age = UserService.uid_age(user_id)
+
+        if ALL_FILTER:
+            accelerate_fakeids = cls._filter_fakeids(user_id, accelerate_fakeids)
+            other_fakeids = cls._filter_fakeids(user_id, other_fakeids)
 
         cnt = 0
         matched_fakeid = None
@@ -316,7 +328,7 @@ class MatchService(object):
             login_day = m["login_day"]
             matched_times = m["matched_times"]
             if login_day < 1 and matched_times < 1:
-                uids = cls._batch_uids_by_fake_id(to_scan)
+                uids = cls.ordered_batch_uids_by_fake_id(to_scan)
                 uid_scores = UserModel.batch_get_score(uids)
                 fakeid_scores = []
                 inds = min(len(uids), len(uid_scores))
@@ -594,8 +606,17 @@ class MatchService(object):
         return redis_client.get(cls.TYPE_FAKE_ID_UID.format(fake_id=fake_id))
 
     @classmethod
+    def ordered_batch_uids_by_fake_id(cls, fake_ids):
+        m = cls._batch_uids_by_fake_id(fake_ids)
+        return [m.get(_, None) for _ in fake_ids]
+
+    @classmethod
     def _batch_uids_by_fake_id(cls, fake_ids):
-        return redis_client.mget([cls.TYPE_FAKE_ID_UID.format(fake_id=_) for _ in fake_ids])
+        m = {}
+        real_fake_ids = [el for el in fake_ids if el]
+        for fake_id, uid in zip(real_fake_ids, redis_client.mget([cls.TYPE_FAKE_ID_UID.format(fake_id=_) for _ in real_fake_ids])):
+            m[fake_id] = uid
+        return m
 
     @classmethod
     def _fakeid_by_uid(cls, user_id):

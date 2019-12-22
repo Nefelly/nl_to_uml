@@ -69,6 +69,7 @@ class UserModel(Document):
 
     @classmethod
     def batch_get_by_user_ids(cls, user_ids):
+        user_ids = [el for el in user_ids if el]
         keys = [REDIS_USER_MODEL_CACHE.format(user_id=_) for _ in user_ids]
         m = {}
         for uid, obj in zip(user_ids, redis_client.mget(keys)):

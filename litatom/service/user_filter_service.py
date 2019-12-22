@@ -8,6 +8,9 @@ from ..model import (
 from ..service import (
     GlobalizationService
 )
+from ..const import (
+    ALL_FILTER
+)
 
 redis_client = RedisClient()['lit']
 
@@ -18,8 +21,10 @@ class UserFilterService(object):
     def online_filter(cls, user_id, age_low, age_high, gender, is_new=False):
         obj = OnlineLimit.make(age_low, age_high, gender, is_new)
         user_setting = UserSetting.get_by_user_id(user_id)
-        msg = {"message": GlobalizationService.get_region_word('filter_inform')}
-        msg = None
+        if ALL_FILTER:
+            msg = {"message": GlobalizationService.get_region_word('filter_inform')}
+        else:
+            msg = None
         if user_setting:
             user_setting.online_limit = obj
             user_setting.save()
@@ -51,6 +56,8 @@ class UserFilterService(object):
 
     @classmethod
     def is_homo(cls, user_id, gender):
+        if not ALL_FILTER:
+            return False
         user_setting = UserSetting.get_by_user_id(user_id)
         if not user_setting or not user_setting.online_limit or user_setting.online_limit.gender != gender:
             return False
@@ -65,11 +72,12 @@ class UserFilterService(object):
         limits = user_setting.online_limit
         uid_ages_m = User.batch_age_by_user_ids(target_uids)
         for uid in target_uids:
-            age = uid_ages_m[age]
+            age = uid_ages_m.get(uid, User.DEFUALT_AGE)
             if limits.age_low and age < limits.age_low:
                 continue
             if limits.age_high and limits.age_high != cls.HIGHEST_AGE and age > limits.age_high:
-                res.append(uid)
+                continue
+            res.append(uid)
         return res
 
     @classmethod
@@ -80,7 +88,16 @@ class UserFilterService(object):
         user_age = User.age_by_user_id(user_id)
         user_settings_m = UserSetting.batch_get_by_user_ids(target_uids)
         res = []
-
+        for uid in target_uids:
+            limits = user_settings_m.get(uid, None)
+            if not limits:
+                continue
+            if limits.age_low and user_age < limits.age_low:
+                continue
+            if limits.age_high and limits.age_high != cls.HIGHEST_AGE and user_age > limits.age_high:
+                continue
+            res.append(uid)
+        return uid
 
     @classmethod
     def filter_by_age_gender(cls, user_id, target_uid):
