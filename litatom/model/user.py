@@ -505,7 +505,8 @@ class OnlineLimit(EmbeddedDocument):
         return {
             'age_low': self.age_low,
             'age_high': self.age_high,
-            'gender': self.gender
+            'gender': self.gender,
+            'is_new': self.is_new
         }
 
 
