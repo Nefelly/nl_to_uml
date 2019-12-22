@@ -55,9 +55,9 @@ class UserSettingService(object):
                     "times": 5,
                     "time_interval": 60,
                     "spam_interval": 60 * 2
-                },
-                'show_accelerate': False
-            }
+                }
+            },
+            'show_accelerate': False
         }
 
 
