@@ -27,7 +27,9 @@ class UserFilterService(object):
             msg = None
         if user_setting:
             user_setting.online_limit = obj
+            print 'jjjjjjjj', obj
             user_setting.save()
+            print 'nnnnn'
             return msg, True
         else:
             user_setting = UserSetting()
