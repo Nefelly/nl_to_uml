@@ -65,7 +65,7 @@ class UserSettingService(object):
     def change_setting(cls, data):
         setting_string = json.dumps(data)
         if not cls._valid_cache_str(setting_string):
-            return 'Not valud setting', False
+            return 'Not valid setting', False
         redis_client.set(REDIS_SETTINGS_KEYS, setting_string)
         return None, True
 
