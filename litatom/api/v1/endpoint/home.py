@@ -92,6 +92,7 @@ def online_filter():
     is_new = limits.get('is_new', False)
     print is_new, '!' * 100
     data, status = UserFilterService.online_filter(request.user_id, age_low, age_high, gender_limit, is_new)
+    print is_new, '!*' * 100
     if status:
         return success(data)
     return fail(data)
