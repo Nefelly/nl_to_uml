@@ -305,18 +305,19 @@ class MatchService(object):
             if user1_out_wait:
                 to_scan = to_scan + far_new + far_old
 
-            m = cls.get_match_user_info(fake_id)
-            login_day = m["login_day"]
-            matched_times = m["matched_times"]
-            if login_day < 1 and matched_times < 1:
-                uids = cls._batch_uids_by_fake_id(to_scan)
-                uid_scores = UserModel.batch_get_score(uids)
-                fakeid_scores = []
-                inds = min(len(uids), len(uid_scores))
-                for i in range(inds):
-                    fakeid_scores.append([to_scan[i], uid_scores[i][1]])
-                fake_ids = [el[0] for el in sorted(fakeid_scores, key=lambda x: -x[1])]
-                to_scan = fake_ids
+            # m = cls.get_match_user_info(fake_id)
+            # login_day = m["login_day"]
+            # matched_times = m["matched_times"]
+            # if login_day < 1 and matched_times < 1:
+            #     uids = cls._batch_uids_by_fake_id(to_scan)
+            #     uid_scores = UserModel.batch_get_score(uids)
+            #     fakeid_scores = []
+            #     inds = min(len(uids), len(uid_scores))
+            #     for i in range(inds):
+            #         fakeid_scores.append([to_scan[i], uid_scores[i][1]])
+            #     fake_ids = [el[0] for el in sorted(fakeid_scores, key=lambda x: -x[1])]
+            #     to_scan = fake_ids
+
             for i in range(len(to_scan)):
                 # fake_id2 = random.choice(other_fakeids)
                 fake_id2 = to_scan[i]
