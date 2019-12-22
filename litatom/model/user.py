@@ -497,6 +497,7 @@ class OnlineLimit(EmbeddedDocument):
             obj.age_high = age_high
         if gender:
             obj.gender = gender
+        print is_new, '*' * 100
         obj.is_new = is_new
         return obj
 
