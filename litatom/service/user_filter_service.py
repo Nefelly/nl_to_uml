@@ -97,7 +97,7 @@ class UserFilterService(object):
             if limits.age_high and limits.age_high != cls.HIGHEST_AGE and user_age > limits.age_high:
                 continue
             res.append(uid)
-        return uid
+        return res
 
     @classmethod
     def filter_by_age_gender(cls, user_id, target_uid):

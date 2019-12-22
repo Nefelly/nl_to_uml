@@ -245,9 +245,17 @@ class MatchService(object):
 
     @classmethod
     def _filter_fakeids(cls, user_id, fakeids):
-        uids = cls._batch_uids_by_fake_id(fakeids)
-        filtered_uids = UserFilterService.batch_filter_two_way(user_id, uids)
-
+        fake_uid_m = cls._batch_uids_by_fake_id(fakeids)
+        to_filter_uid = [fake_uid_m.get(el) for el in fake_uid_m if fake_uid_m.get(el)]
+        filtered_uids = UserFilterService.batch_filter_two_way(user_id, to_filter_uid)
+        filtered_uids_m = {}
+        for _ in filtered_uids:
+            filtered_uids_m[_] = 1
+        res = []
+        for fake in fakeids:
+            uid = fake_uid_m.get(fake)
+            if uid and filtered_uids_m.get(uid):
+                res.append(fake)
         return fakeids
 
     @classmethod
@@ -264,14 +272,16 @@ class MatchService(object):
             redis_client.delete(matched_key)
         int_time = int(time.time())
         judge_time = int_time - cls.MATCH_WAIT
-        other_gender = cls.OTHER_GENDER_M.get(gender)
-        other_cnt = cls.get_anoy_count(other_gender)
-        if other_cnt == 0:
-            return None, False
-        my_cnt = cls.get_anoy_count(gender)
-        if other_cnt == 1:
-            if my_cnt > 1:
+        if not request.is_homo:
+            other_gender = cls.OTHER_GENDER_M.get(gender)
+            other_cnt = cls.get_anoy_count(other_gender)
+            if other_cnt == 0:
                 return None, False
+            my_cnt = cls.get_anoy_count(gender)
+            if other_cnt == 1:
+                if my_cnt > 1:
+                    return None, False
+
         choose_gender = other_gender if not request.is_homo else gender
         accelerate_fakeids = redis_client.zrangebyscore(cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, choose_gender), judge_time + 3, MAX_TIME, 0, cls.MAX_CHOOSE_NUM)
         other_fakeids = redis_client.zrangebyscore(cls.MATCH_KEY_BY_REGION_GENDER(cls.MATCH_TYPE, choose_gender), judge_time + 3, MAX_TIME, 0, cls.MAX_CHOOSE_NUM)
