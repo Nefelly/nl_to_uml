@@ -19,7 +19,6 @@ class UserFilterService(object):
         obj = OnlineLimit.make(age_low, age_high, gender)
         user_setting = UserSetting.get_by_user_id(user_id)
         msg = {"message": GlobalizationService.get_region_word('filter_inform')}
-        msg = None
         if user_setting:
             user_setting.online_limit = obj
             user_setting.save()
