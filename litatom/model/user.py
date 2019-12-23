@@ -315,7 +315,7 @@ class User(Document, UserSessionMixin):
             if not age:
                 age = cls.age_by_user_id(uid)
             else:
-                cls._age_by_cache(age)
+                age = cls._age_by_cache(age)
             m[uid] = age
         return m
 
