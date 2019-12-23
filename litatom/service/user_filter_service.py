@@ -89,7 +89,8 @@ class UserFilterService(object):
         user_settings_m = UserSetting.batch_get_by_user_ids(target_uids)
         res = []
         for uid in target_uids:
-            limits = user_settings_m.get(uid, None)
+            user_setting = user_settings_m.get(uid, None)
+            limits = user_setting.limits
             if not limits:
                 continue
             if limits.age_low and user_age < limits.age_low:
