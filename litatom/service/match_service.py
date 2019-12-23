@@ -251,7 +251,6 @@ class MatchService(object):
         filtered_uids_m = {}
         for _ in filtered_uids:
             filtered_uids_m[_] = 1
-        print 'filtered_uids_m', filtered_uids_m
         res = []
         for fake in fakeids:
             uid = fake_uid_m.get(fake)
