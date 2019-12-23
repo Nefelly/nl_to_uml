@@ -698,6 +698,7 @@ class MatchService(object):
 
     @classmethod
     def quit_match(cls, user_id):   # should delete match pair
+        print 'get in ', 'ni' * 100
         fake_id = cls._fakeid_by_uid(user_id)
         if not fake_id:
             return None, True
