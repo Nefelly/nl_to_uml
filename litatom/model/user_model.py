@@ -75,6 +75,8 @@ class UserModel(Document):
         for uid, obj in zip(user_ids, redis_client.mget(keys)):
             if not obj:
                  obj = cls.get_by_user_id(uid)
+            else:
+                obj = cPickle.loads(obj)
             m[uid] = obj
         return m
 

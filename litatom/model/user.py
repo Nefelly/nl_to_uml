@@ -290,6 +290,10 @@ class User(Document, UserSessionMixin):
         return age
 
     @classmethod
+    def _age_by_cache(cls, res):
+        return int(res) if res != NO_SET and res else cls.DEFUALT_AGE
+
+    @classmethod
     def age_by_user_id(cls, user_id):
         key = REDIS_KEY_USER_AGE.format(user_id=user_id)
         res = redis_client.get(key)
@@ -300,7 +304,7 @@ class User(Document, UserSessionMixin):
             if not user:
                 return cls.DEFUALT_AGE
             res = user._set_age_cache()
-        return int(res) if res != NO_SET else cls.DEFUALT_AGE
+        return cls._age_by_cache(res)
 
     @classmethod
     def batch_age_by_user_ids(cls, target_uids):
@@ -310,7 +314,7 @@ class User(Document, UserSessionMixin):
         for uid, age in zip(target_uids, redis_client.mget(keys)):
             if not age:
                 age = cls.age_by_user_id(uid)
-            m[uid] = age
+            m[uid] = cls._age_by_cache(age)
         return m
 
     @classmethod
@@ -543,7 +547,7 @@ class UserSetting(Document):
         for uid, obj in zip(user_ids, redis_client.mget(keys)):
             if not obj:
                 obj = cls.get_by_user_id(uid)
-            m[uid] = obj
+            m[uid] = cPickle.loads(obj)
         return m
 
     @classmethod
