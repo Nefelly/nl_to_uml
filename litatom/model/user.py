@@ -314,7 +314,9 @@ class User(Document, UserSessionMixin):
         for uid, age in zip(target_uids, redis_client.mget(keys)):
             if not age:
                 age = cls.age_by_user_id(uid)
-            m[uid] = cls._age_by_cache(age)
+            else:
+                cls._age_by_cache(age)
+            m[uid] = age
         return m
 
     @classmethod
@@ -547,7 +549,9 @@ class UserSetting(Document):
         for uid, obj in zip(user_ids, redis_client.mget(keys)):
             if not obj:
                 obj = cls.get_by_user_id(uid)
-            m[uid] = cPickle.loads(obj)
+            else:
+                obj = cPickle.loads(obj)
+            m[uid] = obj
         return m
 
     @classmethod
