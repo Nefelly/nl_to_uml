@@ -257,7 +257,7 @@ class MatchService(object):
             uid = fake_uid_m.get(fake)
             if uid and filtered_uids_m.get(uid):
                 res.append(fake)
-        return fakeids
+        return res
 
     @classmethod
     def _match(cls, fake_id, gender):
