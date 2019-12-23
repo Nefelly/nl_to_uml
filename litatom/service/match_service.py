@@ -125,8 +125,8 @@ class MatchService(object):
             return
         # uid = cls._uid_by_fake_id(fake_id)
         # redis_client.delete(REDIS_ACCELERATE_CACHE.format(user_id=uid))
-        print 'get in ', 'ni' * 100, cls.MATCH_KEY_BY_REGION_GENDER(gender, cls.MATCH_TYPE), cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender)
-        return redis_client.zrem(cls.MATCH_KEY_BY_REGION_GENDER(gender, cls.MATCH_TYPE), fake_id) or \
+        print 'get in ', 'ni' * 100, cls.MATCH_KEY_BY_REGION_GENDER(cls.MATCH_TYPE, gender), cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender)
+        return redis_client.zrem(cls.MATCH_KEY_BY_REGION_GENDER(cls.MATCH_TYPE, gender), fake_id) or \
                redis_client.zrem(cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender), fake_id)
 
     @classmethod
@@ -180,8 +180,9 @@ class MatchService(object):
                 # redis_client.delete(cls.TYPE_MATCH_PAIR.format(low_high_fakeid=pair))
                 # redis_client.delete(REDIS_FAKE_LIKE.format(fake_id=fake_id))
                 # redis_client.delete(REDIS_FAKE_LIKE.format(fake_id=other_fakeid))
-            if not cls._remove_from_match_pool(BOY, fake_id):
-                cls._remove_from_match_pool(GIRL, fake_id)
+            cls._remove_from_match_pool(request.gender, fake_id)
+            # if not cls._remove_from_match_pool(BOY, fake_id):
+            #     cls._remove_from_match_pool(GIRL, fake_id)
         redis_client.zrem(cls.TYPE_ANOY_CHECK_POOL, fake_id)
 
     @classmethod
