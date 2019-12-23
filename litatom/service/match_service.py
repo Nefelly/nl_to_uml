@@ -125,6 +125,7 @@ class MatchService(object):
             return
         # uid = cls._uid_by_fake_id(fake_id)
         # redis_client.delete(REDIS_ACCELERATE_CACHE.format(user_id=uid))
+        print 'get in ', 'ni' * 100, cls.MATCH_KEY_BY_REGION_GENDER(gender, cls.MATCH_TYPE), cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender)
         return redis_client.zrem(cls.MATCH_KEY_BY_REGION_GENDER(gender, cls.MATCH_TYPE), fake_id) or \
                redis_client.zrem(cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender), fake_id)
 
@@ -698,7 +699,6 @@ class MatchService(object):
 
     @classmethod
     def quit_match(cls, user_id):   # should delete match pair
-        print 'get in ', 'ni' * 100
         fake_id = cls._fakeid_by_uid(user_id)
         if not fake_id:
             return None, True
