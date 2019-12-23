@@ -295,8 +295,10 @@ class MatchService(object):
         user_age = UserService.uid_age(user_id)
 
         if ALL_FILTER:
+            print other_fakeids + accelerate_fakeids, 'before', '!' * 100
             accelerate_fakeids = cls._filter_fakeids(user_id, accelerate_fakeids)
             other_fakeids = cls._filter_fakeids(user_id, other_fakeids)
+            print other_fakeids + accelerate_fakeids
 
         cnt = 0
         matched_fakeid = None
