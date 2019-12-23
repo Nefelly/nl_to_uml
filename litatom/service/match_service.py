@@ -125,7 +125,6 @@ class MatchService(object):
             return
         # uid = cls._uid_by_fake_id(fake_id)
         # redis_client.delete(REDIS_ACCELERATE_CACHE.format(user_id=uid))
-        print 'get in ', 'ni' * 100, cls.MATCH_KEY_BY_REGION_GENDER(cls.MATCH_TYPE, gender), cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender)
         return redis_client.zrem(cls.MATCH_KEY_BY_REGION_GENDER(cls.MATCH_TYPE, gender), fake_id) or \
                redis_client.zrem(cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender), fake_id)
 
@@ -297,10 +296,8 @@ class MatchService(object):
         user_age = UserService.uid_age(user_id)
 
         if ALL_FILTER:
-            print other_fakeids + accelerate_fakeids, 'before', '!' * 100, other_fakeids
             accelerate_fakeids = cls._filter_fakeids(user_id, accelerate_fakeids)
             other_fakeids = cls._filter_fakeids(user_id, other_fakeids)
-            print other_fakeids + accelerate_fakeids
 
         cnt = 0
         matched_fakeid = None
