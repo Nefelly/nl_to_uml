@@ -90,9 +90,9 @@ class UserFilterService(object):
         res = []
         for uid in target_uids:
             user_setting = user_settings_m.get(uid, None)
-            if not user_setting or not user_setting.limits:
+            if not user_setting or not user_setting.online_limit:
                 continue
-            limits = user_setting.limits
+            limits = user_setting.online_limit
             if limits.age_low and user_age < limits.age_low:
                 continue
             if limits.age_high and limits.age_high != cls.HIGHEST_AGE and user_age > limits.age_high:
