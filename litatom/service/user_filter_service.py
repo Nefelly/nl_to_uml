@@ -64,12 +64,14 @@ class UserFilterService(object):
         return True
 
     @classmethod
-    def batch_filter_by_age(cls, user_id, target_uids):
+    def batch_filter_by_age(cls, user_id, target_uids, need_new=False):
         res = []
         user_setting = UserSetting.get_by_user_id(user_id)
         if not user_setting or not user_setting.online_limit:
             return target_uids
         limits = user_setting.online_limit
+        if need_new and not limits.is_new:
+            return target_uids
         uid_ages_m = User.batch_age_by_user_ids(target_uids)
         for uid in target_uids:
             age = uid_ages_m.get(uid, User.DEFUALT_AGE)
@@ -81,8 +83,9 @@ class UserFilterService(object):
         return res
 
     @classmethod
-    def batch_filter_two_way(cls, user_id, target_uids):
-        target_uids = cls.batch_filter_by_age(user_id, target_uids)
+    def batch_filter_two_way(cls, user_id, target_uids, need_new=False):
+        ''' need_new  需要是新的过滤 过滤才生效， 故而非新过滤 则直接返回'''
+        target_uids = cls.batch_filter_by_age(user_id, target_uids, need_new)
         if not target_uids:
             return target_uids
         user_age = User.age_by_user_id(user_id)
@@ -90,7 +93,8 @@ class UserFilterService(object):
         res = []
         for uid in target_uids:
             user_setting = user_settings_m.get(uid, None)
-            if not user_setting or not user_setting.online_limit:
+            if not user_setting or not user_setting.online_limit or (need_new and not user_setting.online_limit.is_new):
+                res.append(uid)
                 continue
             limits = user_setting.online_limit
             if limits.age_low and user_age < limits.age_low:

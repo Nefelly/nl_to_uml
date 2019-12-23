@@ -247,7 +247,7 @@ class MatchService(object):
     def _filter_fakeids(cls, user_id, fakeids):
         fake_uid_m = cls._batch_uids_by_fake_id(fakeids)
         to_filter_uid = [fake_uid_m.get(el) for el in fake_uid_m if fake_uid_m.get(el)]
-        filtered_uids = UserFilterService.batch_filter_two_way(user_id, to_filter_uid)
+        filtered_uids = UserFilterService.batch_filter_two_way(user_id, to_filter_uid, need_new=True)
         filtered_uids_m = {}
         for _ in filtered_uids:
             filtered_uids_m[_] = 1
