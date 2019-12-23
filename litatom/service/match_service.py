@@ -251,6 +251,7 @@ class MatchService(object):
         filtered_uids_m = {}
         for _ in filtered_uids:
             filtered_uids_m[_] = 1
+        print 'filtered_uids_m', filtered_uids_m
         res = []
         for fake in fakeids:
             uid = fake_uid_m.get(fake)
@@ -295,7 +296,7 @@ class MatchService(object):
         user_age = UserService.uid_age(user_id)
 
         if ALL_FILTER:
-            print other_fakeids + accelerate_fakeids, 'before', '!' * 100
+            print other_fakeids + accelerate_fakeids, 'before', '!' * 100, other_fakeids
             accelerate_fakeids = cls._filter_fakeids(user_id, accelerate_fakeids)
             other_fakeids = cls._filter_fakeids(user_id, other_fakeids)
             print other_fakeids + accelerate_fakeids
