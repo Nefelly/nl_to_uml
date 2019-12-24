@@ -18,6 +18,7 @@ class MatchRecord(Document):
         'alias': 'db_alias'
     }
 
+
     user_id1 = StringField(required=True)
     user_id2 = StringField(required=True)
     match_type = StringField(required=True)

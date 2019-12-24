@@ -24,6 +24,8 @@ class UserModelService(object):
         uid1 = match_record.user_id1
         uid2 = match_record.user_id2
         inter_time = match_record.inter_time
+        if match_record.match_type in ['soul', 'anoy']:
+            inter_time *= 1.1
         cls.add_match_by_uid_inter(uid1, inter_time)
         cls.add_match_by_uid_inter(uid2, inter_time)
 
