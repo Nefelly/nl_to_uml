@@ -34,7 +34,7 @@ class AntiSpamService(object):
     ACCOST_PASS = 'pass'
     ACCOST_BAN = 'ban'
     ACCOST_NEED_VIDEO = 'need_video'
-    ACCOST_INTER = 5 * ONE_MIN
+    ACCOST_INTER = 10 * ONE_MIN
     ACCOST_RATE = 5
     ACCOST_STOP_INTER = 10 * ONE_MIN
     ACCOST_STOP_RATE = 19
