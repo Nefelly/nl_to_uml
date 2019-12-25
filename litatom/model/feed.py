@@ -64,7 +64,7 @@ class Feed(Document):
 
     @property
     def is_hq(self):
-        return self.like_num >= 5 or self.comment_num >= 5
+        return self.like_num >= 5 or self.comment_num >= 5 or (len(self.audios) > 0 and self.like_num + self.comment_num > 2)
 
     def get_info(self):
         return {
