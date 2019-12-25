@@ -239,6 +239,17 @@ class MatchService(object):
         return False
 
     @classmethod
+    def _ordered_by_score(cls, fakeids):
+        uids = cls._batch_uids_by_fake_id(fakeids)
+        uid_scores = UserModel.batch_get_score(uids)
+        fakeid_scores = []
+        inds = min(len(uids), len(uid_scores))
+        for i in range(inds):
+            fakeid_scores.append([fakeids[i], uid_scores[i][1]])
+        res = [el[0] for el in sorted(fakeid_scores, key=lambda x: -x[1])]
+        return res
+
+    @classmethod
     def _match(cls, fake_id, gender):
         '''
         return matched fake_id, if this match info has been set up
@@ -284,6 +295,13 @@ class MatchService(object):
             near_old = []
             far_new = []
             far_old = []
+            m = cls.get_match_user_info(fake_id)
+            login_day = m["login_day"]
+            matched_times = m["matched_times"]
+
+            if matched_times < 1 and len(other_fakeids) > 2:
+                other_fakeids = cls._ordered_by_score(other_fakeids)
+
             for el_fake_id in other_fakeids:
                 m = cls.get_match_user_info(el_fake_id)
                 age = m["age"]
@@ -305,18 +323,8 @@ class MatchService(object):
             if user1_out_wait:
                 to_scan = to_scan + far_new + far_old
 
-            m = cls.get_match_user_info(fake_id)
-            login_day = m["login_day"]
-            matched_times = m["matched_times"]
             if login_day < 1 and matched_times < 1:
-                uids = cls._batch_uids_by_fake_id(to_scan)
-                uid_scores = UserModel.batch_get_score(uids)
-                fakeid_scores = []
-                inds = min(len(uids), len(uid_scores))
-                for i in range(inds):
-                    fakeid_scores.append([to_scan[i], uid_scores[i][1]])
-                fake_ids = [el[0] for el in sorted(fakeid_scores, key=lambda x: -x[1])]
-                to_scan = fake_ids
+                to_scan = cls._ordered_by_score(to_scan)
 
             for i in range(len(to_scan)):
                 # fake_id2 = random.choice(other_fakeids)
