@@ -240,6 +240,7 @@ class MatchService(object):
 
     @classmethod
     def _ordered_by_score(cls, fakeids):
+        return fakeids
         uids = cls._batch_uids_by_fake_id(fakeids)
         uid_scores = UserModel.batch_get_score(uids)
         fakeid_scores = []
