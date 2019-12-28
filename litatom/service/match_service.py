@@ -240,7 +240,7 @@ class MatchService(object):
 
     @classmethod
     def _ordered_by_score(cls, fakeids):
-        return fakeids
+        # return fakeids
         uids = cls._batch_uids_by_fake_id(fakeids)
         uid_scores = UserModel.batch_get_score(uids)
         fakeid_scores = []
@@ -300,8 +300,8 @@ class MatchService(object):
             login_day = m["login_day"]
             matched_times = m["matched_times"]
 
-            if matched_times < 1 and len(other_fakeids) > 2:
-                other_fakeids = cls._ordered_by_score(other_fakeids)
+            # if matched_times < 1 and len(other_fakeids) > 2:
+            #     other_fakeids = cls._ordered_by_score(other_fakeids)
 
             for el_fake_id in other_fakeids:
                 m = cls.get_match_user_info(el_fake_id)
