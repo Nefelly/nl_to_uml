@@ -34,7 +34,8 @@ from .user import (
     UserAddressList
 )
 from .user_message import (
-    UserMessage
+    UserMessage,
+    UserConversation
 )
 from .firebase import (
     FirebaseInfo
