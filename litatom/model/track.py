@@ -55,7 +55,7 @@ class TrackSpamRecord(Document):
     create_time = IntField(required=True)
 
     @classmethod
-    def create(cls, user_id, word):
+    def create(cls, word, user_id):
         obj = cls(user_id=user_id, word=word)
         obj.create_time = int(time.time())
         obj.save()
