@@ -144,7 +144,7 @@ def delete_conversation(conversation_id):
 
 @session_required
 def get_conversations():
-    data, status = ConversationService.del_conversation(request.user_id, conversation_id)
+    data, status = ConversationService.get_conversations(request.user_id)
     if not status:
         return fail(data)
     return success(data)
