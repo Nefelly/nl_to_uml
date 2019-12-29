@@ -1,5 +1,6 @@
 # coding: utf-8
 import time
+import datetime
 from mongoengine import (
     BooleanField,
     DateTimeField,
@@ -51,7 +52,7 @@ class UserConversation(Document):
     other_user_id = StringField()
     conversation_id = StringField(required=True)
     from_type = StringField()
-    create_time = IntField(required=True)
+    create_time = DateTimeField(required=True, default=lambda: datetime.datetime.now)
 
     @classmethod
     def get_by_user_id(cls, user_id):
