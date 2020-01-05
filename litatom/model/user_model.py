@@ -112,6 +112,13 @@ class UserModel(Document):
         return False
 
     @classmethod
+    def alerted(cls, user_id):
+        obj = cls.get_by_user_id(user_id)
+        if not obj or obj.alert_num % cls.ALERT_TIMES < 1:
+            return False
+        return True
+
+    @classmethod
     def add_match_record(cls, user_id, inter_time_total, times_total=1):
         obj = cls.ensure_model(user_id)
         obj.total_match_inter += inter_time_total
