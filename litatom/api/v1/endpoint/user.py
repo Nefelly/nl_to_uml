@@ -27,7 +27,8 @@ from ....service import (
     UserMessageService,
     FirebaseService,
     AccountService,
-    AntiSpamService
+    AntiSpamService,
+    ConversationService
 )
 from  ....const import (
     MAX_TIME
@@ -121,6 +122,32 @@ def get_user_info(target_user_id):
         return fail(data)
     return success(data)
 
+@session_required
+def add_conversation():
+    data = request.json
+    other_user_id = data.get('other_user_id')
+    conversation_id = data.get('conversation_id')
+    from_type = data.get('from_type')
+    if not other_user_id or not conversation_id:
+        return fail(u'lake of field')
+    data, status = ConversationService.add_conversation(request.user_id, other_user_id, conversation_id, from_type)
+    if not status:
+        return fail(data)
+    return success(data)
+
+@session_required
+def delete_conversation(conversation_id):
+    data, status = ConversationService.del_conversation(request.user_id, conversation_id)
+    if not status:
+        return fail(data)
+    return success(data)
+
+@session_required
+def get_conversations():
+    data, status = ConversationService.get_conversations(request.user_id)
+    if not status:
+        return fail(data)
+    return success(data)
 
 @session_required
 def search_user():
