@@ -68,7 +68,8 @@ class UserModel(Document):
         keys = [REDIS_USER_MODEL_CACHE.format(user_id=_) for _ in user_ids]
         m = {}
         for uid, obj in zip(user_ids, redis_client.mget(keys)):
-            m[uid] = obj
+            if obj:
+                m[uid] = cPickle.loads(obj)
         return m
 
     @classmethod
