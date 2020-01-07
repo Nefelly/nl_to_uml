@@ -484,13 +484,15 @@ class UserService(object):
             nick_name = nick_name.replace('\r', '').replace('\n', '')
             if len(nick_name) > cls.NICKNAME_LEN_LIMIT:
                 nick_name = trunc(nick_name, cls.NICKNAME_LEN_LIMIT)
-            if cls.verify_nickname_exists(nick_name):
-                if not user.finished_info:
-                    nick_name = cls.choose_a_nickname_for_user(nick_name)
-                    if cls.verify_nickname_exists(nick_name):
-                        return u'nickname already exists', False
-                else:
-                    return u'nickname already exists', False
+            if 'LIT' in nick_name.upper():
+                return u"illeagel nickname", False
+            # if cls.verify_nickname_exists(nick_name):
+            #     if not user.finished_info:
+            #         nick_name = cls.choose_a_nickname_for_user(nick_name)
+            #         if cls.verify_nickname_exists(nick_name):
+            #             return u'nickname already exists', False
+            #     else:
+            #         return u'nickname already exists', False
             data['nickname'] = nick_name
         if data.get('avatar', ''):
             if not Avatar.valid_avatar(data.get('avatar')):
