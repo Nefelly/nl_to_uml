@@ -485,7 +485,7 @@ class UserService(object):
             if len(nick_name) > cls.NICKNAME_LEN_LIMIT:
                 nick_name = trunc(nick_name, cls.NICKNAME_LEN_LIMIT)
             if 'LIT' in nick_name.upper():
-                return u"illeagel nickname", False
+                return u"illeagal nickname", False
             # if cls.verify_nickname_exists(nick_name):
             #     if not user.finished_info:
             #         nick_name = cls.choose_a_nickname_for_user(nick_name)
