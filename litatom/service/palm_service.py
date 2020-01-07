@@ -302,6 +302,10 @@ class PalmService(object):
         return res
 
     @classmethod
+    def can_get_result(cls, user_id):
+        return None, True
+
+    @classmethod
     def get_res_by_result_id(cls, result_id):
         return PalmResult.get_by_id(result_id)
 

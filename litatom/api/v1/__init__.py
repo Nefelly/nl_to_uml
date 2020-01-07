@@ -37,6 +37,7 @@ b.add_url_rule('/lit/user/del_conversation/<conversation_id>', 'user-del_convers
 b.add_url_rule('/lit/account/account_info', 'account-account_info', endpoint.account.account_info)
 b.add_url_rule('/lit/account/products', 'account-product_info', endpoint.account.product_info)
 b.add_url_rule('/lit/account/pay_inform', 'account-pay_inform', endpoint.account.pay_inform, methods=['POST'])
+b.add_url_rule('/lit/account/deposit_by_activity', 'account-deposit_by_activity', endpoint.account.deposit_by_activity, methods=['POST'])
 b.add_url_rule('/lit/account/buy_product', 'account-buy_product', endpoint.account.buy_product, methods=['POST'])
 b.add_url_rule('/lit/account/diamond_products', 'account-diamond_products', endpoint.account.diamond_products)
 
