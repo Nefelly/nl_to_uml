@@ -6,12 +6,12 @@ litatom_envvars_json:
     host: "mongodb://ll:11@172.31.138.46/lit?authsource=lit"
     port: 27017
     maxPoolSize: 80
-    socketTimeoutMS: 60000
-    connectTimeoutMS: 60000
-    serverSelectionTimeoutMS: 60000
-    waitQueueTimeoutMS: 60100
+    socketTimeoutMS: 160000
+    connectTimeoutMS: 160000
+    serverSelectionTimeoutMS: 160000
+    waitQueueTimeoutMS: 160100
     waitQueueMultiple: 5
-    maxIdleTimeMS: 600000
+    maxIdleTimeMS: 1600000
   DB_ALI_LIT:
     host: "mongodb://ll:11@s-j6c85e1d17508ac4.mongodb.rds.aliyuncs.com/lit?authsource=lit"
     port: 3717
