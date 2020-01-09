@@ -122,6 +122,7 @@ class AccountService(object):
                 'text': AnoyMatchService
             }
             data, status = getattr(m.get(match_type, AnoyMatchService), 'accelerate')(user_id)
+            print data, status
             if not status:
                 return data, False
         elif product == cls.ACCOST_RESET:
