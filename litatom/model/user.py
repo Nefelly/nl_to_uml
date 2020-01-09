@@ -173,6 +173,7 @@ class User(Document, UserSessionMixin):
     FACEBOOK_TYPE = 'facebook'
     TYPES = [GOOGLE_TYPE, FACEBOOK_TYPE]
     JUDGES = ['nasty', 'boring', 'like']
+    DEFUALT_AGE = 0
 
     SDKAPPID = '1400288794'
     KEY = '9570e67ffeecd5432059ce871c267507a28418f4ab91cea5f4f89d0e6ecb137f'
@@ -289,22 +290,34 @@ class User(Document, UserSessionMixin):
         return age
 
     @classmethod
+    def _age_by_cache(cls, res):
+        return int(res) if res != NO_SET and res else cls.DEFUALT_AGE
+
+    @classmethod
     def age_by_user_id(cls, user_id):
         key = REDIS_KEY_USER_AGE.format(user_id=user_id)
         res = redis_client.get(key)
         if res == NO_SET:
-            return 0
+            return cls.DEFUALT_AGE
         elif not res:
             user = cls.get_by_id(user_id)
             if not user:
-                return 0
+                return cls.DEFUALT_AGE
             res = user._set_age_cache()
-        return int(res) if res != NO_SET else 0
+        return cls._age_by_cache(res)
 
     @classmethod
     def batch_age_by_user_ids(cls, target_uids):
-        pass
-        return
+        target_uids = [_ for _ in target_uids if _]
+        keys = [REDIS_KEY_USER_AGE.format(user_id=_) for _ in target_uids]
+        m = {}
+        for uid, age in zip(target_uids, redis_client.mget(keys)):
+            if not age:
+                age = cls.age_by_user_id(uid)
+            else:
+                age = cls._age_by_cache(age)
+            m[uid] = age
+        return m
 
     @classmethod
     def change_age(cls, user_id):
@@ -479,9 +492,10 @@ class OnlineLimit(EmbeddedDocument):
     age_low = IntField()
     age_high = IntField()
     gender = StringField()
+    is_new = BooleanField(default=False)
 
     @classmethod
-    def make(cls, age_low, age_high, gender):
+    def make(cls, age_low, age_high, gender, is_new):
         obj = cls()
         if age_low:
             obj.age_low = age_low
@@ -489,13 +503,15 @@ class OnlineLimit(EmbeddedDocument):
             obj.age_high = age_high
         if gender:
             obj.gender = gender
+        obj.is_new = is_new
         return obj
 
     def to_json(self):
         return {
             'age_low': self.age_low,
             'age_high': self.age_high,
-            'gender': self.gender
+            'gender': self.gender,
+            'is_new': self.is_new
         }
 
 
@@ -524,6 +540,19 @@ class UserSetting(Document):
         # redis_client.incr('setting_cache_miss_cnt')
         redis_client.set(cache_key, cPickle.dumps(obj), USER_ACTIVE)
         return obj
+
+    @classmethod
+    def batch_get_by_user_ids(cls, user_ids):
+        user_ids = [_ for _ in user_ids if _]
+        keys = [REDIS_USER_SETTING_CACHE.format(user_id=_) for _ in user_ids]
+        m = {}
+        for uid, obj in zip(user_ids, redis_client.mget(keys)):
+            if not obj:
+                obj = cls.get_by_user_id(uid)
+            else:
+                obj = cPickle.loads(obj)
+            m[uid] = obj
+        return m
 
     @classmethod
     def _disable_cache(cls, user_id):

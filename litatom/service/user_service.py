@@ -552,8 +552,8 @@ class UserService(object):
         if not gender:
             user = User.get_by_id(user_id)
             gender = user.gender if user.gender else None
-        if gender:
-            redis_client.set(key, gender, ONLINE_LIVE)
+            if gender:
+                redis_client.set(key, gender, ONLINE_LIVE)
         return gender
 
     @classmethod

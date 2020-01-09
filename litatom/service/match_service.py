@@ -4,6 +4,7 @@ import datetime
 import random
 import cPickle
 from hendrix.conf import setting
+from flask import request
 from ..redis import RedisClient
 from ..key import (
     REDIS_USER_MATCH_LEFT,
@@ -35,10 +36,12 @@ from ..const import (
     NOT_IN_MATCH,
     ONE_MIN,
     CAN_MATCH_ONLINE,
-    USER_MODEL_EXCHANGE
+    USER_MODEL_EXCHANGE,
+    ALL_FILTER
 )
 from ..service import (
     UserService,
+    UserFilterService,
     FollowService,
     BlockService,
     GlobalizationService,
@@ -74,9 +77,10 @@ class MatchService(object):
     TYPE_FAKE_LIKE = REDIS_FAKE_LIKE
     TYPE_MATCH_PAIR = REDIS_MATCH_PAIR
     TYPE_JUDGE_LOCK = REDIS_JUDGE_LOCK
-    MATCH_KEY_BY_REGION_GENDER = GlobalizationService.anoy_match_key_by_region_gender
-    MATCH_TYPE = 'soul'
-    ACCELERATE_KEY_BY_TYPE_REGION_GENDER = GlobalizationService.accelerate_match_key_by_region_type_gender
+    MATCH_TYPE = 'anoy'
+    MATCH_KEY_BY_REGION_GENDER = GlobalizationService.match_key_by_region_type_gender_homo
+
+    ACCELERATE_KEY_BY_TYPE_REGION_GENDER = GlobalizationService.accelerate_match_key_by_region_type_gender_homo
 
     @classmethod
     def get_judge_time(cls):
@@ -85,7 +89,7 @@ class MatchService(object):
     @classmethod
     def get_anoy_count(cls, gender):
         judge_time = cls.get_judge_time()
-        return redis_client.zcount(cls.MATCH_KEY_BY_REGION_GENDER(gender), judge_time, MAX_TIME) + \
+        return redis_client.zcount(cls.MATCH_KEY_BY_REGION_GENDER(cls.MATCH_TYPE, gender), judge_time, MAX_TIME) + \
                redis_client.zcount(cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender), judge_time, MAX_TIME)
 
     @classmethod
@@ -110,7 +114,7 @@ class MatchService(object):
         int_time = int(time.time())
         is_accelerate = cls._is_accelerate(user_id)
         if not is_accelerate:
-            anoy_gender_key = cls.MATCH_KEY_BY_REGION_GENDER(gender)
+            anoy_gender_key = cls.MATCH_KEY_BY_REGION_GENDER(cls.MATCH_TYPE, gender)
         else:
             anoy_gender_key = cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender)
         redis_client.zadd(anoy_gender_key, {fake_id: int_time})
@@ -121,7 +125,8 @@ class MatchService(object):
             return
         # uid = cls._uid_by_fake_id(fake_id)
         # redis_client.delete(REDIS_ACCELERATE_CACHE.format(user_id=uid))
-        return redis_client.zrem(cls.MATCH_KEY_BY_REGION_GENDER(gender), fake_id) or redis_client.zrem(cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender), fake_id)
+        return redis_client.zrem(cls.MATCH_KEY_BY_REGION_GENDER(cls.MATCH_TYPE, gender), fake_id) or \
+               redis_client.zrem(cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender), fake_id)
 
     @classmethod
     def _add_to_check_pool(cls, fake_id):
@@ -174,8 +179,9 @@ class MatchService(object):
                 # redis_client.delete(cls.TYPE_MATCH_PAIR.format(low_high_fakeid=pair))
                 # redis_client.delete(REDIS_FAKE_LIKE.format(fake_id=fake_id))
                 # redis_client.delete(REDIS_FAKE_LIKE.format(fake_id=other_fakeid))
-            if not cls._remove_from_match_pool(BOY, fake_id):
-                cls._remove_from_match_pool(GIRL, fake_id)
+            cls._remove_from_match_pool(request.gender, fake_id)
+            # if not cls._remove_from_match_pool(BOY, fake_id):
+            #     cls._remove_from_match_pool(GIRL, fake_id)
         redis_client.zrem(cls.TYPE_ANOY_CHECK_POOL, fake_id)
 
     @classmethod
@@ -229,7 +235,7 @@ class MatchService(object):
     @classmethod
     def _is_out_wait_time(cls, fake_id, gender):
         return True
-        score = redis_client.zscore(cls.MATCH_KEY_BY_REGION_GENDER(gender), fake_id)
+        score = redis_client.zscore(cls.MATCH_KEY_BY_REGION_GENDER(cls.MATCH_TYPE, gender), fake_id)
         time_now = int(time.time())
         if not score:
             return False
@@ -251,6 +257,21 @@ class MatchService(object):
         return res
 
     @classmethod
+    def _filter_fakeids(cls, user_id, fakeids):
+        fake_uid_m = cls._batch_uids_by_fake_id(fakeids)
+        to_filter_uid = [fake_uid_m.get(el) for el in fake_uid_m if fake_uid_m.get(el)]
+        filtered_uids = UserFilterService.batch_filter_two_way(user_id, to_filter_uid, need_new=True)
+        filtered_uids_m = {}
+        for _ in filtered_uids:
+            filtered_uids_m[_] = 1
+        res = []
+        for fake in fakeids:
+            uid = fake_uid_m.get(fake)
+            if uid and filtered_uids_m.get(uid):
+                res.append(fake)
+        return res
+
+    @classmethod
     def _match(cls, fake_id, gender):
         '''
         return matched fake_id, if this match info has been set up
@@ -264,22 +285,31 @@ class MatchService(object):
             redis_client.delete(matched_key)
         int_time = int(time.time())
         judge_time = int_time - cls.MATCH_WAIT
-        other_gender = cls.OTHER_GENDER_M.get(gender)
-        other_cnt = cls.get_anoy_count(other_gender)
-        if other_cnt == 0:
-            return None, False
-        my_cnt = cls.get_anoy_count(gender)
-        if other_cnt == 1:
-            if my_cnt > 1:
+        if not request.is_homo:
+            other_gender = cls.OTHER_GENDER_M.get(gender)
+            other_cnt = cls.get_anoy_count(other_gender)
+            if other_cnt == 0:
                 return None, False
+            my_cnt = cls.get_anoy_count(gender)
+            if other_cnt == 1:
+                if my_cnt > 1:
+                    return None, False
 
-        accelerate_fakeids = redis_client.zrangebyscore(cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, other_gender), judge_time + 3, MAX_TIME, 0, cls.MAX_CHOOSE_NUM)
-        other_fakeids = redis_client.zrangebyscore(cls.MATCH_KEY_BY_REGION_GENDER(other_gender), judge_time + 3, MAX_TIME, 0, cls.MAX_CHOOSE_NUM)
+        choose_gender = other_gender if not request.is_homo else gender
+        accelerate_fakeids = redis_client.zrangebyscore(cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, choose_gender), judge_time + 3, MAX_TIME, 0, cls.MAX_CHOOSE_NUM)
+        other_fakeids = redis_client.zrangebyscore(cls.MATCH_KEY_BY_REGION_GENDER(cls.MATCH_TYPE, choose_gender), judge_time + 3, MAX_TIME, 0, cls.MAX_CHOOSE_NUM)
+        if request.is_homo:
+            accelerate_fakeids = [el for el in accelerate_fakeids if el != fake_id]
+            other_fakeids = [el for el in other_fakeids if el != fake_id]
         if not accelerate_fakeids and not other_fakeids:
             return None, False
 
         user_id = cls._uid_by_fake_id(fake_id)
         user_age = UserService.uid_age(user_id)
+
+        if ALL_FILTER:
+            accelerate_fakeids = cls._filter_fakeids(user_id, accelerate_fakeids)
+            other_fakeids = cls._filter_fakeids(user_id, other_fakeids)
 
         cnt = 0
         matched_fakeid = None
@@ -326,12 +356,20 @@ class MatchService(object):
 
             if login_day < 1 and matched_times < 1:
                 to_scan = cls._ordered_by_score(to_scan)
+                uids = cls.ordered_batch_uids_by_fake_id(to_scan)
+                uid_scores = UserModel.batch_get_score(uids)
+                fakeid_scores = []
+                inds = min(len(uids), len(uid_scores))
+                for i in range(inds):
+                    fakeid_scores.append([to_scan[i], uid_scores[i][1]])
+                fake_ids = [el[0] for el in sorted(fakeid_scores, key=lambda x: -x[1])]
+                to_scan = fake_ids
 
             for i in range(len(to_scan)):
                 # fake_id2 = random.choice(other_fakeids)
                 fake_id2 = to_scan[i]
                 if i >= near_num:
-                    if not cls._is_out_wait_time(fake_id2, other_gender):
+                    if not cls._is_out_wait_time(fake_id2, choose_gender):
                         continue
                 user_id2 = cls._uid_by_fake_id(fake_id2)
                 # user2_age = UserService.uid_age(user_id2)
@@ -442,10 +480,12 @@ class MatchService(object):
         gender = UserService.get_gender(user_id)
         if not gender:
             return PROFILE_NOT_COMPLETE, False
+
         user_id = str(user.id)
         msg, status = cls._match_left_verify(user_id)
         if not status:
             return msg, False
+
         old_fake_id = redis_client.get(cls.TYPE_UID_FAKE_ID.format(user_id=user_id))
         if old_fake_id:
             cls._destroy_fake_id(old_fake_id)
@@ -513,8 +553,9 @@ class MatchService(object):
     @classmethod
     def _match_online(cls, fake_id, gender):
         other_gender = cls.OTHER_GENDER_M.get(gender)
+        choose_gender = other_gender if not request.is_homo else gender
         user_id = cls._uid_by_fake_id(fake_id)
-        user_ids = StatisticService.online_users_by_interval(other_gender, 3 * ONE_MIN)
+        user_ids = StatisticService.online_users_by_interval(choose_gender, 3 * ONE_MIN)
         nearest_uid = UserService.nearest_age_uid(user_id, user_ids)
         if not nearest_uid:
             return None, False
@@ -523,6 +564,7 @@ class MatchService(object):
     @classmethod
     def _match_yesterday(cls, fake_id, gender):
         other_gender = cls.OTHER_GENDER_M.get(gender)
+        choose_gender = other_gender if not request.is_homo else gender
         user_id = cls._uid_by_fake_id(fake_id)
         user = User.get_by_id(user_id)
         users = User.user_register_yesterday(other_gender, user.country)
@@ -592,8 +634,17 @@ class MatchService(object):
         return redis_client.get(cls.TYPE_FAKE_ID_UID.format(fake_id=fake_id))
 
     @classmethod
+    def ordered_batch_uids_by_fake_id(cls, fake_ids):
+        m = cls._batch_uids_by_fake_id(fake_ids)
+        return [m.get(_, None) for _ in fake_ids]
+
+    @classmethod
     def _batch_uids_by_fake_id(cls, fake_ids):
-        return redis_client.mget([cls.TYPE_FAKE_ID_UID.format(fake_id=_) for _ in fake_ids])
+        m = {}
+        real_fake_ids = [el for el in fake_ids if el]
+        for fake_id, uid in zip(real_fake_ids, redis_client.mget([cls.TYPE_FAKE_ID_UID.format(fake_id=_) for _ in real_fake_ids])):
+            m[fake_id] = uid
+        return m
 
     @classmethod
     def _fakeid_by_uid(cls, user_id):
@@ -632,7 +683,7 @@ class MatchService(object):
                 ctx = app.request_context(EnvironBuilder('/', 'http://localhost/').get_environ())
                 ctx.push()
                 request.region = region
-                to_rem = redis_client.zrangebyscore(cls.MATCH_KEY_BY_REGION_GENDER(g), 0, judge_time - wait_buff, 0, cls.MAX_CHOOSE_NUM)
+                to_rem = redis_client.zrangebyscore(cls.MATCH_KEY_BY_REGION_GENDER(cls.MATCH_TYPE, g), 0, judge_time - wait_buff, 0, cls.MAX_CHOOSE_NUM)
                 to_rem += redis_client.zrangebyscore(cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, g), 0, judge_time - wait_buff, 0, cls.MAX_CHOOSE_NUM)
                 for el in to_rem:
                     cls._destroy_fake_id(el)
@@ -697,7 +748,7 @@ class MatchService(object):
         if is_accelerated:
             rank = redis_client.zrank(cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender), fake_id)
             return rank if rank is not None else redis_client.zcount(cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender), judge_time, MAX_TIME)
-        rank = redis_client.zrank(cls.MATCH_KEY_BY_REGION_GENDER(gender), fake_id)
+        rank = redis_client.zrank(cls.MATCH_KEY_BY_REGION_GENDER(cls.MATCH_TYPE, gender), fake_id)
         if rank is None:
             rank = cls.get_anoy_count(gender)
         return redis_client.zcount(cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender), judge_time, MAX_TIME) + rank
@@ -729,9 +780,9 @@ class MatchService(object):
         if not fake_id:
             return u'you are not in match now', False
         gender = UserService.get_gender(user_id)
-        old_time = redis_client.zscore(cls.MATCH_KEY_BY_REGION_GENDER(gender), fake_id)
+        old_time = redis_client.zscore(cls.MATCH_KEY_BY_REGION_GENDER(cls.MATCH_TYPE, gender), fake_id)
         if old_time:
-            redis_client.zrem(cls.MATCH_KEY_BY_REGION_GENDER(gender), fake_id)
+            redis_client.zrem(cls.MATCH_KEY_BY_REGION_GENDER(cls.MATCH_TYPE, gender), fake_id)
         else:
             old_time = int(time.time())
         redis_client.zadd(cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender), {fake_id: old_time})

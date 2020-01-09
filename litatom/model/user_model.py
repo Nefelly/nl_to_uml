@@ -59,17 +59,25 @@ class UserModel(Document):
         cache_obj = redis_client.get(cache_key)
         if cache_obj:
             return cPickle.loads(cache_obj)
-        obj = cls.objects(user_id=user_id).first()
+        obj = cls.pure_get_by_user_id(user_id)
         redis_client.set(cache_key, cPickle.dumps(obj), USER_ACTIVE)
         return obj
 
     @classmethod
+    def pure_get_by_user_id(cls, user_id):
+        return  cls.objects(user_id=user_id).first()
+
+    @classmethod
     def batch_get_by_user_ids(cls, user_ids):
+        user_ids = [el for el in user_ids if el]
         keys = [REDIS_USER_MODEL_CACHE.format(user_id=_) for _ in user_ids]
         m = {}
         for uid, obj in zip(user_ids, redis_client.mget(keys)):
-            if obj:
-                m[uid] = cPickle.loads(obj)
+            if not obj:
+                 obj = cls.get_by_user_id(uid)
+            else:
+                obj = cPickle.loads(obj)
+            m[uid] = obj
         return m
 
     @classmethod

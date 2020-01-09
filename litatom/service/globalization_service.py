@@ -20,7 +20,9 @@ from ..key import (
     REDIS_ANOY_GENDER_ONLINE_REGION,
     REDIS_VOICE_GENDER_ONLINE_REGION,
     REDIS_VIDEO_GENDER_ONLINE_REGION,
-    REDIS_ACCELERATE_REGION_TYPE_GENDER
+    REDIS_ACCELERATE_REGION_TYPE_GENDER,
+    REDIS_TYPE_GENDER_HOMO_ONLINE_REGION,
+    REDIS_ACCELERATE_HOMO_REGION_TYPE_GENDER
 )
 from ..const import (
     ONLINE_LIVE,
@@ -162,6 +164,12 @@ class GlobalizationService(object):
         return cls.COUNTRY_LOC.get(request.ip_country, loc)
 
     @classmethod
+    def match_key_by_region_type_gender_homo(cls, match_type, gender):
+        region = cls.get_region()
+        homo = '' if not request.is_homo else 'homo'
+        return REDIS_TYPE_GENDER_HOMO_ONLINE_REGION.format(match_type=match_type, gender=gender, homo=homo, region=region)
+
+    @classmethod
     def anoy_match_key_by_region_gender(cls, gender):
         region = cls.get_region()
         return REDIS_ANOY_GENDER_ONLINE_REGION.format(region=region, gender=gender)
@@ -170,6 +178,12 @@ class GlobalizationService(object):
     def accelerate_match_key_by_region_type_gender(cls, match_type, gender):
         region = cls.get_region()
         return REDIS_ACCELERATE_REGION_TYPE_GENDER.format(match_type=match_type, region=region, gender=gender)
+
+    @classmethod
+    def accelerate_match_key_by_region_type_gender_homo(cls, match_type, gender):
+        region = cls.get_region()
+        homo = '' if not request.is_homo else 'homo'
+        return REDIS_ACCELERATE_HOMO_REGION_TYPE_GENDER.format(match_type=match_type, region=region, gender=gender, homo=homo)
 
     @classmethod
     def voice_match_key_by_region_gender(cls, gender):

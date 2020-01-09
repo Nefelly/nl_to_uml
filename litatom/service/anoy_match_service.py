@@ -16,6 +16,7 @@ from ..const import (
     FIVE_MINS,
     BOY,
     GIRL,
+    ALL_FILTER
 )
 from ..service import (
     GlobalizationService,
@@ -39,8 +40,9 @@ class AnoyMatchService(MatchService):
     TYPE_FAKE_LIKE = REDIS_FAKE_LIKE
     TYPE_MATCH_PAIR = REDIS_MATCH_PAIR
     TYPE_JUDGE_LOCK = REDIS_JUDGE_LOCK
-    MATCH_TYPE = 'soul'
-    MATCH_KEY_BY_REGION_GENDER = GlobalizationService.anoy_match_key_by_region_gender
+    MATCH_TYPE = 'anoy'
+    if not ALL_FILTER:
+        MATCH_KEY_BY_REGION_GENDER = GlobalizationService.anoy_match_key_by_region_gender
 
     @classmethod
     def get_tips(cls):

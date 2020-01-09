@@ -24,7 +24,8 @@ from ..util import (
 from ..const import (
     FIVE_MINS,
     BOY,
-    GIRL
+    GIRL,
+    ALL_FILTER
 )
 from ..service import (
     GlobalizationService,
@@ -56,7 +57,8 @@ class VideoMatchService(MatchService):
     TYPE_MATCH_PAIR = REDIS_VIDEO_MATCH_PAIR
     TYPE_JUDGE_LOCK = REDIS_VIDEO_JUDGE_LOCK
     MATCH_TYPE = 'video'
-    MATCH_KEY_BY_REGION_GENDER = GlobalizationService.video_match_key_by_region_gender
+    if not ALL_FILTER:
+        MATCH_KEY_BY_REGION_GENDER = GlobalizationService.video_match_key_by_region_gender
 
     @classmethod
     def get_tips(cls):
