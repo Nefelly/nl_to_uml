@@ -41,8 +41,8 @@ class AnoyMatchService(MatchService):
     TYPE_MATCH_PAIR = REDIS_MATCH_PAIR
     TYPE_JUDGE_LOCK = REDIS_JUDGE_LOCK
     MATCH_TYPE = 'anoy'
-    if not ALL_FILTER:
-        MATCH_KEY_BY_REGION_GENDER = GlobalizationService.anoy_match_key_by_region_gender
+    # if not ALL_FILTER:
+    #     MATCH_KEY_BY_REGION_GENDER = GlobalizationService.anoy_match_key_by_region_gender
 
     @classmethod
     def get_tips(cls):
