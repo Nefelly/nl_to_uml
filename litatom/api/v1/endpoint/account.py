@@ -50,6 +50,7 @@ def diamond_products():
         return fail(data)
     return success(data)
 
+
 @session_required
 def pay_inform():
     payload = request.json
