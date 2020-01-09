@@ -2,6 +2,7 @@
 import time
 import datetime
 import random
+import logging
 from hendrix.conf import setting
 from ..redis import RedisClient
 from ..key import (
@@ -33,6 +34,9 @@ from ..model import (
     YoutubeVideo
 )
 redis_client = RedisClient()['lit']
+
+
+logger = logging.getLogger(__name__)
 
 class VideoMatchService(MatchService):
     MATCH_WAIT = 60 * 7 + 1
@@ -85,7 +89,10 @@ class VideoMatchService(MatchService):
         if not status:
             return res, status
         fake_id = cls._fakeid_by_uid(user_id)
-        matched_id = res.get('matched_fake_id')
+        if not fake_id:
+            logger.error("not fake_id %s", user_id)
+        matched_id = res.get('matched_fake_id', '')
+
         res.update(
             {
                 'video': redis_client.get(REDIS_VIDEO_VID.format(low_high_fakeid=low_high_pair(fake_id, matched_id))),
