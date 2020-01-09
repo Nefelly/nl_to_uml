@@ -77,4 +77,5 @@ def buy_product():
     if not status:
         if data == AccountService.ERR_DIAMONDS_NOT_ENOUGH:
             return jsonify(FailedNotEnoughDiamonds)
+        return fail(data)
     return success(data)
