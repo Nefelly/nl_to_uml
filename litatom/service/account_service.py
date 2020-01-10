@@ -14,7 +14,9 @@ from ..service import (
     MatchService,
     AnoyMatchService,
     VoiceMatchService,
-    VideoMatchService
+    VideoMatchService,
+    AntiSpamService,
+    PalmService
 )
 from ..redis import RedisClient
 from flask import (
@@ -31,11 +33,22 @@ class AccountService(object):
     WEEK_MEMBER = 'week_member'
     ONE_MORE_TIME = 'one_more_time'
     ACCELERATE = 'accelerate'
+    ACCOST_RESET = 'accost_reset'
+    PALM_RESULT = 'palm_result'
     PRODUCT_INFOS = {
         WEEK_MEMBER: 15,
         ONE_MORE_TIME: 1,
-        ACCELERATE: 1
+        ACCELERATE: 1,
+        ACCOST_RESET: 10,
+        PALM_RESULT: 10
     }
+    SHARE = 'share'
+    WATCH_AD = 'watch_video'
+    PAY_ACTIVITIES = {
+        SHARE: 10,
+        WATCH_AD: 5
+    }
+
     MEMBER_SHIPS = [WEEK_MEMBER]
     ERR_DIAMONDS_NOT_ENOUGH = 'not enough diamonds, please deposit first.'
 
@@ -109,6 +122,15 @@ class AccountService(object):
                 'text': AnoyMatchService
             }
             data, status = getattr(m.get(match_type, AnoyMatchService), 'accelerate')(user_id)
+            print data, status
+            if not status:
+                return data, False
+        elif product == cls.ACCOST_RESET:
+            data, status = AntiSpamService.reset_accost(user_id)
+            if not status:
+                return data, False
+        elif product == cls.PALM_RESULT:
+            data, status = PalmService.can_get_result(user_id)
             if not status:
                 return data, False
         err_msg = cls.change_diamonds(user_id, -diamonds)
@@ -128,6 +150,17 @@ class AccountService(object):
         if err_msg:
             return err_msg, False
         AccountFlowRecord.create(user_id, AccountFlowRecord.DEPOSIT, diamonds)
+        return None, True
+
+    @classmethod
+    def deposit_by_activity(cls, user_id, activity):
+        if activity not in cls.PAY_ACTIVITIES:
+            return u'not recognized activity', False
+        diamonds = cls.PAY_ACTIVITIES.get(activity)
+        err_msg = cls.change_diamonds(user_id, diamonds)
+        if err_msg:
+            return err_msg, False
+        AccountFlowRecord.create(user_id, AccountFlowRecord.ADD_BY_ACTIVITY, diamonds)
         return None, True
 
     @classmethod

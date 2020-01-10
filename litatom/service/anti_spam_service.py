@@ -82,7 +82,7 @@ class AntiSpamService(object):
                 return cls.ACCOST_PASS
 
     @classmethod
-    def reset_accost(cls, user_id, data):
+    def reset_accost(cls, user_id, data=None):
         key = REDIS_ACCOST_RATE.format(user_id=user_id)
         redis_client.set(key, cls.ACCOST_RATE, cls.ACCOST_INTER)
         return None, True
