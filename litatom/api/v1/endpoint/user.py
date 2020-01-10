@@ -30,10 +30,13 @@ from ....service import (
     AntiSpamService,
     ConversationService
 )
-from  ....const import (
+from ....const import (
     MAX_TIME
 )
+
 logger = logging.getLogger(__name__)
+
+
 # handler = logging.FileHandler("/data/log/litatom.log")
 # logger.addHandler(handler)
 
@@ -122,6 +125,7 @@ def get_user_info(target_user_id):
         return fail(data)
     return success(data)
 
+
 @session_required
 def add_conversation():
     data = request.json
@@ -135,6 +139,7 @@ def add_conversation():
         return fail(data)
     return success(data)
 
+
 @session_required
 def delete_conversation(conversation_id):
     data, status = ConversationService.del_conversation(request.user_id, conversation_id)
@@ -142,12 +147,14 @@ def delete_conversation(conversation_id):
         return fail(data)
     return success(data)
 
+
 @session_required
 def get_conversations():
     data, status = ConversationService.get_conversations(request.user_id)
     if not status:
         return fail(data)
     return success(data)
+
 
 @session_required
 def search_user():
@@ -168,6 +175,7 @@ def accost():
         'status': status
     }
     return success(res)
+
 
 def get_avatars():
     data = UserService.get_avatars()
@@ -194,12 +202,14 @@ def user_messages():
         return fail(data)
     return success(data)
 
+
 @session_required
 def read_message(message_id):
     data, status = UserMessageService.read_message(request.user_id, message_id)
     if not status:
         return fail(data)
     return success()
+
 
 @session_required
 def register_firebase():
@@ -210,6 +220,7 @@ def register_firebase():
     if not status:
         return fail(data)
     return success()
+
 
 @session_finished_required
 def firebase_push():
