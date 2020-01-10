@@ -63,9 +63,12 @@ class Avatar(Document):
             objs = cls.objects(gender=g)
             for obj in objs:
                 fileid = obj.fileid
-                if len(avatars[g])<5:
+                if len(avatars[g]) < 5:
                     avatars[g].append(fileid)
         redis_client.set(REDIS_AVATAR_CACHE, cPickle.dumps(avatars))
+        # for debug
+        print(len(avatars[GENDERS[0]]))
+        print(len(avatars[GENDERS[1]]))
         return avatars
 
     @classmethod
