@@ -27,6 +27,7 @@ from ..key import (
 from ..const import (
     ONLINE_LIVE,
     GENDERS,
+    ALL_FILTER
 )
 from ..service import (
     Ip2AddressService
@@ -203,6 +204,7 @@ class GlobalizationService(object):
         ctx = app.request_context(EnvironBuilder('/', 'http://localhost/').get_environ())
         ctx.push()
         request.region = region
+        request.is_homo = True if ALL_FILTER else False
 
     @classmethod
     def rem_from_region(cls, user_id, region):
