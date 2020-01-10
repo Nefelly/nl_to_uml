@@ -248,6 +248,7 @@ class MatchService(object):
     def _ordered_by_score(cls, fakeids):
         # return fakeids
         uids = cls._batch_uids_by_fake_id(fakeids)
+        uids = [el for el in uids.values() if el]
         uid_scores = UserModel.batch_get_score(uids)
         fakeid_scores = []
         inds = min(len(uids), len(uid_scores))
