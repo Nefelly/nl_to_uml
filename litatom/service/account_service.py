@@ -2,13 +2,15 @@
 import json
 import time
 import traceback
+from hendrix.conf import setting
 import logging
 from ..model import (
     UserAccount,
     AccountFlowRecord
 )
 from ..const import (
-    ONE_WEEK
+    ONE_WEEK,
+    ONE_MIN
 )
 from ..service import (
     MatchService,
@@ -36,7 +38,7 @@ class AccountService(object):
     ACCOST_RESET = 'accost_reset'
     PALM_RESULT = 'palm_result'
     PRODUCT_INFOS = {
-        WEEK_MEMBER: 15,
+        WEEK_MEMBER: 15 if not setting.IS_DEV else 1,
         ONE_MORE_TIME: 1,
         ACCELERATE: 1,
         ACCOST_RESET: 10,
@@ -100,7 +102,8 @@ class AccountService(object):
         if old_membership_time < time_now:
             old_membership_time = time_now
         if member_type == cls.WEEK_MEMBER:
-            user_account.membership_time = old_membership_time + ONE_WEEK
+            time_int = ONE_WEEK if not setting.IS_DEV else ONE_MIN
+            user_account.membership_time = old_membership_time + time_int
             user_account.save()
         # MatchService.set_member_match_left(user_id)
         return None
