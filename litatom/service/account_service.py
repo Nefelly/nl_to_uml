@@ -105,7 +105,7 @@ class AccountService(object):
             time_int = ONE_WEEK if not setting.IS_DEV else ONE_MIN
             user_account.membership_time = old_membership_time + time_int
             user_account.save()
-        # MatchService.set_member_match_left(user_id)
+        MatchService.set_member_match_left(user_id)
         return None
 
     @classmethod
