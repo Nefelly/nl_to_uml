@@ -47,7 +47,8 @@ from ....service import (
     AlertService,
     JournalService,
     UserSettingService,
-    AsyncCmdService
+    AsyncCmdService,
+    AccountService
 )
 from  ....const import (
     MAX_TIME,
@@ -225,6 +226,23 @@ def change_loc():
     if status:
         return success()
     return fail(msg)
+
+
+def add_diamonds():
+    phone = request.args.get('phone')
+    if phone and phone.startswith('86'):
+        user = User.get_by_phone(phone)
+        if user:
+            user_id = str(user.id)
+            request.user_id = user_id
+            payload = {
+                'diamonds': 50
+            }
+            msg, status = AccountService.deposit_diamonds(user_id, payload)
+            if status:
+                return success(AccountService.get_user_account_info(user_id))
+            return fail(msg)
+    return fail('un aothorized')
 
 
 def unban():
