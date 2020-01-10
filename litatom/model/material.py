@@ -55,7 +55,12 @@ class Avatar(Document):
     def get_avatars(cls):
         cache_obj = redis_client.get(REDIS_AVATAR_CACHE)
         if cache_obj:
-            return cPickle.loads(cache_obj)
+            cache_data=cPickle.loads(cache_obj)
+            if len(cache_data[GENDERS[0]])>5:
+                cache_data[GENDERS[0]]=cache_data[GENDERS[0][:5]]
+            if len(cache_data[GENDERS[1]])>5:
+                cache_data[GENDERS[1]]=cache_data[GENDERS[1][:5]]
+            return cache_data
         avatars = {}
         for g in GENDERS:
             if not avatars.get(g):
