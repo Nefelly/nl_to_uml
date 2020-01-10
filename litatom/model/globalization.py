@@ -33,7 +33,12 @@ class RegionWord(Document):
             'india': u'%s times left',
             'ko': u'%s회 남았습니다',
             'ja': u'%s回残り',
-        }, 
+        },
+        'unlimited_time': {
+            'vi': u'Không giới hạn số lần',
+            'th': u'ไม่จำกัดจำนวนครั้ง',
+            'en': u'unlimited times',
+        },
         'anoy_match_msg': {
             'vi': u'Trò chuyện 180 giây,  thích nhau mở khóa giới hạn trò chuyện', 
             'th': u'180 วินาที กดไลค์กันและกัน เพื่อคุยกันแบบไม่จำกัดเวลา', 
