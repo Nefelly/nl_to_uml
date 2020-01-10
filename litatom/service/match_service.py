@@ -401,7 +401,7 @@ class MatchService(object):
     @classmethod
     def _match_left_verify(cls, user_id):
         # 匹配次数验证
-        if cls.is_member(user_id):
+        if cls._is_member(user_id):
             return cls.FAKE_MAX_TIME, True
         now_date = now_date_key()
         match_left_key = cls.TYPE_USER_MATCH_LEFT.format(user_date=user_id + now_date)
@@ -427,7 +427,7 @@ class MatchService(object):
         now_date = now_date_key()
         match_left_key = cls.TYPE_USER_MATCH_LEFT.format(user_date=user_id + now_date)
         if not redis_client.get(match_left_key):
-            default_match_times = cls.MATCH_TMS if not cls._is_member(user_id) else cls.FAKE_MAX_TIME
+            default_match_times = cls.MATCH_TMS # if not cls._is_member(user_id) else cls.FAKE_MAX_TIME
             redis_client.setnx(match_left_key, default_match_times)
             # redis_client.setnx(match_left_key, cls.MATCH_TMS)
             redis_client.expire(match_left_key, ONE_DAY)
@@ -454,7 +454,7 @@ class MatchService(object):
         now_date = now_date_key()
         match_left_key = cls.TYPE_USER_MATCH_LEFT.format(user_date=user_id + now_date)
         if not redis_client.get(match_left_key):
-            default_match_times = cls.MATCH_TMS if not cls._is_member(user_id) else cls.MATCH_TMS
+            default_match_times = cls.MATCH_TMS # if not cls._is_member(user_id) else cls.MATCH_TMS
             redis_client.setnx(match_left_key, default_match_times)
             # redis_client.setnx(match_left_key, cls.MATCH_TMS)
             redis_client.expire(match_left_key, ONE_DAY)
@@ -624,12 +624,12 @@ class MatchService(object):
         times = 0
         if status:
             times = msg
-        is_member = False
         if cls._is_member(user_id):
             wording = GlobalizationService.get_region_word('unlimited_time')
             is_member = True
         else:
             wording = GlobalizationService.get_region_word('time_left') % times
+            is_member = False
         return {
             'wording': wording,
             'is_member': is_member,
