@@ -41,6 +41,7 @@ class UserSettingService(object):
                 'interval': 5,
                 'adSupport23': False,
                 'using_hamburger': True,
+                'using_banner_hamburger': True,
                 'prior_platform': 'facebook', # facebook
                 'need_ad': True,
                 'banner_ad_type': 1,   # 1：nactive_ad, 2: banner_ad, 3: banner_native_ad
