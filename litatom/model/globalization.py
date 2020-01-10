@@ -237,7 +237,8 @@ class RegionWord(Document):
     def load(cls):
         tag_region_word = {}
         tags = ['time_left', 'anoy_match_msg', 'voice_match_msg', 'voice_top_wording', 'like_feed', 'banned_warn',
-                'reply_comment', 'reply_feed', 'start_follow', 'other_ban_inform', 'app_introduce', 'video_list', 'bio', 'alert_word','sms_could_not_register' ]
+                'reply_comment', 'reply_feed', 'start_follow', 'other_ban_inform', 'app_introduce', 'video_list',
+                'bio', 'alert_word', 'sms_could_not_register']
         for obj in cls.objects():
             region = obj.region
             tag = obj.tag
