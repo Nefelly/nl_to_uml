@@ -58,3 +58,7 @@ class UserModelService(object):
     @classmethod
     def add_comments_replies_by_uid(cls, user_id):
         return UserModel.add_comment_replies_record(user_id)
+
+    @classmethod
+    def find_avr_comment_replies(cls, user_id):
+        return UserModel.get_by_user_id(user_id).avr_comment_replies()
