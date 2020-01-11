@@ -75,6 +75,8 @@ class ReportService(object):
                     else:
                         cnt += 1
                     if cnt >= judge_num:
+                        if UserService.is_high_value_user(target_user_id):
+                            return False
                         return True
         return False
     
