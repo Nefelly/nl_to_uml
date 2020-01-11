@@ -21,6 +21,7 @@ from ..util import (
 from ..key import (
     REDIS_USER_MODEL_CACHE
 )
+
 redis_client = RedisClient()['lit']
 
 
@@ -37,7 +38,9 @@ class UserModel(Document):
     match_times = IntField(default=0)
     total_match_inter = FloatField(default=0)
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
-
+    # 确定用户的评论回复力
+    total_comments = IntField(default=0)  # 用户总评论数
+    total_comments_replies = FloatField(default=0)  # 用户评论总回复数
 
     @classmethod
     def create(cls, user_id):
@@ -53,6 +56,12 @@ class UserModel(Document):
             return self.DEFAULT_SCORE
         return self.total_match_inter / self.match_times
 
+    @cached_property
+    def avr_comment_replies(self):
+        if self.total_comments == 0:
+            return 0
+        return self.total_comments_replies / self.total_comments
+
     @classmethod
     def get_by_user_id(cls, user_id):
         cache_key = REDIS_USER_MODEL_CACHE.format(user_id=user_id)
@@ -65,7 +74,7 @@ class UserModel(Document):
 
     @classmethod
     def pure_get_by_user_id(cls, user_id):
-        return  cls.objects(user_id=user_id).first()
+        return cls.objects(user_id=user_id).first()
 
     @classmethod
     def batch_get_by_user_ids(cls, user_ids):
@@ -74,7 +83,7 @@ class UserModel(Document):
         m = {}
         for uid, obj in zip(user_ids, redis_client.mget(keys)):
             if not obj:
-                 obj = cls.get_by_user_id(uid)
+                obj = cls.get_by_user_id(uid)
             else:
                 obj = cPickle.loads(obj)
             m[uid] = obj
@@ -134,6 +143,18 @@ class UserModel(Document):
         obj.match_times += times_total
         obj.save()
         return True
+
+    @classmethod
+    def add_comment_record(cls, user_id):
+        obj = cls.ensure_model(user_id)
+        obj.total_comments += 1
+        obj.save()
+
+    @classmethod
+    def add_comment_replies_record(cls, user_id):
+        obj = cls.ensure_model(user_id)
+        obj.total_comments_replies += 1
+        obj.save()
 
     @classmethod
     def ensure_model(cls, user_id):

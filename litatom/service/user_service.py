@@ -5,6 +5,7 @@ import datetime
 import logging
 import langid
 from flask import request
+
 logger = logging.getLogger(__name__)
 
 from ..redis import RedisClient
@@ -69,6 +70,7 @@ from ..service import (
 
 sys_rnd = random.SystemRandom()
 redis_client = RedisClient()['lit']
+
 
 class UserService(object):
     FORBID_TIME = ONE_MIN
@@ -254,7 +256,7 @@ class UserService(object):
         elif user_age <= 13 + interval:
             if age <= max(13, user_age + interval):
                 return True
-        elif age >=  user_age - interval and age <= user_age + interval:
+        elif age >= user_age - interval and age <= user_age + interval:
             return True
         return False
 
@@ -283,7 +285,7 @@ class UserService(object):
 
     @classmethod
     def msg_to_user(cls, msg, target_user_id):
-        from_name='Lit official'
+        from_name = 'Lit official'
         officail_user = User.get_by_nickname(from_name)
         if not officail_user:
             from hendrix.conf import setting
@@ -329,7 +331,7 @@ class UserService(object):
     @classmethod
     def msg_to_region_users(cls, region, msg, number=None):
         # todo  when user gets big  need to redesign
-        from_name='Lit official'
+        from_name = 'Lit official'
         officail_user = User.get_by_nickname(from_name)
         if not officail_user:
             return False
@@ -341,7 +343,7 @@ class UserService(object):
         if number and number > 0:
             number = min(len(huanxin_ids), number)
             huanxin_ids = random.sample(huanxin_ids, number)
-        #huanxin_ids = [u'love123879348711830']   # joey
+        # huanxin_ids = [u'love123879348711830']   # joey
         res = HuanxinService.batch_send_msgs(msg, huanxin_ids, officail_user.huanxin.user_id)
         # print res
         return True
@@ -358,7 +360,7 @@ class UserService(object):
                 to_query.append(huanxinid)
         query_res = HuanxinService.is_user_online(to_query)
         for huanxinid, status in query_res.items():
-            #if status:
+            # if status:
             uid = huanxinid_uid[huanxinid]
             res[uid] = status
         # for uid in user_ids:   # not query result, do not deal
@@ -507,8 +509,8 @@ class UserService(object):
         gender = data.get('gender', '').strip().replace('\n', '')
         if gender:
             if gender not in GENDERS:
-                return u'gender must be one of ' + ',' . join(GENDERS), False
-            if not Avatar.valid_avatar(data.get('avatar', '')) and not user.avatar:   # user's avatar not set random one
+                return u'gender must be one of ' + ','.join(GENDERS), False
+            if not Avatar.valid_avatar(data.get('avatar', '')) and not user.avatar:  # user's avatar not set random one
                 random_avatars = Avatar.get_avatars()
                 if not random_avatars.get(gender):
                     logger.error("radom Avatars", random_avatars)
@@ -517,7 +519,8 @@ class UserService(object):
             User.change_age(user_id)
             user.birthdate = data.get('birthdate')
             user.save()
-            if getattr(request, 'region', '') == GlobalizationService.REGION_IN or request.loc == GlobalizationService.LOC_IN:
+            if getattr(request, 'region',
+                       '') == GlobalizationService.REGION_IN or request.loc == GlobalizationService.LOC_IN:
                 age = User.age_by_user_id(user_id)
                 gender = gender if gender else user.gender
 
@@ -566,7 +569,7 @@ class UserService(object):
     @classmethod
     def refresh_status(cls, user_id):
         int_time = int(time.time())
-        if user_id in [u'5cbc571e3fff2235defd5a65']:   # system account
+        if user_id in [u'5cbc571e3fff2235defd5a65']:  # system account
             cls.set_not_online(user_id)
             return
         redis_client.zadd(REDIS_HUANXIN_ONLINE, {user_id: int_time})
@@ -657,7 +660,7 @@ class UserService(object):
             cls._on_create_new_user(user)
             cls.update_info_finished_cache(user)
             RedisLock.release_mutex(key)
-        request.user_id = str(user.id)    # 为了region
+        request.user_id = str(user.id)  # 为了region
         msg, status = cls.login_job(user)
         if not status:
             return msg, False
@@ -734,7 +737,7 @@ class UserService(object):
         login_info = user.get_login_info()
         basic_info.update(login_info)
         return basic_info, True
-    
+
     @classmethod
     def get_basic_info(cls, user):
         if not user:
@@ -769,7 +772,7 @@ class UserService(object):
         # return u'%s loves to share' % he_or_she
 
     @classmethod
-    def verify_nickname_exists(cls, nickname):   # judge if nickname exists
+    def verify_nickname_exists(cls, nickname):  # judge if nickname exists
         if not nickname or User.get_by_nickname(nickname):
             return True
         return False
@@ -787,7 +790,7 @@ class UserService(object):
     @classmethod
     def uid_online_time_with_huanxin(cls, target_user_id):
         huanxin_time = redis_client.zscore(REDIS_HUANXIN_ONLINE, target_user_id)
-        return max(cls.uid_online_time(target_user_id), int(huanxin_time) if huanxin_time else 0 )
+        return max(cls.uid_online_time(target_user_id), int(huanxin_time) if huanxin_time else 0)
 
     @classmethod
     def get_user_info(cls, user_id, target_user_id):

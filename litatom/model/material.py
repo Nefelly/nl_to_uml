@@ -56,6 +56,7 @@ class Avatar(Document):
         cache_obj = redis_client.get(REDIS_AVATAR_CACHE)
         if cache_obj:
             return cPickle.loads(cache_obj)
+
         avatars = {}
         for g in GENDERS:
             if not avatars.get(g):
@@ -65,6 +66,7 @@ class Avatar(Document):
                 fileid = obj.fileid
                 avatars[g].append(fileid)
         redis_client.set(REDIS_AVATAR_CACHE, cPickle.dumps(avatars))
+
         return avatars
 
     @classmethod

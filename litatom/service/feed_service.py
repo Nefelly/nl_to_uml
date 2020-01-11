@@ -25,6 +25,7 @@ from ..const import (
 
 from ..service import (
     UserService,
+    UserModelService,
     BlockService,
     Ip2AddressService,
     UserMessageService,
@@ -38,10 +39,11 @@ from ..service import (
 from ..model import (
     Feed,
     FeedLike,
-    FeedComment
+    FeedComment,
 )
 
 redis_client = RedisClient()['lit']
+
 
 class FeedService(object):
     LATEST_TYPE = 'latest'
@@ -58,7 +60,8 @@ class FeedService(object):
             if cls.should_add_to_square(feed):
                 cls._add_to_feed_pool(feed)
         MqService.push(ADD_EXCHANGE,
-                       {"feed_id": str(feed.id), "pics": feed.pics, "region_key": cls._redis_feed_region_key(REDIS_FEED_SQUARE_REGION)})
+                       {"feed_id": str(feed.id), "pics": feed.pics,
+                        "region_key": cls._redis_feed_region_key(REDIS_FEED_SQUARE_REGION)})
         # FollowingFeedService.add_feed(feed)
 
     @classmethod
@@ -74,7 +77,9 @@ class FeedService(object):
             if reason:
                 reason_m = {"pulp": "sexual"}
                 reason = reason_m.get(reason, reason)
-                UserService.msg_to_user(u'Your post have been deleted due to reason: %s. Please keep your feed positive.' % reason, feed.user_id)
+                UserService.msg_to_user(
+                    u'Your post have been deleted due to reason: %s. Please keep your feed positive.' % reason,
+                    feed.user_id)
                 FeedLike.del_by_feedid(feed_id)
                 FeedComment.objects(feed_id=feed_id).delete()
                 feed.delete()
@@ -129,11 +134,11 @@ class FeedService(object):
         return feed_info, True
 
     @classmethod
-    def _add_to_feed_pool(cls,  feed):
+    def _add_to_feed_pool(cls, feed):
         redis_client.zadd(cls._redis_feed_region_key(REDIS_FEED_SQUARE_REGION), {str(feed.id): feed.create_time})
 
     @classmethod
-    def _del_from_feed_pool(cls,feed):
+    def _del_from_feed_pool(cls, feed):
         redis_client.zrem(cls._redis_feed_region_key(REDIS_FEED_SQUARE_REGION), str(feed.id))
 
     @classmethod
@@ -181,6 +186,7 @@ class FeedService(object):
                 return u'spam words', False
         feed = Feed.create_feed(user_id, content, pics, audios)
         cls._on_add_feed(feed)
+        UserModelService.add_comments_by_uid(user_id)
         # cls._add_to_feed_pool(feed)
         return str(feed.id), True
 
@@ -190,7 +196,7 @@ class FeedService(object):
         if not feed:
             return None, True
         if not getattr(request, 'is_admin', False) and feed.user_id != user_id:
-        #if not request.is_admin and feed.user_id != user_id:
+            # if not request.is_admin and feed.user_id != user_id:
             return u'you are not authorized', False
         cls._del_from_feed_pool(feed)
         cls._del_from_feed_hq(feed)
@@ -200,7 +206,6 @@ class FeedService(object):
         MqService.push(REMOVE_EXCHANGE, {"feed_id": feed_id})
         return None, True
 
-
     @classmethod
     def feeds_by_userid(cls, visitor_user_id, user_id, start_ts=MAX_TIME, num=10):
         if request.ip_should_filter:
@@ -208,7 +213,7 @@ class FeedService(object):
                        'feeds': [],
                        'has_next': False,
                        'next_start': -1
-            }, True
+                   }, True
         msg = BlockService.get_block_msg(visitor_user_id, user_id)
         if msg:
             return msg, False
@@ -217,17 +222,17 @@ class FeedService(object):
         next_start = -1
         feeds = Feed.objects(user_id=user_id, create_time__lte=start_ts).order_by('-create_time').limit(num + 1)
         feeds = list(feeds)
-        #feeds.reverse()   # 时间顺序错误
+        # feeds.reverse()   # 时间顺序错误
         has_next = False
         if len(feeds) == num + 1:
             has_next = True
             next_start = feeds[-1].create_time
             feeds = feeds[:-1]
         return {
-            'feeds': map(cls._feed_info, feeds, [visitor_user_id for el in feeds]),
-            'has_next': has_next,
-            'next_start': next_start
-        }, True
+                   'feeds': map(cls._feed_info, feeds, [visitor_user_id for el in feeds]),
+                   'has_next': has_next,
+                   'next_start': next_start
+               }, True
 
     @classmethod
     def _feeds_by_pool(cls, redis_key, user_id, start_p, num, pool_type=None):
@@ -268,8 +273,8 @@ class FeedService(object):
 
     @classmethod
     def feeds_by_square(cls, user_id, start_p=0, num=10):
-        return cls._feeds_by_pool(cls._redis_feed_region_key(REDIS_FEED_SQUARE_REGION), user_id, start_p, num, cls.LATEST_TYPE)
-
+        return cls._feeds_by_pool(cls._redis_feed_region_key(REDIS_FEED_SQUARE_REGION), user_id, start_p, num,
+                                  cls.LATEST_TYPE)
 
     @classmethod
     def age_by_feed_id(cls, feed_id):
@@ -336,11 +341,16 @@ class FeedService(object):
                 return u'comment of id:%s not exists' % comment_id, False
             # if father_comment.user_id == user_id:
             #     return u'could not comment on yourself\'s comement', False
-            if father_comment.comment_id:   # 直接评论到一级目录里  不支持多级嵌套
+            # 如果father comment也是一个评论回复，即father comment 也有father comment,就把当前评论的father comment设为根评论
+            if father_comment.comment_id:  # 直接评论到一级目录里  不支持多级嵌套
                 comment_id = father_comment.comment_id
+            # 如果father comment不是一个评论回复，即为一个根评论，找到father comment的user_id，对评论回复力进行计数
+            else:
+                UserModelService.add_comments_replies_by_uid(father_comment.user_id)
             comment.comment_id = comment_id
             comment.content_user_id = father_comment.user_id
-            UserMessageService.add_message(father_comment.user_id, user_id, UserMessageService.MSG_COMMENT, feed_id, content)
+            UserMessageService.add_message(father_comment.user_id, user_id, UserMessageService.MSG_COMMENT, feed_id,
+                                           content)
         else:
             UserMessageService.add_message(feed.user_id, user_id, UserMessageService.MSG_REPLY, feed_id, content)
         is_spam = AntiSpamService.is_spam_word(content, user_id)
@@ -364,10 +374,10 @@ class FeedService(object):
         feed = Feed.get_by_id(comment.feed_id)
         if not comment or not feed or (user_id not in [comment.user_id, feed.user_id]):
             return u'not authorized', False
-        #todo 嵌套查找
+        # todo 嵌套查找
         num = 1
-        if not comment.comment_id:   # has not father comment
-            num += FeedComment.objects(comment_id=comment_id).delete()   # delete son comments
+        if not comment.comment_id:  # has not father comment
+            num += FeedComment.objects(comment_id=comment_id).delete()  # delete son comments
         # feed = Feed.get_by_id(comment.feed_id)
         feed.chg_comment_num(-num)
         comment.delete()
