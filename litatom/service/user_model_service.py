@@ -61,4 +61,5 @@ class UserModelService(object):
 
     @classmethod
     def find_avr_comment_replies(cls, user_id):
-        return UserModel.get_by_user_id(user_id).avr_comment_replies()
+        user = UserModel.get_by_user_id(user_id)
+        return user.avr_comment_replies()
