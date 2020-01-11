@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 
 redis_client = RedisClient()['lit']
 
+
 class UserModelService(object):
     '''
     '''
@@ -49,3 +50,11 @@ class UserModelService(object):
                 mm[u2].append(_.inter_time)
         for _ in mm:
             UserModel.add_match_record(_, sum(mm[_]), len(mm[_]))
+
+    @classmethod
+    def add_comments_by_uid(cls, user_id):
+        return UserModel.add_comment_record(user_id)
+
+    @classmethod
+    def add_comments_replies_by_uid(cls, user_id):
+        return UserModel.add_comment_replies_record(user_id)

@@ -30,6 +30,7 @@ from ...error import (
 
 logger = logging.getLogger(__name__)
 
+
 @session_finished_required
 def create_feed():
     data = request.json
