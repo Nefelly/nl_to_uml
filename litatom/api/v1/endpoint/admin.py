@@ -247,6 +247,7 @@ def add_diamonds():
 def set_diamonds():
     phone = request.args.get('phone')
     num = request.args.get('num')
+    num = int(num)
     if phone and phone.startswith('86'):
         user = User.get_by_phone(phone)
         if user:
