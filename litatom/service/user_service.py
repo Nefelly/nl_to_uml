@@ -135,6 +135,13 @@ class UserService(object):
         return res, True
 
     @classmethod
+    def is_high_value_user(cls, user_id):
+        user = User.get_by_id(user_id)
+        if user and user.follower >= 20:
+            return True
+        return False
+
+    @classmethod
     def _get_words_loc(cls, words):
         for word in words:
             lang, score = langid.classify(word)
