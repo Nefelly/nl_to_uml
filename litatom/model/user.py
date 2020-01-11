@@ -6,6 +6,7 @@ import logging
 import json
 import random
 import cPickle
+
 sys_rng = random.SystemRandom()
 import urlparse
 
@@ -58,6 +59,7 @@ from ..util import (
 logger = logging.getLogger(__name__)
 requests = None
 redis_client = RedisClient()['lit']
+
 
 class UserSessionMixin(object):
     SESSION_ID_PATTERN = 'session.{id}'
@@ -154,6 +156,7 @@ class SocialAccountInfo(EmbeddedDocument):
         obj = cls(other_id=other_id, extra_data=json.dumps(payload))
         return obj
 
+
 def base64_decode_url(base64_data):
     import base64
     """ base url decode 实现"""
@@ -163,6 +166,7 @@ def base64_decode_url(base64_data):
     base64_data_str = base64_data_str.replace('_', '=')
     raw_data = base64.b64decode(base64_data_str)
     return raw_data
+
 
 class User(Document, UserSessionMixin):
     meta = {
@@ -184,7 +188,7 @@ class User(Document, UserSessionMixin):
     nickname = StringField()
     avatar = StringField()
     gender = StringField()
-    birthdate = StringField()   # in form of 1999-12-14 now
+    birthdate = StringField()  # in form of 1999-12-14 now
     session = StringField()
     sessionCreateTime = DateTimeField()
     logined = BooleanField(default=False)
@@ -195,7 +199,7 @@ class User(Document, UserSessionMixin):
     forbidden_ts = IntField(required=True, default=0)
     follower = IntField(required=True, default=0)
     following = IntField(required=True, default=0)
-    judge = ListField(required=True, default=[0, 0, 0])   # nasty, boring, like
+    judge = ListField(required=True, default=[0, 0, 0])  # nasty, boring, like
     huanxin = EmbeddedDocumentField(HuanxinAccount)
     google = EmbeddedDocumentField(SocialAccountInfo)
     facebook = EmbeddedDocumentField(SocialAccountInfo)
@@ -246,9 +250,11 @@ class User(Document, UserSessionMixin):
     @classmethod
     def user_register_yesterday(cls, gender, country):
         now = datetime.datetime.now()
-        zeroToday = now - datetime.timedelta(hours=now.hour, minutes=now.minute, seconds=now.second, microseconds=now.microsecond)
+        zeroToday = now - datetime.timedelta(hours=now.hour, minutes=now.minute, seconds=now.second,
+                                             microseconds=now.microsecond)
         zeroYestoday = zeroToday - datetime.timedelta(days=1)
-        return list(User.objects(create_time__gte=zeroYestoday, create_time__lte=zeroToday, gender=gender, country=country))
+        return list(
+            User.objects(create_time__gte=zeroYestoday, create_time__lte=zeroToday, gender=gender, country=country))
 
     @classmethod
     def info_by_session(cls, sid):
@@ -395,10 +401,10 @@ class User(Document, UserSessionMixin):
         age = date_now.year - date_birth.year
         try:
             replaced_birth = date_birth.replace(year=date_now.year)
-        except ValueError:   # raised when birth date is February 29 and the current year is not a leap year
-            replaced_birth = date_birth.replace(year=date_now.year, day=date_birth.day-1)
+        except ValueError:  # raised when birth date is February 29 and the current year is not a leap year
+            replaced_birth = date_birth.replace(year=date_now.year, day=date_birth.day - 1)
         if replaced_birth > date_now:
-            return date_now.year - date_birth.year -1
+            return date_now.year - date_birth.year - 1
         return date_now.year - date_birth.year
         # year_now = datetime.datetime.now().year
         # return min(year_now - int(self.birthdate.split('-')[0]), 100)
@@ -415,8 +421,7 @@ class User(Document, UserSessionMixin):
     @classmethod
     def get_by_phone(cls, zone_phone):
         return cls.objects(phone=zone_phone).first()
-    
-    
+
     @classmethod
     def chg_follower(cls, user_id, num):
         user = cls.get_by_id(user_id)
@@ -425,7 +430,7 @@ class User(Document, UserSessionMixin):
         new = user.follower + num
         user.follower = max(0, new)
         user.save()
-        
+
     @classmethod
     def chg_following(cls, user_id, num):
         user = cls.get_by_id(user_id)
@@ -434,7 +439,7 @@ class User(Document, UserSessionMixin):
         new = user.following + num
         user.following = max(0, new)
         user.save()
-    
+
     # @classmethod
     # def huanxin_id_by_user_id(cls, user_id):
     #     user = cls.get_by_id(user_id)
@@ -472,7 +477,6 @@ class User(Document, UserSessionMixin):
             'age': self.age_by_user_id(str(self.id))
 
         }
-
 
     def get_login_info(self):
         return {
