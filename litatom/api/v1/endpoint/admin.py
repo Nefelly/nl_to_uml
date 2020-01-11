@@ -244,6 +244,23 @@ def add_diamonds():
             return fail(msg)
     return fail('un aothorized')
 
+def set_diamonds():
+    phone = request.args.get('phone')
+    num = request.args.get('num')
+    if phone and phone.startswith('86'):
+        user = User.get_by_phone(phone)
+        if user:
+            user_id = str(user.id)
+            request.user_id = user_id
+            payload = {
+                'diamonds': 50
+            }
+            msg, status = AccountService.set_diamonds(user_id, num)
+            if status:
+                return success(AccountService.get_user_account_info(user_id))
+            return fail(msg)
+    return fail('un aothorized')
+
 
 def unban():
     UserService.unban_user(get_user_id())

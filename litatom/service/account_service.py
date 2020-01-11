@@ -83,6 +83,15 @@ class AccountService(object):
             return cls.ERR_DIAMONDS_NOT_ENOUGH
 
     @classmethod
+    def set_diamonds(cls, user_id, num):
+        user_account = UserAccount.get_by_user_id(user_id)
+        if not user_account:
+            user_account = UserAccount.create_account(user_id)
+        user_account.diamonds = num
+        user_account.save()
+        return None, True
+
+    @classmethod
     def is_member(cls, user_id):
         user_account = UserAccount.get_by_user_id(user_id)
         if not user_account:
