@@ -59,7 +59,7 @@ class UserModel(Document):
     @cached_property
     def avr_comment_replies(self):
         if self.total_comments == 0:
-            return self.DEFAULT_SCORE
+            return 0
         return self.total_comments_replies / self.total_comments
 
     @classmethod
