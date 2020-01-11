@@ -61,8 +61,6 @@ class UserModelService(object):
 
     @classmethod
     def find_avr_comment_replies(cls, user_id):
+        UserModel.ensure_model(user_id)
         user = UserModel.get_by_user_id(user_id)
-        print("average comment replies is " + user.avr_comment_replies)
-        print("average match is " + user.avr_match)
-        print(type(user))
-        return user.avr_match
+        return user.avr_comment_replies
