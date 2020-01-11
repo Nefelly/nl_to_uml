@@ -34,7 +34,7 @@ class JournalService(object):
 
     USER_LOC = {}
     NEW_USER_LOC = {}
-    LOC_STATED = ['TH', 'VN']
+    LOC_STATED = ['TH', 'VN', 'PH']
     CACHED_RES = {}
     ZERO_TODAY = None
 
