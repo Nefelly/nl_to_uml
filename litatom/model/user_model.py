@@ -40,7 +40,7 @@ class UserModel(Document):
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
     # 确定用户的评论回复力
     total_comments = IntField(default=0)  # 用户总评论数
-    total_comments_replies = IntField(default=0)  # 用户评论总回复数
+    total_comments_replies = FloatField(default=0)  # 用户评论总回复数
 
     @classmethod
     def create(cls, user_id):
