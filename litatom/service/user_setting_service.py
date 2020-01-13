@@ -118,4 +118,4 @@ class UserSettingService(object):
         #        res['modules_open']['video_match'] = 0
         # if region == GlobalizationService.REGION_PH:
         #     res['modules_open']['voice_match'] = 0
-        return {'a': 1}
+        return res
