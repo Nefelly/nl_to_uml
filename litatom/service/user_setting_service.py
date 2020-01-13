@@ -114,4 +114,6 @@ class UserSettingService(object):
         # print region, "!" * 100, region not in [GlobalizationService.REGION_TH]
         if region not in [GlobalizationService.REGION_TH, GlobalizationService.REGION_VN]:
                res['modules_open']['video_match'] = 0
+        if region == GlobalizationService.REGION_PH:
+            res['modules_open']['voice_match'] = 0
         return res
