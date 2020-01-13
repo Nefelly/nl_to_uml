@@ -154,7 +154,8 @@ def check_pic():
 
 
 def settings():
-    return success(UserSettingService.get_settings(request.user_id))
+    # return success(UserSettingService.get_settings(request.user_id))
+    return success(None)
 
 
 def check_version():
