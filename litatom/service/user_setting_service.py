@@ -105,17 +105,17 @@ class UserSettingService(object):
         #             userSetting.save()
         # res['pop_good_rate'] = need_pop
 
-        # region = GlobalizationService.get_region()
-        # if setting.IS_DEV or 1:
-        #     cached_setting_str = redis_client.get(REDIS_SETTINGS_KEYS)
-        #     if False and not cls._valid_cache_str(cached_setting_str):
-        #         redis_client.delete(REDIS_SETTINGS_KEYS)
-        #         redis_client.set(REDIS_SETTINGS_KEYS, json.dumpsgit (res))
-        #     else:
-        #         res = json.loads(cached_setting_str)
-        # # print region, "!" * 100, region not in [GlobalizationService.REGION_TH]
-        # if region not in [GlobalizationService.REGION_TH, GlobalizationService.REGION_VN]:
-        #        res['modules_open']['video_match'] = 0
-        # if region == GlobalizationService.REGION_PH:
-        #     res['modules_open']['voice_match'] = 0
+        region = GlobalizationService.get_region()
+        if setting.IS_DEV or 1:
+            cached_setting_str = redis_client.get(REDIS_SETTINGS_KEYS)
+            if not cls._valid_cache_str(cached_setting_str):
+                redis_client.delete(REDIS_SETTINGS_KEYS)
+                redis_client.set(REDIS_SETTINGS_KEYS, json.dumpsgit (res))
+            else:
+                res = json.loads(cached_setting_str)
+        # print region, "!" * 100, region not in [GlobalizationService.REGION_TH]
+        if region not in [GlobalizationService.REGION_TH, GlobalizationService.REGION_VN]:
+               res['modules_open']['video_match'] = 0
+        if region == GlobalizationService.REGION_PH:
+            res['modules_open']['voice_match'] = 0
         return res
