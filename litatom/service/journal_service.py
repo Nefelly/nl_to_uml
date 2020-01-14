@@ -108,7 +108,7 @@ class JournalService(object):
         gender_cnts = {}
         for gender in cls.GENDERS:
             gender_cnts[gender] = 0.0
-        # 遍历item对应表中的最近一天结果集的每个user_id
+        # 遍历item对应表中的最近一天结果集的每一个user_id
         for user_id in eval(exc_str):
             cnt += 1
             gender = cls.USER_GEN.get(str(user_id))
