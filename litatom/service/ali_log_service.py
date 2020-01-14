@@ -14,7 +14,8 @@ class AliLogService(object):
     '''
     https://help.aliyun.com/document_detail/29077.html?spm=5176.2020520112.0.0.734834c0eZ4Hb2
     '''
-    classmethod
+
+    @classmethod
     def test(cls):
         endpoint = 'cn-hongkong.log.aliyuncs.com'  # 选择与上面步骤创建Project所属区域匹配的Endpoint
         access_key_id = 'LTAI4FmgXZDqyFsLxf6Rez3e'  # 使用您的阿里云访问密钥AccessKeyId
