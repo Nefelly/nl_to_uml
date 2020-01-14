@@ -76,7 +76,7 @@ class JournalService(object):
         return 'new_count_' + loc
 
     @classmethod
-    def find_gender_by_uid(cls,user_id):
+    def find_gender_by_uid(cls, user_id):
         return User.objects(id=user_id).first().gender
 
     '''
@@ -104,7 +104,7 @@ class JournalService(object):
         # 遍历item对应表中的最近一天结果集的每个user_id
         for user_id in eval(exc_str):
             cnt += 1
-            gender=cls.find_gender_by_uid(user_id)
+            gender = cls.find_gender_by_uid(user_id)
             if gender in gender_cnts:
                 gender_cnts[gender] += 1
             loc = cls.USER_LOC.get(user_id)
