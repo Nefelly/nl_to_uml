@@ -43,4 +43,4 @@ class AliLogService(object):
                 logitemList.append(logItem)
             req2 = PutLogsRequest(project, logstore, topic, source, logitemList)
             res2 = client.put_logs(req2)
-            res2.log_print()
+            print 'hh'
