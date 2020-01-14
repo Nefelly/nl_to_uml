@@ -68,7 +68,10 @@ class JournalService(object):
         else:
             objs = User.objects().limit(1000)
         for obj in objs:
-            cls.USER_GEN[str(obj.id)] = obj.gender
+            gender=obj.gender
+            if gender in cls.GENDERS:
+                cls.USER_GEN[str(obj.id)] = gender
+        print cls.USER_GEN
 
     @classmethod
     def get_journal_items(cls, stat_type):
@@ -111,6 +114,7 @@ class JournalService(object):
         for user_id in eval(exc_str):
             cnt += 1
             gender = cls.USER_GEN.get(user_id)
+            print user_id,gender
             if gender in gender_cnts:
                 gender_cnts[gender] += 1
             loc = cls.USER_LOC.get(user_id)
@@ -361,8 +365,8 @@ class JournalService(object):
     @classmethod
     def out_port_result(cls, dst_addr):
         cls.load_user_loc()
-        cls.load_user_gen()
         print 'load succ', cls.LOC_STATED
+        cls.load_user_gen()
         res_lst = []
         cls.DATE_DIS = datetime.timedelta(hours=0)
         cnt = 0
@@ -376,6 +380,7 @@ class JournalService(object):
                 m = cls.cal_by_id(str(item.id))
                 name, num = m['name'], m['num']
                 gender_cnt = [m[gender] for gender in cls.GENDERS]
+                print gender_cnt
                 region_cnt = [m[loc] for loc in cls.LOC_STATED]
                 avr_cnt = []
                 for loc in cls.LOC_STATED:
