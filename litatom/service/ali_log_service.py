@@ -36,7 +36,7 @@ class AliLogService(object):
         for i in range(10):
             logitemList = []  # LogItem list
             for j in range(10):
-                contents = [('action', 'test'), ('amount', '1'), ('remark', 'hanimei') ]
+                contents = [('action', 'test'), ('amount', '1'), ('remark', 'hanimei'), ('user_id', 'fvdsgfd') ]
                 logItem = LogItem()
                 logItem.set_time(int(time.time()))
                 logItem.set_contents(contents)
