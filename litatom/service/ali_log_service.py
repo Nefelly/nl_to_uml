@@ -16,7 +16,7 @@ class AliLogService(object):
     '''
     classmethod
     def test(cls):
-        endpoint = ''  # 选择与上面步骤创建Project所属区域匹配的Endpoint
+        endpoint = 'cn-hongkong.log.aliyuncs.com'  # 选择与上面步骤创建Project所属区域匹配的Endpoint
         access_key_id = 'LTAI4FmgXZDqyFsLxf6Rez3e'  # 使用您的阿里云访问密钥AccessKeyId
         access_key = 'n6ZOCqP28vfOJi3YbNETJynEG87sRo'  # 使用您的阿里云访问密钥AccessKeySecret
         project = 'litatomaction'  # 上面步骤创建的项目名称
@@ -29,13 +29,13 @@ class AliLogService(object):
         req1 = ListLogstoresRequest(project)
         res1 = client.list_logstores(req1)
         res1.log_print()
-        topic = ""
-        source = ""
+        topic = "imtopic"
+        source = "imsource"
 
         for i in range(10):
             logitemList = []  # LogItem list
             for j in range(10):
-                contents = [('index', str(i * 10 + j))]
+                contents = [('action', 'test'), ('amount', 1), ('remark', 'hanimei') ]
                 logItem = LogItem()
                 logItem.set_time(int(time.time()))
                 logItem.set_contents(contents)
