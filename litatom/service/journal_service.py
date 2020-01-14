@@ -68,6 +68,7 @@ class JournalService(object):
         else:
             objs = User.objects().limit(1000)
         for obj in objs:
+            print obj.gender
             if obj.gender in cls.GENDERS:
                 cls.USER_GEN[str(obj.id)] = obj.gender
         print cls.USER_GEN
