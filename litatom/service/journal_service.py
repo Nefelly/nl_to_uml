@@ -71,7 +71,6 @@ class JournalService(object):
             gender=obj.gender
             if gender in cls.GENDERS:
                 cls.USER_GEN[str(obj.id)] = gender
-        print cls.USER_GEN
 
     @classmethod
     def get_journal_items(cls, stat_type):
