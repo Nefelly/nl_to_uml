@@ -64,9 +64,9 @@ class JournalService(object):
     @classmethod
     def load_user_gen(cls):
         if not cls.IS_TESTING:
-            objs = UserSetting.objects()
+            objs = User.objects()
         else:
-            objs = UserSetting.objects().limit(1000)
+            objs = User.objects().limit(1000)
         for obj in objs:
             cls.USER_GEN[str(obj.id)] = obj.gender
 
