@@ -68,10 +68,8 @@ class JournalService(object):
         else:
             objs = User.objects().limit(1000)
         for obj in objs:
-            print obj.gender
             if obj.gender in cls.GENDERS:
                 cls.USER_GEN[str(obj.id)] = obj.gender
-        print cls.USER_GEN
 
     @classmethod
     def get_journal_items(cls, stat_type):
@@ -113,8 +111,7 @@ class JournalService(object):
         # 遍历item对应表中的最近一天结果集的每个user_id
         for user_id in eval(exc_str):
             cnt += 1
-            gender = cls.USER_GEN.get(user_id)
-            print user_id,gender
+            gender = cls.USER_GEN.get(str(user_id))
             if gender in gender_cnts:
                 gender_cnts[gender] += 1
             loc = cls.USER_LOC.get(user_id)
@@ -323,7 +320,7 @@ class JournalService(object):
                             # user_id = str(obj.target_uid)
                         else:
                             user_id = obj.user_id
-                        gender=cls.USER_GEN.get(user_id)
+                        gender=cls.USER_GEN.get(str(user_id))
                         if gender in gender_cnts:
                             gender_cnts[gender] += 1
                         loc = cls.USER_LOC.get(user_id)
@@ -344,7 +341,7 @@ class JournalService(object):
                         user_id = getattr(obj, table_user_id[table_name])
                     else:
                         user_id = obj.user_id
-                    gender=cls.USER_GEN.get(user_id)
+                    gender=cls.USER_GEN.get(str(user_id))
                     if gender in gender_cnts:
                         gender_cnts[gender] += 1
             res = {
