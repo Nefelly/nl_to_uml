@@ -65,7 +65,7 @@ class JournalService(object):
     def load_user_gen(cls):
         objs = User.objects()
         for obj in objs:
-            cls.USER_GEN[obj.id] = obj.gender
+            cls.USER_GEN[str(obj.id)] = obj.gender
 
     @classmethod
     def get_journal_items(cls, stat_type):
