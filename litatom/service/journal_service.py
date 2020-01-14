@@ -37,6 +37,7 @@ class JournalService(object):
     LOC_STATED = ['TH', 'VN', 'PH'] # new_TH, count_TH
     CACHED_RES = {}
     ZERO_TODAY = None
+    GENDERS = ['boy','girl']
 
     '''
     类的预装载函数，把现有的LOC_STATED，加上new_，和count_前缀,同时赋值USER_LOC,NEW_USER_LOC
@@ -74,6 +75,10 @@ class JournalService(object):
     def _get_count_loc(cls, loc):
         return 'new_count_' + loc
 
+    @classmethod
+    def find_gender_by_uid(cls,user_id):
+        return User.objects(id=user_id).first().gender
+
     '''
     输入一个StatItems Document，
     返回一个dict，返回该item的id,name,num：最近一天item对应表中的用户数量
@@ -93,9 +98,15 @@ class JournalService(object):
         loc_cnts = {}
         for loc in cls.LOC_STATED:
             loc_cnts[loc] = 0.0
+        gender_cnts = {}
+        for gender in cls.GENDERS:
+            gender_cnts[gender] = 0.0
         # 遍历item对应表中的最近一天结果集的每个user_id
         for user_id in eval(exc_str):
             cnt += 1
+            gender=cls.find_gender_by_uid(user_id)
+            if gender in gender_cnts:
+                gender_cnts[gender] += 1
             loc = cls.USER_LOC.get(user_id)
             if loc in cls.LOC_STATED:
                 loc_cnts[loc] += 1
@@ -104,6 +115,7 @@ class JournalService(object):
                 loc_cnts[cls._get_new_loc(new_loc)] += 1
                 loc_cnts[cls._get_count_loc(new_loc)] += 1
         res["num"] = cnt
+        res.update(gender_cnts)
         res.update(loc_cnts)
         return res
 
@@ -161,6 +173,12 @@ class JournalService(object):
         # num中存储了表达式的值
         num = cal_exp(tmp_exp)
         loc_cnts = {"num": num}
+        # 将性别数量分别计算
+        for gender in cls.GENDERS:
+            tmp_exp = expression
+            for el in res_m:
+                tmp_exp=tmp_exp.replace(el,str(res_m[el][gender]))
+            loc_cnts[gender] = cal_exp(tmp_exp)
         # 如果需要location信息，则对每个location的数量分别计算
         if need_loc:
             for loc in cls.LOC_STATED:
@@ -266,6 +284,9 @@ class JournalService(object):
             cnt = eval(exc_str)
             if not cnt:
                 cnt = 0
+            gender_cnts={}
+            for gender in cls.GENDERS:
+                gender_cnts[gender]=0.0
             loc_cnts = {}
             table_user_id = {
                 "Report": "target_uid",
@@ -292,6 +313,9 @@ class JournalService(object):
                             # user_id = str(obj.target_uid)
                         else:
                             user_id = obj.user_id
+                        gender=cls.find_gender_by_uid(user_id)
+                        if gender in gender_cnts:
+                            gender_cnts[gender] += 1
                         loc = cls.USER_LOC.get(user_id)
                         if loc and loc in loc_cnts:
                             loc_cnts[loc] += 1
@@ -301,12 +325,25 @@ class JournalService(object):
                             if not new_user_acted.get(user_id):
                                 loc_cnts[cls._get_count_loc(new_loc)] += 1
                                 new_user_acted[user_id] = 1
+            else:
+                eval_str = '%s.objects(%s,%s)' % (table_name, time_str, expression)
+                for obj in eval(eval_str):
+                    if table_name == 'User':
+                        user_id = str(obj.id)
+                    elif table_name in table_user_id:
+                        user_id = getattr(obj, table_user_id[table_name])
+                    else:
+                        user_id = obj.user_id
+                    gender=cls.find_gender_by_uid(user_id)
+                    if gender in gender_cnts:
+                        gender_cnts[gender] += 1
             res = {
                 "id": item_id,
                 "num": cnt,
                 "name": item.name
             }
             res.update(loc_cnts)
+            res.update(gender_cnts)
         cls.CACHED_RES[item_id] = res
         return res
 
@@ -331,6 +368,7 @@ class JournalService(object):
                 # m为根据该统计量的id计算得到的结果
                 m = cls.cal_by_id(str(item.id))
                 name, num = m['name'], m['num']
+                gender_cnt = [m[gender] for gender in cls.GENDERS]
                 region_cnt = [m[loc] for loc in cls.LOC_STATED]
                 avr_cnt = []
                 for loc in cls.LOC_STATED:
@@ -338,7 +376,7 @@ class JournalService(object):
                         avr_cnt.append(round(m.get(loc, 0)/daily_m[loc], 4))
                     else:
                         avr_cnt.append(0)
-                res_lst.append([name, num] + region_cnt + [num/daily_m['num']] + avr_cnt)
+                res_lst.append([name, num] + gender_cnt + region_cnt + [num/daily_m['num']] + avr_cnt)
                 cnt += 1
             except Exception, e:
                 print e
@@ -348,7 +386,7 @@ class JournalService(object):
         # dst_addr = '/data/statres/%s.xlsx' % now_date_key()
         # ensure_path(dst_addr)
         # print res_lst
-        write_data_to_xls(dst_addr, [u'名字', u'数量'] + cls.LOC_STATED + ['total avr'] + [el + 'avr' for el in cls.LOC_STATED], res_lst)
+        write_data_to_xls(dst_addr, [u'名字', u'数量'] + cls.GENDERS + cls.LOC_STATED + ['total avr'] + [el + 'avr' for el in cls.LOC_STATED], res_lst)
 
     @classmethod
     def ad_res(cls, dst_addr):
