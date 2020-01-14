@@ -370,7 +370,6 @@ class JournalService(object):
                 name, num = m['name'], m['num']
                 gender_cnt = [m[gender] for gender in cls.GENDERS]
                 region_cnt = [m[loc] for loc in cls.LOC_STATED]
-                print gender_cnt
                 avr_cnt = []
                 for loc in cls.LOC_STATED:
                     if daily_m[loc]:
