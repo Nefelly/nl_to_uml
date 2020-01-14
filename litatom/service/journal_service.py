@@ -38,9 +38,10 @@ class JournalService(object):
     CACHED_RES = {}
     ZERO_TODAY = None
     GENDERS = ['boy','girl']
+    USER_GEN = {}   # user_id:gender
 
     '''
-    类的预装载函数，把现有的LOC_STATED，加上new_，和count_前缀,同时赋值USER_LOC,NEW_USER_LOC
+    类的预装载函数，把现有的LOC_STATED，加上new_，和count_前缀,同时准备USER_LOC,NEW_USER_LOC
     '''
     @classmethod
     def load_user_loc(cls):
@@ -61,6 +62,12 @@ class JournalService(object):
             cls.NEW_USER_LOC[obj.user_id] = obj.lang
 
     @classmethod
+    def load_user_gen(cls):
+        objs = User.objects()
+        for obj in objs:
+            cls.USER_GEN[obj.id] = obj.gender
+
+    @classmethod
     def get_journal_items(cls, stat_type):
         res = []
         for el in StatItems.get_items_by_type(stat_type):
@@ -74,10 +81,6 @@ class JournalService(object):
     @classmethod
     def _get_count_loc(cls, loc):
         return 'new_count_' + loc
-
-    @classmethod
-    def find_gender_by_uid(cls, user_id):
-        return User.objects(id=user_id).first().gender
 
     '''
     输入一个StatItems Document，
@@ -104,7 +107,7 @@ class JournalService(object):
         # 遍历item对应表中的最近一天结果集的每个user_id
         for user_id in eval(exc_str):
             cnt += 1
-            gender = cls.find_gender_by_uid(user_id)
+            gender = cls.USER_GEN.get(user_id)
             if gender in gender_cnts:
                 gender_cnts[gender] += 1
             loc = cls.USER_LOC.get(user_id)
@@ -313,7 +316,7 @@ class JournalService(object):
                             # user_id = str(obj.target_uid)
                         else:
                             user_id = obj.user_id
-                        gender=cls.find_gender_by_uid(user_id)
+                        gender=cls.USER_GEN.get(user_id)
                         if gender in gender_cnts:
                             gender_cnts[gender] += 1
                         loc = cls.USER_LOC.get(user_id)
@@ -334,7 +337,7 @@ class JournalService(object):
                         user_id = getattr(obj, table_user_id[table_name])
                     else:
                         user_id = obj.user_id
-                    gender=cls.find_gender_by_uid(user_id)
+                    gender=cls.USER_GEN.get(user_id)
                     if gender in gender_cnts:
                         gender_cnts[gender] += 1
             res = {
@@ -355,6 +358,7 @@ class JournalService(object):
     @classmethod
     def out_port_result(cls, dst_addr):
         cls.load_user_loc()
+        cls.load_user_gen()
         print 'load succ', cls.LOC_STATED
         res_lst = []
         cls.DATE_DIS = datetime.timedelta(hours=0)
