@@ -68,9 +68,9 @@ class JournalService(object):
         else:
             objs = User.objects().limit(1000)
         for obj in objs:
-            gender=obj.gender
-            if gender in cls.GENDERS:
-                cls.USER_GEN[str(obj.id)] = gender
+            if obj.gender in cls.GENDERS:
+                cls.USER_GEN[str(obj.id)] = obj.gender
+        print cls.USER_GEN
 
     @classmethod
     def get_journal_items(cls, stat_type):
