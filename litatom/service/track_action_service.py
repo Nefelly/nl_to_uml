@@ -70,3 +70,7 @@ class TrackActionService(object):
         '''
         res = map(UserAction.to_json, UserAction.get_by_user_id(user_id))
         return res, True
+
+    @classmethod
+    def write_to_alilogservice(cls,user_id, action, other_user_id, amount=None, remark=None, version=None):
+

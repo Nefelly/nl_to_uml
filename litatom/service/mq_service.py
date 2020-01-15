@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 class MqService(object):
     """
-
+    消息队列服务
     """
     @classmethod
     def push(cls, exchange, payload):
