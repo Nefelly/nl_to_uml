@@ -427,6 +427,6 @@ class JournalService(object):
         # ensure_path(dst_addr)
         # print res_lst
         write_data_to_xls(dst_addr,
-                          [u'名字', u'数量'] + cls.GENDERS + cls.LOC_STATED + ['total avr'] + [el + 'avr' for el in cls.LOC_STATED],
+                          [u'名字', u'数量'] + cls.LOC_STATED + ['total avr'] + [el + 'avr' for el in cls.LOC_STATED],
                           res_lst)
         return
