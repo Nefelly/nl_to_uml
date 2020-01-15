@@ -28,9 +28,9 @@ def run(stat_date=None):
         JournalService.out_port_result(dst_addr)
     #AlertService.send_file(["litatomwang@gmail.com", "w326571@126.com", '382365209@qq.com'], dst_addr)
     AlertService.send_file(["644513759@qq.com"], dst_addr)
-    # JournalService.ad_res(ad_addr)
+    JournalService.ad_res(ad_addr)
     #AlertService.send_file(["litatomwang@gmail.com", "w326571@126.com", '382365209@qq.com'], ad_addr)
-    # AlertService.send_file(["644513759@qq.com"], ad_addr)
+    AlertService.send_file(["644513759@qq.com"], ad_addr)
 
 
 if __name__ == "__main__":
