@@ -32,6 +32,7 @@ class UserSettingService(object):
             'pop_good_rate': True,
             'prior_voice': TYPE_VOICE_TENCENT,   # agora 声网，
             'phone_login_without_code': True,
+            'disableGooglePlayCheck': True,
             'modules_open': {
                 "soul_match": 1,
                 "video_match": 1,
