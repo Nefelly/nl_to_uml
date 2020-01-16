@@ -1,6 +1,8 @@
 import os
 import sys
 from litatom.service import AliLogService
+from aliyun.log import *
+import logging
 import time
 import datetime
 from litatom.util import (
@@ -11,10 +13,8 @@ from litatom.util import (
 
 
 def run():
-    contents = [('a', 'b')]
-    print 'contents',contents
-    res = AliLogService.put_logs(contents)
-    print res
+    contents = [('a', '1'), ('b', '2')]
+    AliLogService.put_logs(contents)
 
 
 if __name__ == "__main__":

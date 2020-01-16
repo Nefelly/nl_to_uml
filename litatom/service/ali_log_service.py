@@ -52,23 +52,16 @@ class AliLogService(object):
         # 重要提示：创建的logstore请配置为4个shard以便于后面测试通过
         # 构建一个client
         client = LogClient(cls.ENDPOINT, cls.ACCESS_KEY_ID, cls.ACCESS_KEY)
-        # list 所有的logstore
-        req1 = ListLogstoresRequest(cls.DEFAULT_PROJECT)
-        res1 = client.list_logstores(req1)
-        res1.log_print()
-        topic = ""
-        source = ""
         res2 = ''
         # 发送10个数据包，每个数据包有10条log
         for i in range(10):
             logitemList = []  # LogItem list
             for j in range(10):
-                contents = [('test', str(i * 10 + j))]
                 logItem = LogItem()
                 logItem.set_time(int(time.time()))
                 logItem.set_contents(contents)
                 logitemList.append(logItem)
-            req2 = PutLogsRequest(cls.DEFAULT_PROJECT, cls.DEFAULT_LOGSTORE, topic, source, logitemList)
+            req2 = PutLogsRequest(project, logstore, topic, source, logitemList)
             res2 = client.put_logs(req2)
             res2.log_print()
         return res2.get_all_headers()
