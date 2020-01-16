@@ -10,6 +10,7 @@ logger = logging.getLogger(__name__)
 
 redis_client = RedisClient()['lit']
 
+
 class AliLogService(object):
     '''
     https://help.aliyun.com/document_detail/29077.html?spm=5176.2020520112.0.0.734834c0eZ4Hb2
@@ -29,14 +30,16 @@ class AliLogService(object):
     # res1 = client.list_logstores(req1)
     # res1.log_print()
     DEFAULT_TOPIC = "default_topic"
-    DEFAULT_SOURCE = "default_source" # 日志来源机器ip
+    DEFAULT_SOURCE = "default_source"  # 日志来源机器ip
 
     '''
     上传一条日志，contents格式为[('key','value'),('key2','value2')...]，
     返回一个LogSponse对象，为http相应包头部封装后的对象
     '''
+
     @classmethod
-    def put_logs(cls, contents, topic=DEFAULT_TOPIC, source=DEFAULT_SOURCE, project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE, client=DEFAULT_CLIENT, compress=False):
+    def put_logs(cls, contents, topic=DEFAULT_TOPIC, source=DEFAULT_SOURCE, project=DEFAULT_PROJECT,
+                 logstore=DEFAULT_LOGSTORE, client=DEFAULT_CLIENT, compress=False):
         logitemList = []  # LogItem list
         logItem = LogItem()
         logItem.set_time(int(time.time()))
