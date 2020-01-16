@@ -38,22 +38,22 @@ class TrackActionService(object):
                 contents += [('version', version)]
             res = AliLogService.put_logs(contents)
             return res
-        # if cls.MQ_INSERT:
-        #     MqService.push(USER_ACTION_EXCHANGE,
-        #                    {"args": cPickle.dumps(
-        #                        [user_id, action, other_user_id, amount, remark, version, datetime.datetime.now(),
-        #                         int(time.time())])}
-        #                    # {
-        #                    #         "user_id": user_id,
-        #                    #         "action": action,
-        #                    #         "other_user_id": other_user_id,
-        #                    #         "amount": amount,
-        #                    #         "remark": remark,
-        #                    #         "create_time": cPickle.dumps(datetime.datetime.now())
-        #                    # }
-        #                    )
-        #     return True
-        # return cls._create_action(user_id, action, other_user_id, amount, remark, version)
+        if cls.MQ_INSERT:
+            MqService.push(USER_ACTION_EXCHANGE,
+                           {"args": cPickle.dumps(
+                               [user_id, action, other_user_id, amount, remark, version, datetime.datetime.now(),
+                                int(time.time())])}
+                           # {
+                           #         "user_id": user_id,
+                           #         "action": action,
+                           #         "other_user_id": other_user_id,
+                           #         "amount": amount,
+                           #         "remark": remark,
+                           #         "create_time": cPickle.dumps(datetime.datetime.now())
+                           # }
+                           )
+            return True
+        return cls._create_action(user_id, action, other_user_id, amount, remark, version)
 
     @classmethod
     def pymongo_batch_insert(cls, collection, payload_list):
