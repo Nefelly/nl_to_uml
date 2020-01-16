@@ -37,7 +37,8 @@ class TrackActionService(object):
             if version:
                 contents += [('version', version)]
             print "in crate_action, contents:",contents
-            AliLogService.put_logs(contents)
+            res = AliLogService.put_logs(contents)
+            return res
         # if cls.MQ_INSERT:
         #     MqService.push(USER_ACTION_EXCHANGE,
         #                    {"args": cPickle.dumps(

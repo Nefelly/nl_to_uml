@@ -25,10 +25,6 @@ class AliLogService(object):
     # 重要提示：创建的logstore请配置为4个shard以便于后面测试通过
     # 构建一个client
     DEFAULT_CLIENT = LogClient(ENDPOINT, ACCESS_KEY_ID, ACCESS_KEY)
-    # # list 所有的logstore
-    # req1 = ListLogstoresRequest(project)
-    # res1 = client.list_logstores(req1)
-    # res1.log_print()
     DEFAULT_TOPIC = "default_topic"
     DEFAULT_SOURCE = "default_source"  # 日志来源机器ip
 
@@ -46,7 +42,6 @@ class AliLogService(object):
         logitemList.append(logItem)
         request = PutLogsRequest(project, logstore, topic, source, logitemList)
         response = client.put_logs(request)
-        response.log_print()
         return response.get_all_headers()
 
 
@@ -70,3 +65,8 @@ class AliLogService(object):
     #                           datetime.fromtimestamp(int(time.time())).strftime('%Y-%m-%d %H:%M:%S'))
     #     for x in res:
     #         x.log_print()
+
+    # # list 所有的logstore
+    # req1 = ListLogstoresRequest(project)
+    # res1 = client.list_logstores(req1)
+    # res1.log_print()
