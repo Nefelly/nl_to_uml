@@ -29,7 +29,7 @@ class TrackActionService(object):
         if cls.ALI_LOG_INSERT:
             contents = [('user_id', user_id), ('session_id', sid), ('action', action), ('other_user_id', other_user_id),
                         ('amount', amount), ('remark', remark), ('version', version)]
-            return AliLogService.put_logs(contents, 'action').get_all_headers()
+            return AliLogService.put_logs(contents).get_all_headers()
         # if cls.MQ_INSERT:
         #     MqService.push(USER_ACTION_EXCHANGE,
         #                    {"args": cPickle.dumps(
