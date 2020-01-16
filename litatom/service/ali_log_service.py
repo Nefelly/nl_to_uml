@@ -54,15 +54,16 @@ class AliLogService(object):
         client = LogClient(cls.ENDPOINT, cls.ACCESS_KEY_ID, cls.ACCESS_KEY)
         # 发送10个数据包，每个数据包有10条log
         logitemList = []  # LogItem list
-        for j in range(2):
-            logItem = LogItem()
-            logItem.set_time(int(time.time()))
-            logItem.set_contents(contents)
-            logitemList.append(logItem)
+        logItem = LogItem()
+        logItem.set_time(int(time.time()))
+        logItem.set_contents(contents)
+        logitemList.append(logItem)
         req2 = PutLogsRequest(project, logstore, topic, source, logitemList)
         res2 = client.put_logs(req2)
         res2.log_print()
         return res2.get_all_headers()
+
+
     # @classmethod
     # def pull_logs(cls, client=DEFAULT_CLIENT, project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE, compress=False):
     #     res = client.get_cursor(project, logstore, 0, int(time.time() - 60))
