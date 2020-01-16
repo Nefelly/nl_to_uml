@@ -257,7 +257,7 @@ def track_action():
     status = TrackActionService.create_action(request.user_id, request.session_id, request.loc, action, other_user_id,
                                               amount, remark, request.version)
     if status:
-        return success(status)
+        return success()
     return fail()
 
 

@@ -36,8 +36,7 @@ class TrackActionService(object):
                 contents += [('remark', remark)]
             if version:
                 contents += [('version', version)]
-            res = AliLogService.put_logs(contents)
-            return res
+            AliLogService.put_logs(contents)
         if cls.MQ_INSERT:
             MqService.push(USER_ACTION_EXCHANGE,
                            {"args": cPickle.dumps(
