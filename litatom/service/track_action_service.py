@@ -2,6 +2,9 @@
 import time
 import datetime
 import cPickle
+from flask import (
+    request
+)
 from ..const import (
     USER_ACTION_EXCHANGE
 )
@@ -25,9 +28,9 @@ class TrackActionService(object):
     '''
 
     @classmethod
-    def create_action(cls, user_id, loc, sid, action, other_user_id=None, amount=None, remark=None, version=None):
+    def create_action(cls, user_id, action, other_user_id=None, amount=None, remark=None, version=None):
         if cls.ALI_LOG_INSERT:
-            contents = [('user_id', user_id), ('session_id', sid), ('location',loc), ('action', action)]
+            contents = [('user_id', user_id), ('session_id', request.session_id), ('location', request.loc), ('action', action)]
             if other_user_id:
                 contents += [('other_user_id', other_user_id)]
             if amount:
