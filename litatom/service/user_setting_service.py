@@ -23,7 +23,9 @@ from ..key import (
 )
 
 from ..service import GlobalizationService
+
 redis_client = RedisClient()['lit']
+
 
 class UserSettingService(object):
     DEFAULT_SETTING = {
@@ -104,12 +106,13 @@ class UserSettingService(object):
         #             userSetting.good_rate_times += 1
         #             userSetting.save()
         # res['pop_good_rate'] = need_pop
+
         region = GlobalizationService.get_region()
         if setting.IS_DEV or 1:
             cached_setting_str = redis_client.get(REDIS_SETTINGS_KEYS)
-            if False and not cls._valid_cache_str(cached_setting_str):
+            if not cls._valid_cache_str(cached_setting_str):
                 redis_client.delete(REDIS_SETTINGS_KEYS)
-                redis_client.set(REDIS_SETTINGS_KEYS, json.dumps(res))
+                redis_client.set(REDIS_SETTINGS_KEYS, json.dumpsgit (res))
             else:
                 res = json.loads(cached_setting_str)
         # print region, "!" * 100, region not in [GlobalizationService.REGION_TH]
