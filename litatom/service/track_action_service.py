@@ -15,8 +15,8 @@ from ..service import (
 
 
 class TrackActionService(object):
-    MQ_INSERT = True
-    ALI_LOG_INSERT = False
+    MQ_INSERT = False
+    ALI_LOG_INSERT = True
 
     '''
     开启AIL_LOG_INSERT,则向ali log service中写入
