@@ -27,8 +27,9 @@ class TrackActionService(object):
     @classmethod
     def create_action(cls, user_id, sid, action, other_user_id=None, amount=None, remark=None, version=None):
         if cls.ALI_LOG_INSERT:
-            contents = [('user_id', user_id), ('session_id', sid), ('action', action), ('other_user_id', other_user_id),
-                        ('amount', amount), ('remark', remark), ('version', version)]
+            # contents = [('user_id', user_id), ('session_id', sid), ('action', action), ('other_user_id', other_user_id),
+            #             ('amount', amount), ('remark', remark), ('version', version)]
+            contents = [('user_id', str(user_id))]
             return AliLogService.put_logs(contents).get_all_headers()
         # if cls.MQ_INSERT:
         #     MqService.push(USER_ACTION_EXCHANGE,

@@ -29,8 +29,8 @@ class AliLogService(object):
     # req1 = ListLogstoresRequest(project)
     # res1 = client.list_logstores(req1)
     # res1.log_print()
-    DEFAULT_TOPIC = "imtopic"
-    DEFAULT_SOURCE = "imsource"  # 日志来源机器ip
+    DEFAULT_TOPIC = "default_topic"
+    DEFAULT_SOURCE = "default_source"  # 日志来源机器ip
 
     '''
     上传一条日志，contents格式为[('key','value'),('key2','value2')...]，
