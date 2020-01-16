@@ -254,7 +254,8 @@ def track_action():
     remark = form.remark.data
     other_user_id = form.other_user_id.data
     amount = form.amount.data
-    status = TrackActionService.create_action(request.user_id, request.session_id, action, other_user_id, amount, remark, request.version)
+    status = TrackActionService.create_action(request.user_id, request.session_id, request.loc, action, other_user_id,
+                                              amount, remark, request.version)
     if status:
         return success(status)
     return fail()

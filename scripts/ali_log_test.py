@@ -1,20 +1,10 @@
 import os
 import sys
-from litatom.service import AliLogService
-from aliyun.log import *
-import logging
-import time
-import datetime
-from litatom.util import (
-    write_data_to_xls,
-    ensure_path,
-    now_date_key
-)
+from litatom.service import TrackActionService
 
 
 def run():
-    contents = [('e', '5'), ('f', '6')]
-    AliLogService.put_logs(contents)
+    TrackActionService.create_action("5e1c12663fff225067e38989", "PH", "session.1263651703460976630", 'test')
 
 
 if __name__ == "__main__":

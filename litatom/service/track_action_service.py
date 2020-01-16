@@ -25,11 +25,11 @@ class TrackActionService(object):
     '''
 
     @classmethod
-    def create_action(cls, user_id, sid, action, other_user_id=None, amount=None, remark=None, version=None):
+    def create_action(cls, user_id, loc, sid, action, other_user_id=None, amount=None, remark=None, version=None):
         if cls.ALI_LOG_INSERT:
-            contents = [('user_id', user_id), ('session_id', sid), ('action', action), ('other_user_id', other_user_id),
-                        ('amount', amount), ('remark', remark), ('version', version)]
-            return AliLogService.put_logs(contents).get_all_headers()
+            contents = [('user_id', user_id), ('session_id', sid), ('location',loc), ('action', action),
+                        ('other_user_id', other_user_id), ('amount', amount), ('remark', remark), ('version', version)]
+            return AliLogService.put_logs(contents)
         # if cls.MQ_INSERT:
         #     MqService.push(USER_ACTION_EXCHANGE,
         #                    {"args": cPickle.dumps(
