@@ -30,22 +30,22 @@ class TrackActionService(object):
             contents = [('user_id', user_id), ('session_id', sid), ('action', action), ('other_user_id', other_user_id),
                         ('amount', amount), ('remark', remark), ('version', version)]
             return AliLogService.put_logs(contents, 'action').get_all_headers()
-        if cls.MQ_INSERT:
-            MqService.push(USER_ACTION_EXCHANGE,
-                           {"args": cPickle.dumps(
-                               [user_id, action, other_user_id, amount, remark, version, datetime.datetime.now(),
-                                int(time.time())])}
-                           # {
-                           #         "user_id": user_id,
-                           #         "action": action,
-                           #         "other_user_id": other_user_id,
-                           #         "amount": amount,
-                           #         "remark": remark,
-                           #         "create_time": cPickle.dumps(datetime.datetime.now())
-                           # }
-                           )
-            return True
-        return cls._create_action(user_id, action, other_user_id, amount, remark, version)
+        # if cls.MQ_INSERT:
+        #     MqService.push(USER_ACTION_EXCHANGE,
+        #                    {"args": cPickle.dumps(
+        #                        [user_id, action, other_user_id, amount, remark, version, datetime.datetime.now(),
+        #                         int(time.time())])}
+        #                    # {
+        #                    #         "user_id": user_id,
+        #                    #         "action": action,
+        #                    #         "other_user_id": other_user_id,
+        #                    #         "amount": amount,
+        #                    #         "remark": remark,
+        #                    #         "create_time": cPickle.dumps(datetime.datetime.now())
+        #                    # }
+        #                    )
+        #     return True
+        # return cls._create_action(user_id, action, other_user_id, amount, remark, version)
 
     @classmethod
     def pymongo_batch_insert(cls, collection, payload_list):
