@@ -31,12 +31,11 @@ class TrackActionService(object):
             if other_user_id:
                 contents += [('other_user_id', other_user_id)]
             if amount:
-                contents += [('amount', amount)]
+                contents += [('amount', str(amount))]
             if remark:
                 contents += [('remark', remark)]
             if version:
                 contents += [('version', version)]
-            print "in crate_action, contents:",contents
             res = AliLogService.put_logs(contents)
             return res
         # if cls.MQ_INSERT:
