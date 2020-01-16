@@ -13,6 +13,7 @@ from ..service import (
     AliLogService
 )
 
+
 class TrackActionService(object):
     MQ_INSERT = True
     ALI_LOG_INSERT = False
@@ -22,23 +23,26 @@ class TrackActionService(object):
     失败或未开启ali log insert，若开启MQ_INSERT，则向message queue中写user_action，
     message queue写入失败或者MQ_INSERT未开启，则向USER_ACTION表中直接写
     '''
+
     @classmethod
     def create_action(cls, user_id, sid, action, other_user_id=None, amount=None, remark=None, version=None):
         if cls.ALI_LOG_INSERT:
-            contents=[('user_id',user_id), ('session_id', sid), ('action',action), ('other_user_id',other_user_id),
-                      ('amount',amount), ('remark',remark),('version',version)]
+            contents = [('user_id', user_id), ('session_id', sid), ('action', action), ('other_user_id', other_user_id),
+                        ('amount', amount), ('remark', remark), ('version', version)]
             return AliLogService.put_logs(contents).get_all_headers()
         if cls.MQ_INSERT:
             MqService.push(USER_ACTION_EXCHANGE,
-                           {"args": cPickle.dumps([user_id, action, other_user_id, amount, remark, version, datetime.datetime.now(), int(time.time())])}
-                            # {
-                            #         "user_id": user_id,
-                            #         "action": action,
-                            #         "other_user_id": other_user_id,
-                            #         "amount": amount,
-                            #         "remark": remark,
-                            #         "create_time": cPickle.dumps(datetime.datetime.now())
-                            # }
+                           {"args": cPickle.dumps(
+                               [user_id, action, other_user_id, amount, remark, version, datetime.datetime.now(),
+                                int(time.time())])}
+                           # {
+                           #         "user_id": user_id,
+                           #         "action": action,
+                           #         "other_user_id": other_user_id,
+                           #         "amount": amount,
+                           #         "remark": remark,
+                           #         "create_time": cPickle.dumps(datetime.datetime.now())
+                           # }
                            )
             return True
         return cls._create_action(user_id, action, other_user_id, amount, remark, version)
@@ -66,7 +70,6 @@ class TrackActionService(object):
             # print insert_pack
         collection.insert_many(insert_pack, ordered=False)
 
-
     @classmethod
     def _create_action(cls, user_id, action, other_user_id=None, amount=None, remark=None, version=None):
         UserAction.create(user_id, action, other_user_id, amount, remark, version)
@@ -81,4 +84,3 @@ class TrackActionService(object):
         '''
         res = map(UserAction.to_json, UserAction.get_by_user_id(user_id))
         return res, True
-
