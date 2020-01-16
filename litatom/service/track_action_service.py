@@ -15,7 +15,7 @@ from ..service import (
 
 
 class TrackActionService(object):
-    MQ_INSERT = False
+    MQ_INSERT = True
     ALI_LOG_INSERT = True
 
     '''
