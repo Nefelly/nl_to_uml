@@ -40,16 +40,38 @@ class AliLogService(object):
     @classmethod
     def put_logs(cls, contents, topic=DEFAULT_TOPIC, source=DEFAULT_SOURCE, project=DEFAULT_PROJECT,
                  logstore=DEFAULT_LOGSTORE, client=DEFAULT_CLIENT, compress=False):
-        logitemList = []  # LogItem list
-        logItem = LogItem()
-        logItem.set_time(int(time.time()))
-        logItem.set_contents(contents)
-        logitemList.append(logItem)
-        # 包装上传请求并发送
-        request = PutLogsRequest(project, logstore, topic, source, logitemList, compress=compress)
-        response = client.put_logs(request)
-        return response
-
+        # logitemList = []  # LogItem list
+        # logItem = LogItem()
+        # logItem.set_time(int(time.time()))
+        # logItem.set_contents(contents)
+        # logitemList.append(logItem)
+        # # 包装上传请求并发送
+        # request = PutLogsRequest(project, logstore, topic, source, logitemList, compress=compress)
+        # response = client.put_logs(request)
+        # return response
+        # 重要提示：创建的logstore请配置为4个shard以便于后面测试通过
+        # 构建一个client
+        client = LogClient(cls.ENDPOINT, cls.ACCESS_KEY_ID, cls.ACCESS_KEY)
+        # list 所有的logstore
+        req1 = ListLogstoresRequest(cls.DEFAULT_PROJECT)
+        res1 = client.list_logstores(req1)
+        res1.log_print()
+        topic = ""
+        source = ""
+        res2 = ''
+        # 发送10个数据包，每个数据包有10条log
+        for i in range(10):
+            logitemList = []  # LogItem list
+            for j in range(10):
+                contents = [('index', str(i * 10 + j))]
+                logItem = LogItem()
+                logItem.set_time(int(time.time()))
+                logItem.set_contents(contents)
+                logitemList.append(logItem)
+            req2 = PutLogsRequest(cls.DEFAULT_PROJECT, cls.DEFAULT_LOGSTORE, topic, source, logitemList)
+            res2 = client.put_logs(req2)
+            res2.log_print()
+        return res2.get_all_headers()
     # @classmethod
     # def pull_logs(cls, client=DEFAULT_CLIENT, project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE, compress=False):
     #     res = client.get_cursor(project, logstore, 0, int(time.time() - 60))
