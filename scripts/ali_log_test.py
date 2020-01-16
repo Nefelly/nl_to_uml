@@ -13,7 +13,7 @@ from litatom.util import (
 
 
 def run():
-    contents = [('c', '3'), ('d', '4')]
+    contents = [('e', '5'), ('f', '6')]
     AliLogService.put_logs(contents)
 
 

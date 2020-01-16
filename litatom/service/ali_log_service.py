@@ -36,32 +36,18 @@ class AliLogService(object):
     上传一条日志，contents格式为[('key','value'),('key2','value2')...]，
     返回一个LogSponse对象，为http相应包头部封装后的对象
     '''
-
     @classmethod
     def put_logs(cls, contents, topic=DEFAULT_TOPIC, source=DEFAULT_SOURCE, project=DEFAULT_PROJECT,
-                 logstore=DEFAULT_LOGSTORE, client=DEFAULT_CLIENT, compress=False):
-        # logitemList = []  # LogItem list
-        # logItem = LogItem()
-        # logItem.set_time(int(time.time()))
-        # logItem.set_contents(contents)
-        # logitemList.append(logItem)
-        # # 包装上传请求并发送
-        # request = PutLogsRequest(project, logstore, topic, source, logitemList, compress=compress)
-        # response = client.put_logs(request)
-        # return response
-        # 重要提示：创建的logstore请配置为4个shard以便于后面测试通过
-        # 构建一个client
-        client = LogClient(cls.ENDPOINT, cls.ACCESS_KEY_ID, cls.ACCESS_KEY)
-        # 发送10个数据包，每个数据包有10条log
+                 logstore=DEFAULT_LOGSTORE, client=DEFAULT_CLIENT):
         logitemList = []  # LogItem list
         logItem = LogItem()
         logItem.set_time(int(time.time()))
         logItem.set_contents(contents)
         logitemList.append(logItem)
-        req2 = PutLogsRequest(project, logstore, topic, source, logitemList)
-        res2 = client.put_logs(req2)
-        res2.log_print()
-        return res2.get_all_headers()
+        request = PutLogsRequest(project, logstore, topic, source, logitemList)
+        response = client.put_logs(request)
+        response.log_print()
+        return response.get_all_headers()
 
 
     # @classmethod
