@@ -29,7 +29,7 @@ redis_client = RedisClient()['lit']
 class JournalService(object):
     '''
     '''
-    IS_TESTING = True
+    IS_TESTING = False
     DATE_DIS = datetime.timedelta(hours=0)
 
     USER_LOC = {}   # user_id:language
@@ -61,6 +61,9 @@ class JournalService(object):
         for obj in new_users:
             cls.NEW_USER_LOC[obj.user_id] = obj.lang
 
+    '''
+    预装载函数，将用户性别信息写入USER_GEN
+    '''
     @classmethod
     def load_user_gen(cls):
         if not cls.IS_TESTING:
