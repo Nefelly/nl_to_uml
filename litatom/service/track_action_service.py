@@ -9,14 +9,25 @@ from ..model import (
     UserAction
 )
 from ..service import (
-    MqService
+    MqService,
+    AliLogService
 )
 
 class TrackActionService(object):
     MQ_INSERT = True
+    ALI_LOG_INSERT = False
 
+    '''
+    开启AIL_LOG_INSERT,则向ali log service中写入
+    失败或未开启ali log insert，若开启MQ_INSERT，则向message queue中写user_action，
+    message queue写入失败或者MQ_INSERT未开启，则向USER_ACTION表中直接写
+    '''
     @classmethod
-    def create_action(cls, user_id, action, other_user_id=None, amount=None, remark=None, version=None):
+    def create_action(cls, user_id, sid, action, other_user_id=None, amount=None, remark=None, version=None):
+        if cls.ALI_LOG_INSERT:
+            contents=[('user_id',user_id), ('session_id', sid), ('action',action), ('other_user_id',other_user_id),
+                      ('amount',amount), ('remark',remark),('version',version)]
+            return AliLogService.put_logs(contents).get_all_headers()
         if cls.MQ_INSERT:
             MqService.push(USER_ACTION_EXCHANGE,
                            {"args": cPickle.dumps([user_id, action, other_user_id, amount, remark, version, datetime.datetime.now(), int(time.time())])}
