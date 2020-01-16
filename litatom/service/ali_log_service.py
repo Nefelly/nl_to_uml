@@ -63,7 +63,7 @@ class AliLogService(object):
         for i in range(10):
             logitemList = []  # LogItem list
             for j in range(10):
-                contents = [('index', str(i * 10 + j))]
+                contents = [('test', str(i * 10 + j))]
                 logItem = LogItem()
                 logItem.set_time(int(time.time()))
                 logItem.set_contents(contents)
