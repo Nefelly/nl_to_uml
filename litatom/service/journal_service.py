@@ -397,23 +397,23 @@ class JournalService(object):
                 ali_log=[('date', stat_date)]
                 name, num = m['name'], m['num']
                 ali_log.append(('name',name))
-                ali_log.append(('num',num))
+                ali_log.append(('num',str(num)))
                 gender_cnt = [m[gender] for gender in cls.GENDERS]
                 for gender in cls.GENDERS:
-                    ali_log.append((gender,m[gender]))
+                    ali_log.append((gender,str(m[gender])))
                 region_cnt = [m[loc] for loc in cls.LOC_STATED]
                 for loc in cls.LOC_STATED:
-                    ali_log.append((loc,m[loc]))
-                ali_log.append(('total_avr',num/daily_m['num']))
+                    ali_log.append((loc,str(m[loc])))
+                ali_log.append(('total_avr',str(num/daily_m['num'])))
                 avr_cnt = []
                 for loc in cls.LOC_STATED:
                     if daily_m[loc]:
                         data = round(m.get(loc, 0)/daily_m[loc], 4)
                         avr_cnt.append(data)
-                        ali_log.append((loc+'avr',data))
+                        ali_log.append((loc+'avr',str(data)))
                     else:
                         avr_cnt.append(0)
-                        ali_log.append((loc+'avr',0))
+                        ali_log.append((loc+'avr','0'))
                 res_lst.append([name, num] + gender_cnt + region_cnt + [num/daily_m['num']] + avr_cnt)
                 AliLogService.put_logs(ali_log,topic='business_type',project='litatommonitor',logstore='daily-stat-monitor')
                 cnt += 1
@@ -441,20 +441,20 @@ class JournalService(object):
                 ali_log=[('date', stat_date)]
                 name, num = m['name'], m['num']
                 ali_log.append(('name',name))
-                ali_log.append(('num',num))
+                ali_log.append(('num',str(num)))
                 region_cnt = [m[loc] for loc in cls.LOC_STATED]
                 for loc in cls.LOC_STATED:
-                    ali_log.append((loc,m[loc]))
-                ali_log.append(('total_avr',num/daily_m['num']))
+                    ali_log.append((loc,str(m[loc])))
+                ali_log.append(('total_avr',str(num/daily_m['num'])))
                 avr_cnt = []
                 for loc in cls.LOC_STATED:
                     if daily_m[loc]:
                         data=round(m.get(loc, 0) / daily_m[loc], 4)
                         avr_cnt.append(data)
-                        ali_log.append((loc+'avr',data))
+                        ali_log.append((loc+'avr',str(data)))
                     else:
                         avr_cnt.append(0)
-                        ali_log.append((loc+'avr',0))
+                        ali_log.append((loc+'avr','0'))
                 res_lst.append([name, num] + region_cnt + [num / daily_m['num']] + avr_cnt)
                 AliLogService.put_logs(ali_log,topic='ad_type',project='litatommonitor',logstore='daily-stat-monitor')
                 cnt += 1
