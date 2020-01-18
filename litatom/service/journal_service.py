@@ -397,11 +397,7 @@ class JournalService(object):
                 ali_log=[('date', stat_date)]
                 name, num = m['name'], m['num']
                 ali_log.append(('name',name))
-                if num:
-                    ali_log.append(('num',num))
-                else:
-                    ali_log.append(('num',int.to_bytes(0,1,'little')))
-
+                ali_log.append(('num',num))
                 gender_cnt = [m[gender] for gender in cls.GENDERS]
                 for gender in cls.GENDERS:
                     ali_log.append((gender,m[gender]))
@@ -417,10 +413,9 @@ class JournalService(object):
                         ali_log.append((loc+'avr',data))
                     else:
                         avr_cnt.append(0)
-                        ali_log.append((loc+'avr',int.to_bytes(0,1,'little')))
+                        ali_log.append((loc+'avr',0))
                 res_lst.append([name, num] + gender_cnt + region_cnt + [num/daily_m['num']] + avr_cnt)
                 AliLogService.put_logs(ali_log,topic='business_type',project='litatommonitor',logstore='daily-stat-monitor')
-
                 cnt += 1
             except Exception, e:
                 print e
@@ -459,7 +454,7 @@ class JournalService(object):
                         ali_log.append((loc+'avr',data))
                     else:
                         avr_cnt.append(0)
-                        ali_log.append((loc+'avr',int.to_bytes(0,1,'little')))
+                        ali_log.append((loc+'avr',0))
                 res_lst.append([name, num] + region_cnt + [num / daily_m['num']] + avr_cnt)
                 AliLogService.put_logs(ali_log,topic='ad_type',project='litatommonitor',logstore='daily-stat-monitor')
                 cnt += 1
