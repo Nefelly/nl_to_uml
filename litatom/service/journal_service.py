@@ -378,7 +378,7 @@ class JournalService(object):
         return None, True
 
     @classmethod
-    def out_port_result(cls, dst_addr, date=datetime.datetime.now()):
+    def out_port_result(cls, dst_addr, date):
         cls.load_user_loc()
         print 'load succ', cls.LOC_STATED
         cls.load_user_gen()
