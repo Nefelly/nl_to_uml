@@ -382,7 +382,6 @@ class JournalService(object):
         cls.load_user_loc()
         print 'load succ', cls.LOC_STATED
         cls.load_user_gen()
-        print 'load gender succ',cls.USER_GEN
         res_lst = []
         cls.DATE_DIS = datetime.timedelta(hours=0)
         cnt = 0
@@ -398,7 +397,11 @@ class JournalService(object):
                 ali_log=[('date', stat_date)]
                 name, num = m['name'], m['num']
                 ali_log.append(('name',name))
-                ali_log.append(('num',num))
+                if num:
+                    ali_log.append(('num',num))
+                else:
+                    ali_log.append(('num',int.to_bytes(0,1,'little')))
+
                 gender_cnt = [m[gender] for gender in cls.GENDERS]
                 for gender in cls.GENDERS:
                     ali_log.append((gender,m[gender]))
@@ -414,7 +417,7 @@ class JournalService(object):
                         ali_log.append((loc+'avr',data))
                     else:
                         avr_cnt.append(0)
-                        ali_log.append((loc+'avr',0))
+                        ali_log.append((loc+'avr',int.to_bytes(0,1,'little')))
                 res_lst.append([name, num] + gender_cnt + region_cnt + [num/daily_m['num']] + avr_cnt)
                 AliLogService.put_logs(ali_log,topic='business_type',project='litatommonitor',logstore='daily-stat-monitor')
 
@@ -456,7 +459,7 @@ class JournalService(object):
                         ali_log.append((loc+'avr',data))
                     else:
                         avr_cnt.append(0)
-                        ali_log.append((loc+'avr',0))
+                        ali_log.append((loc+'avr',int.to_bytes(0,1,'little')))
                 res_lst.append([name, num] + region_cnt + [num / daily_m['num']] + avr_cnt)
                 AliLogService.put_logs(ali_log,topic='ad_type',project='litatommonitor',logstore='daily-stat-monitor')
                 cnt += 1
