@@ -20,6 +20,10 @@ from mongoengine import (
 
 )
 
+from ..service import (
+    AliLogService
+)
+
 from ..redis import RedisClient
 
 logger = logging.getLogger(__name__)
@@ -222,6 +226,17 @@ class JournalService(object):
         return time_str
 
     '''
+    通过输入date，返回daily-stat应当记录的日期；默认返回当前日期的前一天
+    '''
+    @classmethod
+    def _get_stat_date(cls,date):
+        if date:
+            return (date - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
+        else:
+            return (datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
+
+
+    '''
     通过统计量对应的id,返回一个dict，有id,name,num,loc,new_loc,count_loc各个字段，
     对满足item条件限制的对象不做去重
     '''
@@ -363,7 +378,7 @@ class JournalService(object):
         return None, True
 
     @classmethod
-    def out_port_result(cls, dst_addr):
+    def out_port_result(cls, dst_addr, date=datetime.datetime.now()):
         cls.load_user_loc()
         print 'load succ', cls.LOC_STATED
         cls.load_user_gen()
@@ -374,22 +389,35 @@ class JournalService(object):
         # daily_m是一个dict类型变量,id,name为抽样日活，num为最近一日日活用户数量，以及各种loc中的各种日活用户数量
         daily_m = cls.daily_active(StatItems.objects(name=u'抽样日活').first())
         print 'load daily_m'
+        stat_date=cls._get_stat_date(date)
         # 遍历StatItems中所有类型为BUSINESS_TYPE的统计量item
         for item in StatItems.get_items_by_type(StatItems.BUSINESS_TYPE):
             try:
                 # m为根据该统计量的id计算得到的结果
                 m = cls.cal_by_id(str(item.id))
+                ali_log=[('date', stat_date)]
                 name, num = m['name'], m['num']
+                ali_log.append(('name',name))
+                ali_log.append(('num',num))
                 gender_cnt = [m[gender] for gender in cls.GENDERS]
-                print gender_cnt
+                for gender in cls.GENDERS:
+                    ali_log.append((gender,m[gender]))
                 region_cnt = [m[loc] for loc in cls.LOC_STATED]
+                for loc in cls.LOC_STATED:
+                    ali_log.append((loc,m[loc]))
+                ali_log.append(('total_avr',num/daily_m['num']))
                 avr_cnt = []
                 for loc in cls.LOC_STATED:
                     if daily_m[loc]:
-                        avr_cnt.append(round(m.get(loc, 0)/daily_m[loc], 4))
+                        data = round(m.get(loc, 0)/daily_m[loc], 4)
+                        avr_cnt.append(data)
+                        ali_log.append((loc+'avr',data))
                     else:
                         avr_cnt.append(0)
+                        ali_log.append((loc+'avr',0))
                 res_lst.append([name, num] + gender_cnt + region_cnt + [num/daily_m['num']] + avr_cnt)
+                AliLogService.put_logs(ali_log,topic='business_type',project='litatommonitor',logstore='daily-stat-monitor')
+
                 cnt += 1
             except Exception, e:
                 print e
@@ -402,24 +430,35 @@ class JournalService(object):
         write_data_to_xls(dst_addr, [u'名字', u'数量'] + cls.GENDERS + cls.LOC_STATED + ['total avr'] + [el + 'avr' for el in cls.LOC_STATED], res_lst)
 
     @classmethod
-    def ad_res(cls, dst_addr):
+    def ad_res(cls, dst_addr, date):
         # cls.load_user_loc()
         res_lst = []
         cnt = 0
         daily_m = cls.daily_active(StatItems.objects(name=u'抽样日活').first())
         cls.DATE_DIS = datetime.timedelta(hours=-16)
+        stat_date=cls._get_stat_date(date)
         for item in StatItems.get_items_by_type(StatItems.AD_TYPE):
             try:
                 m = cls.cal_by_id(str(item.id))
+                ali_log=[('date', stat_date)]
                 name, num = m['name'], m['num']
+                ali_log.append(('name',name))
+                ali_log.append(('num',num))
                 region_cnt = [m[loc] for loc in cls.LOC_STATED]
+                for loc in cls.LOC_STATED:
+                    ali_log.append((loc,m[loc]))
+                ali_log.append(('total_avr',num/daily_m['num']))
                 avr_cnt = []
                 for loc in cls.LOC_STATED:
                     if daily_m[loc]:
-                        avr_cnt.append(round(m.get(loc, 0) / daily_m[loc], 4))
+                        data=round(m.get(loc, 0) / daily_m[loc], 4)
+                        avr_cnt.append(data)
+                        ali_log.append((loc+'avr',data))
                     else:
                         avr_cnt.append(0)
+                        ali_log.append((loc+'avr',0))
                 res_lst.append([name, num] + region_cnt + [num / daily_m['num']] + avr_cnt)
+                AliLogService.put_logs(ali_log,topic='ad_type',project='litatommonitor',logstore='daily-stat-monitor')
                 cnt += 1
             except Exception, e:
                 print e
