@@ -112,7 +112,7 @@ class UserSettingService(object):
             cached_setting_str = redis_client.get(REDIS_SETTINGS_KEYS)
             if not cls._valid_cache_str(cached_setting_str):
                 redis_client.delete(REDIS_SETTINGS_KEYS)
-                redis_client.set(REDIS_SETTINGS_KEYS, json.dumpsgit (res))
+                redis_client.set(REDIS_SETTINGS_KEYS, json.dumps(res))
             else:
                 res = json.loads(cached_setting_str)
         # print region, "!" * 100, region not in [GlobalizationService.REGION_TH]
