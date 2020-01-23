@@ -39,8 +39,8 @@ def clean_old_records():
 
 
 if __name__ == "__main__":
-#     print "started at", time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
-#     back()
-#     time.sleep(10)
+    print "started at", time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
+    back()
+    time.sleep(10)
     clean_old_records()
     print "ended at", time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
