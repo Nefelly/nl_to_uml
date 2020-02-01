@@ -79,6 +79,7 @@ class MatchService(object):
     TYPE_JUDGE_LOCK = REDIS_JUDGE_LOCK
     MATCH_TYPE = 'anoy'
     MATCH_KEY_BY_REGION_GENDER = GlobalizationService.match_key_by_region_type_gender_homo
+    ERR_NOT_ENOUGH_TIMES = u'Your match opportunity has run out, please try again tomorrow'
 
     ACCELERATE_KEY_BY_TYPE_REGION_GENDER = GlobalizationService.accelerate_match_key_by_region_type_gender_homo
 
@@ -411,7 +412,7 @@ class MatchService(object):
         redis_client.expire(match_left_key, ONE_DAY)
         times_left = int(redis_client.get(match_left_key))
         if times_left <= 0:
-            return u'Your match opportunity has run out, please try again tomorrow', False
+            return cls.ERR_NOT_ENOUGH_TIMES, False
         return times_left, True
 
     @classmethod

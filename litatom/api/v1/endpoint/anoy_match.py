@@ -11,6 +11,10 @@ from ...decorator import (
     session_finished_required
 )
 
+from ...error import (
+    FailedNotTimesLeft
+)
+
 from ....response import (
     fail,
     success
@@ -19,6 +23,7 @@ from ....service import (
     AnoyMatchService,
     VoiceMatchService,
     VideoMatchService,
+    MatchService,
     GlobalizationService,
     AdService
 )
@@ -84,6 +89,8 @@ def get_fakeid():
 def anoy_match():
     data, status = get_match_func(sys._getframe().f_code.co_name)(request.user_id)
     if not status:
+        if data == MatchService.ERR_NOT_ENOUGH_TIMES:
+            return jsonify(FailedNotTimesLeft)
         return fail(data)
     return success(data)
 
