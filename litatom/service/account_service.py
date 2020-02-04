@@ -38,7 +38,7 @@ class AccountService(object):
     ACCOST_RESET = 'accost_reset'
     PALM_RESULT = 'palm_result'
     PRODUCT_INFOS = {
-        WEEK_MEMBER: 15 if not setting.IS_DEV else 1,
+        WEEK_MEMBER: 20 if not setting.IS_DEV else 1,
         ONE_MORE_TIME: 1,
         ACCELERATE: 1,
         ACCOST_RESET: 10,
@@ -57,9 +57,12 @@ class AccountService(object):
     @classmethod
     def diamond_products(cls, user_id):
         return {
-            '10diamonds': 10,
-            'asfd324': 5,
-            '324asd': 15
+            '10diamonds': 50,
+            '100_diamonds': 100,
+            '200diamonds': 200,
+            '500diamonds': 500,
+            # 'asfd324': 5,
+            # '324asd': 15
         }, True
 
     @classmethod
