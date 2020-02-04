@@ -57,10 +57,10 @@ class AccountService(object):
     @classmethod
     def diamond_products(cls, user_id):
         return {
-            '10diamonds': 50,
-            '100_diamonds': 100,
-            '200diamonds': 200,
             '500diamonds': 500,
+            '200diamonds': 200,
+            '100_diamonds': 100,
+            '10diamonds': 50,
             # 'asfd324': 5,
             # '324asd': 15
         }, True
