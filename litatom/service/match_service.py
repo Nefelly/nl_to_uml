@@ -692,6 +692,7 @@ class MatchService(object):
                 ctx = app.request_context(EnvironBuilder('/', 'http://localhost/').get_environ())
                 ctx.push()
                 request.region = region
+                request.gender = g
                 for homo in [True, False]:
                     request.is_homo = homo
                     to_rem = redis_client.zrangebyscore(cls.MATCH_KEY_BY_REGION_GENDER(cls.MATCH_TYPE, g), 0, judge_time - wait_buff, 0, cls.MAX_CHOOSE_NUM)
