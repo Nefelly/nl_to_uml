@@ -692,15 +692,17 @@ class MatchService(object):
                 ctx = app.request_context(EnvironBuilder('/', 'http://localhost/').get_environ())
                 ctx.push()
                 request.region = region
-                to_rem = redis_client.zrangebyscore(cls.MATCH_KEY_BY_REGION_GENDER(cls.MATCH_TYPE, g), 0, judge_time - wait_buff, 0, cls.MAX_CHOOSE_NUM)
-                to_rem += redis_client.zrangebyscore(cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, g), 0, judge_time - wait_buff, 0, cls.MAX_CHOOSE_NUM)
-                for el in to_rem:
-                    cls._destroy_fake_id(el)
-                    print "match pool fake_id: %s destoryed" % el
-                to_rem_check = redis_client.zrangebyscore(cls.TYPE_ANOY_CHECK_POOL.format(gender=g), 0,  int_time - cls.MATCH_INT - wait_buff, 0, cls.MAX_CHOOSE_NUM)
-                for el in to_rem + to_rem_check:
-                    cls._destroy_fake_id(el, False)
-                    print "check pool fake_id: %s destoryed" % el
+                for homo in [True, False]:
+                    request.is_homo = homo
+                    to_rem = redis_client.zrangebyscore(cls.MATCH_KEY_BY_REGION_GENDER(cls.MATCH_TYPE, g), 0, judge_time - wait_buff, 0, cls.MAX_CHOOSE_NUM)
+                    to_rem += redis_client.zrangebyscore(cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, g), 0, judge_time - wait_buff, 0, cls.MAX_CHOOSE_NUM)
+                    for el in to_rem:
+                        cls._destroy_fake_id(el)
+                        print "match pool fake_id: %s destoryed" % el
+                    to_rem_check = redis_client.zrangebyscore(cls.TYPE_ANOY_CHECK_POOL.format(gender=g), 0,  int_time - cls.MATCH_INT - wait_buff, 0, cls.MAX_CHOOSE_NUM)
+                    for el in to_rem + to_rem_check:
+                        cls._destroy_fake_id(el, False)
+                        print "check pool fake_id: %s destoryed" % el
 
     @classmethod
     def judge(cls, user_id, judge):
