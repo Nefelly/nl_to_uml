@@ -51,6 +51,7 @@ class FeedService(object):
 
     @classmethod
     def should_add_to_square(cls, feed):
+        return True
         user_id = feed.user_id
         judge_time = int(time.time()) - ONE_HOUR
         status = Feed.objects(user_id=user_id, create_time__gte=judge_time).count() <= 3
@@ -75,6 +76,7 @@ class FeedService(object):
             for pic in pics:
                 reason = QiniuService.should_pic_block_from_file_id(pic)
                 if reason:
+                    print reason
                     break
         feed = Feed.get_by_id(feed_id)
         if feed:
@@ -92,6 +94,7 @@ class FeedService(object):
                 if cls.should_add_to_square(feed):
                     redis_client.zadd(region_key,
                                       {str(feed.id): feed.create_time})
+                print 'should not'
             FollowingFeedService.add_feed(feed)
 
     @classmethod
