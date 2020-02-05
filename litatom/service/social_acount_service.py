@@ -36,7 +36,7 @@ class GoogleService(object):
     def login_info(cls, token, platform=PLATFORM_ANDROID):
         try:
             # Specify the CLIENT_ID of the app that accesses the backend:
-            client_id = cls.CLIENT_ID if platform == PLATFORM_ANDROID else cls.IOS_CLIENT_ID
+            client_id = cls.IOS_CLIENT_ID if platform == PLATFORM_IOS else cls.CLIENT_ID
             idinfo = id_token.verify_oauth2_token(token, requests.Request(), client_id)
 
             '''idinfo = {u'picture': u'https://lh6.googleusercontent.com/-k2KzgpaOHxg/AAAAAAAAAAI/AAAAAAAAAAA/ACHi3rcIYSdTEK8c7XzOKFZU07cQDA2z6Q/s96-c/photo.jpg',

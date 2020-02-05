@@ -672,7 +672,7 @@ class UserService(object):
 
     @classmethod
     def google_login(cls, token):
-        idinfo = GoogleService.login_info(token)
+        idinfo = GoogleService.login_info(token, request.platform)
         if not idinfo:
             return u'google login is unavailable now, please try facebook login ~', False
         google_id = idinfo.get('sub', '')
