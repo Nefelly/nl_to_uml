@@ -51,7 +51,7 @@ class FeedService(object):
 
     @classmethod
     def should_add_to_square(cls, feed):
-        return True
+        # return True
         user_id = feed.user_id
         judge_time = int(time.time()) - ONE_HOUR
         status = Feed.objects(user_id=user_id, create_time__gte=judge_time).count() <= 3
@@ -67,6 +67,8 @@ class FeedService(object):
         MqService.push(ADD_EXCHANGE,
                        {"feed_id": str(feed.id), "pics": feed.pics,
                         "region_key": cls._redis_feed_region_key(REDIS_FEED_SQUARE_REGION)})
+        print 'push', {"feed_id": str(feed.id), "pics": feed.pics,
+                        "region_key": cls._redis_feed_region_key(REDIS_FEED_SQUARE_REGION)}
         # FollowingFeedService.add_feed(feed)
 
     @classmethod
@@ -94,7 +96,8 @@ class FeedService(object):
                 if cls.should_add_to_square(feed):
                     redis_client.zadd(region_key,
                                       {str(feed.id): feed.create_time})
-                print 'should not'
+                else:
+                    print 'should not'
             FollowingFeedService.add_feed(feed)
 
     @classmethod
