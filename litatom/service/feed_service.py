@@ -67,8 +67,8 @@ class FeedService(object):
         MqService.push(ADD_EXCHANGE,
                        {"feed_id": str(feed.id), "pics": feed.pics,
                         "region_key": cls._redis_feed_region_key(REDIS_FEED_SQUARE_REGION)})
-        print 'push', {"feed_id": str(feed.id), "pics": feed.pics,
-                        "region_key": cls._redis_feed_region_key(REDIS_FEED_SQUARE_REGION)}
+        # print 'push', {"feed_id": str(feed.id), "pics": feed.pics,
+        #                 "region_key": cls._redis_feed_region_key(REDIS_FEED_SQUARE_REGION)}
         # FollowingFeedService.add_feed(feed)
 
     @classmethod
