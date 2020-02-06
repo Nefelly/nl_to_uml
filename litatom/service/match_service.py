@@ -79,6 +79,7 @@ class MatchService(object):
     TYPE_JUDGE_LOCK = REDIS_JUDGE_LOCK
     MATCH_TYPE = 'anoy'
     MATCH_KEY_BY_REGION_GENDER = GlobalizationService.match_key_by_region_type_gender_homo
+    ERR_NOT_ENOUGH_TIMES = u'Your match opportunity has run out, please try again tomorrow'
 
     ACCELERATE_KEY_BY_TYPE_REGION_GENDER = GlobalizationService.accelerate_match_key_by_region_type_gender_homo
 
@@ -411,7 +412,7 @@ class MatchService(object):
         redis_client.expire(match_left_key, ONE_DAY)
         times_left = int(redis_client.get(match_left_key))
         if times_left <= 0:
-            return u'Your match opportunity has run out, please try again tomorrow', False
+            return cls.ERR_NOT_ENOUGH_TIMES, False
         return times_left, True
 
     @classmethod
@@ -691,15 +692,18 @@ class MatchService(object):
                 ctx = app.request_context(EnvironBuilder('/', 'http://localhost/').get_environ())
                 ctx.push()
                 request.region = region
-                to_rem = redis_client.zrangebyscore(cls.MATCH_KEY_BY_REGION_GENDER(cls.MATCH_TYPE, g), 0, judge_time - wait_buff, 0, cls.MAX_CHOOSE_NUM)
-                to_rem += redis_client.zrangebyscore(cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, g), 0, judge_time - wait_buff, 0, cls.MAX_CHOOSE_NUM)
-                for el in to_rem:
-                    cls._destroy_fake_id(el)
-                    print "match pool fake_id: %s destoryed" % el
-                to_rem_check = redis_client.zrangebyscore(cls.TYPE_ANOY_CHECK_POOL.format(gender=g), 0,  int_time - cls.MATCH_INT - wait_buff, 0, cls.MAX_CHOOSE_NUM)
-                for el in to_rem + to_rem_check:
-                    cls._destroy_fake_id(el, False)
-                    print "check pool fake_id: %s destoryed" % el
+                request.gender = g
+                for homo in [True, False]:
+                    request.is_homo = homo
+                    to_rem = redis_client.zrangebyscore(cls.MATCH_KEY_BY_REGION_GENDER(cls.MATCH_TYPE, g), 0, judge_time - wait_buff, 0, cls.MAX_CHOOSE_NUM)
+                    to_rem += redis_client.zrangebyscore(cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, g), 0, judge_time - wait_buff, 0, cls.MAX_CHOOSE_NUM)
+                    for el in to_rem:
+                        cls._destroy_fake_id(el)
+                        print "match pool fake_id: %s destoryed" % el
+                    to_rem_check = redis_client.zrangebyscore(cls.TYPE_ANOY_CHECK_POOL.format(gender=g), 0,  int_time - cls.MATCH_INT - wait_buff, 0, cls.MAX_CHOOSE_NUM)
+                    for el in to_rem + to_rem_check:
+                        cls._destroy_fake_id(el, False)
+                        print "check pool fake_id: %s destoryed" % el
 
     @classmethod
     def judge(cls, user_id, judge):

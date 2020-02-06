@@ -78,7 +78,15 @@ def run():
     except:
         print 'program already in run'
         sys.exit(0)
-    feed_consum()
+    thread_num = 10
+    threads = []
+    for i in range(thread_num):
+        t = threading.Thread(target=feed_consum, args=())
+        t.start()
+        threads.append(t)
+    for t in threads:
+        t.join()
+    # feed_consum()
     # thread_num = 10
     # threads = []
     # for i in range(thread_num):

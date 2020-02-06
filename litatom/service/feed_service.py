@@ -2,6 +2,7 @@
 import time
 import random
 import datetime
+from hendrix.conf import setting
 from flask import (
     request
 )
@@ -50,9 +51,13 @@ class FeedService(object):
 
     @classmethod
     def should_add_to_square(cls, feed):
+        # return True
         user_id = feed.user_id
         judge_time = int(time.time()) - ONE_HOUR
-        return Feed.objects(user_id=user_id, create_time__gte=judge_time).count() <= 3
+        status = Feed.objects(user_id=user_id, create_time__gte=judge_time).count() <= 3
+        if not status and setting.IS_DEV:
+            return True
+        return status
 
     @classmethod
     def _on_add_feed(cls, feed):
@@ -62,6 +67,8 @@ class FeedService(object):
         MqService.push(ADD_EXCHANGE,
                        {"feed_id": str(feed.id), "pics": feed.pics,
                         "region_key": cls._redis_feed_region_key(REDIS_FEED_SQUARE_REGION)})
+        # print 'push', {"feed_id": str(feed.id), "pics": feed.pics,
+        #                 "region_key": cls._redis_feed_region_key(REDIS_FEED_SQUARE_REGION)}
         # FollowingFeedService.add_feed(feed)
 
     @classmethod
@@ -71,6 +78,7 @@ class FeedService(object):
             for pic in pics:
                 reason = QiniuService.should_pic_block_from_file_id(pic)
                 if reason:
+                    print reason
                     break
         feed = Feed.get_by_id(feed_id)
         if feed:
@@ -88,6 +96,8 @@ class FeedService(object):
                 if cls.should_add_to_square(feed):
                     redis_client.zadd(region_key,
                                       {str(feed.id): feed.create_time})
+                else:
+                    print 'should not'
             FollowingFeedService.add_feed(feed)
 
     @classmethod

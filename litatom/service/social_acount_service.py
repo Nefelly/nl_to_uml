@@ -12,7 +12,11 @@ from urllib2 import urlopen
 
 import oss2
 
-from ..const import ONE_HOUR
+from ..const import (
+    ONE_HOUR,
+    PLATFORM_ANDROID,
+    PLATFORM_IOS
+)
 
 logger = logging.getLogger(__name__)
 
@@ -27,11 +31,13 @@ class GoogleService(object):
     https://developers.google.com/identity/sign-in/android/backend-auth
     '''
     CLIENT_ID = '272687572250-i5659eubkl38ck9n17mrijl0neh7rgkc.apps.googleusercontent.com'
+    IOS_CLIENT_ID = '787479292864-bgpar2s95tbkmjphofq23ivu0b2tdu9t.apps.googleusercontent.com'
     @classmethod
-    def login_info(cls, token):
+    def login_info(cls, token, platform=PLATFORM_ANDROID):
         try:
             # Specify the CLIENT_ID of the app that accesses the backend:
-            idinfo = id_token.verify_oauth2_token(token, requests.Request(), cls.CLIENT_ID)
+            client_id = cls.IOS_CLIENT_ID if platform == PLATFORM_IOS else cls.CLIENT_ID
+            idinfo = id_token.verify_oauth2_token(token, requests.Request(), client_id)
 
             '''idinfo = {u'picture': u'https://lh6.googleusercontent.com/-k2KzgpaOHxg/AAAAAAAAAAI/AAAAAAAAAAA/ACHi3rcIYSdTEK8c7XzOKFZU07cQDA2z6Q/s96-c/photo.jpg',
             u'aud': u'272687572250-i5659eubkl38ck9n17mrijl0neh7rgkc.apps.googleusercontent.com', u'family_name': u'wang', u'iss': u'https://accounts.google.com',
