@@ -21,10 +21,12 @@ class Blocked(Document):
 
     @classmethod
     def get_by_block(cls, uid, blocked):
+        return None
         return cls.objects(uid=uid, blocked=blocked).first()
 
     @classmethod
     def in_block(cls, uid, blocked):
+        return False
         if cls.get_by_block(uid, blocked):
             return True
         return False
