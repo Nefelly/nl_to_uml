@@ -41,6 +41,8 @@ class TrackActionService(object):
                 contents += [('version', version)]
             AliLogService.put_logs(contents)
         if cls.MQ_INSERT:
+            if action in ['chat', 'fb_ad']:
+                return True
             MqService.push(USER_ACTION_EXCHANGE,
                            {"args": cPickle.dumps(
                                [user_id, action, other_user_id, amount, remark, version, datetime.datetime.now(),
