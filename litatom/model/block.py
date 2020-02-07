@@ -79,10 +79,10 @@ class Blocked(Document):
             return False
         key = cls.get_redis_key(uid)
         cls.ensure_cache(uid)
-        if not redis_client.exists(key):
-            obj = cls(uid=uid, blocked=blocked)
+        obj = cls(uid=uid, blocked=blocked)
+        if not obj:
             obj.save()
-            redis_client.sadd(key, blocked)
+        redis_client.sadd(key, blocked)
         # if not cls.get_by_block(uid, blocked):
         #     obj = cls(uid=uid, blocked=blocked)
         #     obj.save()
@@ -93,7 +93,6 @@ class Blocked(Document):
         key = cls.get_redis_key(uid)
         if not redis_client.exists(key):
             return False
-        cls.ensure_cache(uid)
         redis_client.srem(key, blocked)
         obj = cls.get_by_block(uid, blocked)
         if obj:
