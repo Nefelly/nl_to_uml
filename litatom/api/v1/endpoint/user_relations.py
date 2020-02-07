@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 def block(other_user_id):
     data, status = BlockService.block(request.user_id, other_user_id)
     if status:
-        return success(data)
+        return success()
     return fail(data)
 
 @session_finished_required

@@ -153,15 +153,13 @@ class BlockService(object):
     @classmethod
     def block(cls, uid, blocked_uid):
         FollowService.unfollow_eachother(uid, blocked_uid)
-        data,res=Blocked.block(uid, blocked_uid)
-        if not res:
-            return data, False
+        Blocked.block(uid, blocked_uid)
         user_huanxin = User.huanxin_id_by_user_id(uid)
         blocked_huanxin = User.huanxin_id_by_user_id(blocked_uid)
         if user_huanxin and blocked_huanxin:
             HuanxinService.block_user(user_huanxin, blocked_huanxin)
             HuanxinService.block_user(blocked_huanxin, user_huanxin)
-        return data, True
+        return None, True
 
     @classmethod
     def unblock(cls, uid, blocked_uid):
