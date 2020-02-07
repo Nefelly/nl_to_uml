@@ -5,6 +5,9 @@ import traceback
 from aliyun.log import *
 import logging
 from ..redis import RedisClient
+from ..util import (
+    read_data_from_xls
+)
 
 logger = logging.getLogger(__name__)
 
@@ -29,9 +32,25 @@ class AliLogService(object):
     DEFAULT_SOURCE = "default_source"  # 日志来源机器ip
 
     '''
+    从daily_stat文件地址获取当前日期
+    '''
+
+    @classmethod
+    def _read_date_from_addr(cls, addr):
+        import re
+        pattern0 = "/data/statres/"
+        res = re.sub(pattern0, '', addr)
+        pattern1 = ".xlsx"
+        res = re.sub(pattern1, '', res)
+        pattern2 = 'ad.xlsx'
+        date = re.sub(pattern2, '', res)
+        return date
+
+    '''
     上传一条日志，contents格式为[('key','value'),('key2','value2')...]，
     返回一个LogSponse对象，为http相应包头部封装后的对象
     '''
+
     @classmethod
     def put_logs(cls, contents, topic=DEFAULT_TOPIC, source=DEFAULT_SOURCE, project=DEFAULT_PROJECT,
                  logstore=DEFAULT_LOGSTORE, client=DEFAULT_CLIENT):
@@ -44,6 +63,20 @@ class AliLogService(object):
         response = client.put_logs(request)
         return response.get_all_headers()
 
+    '''
+    上传一条日常统计数据日志
+    '''
+
+    @classmethod
+    def put_daily_stat(cls, contents, topic='undefined'):
+        cls.put_logs(contents, topic=topic, project='litatommonitor', logstore='daily-stat-monitor')
+
+    @classmethod
+    def put_dailt_stat_from_xlsx(cls, name):
+        tb_header, tb_data = read_data_from_xls(name)
+        contents = [('date', cls._read_date_from_addr(name))]
+        nstat = len(tb_data)
+        for stat in nstat:
 
     # @classmethod
     # def pull_logs(cls, client=DEFAULT_CLIENT, project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE, compress=False):

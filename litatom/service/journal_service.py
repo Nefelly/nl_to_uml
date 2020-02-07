@@ -388,16 +388,14 @@ class JournalService(object):
         # daily_m是一个dict类型变量,id,name为抽样日活，num为最近一日日活用户数量，以及各种loc中的各种日活用户数量
         daily_m = cls.daily_active(StatItems.objects(name=u'抽样日活').first())
         print 'load daily_m'
-        stat_date=cls._get_stat_date(date)
         # 遍历StatItems中所有类型为BUSINESS_TYPE的统计量item
         for item in StatItems.get_items_by_type(StatItems.BUSINESS_TYPE):
             try:
                 # m为根据该统计量的id计算得到的结果
                 m = cls.cal_by_id(str(item.id))
-                ali_log=[('date', stat_date)]
                 name, num = m['name'], m['num']
                 ali_log.append(('name',name))
-                ali_log.append(('num',str(num)))
+                ali_log.append(('num',str(num)))，
                 gender_cnt = [m[gender] for gender in cls.GENDERS]
                 for gender in cls.GENDERS:
                     ali_log.append((gender,str(m[gender])))
@@ -415,7 +413,7 @@ class JournalService(object):
                         avr_cnt.append(0)
                         ali_log.append((loc+'avr','0'))
                 res_lst.append([name, num] + gender_cnt + region_cnt + [num/daily_m['num']] + avr_cnt)
-                AliLogService.put_logs(ali_log,topic='business_type',project='litatommonitor',logstore='daily-stat-monitor')
+                AliLogService.put_daily_stat(ali_log,topic='business_type')
                 cnt += 1
             except Exception, e:
                 print e
