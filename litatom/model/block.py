@@ -83,12 +83,11 @@ class Blocked(Document):
         if not cls.get_by_block(uid, blocked):
             obj = cls(uid=uid, blocked=blocked)
             obj.save()
-            return 1, True
 
         # if not cls.get_by_block(uid, blocked):
         #     obj = cls(uid=uid, blocked=blocked)
         #     obj.save()
-        return 2, True
+        return True
 
     @classmethod
     def unblock(cls, uid, blocked):
