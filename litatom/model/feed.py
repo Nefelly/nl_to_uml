@@ -17,7 +17,8 @@ from ..util import (
 from ..const import (
     DEFAULT_QUERY_LIMIT,
     ONE_HOUR,
-    ONE_MIN
+    ONE_MIN,
+    NAN
 )
 from ..key import (
     REDIS_FEED_CACHE,
@@ -201,6 +202,9 @@ class FeedLike(Document):
             uids = [e.uid for e in cls.objects(feed_id=feed_id)]
             if uids:
                 redis_client.sadd(key, *uids)
+                redis_client.expire(key, cls.CACHED_TIME)
+            else:
+                redis_client.sadd(key, NAN)
                 redis_client.expire(key, cls.CACHED_TIME)
 
     @classmethod

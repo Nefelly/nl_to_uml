@@ -10,7 +10,8 @@ from mongoengine import (
     StringField,
 )
 from ..const import (
-    ONE_MIN
+    ONE_MIN,
+    NAN
 )
 from ..redis import RedisClient
 from ..key import (
@@ -71,6 +72,9 @@ class Blocked(Document):
             blockeds = [e.blocked for e in cls.objects(uid=uid)]
             if blockeds:
                 redis_client.sadd(key, *blockeds)
+                redis_client.expire(key, cls.CACHED_TIME)
+            else:
+                redis_client.sadd(key, NAN)
                 redis_client.expire(key, cls.CACHED_TIME)
 
     @classmethod
