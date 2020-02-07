@@ -248,6 +248,7 @@ class FeedLike(Document):
     def reverse(cls, uid, feed_id, feed_like_num):
         '''
         返回最终是否是like
+        :param feed_like_num:
         :param uid:
         :param feed_id:
         :return:
