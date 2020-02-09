@@ -30,7 +30,7 @@ TYPE_VOICE_AGORA = 'agora'
 TYPE_VOICE_TENCENT = 'tencent'
 CODE_PRIOR_VOICE = TYPE_VOICE_TENCENT
 
-ALL_FILTER = True
+ALL_FILTER = False
 
 # 后端action
 ACTION_ACCOST_OVER = 'accost_over'
