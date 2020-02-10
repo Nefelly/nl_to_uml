@@ -96,7 +96,7 @@ class MaintainService(object):
         maintain_num = 100
         clear_interval = 50
         judge_num = maintain_num + clear_interval
-        ids = FollowingFeed.objects().distinct('user_id')
+        # ids = FollowingFeed.objects().distinct('user_id')
         clear_cnt = 0
         for user in User.objects():
             _ = str(user.id)
