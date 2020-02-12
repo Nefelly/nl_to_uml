@@ -4,7 +4,7 @@ import datetime
 from hendrix.conf import setting
 from litatom.model import UserAction
 
-keep_time = 5 * 3600 * 24
+keep_time = 2 * 3600 * 24
 save_dir = '/data/mongoback/user_action'
 query_time = int(time.time()) - keep_time
 
