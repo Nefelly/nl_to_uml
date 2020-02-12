@@ -94,8 +94,8 @@ class MaintainService(object):
 
     @classmethod
     def clear_following_feed(cls):
-        maintain_num = 100
-        clear_interval = 50
+        maintain_num = 60
+        clear_interval = 30
         judge_num = maintain_num + clear_interval
         # ids = FollowingFeed.objects().distinct('user_id')
         clear_cnt = 0
