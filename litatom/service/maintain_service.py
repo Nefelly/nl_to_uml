@@ -97,9 +97,11 @@ class MaintainService(object):
         maintain_num = 60
         clear_interval = 30
         judge_num = maintain_num + clear_interval
+        judge = int(time.time()) - 86400
+        ids = FollowingFeed.objects(feed_create_time__gte=judge).distinct('user_id')
         # ids = FollowingFeed.objects().distinct('user_id')
         clear_cnt = 0
-        ids = [el.user_id for el in UserSetting.objects()]
+        # ids = [el.user_id for el in UserSetting.objects()]
         for _ in ids:
             try:
                 cnt = FollowingFeed.objects(user_id=_).count()
