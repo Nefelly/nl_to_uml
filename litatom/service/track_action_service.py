@@ -41,7 +41,7 @@ class TrackActionService(object):
                 contents += [('version', version)]
             AliLogService.put_logs(contents)
         if cls.MQ_INSERT:
-            if action in ['chat', 'fb_ad']:
+            if action in ['chat', 'fb_ad', 'matchResult']:
                 return True
             MqService.push(USER_ACTION_EXCHANGE,
                            {"args": cPickle.dumps(

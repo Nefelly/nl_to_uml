@@ -5,7 +5,8 @@ import traceback
 import logging
 from ..model import (
     FollowingFeed,
-    UserMessage
+    UserMessage,
+    User
 )
 from ..service import (
     GlobalizationService,
@@ -92,12 +93,13 @@ class MaintainService(object):
 
     @classmethod
     def clear_following_feed(cls):
-        maintain_num = 300
-        clear_interval = 100
+        maintain_num = 100
+        clear_interval = 50
         judge_num = maintain_num + clear_interval
-        ids = FollowingFeed.objects().distinct('user_id')
+        # ids = FollowingFeed.objects().distinct('user_id')
         clear_cnt = 0
-        for _ in ids:
+        for user in User.objects():
+            _ = str(user.id)
             cnt = FollowingFeed.objects(user_id=_).count()
             if cnt > judge_num:
                 FollowingFeed.objects(user_id=_).order_by('-feed_create_time').skip(maintain_num).delete()
