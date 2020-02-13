@@ -6,7 +6,8 @@ import logging
 from ..model import (
     FollowingFeed,
     UserMessage,
-    User
+    User,
+    UserSetting
 )
 from ..service import (
     GlobalizationService,
@@ -93,19 +94,24 @@ class MaintainService(object):
 
     @classmethod
     def clear_following_feed(cls):
-        maintain_num = 100
-        clear_interval = 50
+        maintain_num = 60
+        clear_interval = 30
         judge_num = maintain_num + clear_interval
+        judge = int(time.time()) - 86400
+        ids = FollowingFeed.objects(feed_create_time__gte=judge).distinct('user_id')
         # ids = FollowingFeed.objects().distinct('user_id')
         clear_cnt = 0
-        for user in User.objects():
-            _ = str(user.id)
-            cnt = FollowingFeed.objects(user_id=_).count()
-            if cnt > judge_num:
-                FollowingFeed.objects(user_id=_).order_by('-feed_create_time').skip(maintain_num).delete()
-                clear_cnt += 1
-                if clear_cnt % 100 == 0:
-                    print clear_cnt
+        # ids = [el.user_id for el in UserSetting.objects()]
+        for _ in ids:
+            try:
+                cnt = FollowingFeed.objects(user_id=_).count()
+                if cnt > judge_num:
+                    FollowingFeed.objects(user_id=_).order_by('-feed_create_time').skip(maintain_num).delete()
+                    clear_cnt += 1
+                    if clear_cnt % 100 == 0:
+                        print clear_cnt
+            except:
+                continue
 
     @classmethod
     def clear_UserMessages(cls):

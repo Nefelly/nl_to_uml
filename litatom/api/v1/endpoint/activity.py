@@ -18,12 +18,14 @@ logger = logging.getLogger(__name__)
 from flask import (
     jsonify,
     request,
+    current_app,
     render_template
 )
 
 from ....service import (
     PalmService,
-    GlobalizationService
+    GlobalizationService,
+    ShareStatService
 )
 
 
@@ -44,6 +46,10 @@ def palm_query():
 def times_left():
     return success({'times_left': PalmService.times_left(request.user_id)})
 
+
+def user_share(share_user_id):
+    ShareStatService.add_stat_item(share_user_id, request.ip)
+    return current_app.send_static_file('share_index.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
 
 def share_info():
     result_id = request.values.get('result_id')

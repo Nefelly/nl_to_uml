@@ -159,9 +159,9 @@ class FollowingFeed(Document):
         if not feed:
             return True
         feed_id = str(feed.id)
-        obj = cls.get_by_user_id_feed_id(user_id, feed_id)
-        if obj:
-            return True
+        # obj = cls.get_by_user_id_feed_id(user_id, feed_id)
+        # if obj:
+        #     return True
         obj = cls()
         obj.user_id = user_id
         obj.followed_user_id = feed.user_id
