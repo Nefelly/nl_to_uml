@@ -44,7 +44,7 @@ class SmsCodeService(object):
         GlobalizationService.REGION_EN: 'SMS_164510648',
         GlobalizationService.REGION_TH: 'SMS_164506012',
         GlobalizationService.REGION_ID: 'SMS_167963840',
-        GlobalizationService.REGION_KR: 'SMS_169112439'
+        # GlobalizationService.REGION_KR: 'SMS_169112439'
     }
     @classmethod
     def gen_code(cls):
