@@ -29,7 +29,7 @@ redis_client = RedisClient()['lit']
 class Feed(Document):
     meta = {
         'strict': False,
-        'db_alias': 'relations',
+        'db_alias': 'db_alias',
 
     }
 
