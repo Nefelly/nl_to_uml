@@ -132,7 +132,7 @@ b.add_url_rule('/lit/huanxin/<target_user_id>', 'huanxin-get-info', endpoint.hua
 b.add_url_rule('/lit/activity/palm/query', 'activity-palm-query', endpoint.activity.palm_query)
 b.add_url_rule('/lit/activity/palm/share', 'activity-palm-share', endpoint.activity.share_info)
 b.add_url_rule('/lit/activity/palm/times_left', 'activity-palm-times-left', endpoint.activity.times_left)
-b.add_url_rule('/lit/activity/user_share/index', 'activity-user-share-index', endpoint.activity.user_share_index)
+b.add_url_rule('/lit/activity/user_share/<share_user_id>', 'activity-user-share', endpoint.activity.user_share)
 
 # anoy_match
 b.add_url_rule('/lit/anoy_match/get_fakeid', 'anoy-match-create-fakeid', endpoint.anoy_match.get_fakeid)

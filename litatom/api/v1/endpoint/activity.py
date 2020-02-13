@@ -46,7 +46,7 @@ def times_left():
     return success({'times_left': PalmService.times_left(request.user_id)})
 
 
-def user_share_index():
+def user_share(share_user_id):
     return current_app.send_static_file('share_index.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
 
 def share_info():
