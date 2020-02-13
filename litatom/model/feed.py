@@ -84,6 +84,12 @@ class Feed(Document):
         return cls.objects(user_id=user_id).order_by("-create_time").first()
     
     def is_same(self, content, pics, audios):
+        if not pics:
+            pics = []
+        if not audios:
+            audios = []
+        if not content:
+            content = None
         return self.pics == pics and self.content == content and self.audios == audios
     
     @classmethod
