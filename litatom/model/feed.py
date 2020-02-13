@@ -277,7 +277,9 @@ class FeedLike(Document):
             obj.delete()
             like_now = False
         # 1. 如果feed_like_num >= LIKE_NUM_THRESHOLD，则无论结果如何，不必将数据缓存
-        # 2. 如果feed_like_num属于[LIKE_NUM_THRESHOLD-PROTECT,LIKE_NUM_THRESHOLD)，如果
+        # 2. 如果feed_like_num属于[LIKE_NUM_THRESHOLD-PROTECT,LIKE_NUM_THRESHOLD)，
+        #       在该feed已经被缓存的情况下，如果新增like则缓存该项，如果去掉like则移除缓存该项
+        # 3. 如果feed_like_num < LIKE_NUM_THRESHOLD - PROTECT,必须确保有缓存，然后更新缓存
         if cls.LIKE_NUM_THRESHOLD > feed_like_num:
             key = cls.get_redis_key(feed_id)
             if cls.LIKE_NUM_THRESHOLD - cls.PROTECT <= feed_like_num:

@@ -13,6 +13,9 @@ from ..service import (
     HuanxinService,
     FollowingFeedService
 )
+from ..model import (
+    UserModel
+)
 
 
 class FollowService(object):
@@ -153,7 +156,8 @@ class BlockService(object):
     @classmethod
     def block(cls, uid, blocked_uid):
         FollowService.unfollow_eachother(uid, blocked_uid)
-        Blocked.block(uid, blocked_uid)
+        block_num = UserModel.get_block_num_by_user_id(uid)
+        Blocked.block(uid, blocked_uid, block_num)
         user_huanxin = User.huanxin_id_by_user_id(uid)
         blocked_huanxin = User.huanxin_id_by_user_id(blocked_uid)
         if user_huanxin and blocked_huanxin:

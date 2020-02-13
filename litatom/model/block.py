@@ -42,25 +42,6 @@ class Blocked(Document):
         return REDIS_BLOCK_CACHE.format(user_id=uid)
 
     @classmethod
-    def in_block(cls, uid, blocked):
-        """
-        判断blocked是否被uid所屏蔽
-        :param uid:
-        :param blocked:
-        :param blocked_num:
-        :return:
-        """
-        key = cls.get_redis_key(uid)
-        # 缓存保护，屏蔽个数太多将不再缓存，以下以被block个数作为临界
-        # if blocked_num > cls.BLOCK_NUM_THRESHOLD - cls.PROTECT:  # PROTECT 用来保护缓存不会因为like num 一上一下不断刷缓存
-        #     if blocked_num >= cls.BLOCK_NUM_THRESHOLD:
-        #         redis_client.delete(key)
-        #     obj = cls.objects(uid=uid, blocked=blocked).first()
-        #     return True if obj else False
-        cls.ensure_cache(uid)
-        return redis_client.sismember(key, blocked)
-
-    @classmethod
     def ensure_cache(cls, uid):
         """
         对uid已屏蔽的user_id进行缓存
@@ -78,31 +59,53 @@ class Blocked(Document):
                 redis_client.expire(key, cls.CACHED_TIME)
 
     @classmethod
-    def block(cls, uid, blocked):
+    def in_block(cls, uid, blocked, block_num):
+        """
+        判断blocked是否被uid所屏蔽
+        :param block_num:
+        :param uid:
+        :param blocked:
+        :param blocked_num:
+        :return:
+        """
+        key = cls.get_redis_key(uid)
+        if block_num > cls.BLOCK_NUM_THRESHOLD - cls.PROTECT:
+            obj = cls.objects(uid=uid, blocked=blocked)
+            if block_num >= cls.BLOCK_NUM_THRESHOLD:
+                redis_client.delete(key)
+            return True if obj else False
+        cls.ensure_cache(uid)
+        return redis_client.sismember(key, blocked)
+
+    @classmethod
+    def block(cls, uid, blocked, block_num):
         if uid == blocked:
             return False
-        cls.ensure_cache(uid)
-        key = cls.get_redis_key(uid)
-        redis_client.sadd(key, blocked)
-        if not cls.get_by_block(uid, blocked):
+        obj = cls.get_by_block(uid, blocked)
+        if not obj:
             obj = cls(uid=uid, blocked=blocked)
             obj.save()
-
-        # if not cls.get_by_block(uid, blocked):
-        #     obj = cls(uid=uid, blocked=blocked)
-        #     obj.save()
+        # 确认缓存有效
+        if block_num <= cls.BLOCK_NUM_THRESHOLD:
+            key = cls.get_redis_key(uid)
+            if block_num <= cls.BLOCK_NUM_THRESHOLD - cls.PROTECT:
+                cls.ensure_cache(uid)
+                redis_client.sadd(key, uid)
+            elif redis_client.exists(key):
+                redis_client.sadd(key, uid)
         return True
 
     @classmethod
     def unblock(cls, uid, blocked):
-        key = cls.get_redis_key(uid)
-        if not redis_client.exists(key):
-            return False
-        redis_client.srem(key, blocked)
         obj = cls.get_by_block(uid, blocked)
-        if obj:
-            obj.delete()
-            obj.save()
+        if not obj:
+            return False
+        obj.delete()
+        obj.save()
+        # 确认缓存删除
+        key = cls.get_redis_key(uid)
+        if redis_client.exists(key):
+            redis_client.srem(key, blocked)
         return True
 
     # obj = cls.get_by_block(uid, blocked)
@@ -112,34 +115,33 @@ class Blocked(Document):
     #     return True
     # return False
 
-    @classmethod
-    def reverse(cls, uid, blocked):
-        """
-        返回最终是否是block
-        :param blocked_num:
-        :param uid:
-        :param blocked:
-        :return:
-        """
-        obj = cls.get_by_block(uid, blocked)
-        if not obj:
-            obj = cls(uid=uid, blocked=blocked)
-            obj.save()
-            res = True
-        else:
-            obj.delete()
-            res = False
-        key = cls.get_redis_key(uid)
-        if redis_client.exists(key):
-            if res:
-                redis_client.sadd(key, blocked)
-            else:
-                redis_client.srem(key, blocked)
-        else:
-            if res:
-                cls.ensure_cache(uid)
-                redis_client.sadd(key, blocked)
-        return res
+    # @classmethod
+    # def reverse(cls, uid, blocked):
+    #     """
+    #     返回最终是否是block
+    #     :param uid:
+    #     :param blocked:
+    #     :return:
+    #     """
+    #     obj = cls.get_by_block(uid, blocked)
+    #     if not obj:
+    #         obj = cls(uid=uid, blocked=blocked)
+    #         obj.save()
+    #         res = True
+    #     else:
+    #         obj.delete()
+    #         res = False
+    #     key = cls.get_redis_key(uid)
+    #     if redis_client.exists(key):
+    #         if res:
+    #             redis_client.sadd(key, blocked)
+    #         else:
+    #             redis_client.srem(key, blocked)
+    #     else:
+    #         if res:
+    #             cls.ensure_cache(uid)
+    #             redis_client.sadd(key, blocked)
+    #     return res
         # if cls.BLOCK_NUM_THRESHOLD > blocked_num:
         #     key = cls.get_redis_key(blocked)
         #     if cls.LIKE_NUM_THRESHOLD - cls.PROTECT <= blocked_num:
