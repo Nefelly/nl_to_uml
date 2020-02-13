@@ -145,7 +145,7 @@ class Feed(Document):
 class FollowingFeed(Document):
     meta = {
         'strict': False,
-        'alias': 'relations',
+        'db_alias': 'relations',
         'shard_key': {'user_id': 'hashed'}
     }
     user_id = StringField(required=True)
