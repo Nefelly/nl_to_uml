@@ -81,11 +81,14 @@ class Feed(Document):
     @classmethod
     def last_feed_by_user_id(cls, user_id):
         return cls.objects(user_id=user_id).order_by("-create_time").first()
-
+    
+    def is_same(self, content, pics, audios):
+        return self.pics == pics and self.content == content and self.audios == audios
+    
     @classmethod
     def create_feed(cls, user_id, content, pics, audios):
         last = cls.last_feed_by_user_id(user_id)
-        if last and last.pics == pics and last.content == content and last.audios == audios:
+        if last and last.is_same(content, pics, audios):
             return last
         obj = cls()
         obj.user_id = user_id
