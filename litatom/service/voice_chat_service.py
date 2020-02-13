@@ -17,7 +17,8 @@ from ..key import (
 )
 from ..model import (
     Blocked,
-    Follow
+    Follow,
+    UserModel
 )
 from ..const import (
     ONE_MIN,
@@ -66,7 +67,8 @@ class VoiceChatService(object):
         if other_call and other_call != target_user_id:
             return u'you are being called', False
 
-        if Blocked.in_block(target_user_id, user_id):
+        block_num = UserModel.get_block_num_by_user_id(target_user_id)
+        if Blocked.in_block(target_user_id, user_id, block_num):
             return u'you have been blocked', False
         # if not (Follow.in_follow(target_user_id, user_id) and Follow.in_follow(user_id, target_user_id)):
         #     return u'you should follow each other to launch a voice chat', False
