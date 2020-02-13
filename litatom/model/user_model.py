@@ -41,6 +41,7 @@ class UserModel(Document):
     # 确定用户的评论回复力
     total_comments = IntField(default=0)  # 用户总评论数
     total_comments_replies = FloatField(default=0)  # 用户评论总回复数
+    block_num = IntField(default=0)  # 用户屏蔽的人数
 
     @classmethod
     def create(cls, user_id):
@@ -71,6 +72,13 @@ class UserModel(Document):
         obj = cls.pure_get_by_user_id(user_id)
         redis_client.set(cache_key, cPickle.dumps(obj), USER_ACTIVE)
         return obj
+
+    @classmethod
+    def get_block_num_by_user_id(cls, user_id):
+        user = cls.get_by_user_id(user_id)
+        if user:
+            return user.block_num
+        return None
 
     @classmethod
     def pure_get_by_user_id(cls, user_id):
@@ -128,6 +136,30 @@ class UserModel(Document):
         if obj.alert_num != 0 and obj.alert_num % cls.ALERT_TIMES == 0:
             return True
         return False
+
+    @classmethod
+    def inc_block_num(cls, user_id):
+        """增加一个屏蔽者"""
+        obj = cls.get_by_user_id(user_id)
+        if not obj:
+            obj = cls(user_id=user_id, block_num=1)
+        else:
+            obj.block_num += 1
+        obj.save()
+
+    @classmethod
+    def dec_block_num(cls, user_id):
+        """减少一个屏蔽者"""
+        obj = cls.get_by_user_id(user_id)
+        if not obj:
+            return False
+        else:
+            if obj.block_num <= 0:
+                return False
+            else:
+                obj.block_num -= 1
+        obj.save()
+        return True
 
     @classmethod
     def alerted(cls, user_id):
