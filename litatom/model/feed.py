@@ -29,7 +29,8 @@ redis_client = RedisClient()['lit']
 class Feed(Document):
     meta = {
         'strict': False,
-        'alias': 'db_alias'
+        'alias': 'relations',
+
     }
 
     user_id = StringField(required=True)
@@ -144,7 +145,8 @@ class Feed(Document):
 class FollowingFeed(Document):
     meta = {
         'strict': False,
-        'alias': 'relations'
+        'alias': 'relations',
+        'shard_key': {'user_id': 'hashed'}
     }
     user_id = StringField(required=True)
     followed_user_id = StringField(required=True)
