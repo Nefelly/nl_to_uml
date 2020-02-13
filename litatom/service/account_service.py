@@ -75,11 +75,11 @@ class AccountService(object):
         unban_pay = 100
         if not UserService.is_forbbiden(user_id):
             return u'you are not forbbiden', False
-        msg = cls.change_diamonds(cls, user_id, -unban_pay)
+        msg = cls.change_diamonds(user_id, -unban_pay)
         if not msg:
             if UserService.unban_user(user_id):
                  return None, True
-            cls.change_diamonds(cls, user_id, unban_pay)
+            cls.change_diamonds(user_id, unban_pay)
             return u'unban failed', False
         return msg, False
 
