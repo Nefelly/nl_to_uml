@@ -87,7 +87,7 @@ class SmsCodeService(object):
         if not zone_phone:
             return cls.ERR_WORONG_TELEPHONE, False
         if zone.replace('+', '') != '86' and not User.get_by_phone(zone_phone):
-            # if not TokenBucketService.get_token('send_lock' + zone_phone, 1, 2, 2):
+            if not TokenBucketService.get_token('send_lock' + zone_phone, 1, 2, 2):
                 return GlobalizationService.get_region_word('sms_could_not_register'), False
         if not TokenBucketService.get_token('send_lock' + zone_phone, 1, 1, 1, TEN_MINS, TEN_MINS):
             return '', True
