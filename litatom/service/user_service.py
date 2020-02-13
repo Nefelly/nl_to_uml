@@ -152,6 +152,11 @@ class UserService(object):
                 return loc
 
     @classmethod
+    def is_forbbiden(cls, user_id):
+        user = User.get_by_id(user_id)
+        return user and user.forbidden
+
+    @classmethod
     def unban_user(cls, user_id):
         user = User.get_by_id(user_id)
         if user:

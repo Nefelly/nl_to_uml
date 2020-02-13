@@ -73,6 +73,8 @@ class AccountService(object):
     @classmethod
     def unban_by_diamonds(cls, user_id):
         unban_pay = 100
+        if not UserService.is_forbbiden(user_id):
+            return u'you are not forbbiden', False
         msg = cls.change_diamonds(cls, user_id, -unban_pay)
         if not msg:
             if UserService.unban_user(user_id):
