@@ -142,6 +142,10 @@ class Feed(Document):
         return obj
 
 class FollowingFeed(Document):
+    meta = {
+        'strict': False,
+        'alias': 'relations'
+    }
     user_id = StringField(required=True)
     followed_user_id = StringField(required=True)
     feed_id = StringField(required=True)
