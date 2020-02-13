@@ -152,6 +152,11 @@ class UserService(object):
                 return loc
 
     @classmethod
+    def is_forbbiden(cls, user_id):
+        user = User.get_by_id(user_id)
+        return user and user.forbidden
+
+    @classmethod
     def unban_user(cls, user_id):
         user = User.get_by_id(user_id)
         if user:
@@ -159,6 +164,8 @@ class UserService(object):
             user.save()
             if user.huanxin and user.huanxin.user_id:
                 HuanxinService.active_user(user.huanxin.user_id)
+            return True
+        return False
 
     @classmethod
     def uid_by_huanxin_id(cls, huanxin_id):
