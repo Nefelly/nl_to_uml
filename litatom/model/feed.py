@@ -88,6 +88,8 @@ class Feed(Document):
             pics = []
         if not audios:
             audios = []
+        if not self.content:
+            self.content = None
         if not content:
             content = None
         return self.pics == pics and self.content == content and self.audios == audios
