@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 from flask import (
     jsonify,
     request,
+    current_app,
     render_template
 )
 
@@ -44,9 +45,9 @@ def palm_query():
 def times_left():
     return success({'times_left': PalmService.times_left(request.user_id)})
 
-@session_required
+
 def user_share_index():
-    return
+    return current_app.send_static_file('share/feed_hq.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
 
 def share_info():
     result_id = request.values.get('result_id')
