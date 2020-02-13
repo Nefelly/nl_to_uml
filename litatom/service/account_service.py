@@ -18,7 +18,8 @@ from ..service import (
     VoiceMatchService,
     VideoMatchService,
     AntiSpamService,
-    PalmService
+    PalmService,
+    UserService
 )
 from ..redis import RedisClient
 from flask import (
@@ -68,6 +69,17 @@ class AccountService(object):
     @classmethod
     def get_user_account_info(cls, user_id):
         return UserAccount.get_account_info(user_id)
+
+    @classmethod
+    def unban_by_diamonds(cls, user_id):
+        unban_pay = 100
+        msg = cls.change_diamonds(cls, user_id, -unban_pay)
+        if not msg:
+            if UserService.unban_user(user_id):
+                 return None, True
+            cls.change_diamonds(cls, user_id, unban_pay)
+            return u'unban failed', False
+        return msg, False
 
     @classmethod
     def change_diamonds(cls, user_id, diamonds):

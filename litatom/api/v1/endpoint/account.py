@@ -59,6 +59,7 @@ def pay_inform():
         return fail(data)
     return success(data)
 
+
 @session_required
 def deposit_by_activity():
     data = request.json
@@ -70,6 +71,15 @@ def deposit_by_activity():
     if not status:
         return fail(data)
     return success(data)
+
+
+@session_required
+def unban_by_diamonds():
+    data, status = AccountService.unban_by_diamonds(request.user_id)
+    if not status:
+        return fail(data)
+    return success(data)
+
 
 @session_required
 def buy_product():

@@ -8,6 +8,7 @@ _envvars = [
     'DB_LIT',
     'DB_DEV_LIT',
     'DB_ALI_LIT',
+    'DB_RELATIONS',
     'DB_HUANXIN_MESSAGE',
     'REDIS_SNS_TAG_LIKE',
     'ELASTICSEARCH_SNS_POI',
@@ -49,6 +50,7 @@ METRICS_SCHEMAS = {'litatom': {'a': {'a': 'a'}}}   # no use
 DB_SETTINGS = {
     'DB_LIT': _get_db_setting('DB_LIT', 'lit', 'lit'),
     'DB_ALI_LIT': _get_db_setting('DB_ALI_LIT', 'lit', 'ali_lit'),
+    'DB_RELATIONS': _get_db_setting('DB_ALI_LIT', 'relations', 'ali_lit'),
     'dev_lit': _get_db_setting('DB_DEV_LIT', 'lit', 'dev_lit'),  # envar, db, alias,
     'huanxin_message': _get_db_setting('DB_HUANXIN_MESSAGE', 'huanxin_message', 'huanxin_message')
 }
