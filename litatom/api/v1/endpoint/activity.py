@@ -24,7 +24,8 @@ from flask import (
 
 from ....service import (
     PalmService,
-    GlobalizationService
+    GlobalizationService,
+    ShareStatService
 )
 
 
@@ -47,6 +48,7 @@ def times_left():
 
 
 def user_share(share_user_id):
+    ShareStatService.add_stat_item(share_user_id, request.ip)
     return current_app.send_static_file('share_index.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
 
 def share_info():
