@@ -47,7 +47,7 @@ def times_left():
 
 
 def user_share_index():
-    return current_app.send_static_file('share/index.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
+    return current_app.send_static_file('share_index.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
 
 def share_info():
     result_id = request.values.get('result_id')
