@@ -173,7 +173,7 @@ class AccountService(object):
         diamonds = payload.get('diamonds')
         if not isinstance(diamonds, int):
             return u'error request diamonds', False
-        if diamonds >= 100:
+        if diamonds >= 1000:
             return u'authorize false, please retry', False
         err_msg = cls.change_diamonds(user_id, diamonds)
         if err_msg:
