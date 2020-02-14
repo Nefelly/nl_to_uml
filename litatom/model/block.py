@@ -75,7 +75,9 @@ class Blocked(Document):
                 redis_client.delete(key)
             return True if obj else False
         cls.ensure_cache(uid)
-        return redis_client.sismember(key, blocked)
+        obj = cls.objects(uid=uid, blocked=blocked)
+        return True if obj else False
+        # return redis_client.sismember(key, blocked)
 
     @classmethod
     def block(cls, uid, blocked, block_num):
