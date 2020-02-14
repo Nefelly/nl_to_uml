@@ -183,7 +183,7 @@ class AccountService(object):
             r = redis_client.get(key)
             if r:
                 return 'Already deposit success', False
-            redis_client.setex(key, 1, ONE_WEEK)
+            redis_client.setex(key, ONE_WEEK, 1)
         if not isinstance(diamonds, int):
             return u'error request diamonds', False
         # if diamonds >= 10000:
