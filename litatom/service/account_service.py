@@ -19,7 +19,8 @@ from ..service import (
     VideoMatchService,
     AntiSpamService,
     PalmService,
-    UserService
+    UserService,
+    TrackActionService
 )
 from ..redis import RedisClient
 from flask import (
