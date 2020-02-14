@@ -15,6 +15,9 @@ REDIS_FEED_ID_AGE = 'feed_id_age:{feed_id}'
 REDIS_AD_TIMES_LEFT = 'ad_times_left:{user_date}'
 REDIS_REGION_FEED_TOP = 'region_feed_top:{region}'
 
+# share stat
+REDIS_SHARE_STAT = 'share_stat:{user_id}'
+
 # rate control
 REDIS_VISIT_RATE = 'visit_rate:{user_id}'
 REDIS_ACCOST_RATE = 'accost_rate:{user_id}'
@@ -30,6 +33,7 @@ REDIS_AVATAR_CACHE = 'avatar_cache'
 REDIS_YOUTUBE_VIDEO_CACHE = 'youtube_video_cache:{region}'
 REDIS_SPAM_WORD_CACHE = 'spam_word:{region}'
 REDIS_FEED_LIKE_CACHE = 'feed_like_cache:{feed_id}'
+REDIS_BLOCK_CACHE = 'user_block_cache:{user_id}'
 REDIS_USER_NOT_MESSAGE_CACHE = 'user_nomsg_cache:{user_id}'
 REDIS_ACCELERATE_CACHE = 'acclerate_cache:{user_id}'
 REDIS_ONLINE_CNT_CACHE = 'online_cnt_cache:{region}:{gender}'

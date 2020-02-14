@@ -40,6 +40,8 @@ b.add_url_rule('/lit/account/pay_inform', 'account-pay_inform', endpoint.account
 b.add_url_rule('/lit/account/deposit_by_activity', 'account-deposit_by_activity', endpoint.account.deposit_by_activity, methods=['POST'])
 b.add_url_rule('/lit/account/buy_product', 'account-buy_product', endpoint.account.buy_product, methods=['POST'])
 b.add_url_rule('/lit/account/diamond_products', 'account-diamond_products', endpoint.account.diamond_products)
+b.add_url_rule('/lit/account/unban_by_diamonds/<user_id>', 'account-unban-by-diamonds', endpoint.account.unban_by_diamonds)
+
 
 # admin
 b.add_url_rule('/lit/admin/index', 'admin-index', endpoint.admin.index)
@@ -132,6 +134,7 @@ b.add_url_rule('/lit/huanxin/<target_user_id>', 'huanxin-get-info', endpoint.hua
 b.add_url_rule('/lit/activity/palm/query', 'activity-palm-query', endpoint.activity.palm_query)
 b.add_url_rule('/lit/activity/palm/share', 'activity-palm-share', endpoint.activity.share_info)
 b.add_url_rule('/lit/activity/palm/times_left', 'activity-palm-times-left', endpoint.activity.times_left)
+b.add_url_rule('/lit/activity/user_share/<share_user_id>', 'activity-user-share', endpoint.activity.user_share)
 
 # anoy_match
 b.add_url_rule('/lit/anoy_match/get_fakeid', 'anoy-match-create-fakeid', endpoint.anoy_match.get_fakeid)

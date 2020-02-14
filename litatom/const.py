@@ -65,6 +65,9 @@ ONE_WEEK = 60 * 60 * 24 * 7
 TWO_WEEKS = 60 * 60 * 24 * 14
 ONE_MONTH = 60 * 60 * 24 * 30
 
+# redis中空集的占位符
+NAN = 'NAN'
+
 APP_PATH = '/data/apps/'
 MAX_TIME = 10 ** 13
 ONLINE_LIVE = TWO_WEEKS

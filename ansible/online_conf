@@ -23,6 +23,17 @@ litatom_envvars_json:
     waitQueueTimeoutMS: 30000
     waitQueueMultiple: 5
     maxIdleTimeMS: 600000
+  DB_RELATIONS:
+    host: "mongodb://ll:11@s-j6cabaa78d584554.mongodb.rds.aliyuncs.com,s-j6cdbafccfc856c4.mongodb.rds.aliyuncs.com/relations?authsource=relations"
+    port: 3717
+    alias: relations
+    maxPoolSize: 80
+    socketTimeoutMS: 30000
+    connectTimeoutMS: 30000
+    serverSelectionTimeoutMS: 30000
+    waitQueueTimeoutMS: 30000
+    waitQueueMultiple: 5
+    maxIdleTimeMS: 600000
   DB_DEV_LIT:
     host: "mongodb://test:11@47.244.141.151/testlit?authsource=testlit"
     port: 27017

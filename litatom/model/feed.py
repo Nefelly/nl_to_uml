@@ -17,19 +17,23 @@ from ..util import (
 from ..const import (
     DEFAULT_QUERY_LIMIT,
     ONE_HOUR,
-    ONE_MIN
+    ONE_MIN,
+    NAN
 )
 from ..key import (
     REDIS_FEED_CACHE,
     REDIS_FEED_LIKE_CACHE
 )
 from ..redis import RedisClient
+
 redis_client = RedisClient()['lit']
+
 
 class Feed(Document):
     meta = {
         'strict': False,
-        'alias': 'db_alias'
+        'alias': 'db_alias',
+
     }
 
     user_id = StringField(required=True)
@@ -64,7 +68,8 @@ class Feed(Document):
 
     @property
     def is_hq(self):
-        return self.like_num >= 5 or self.comment_num >= 5 or (len(self.audios) > 0 and self.like_num + self.comment_num > 2)
+        return self.like_num >= 5 or self.comment_num >= 5 or (
+                    len(self.audios) > 0 and self.like_num + self.comment_num > 2)
 
     def get_info(self):
         return {
@@ -81,11 +86,22 @@ class Feed(Document):
     @classmethod
     def last_feed_by_user_id(cls, user_id):
         return cls.objects(user_id=user_id).order_by("-create_time").first()
-
+    
+    def is_same(self, content, pics, audios):
+        if not pics:
+            pics = []
+        if not audios:
+            audios = []
+        if not self.content:
+            self.content = None
+        if not content:
+            content = None
+        return self.pics == pics and self.content == content and self.audios == audios
+    
     @classmethod
     def create_feed(cls, user_id, content, pics, audios):
         last = cls.last_feed_by_user_id(user_id)
-        if last and last.pics == pics and last.content == content and last.audios == audios:
+        if last and last.is_same(content, pics, audios):
             return last
         obj = cls()
         obj.user_id = user_id
@@ -138,7 +154,13 @@ class Feed(Document):
         redis_client.set(cache_key, cPickle.dumps(obj), ONE_HOUR)
         return obj
 
+
 class FollowingFeed(Document):
+    meta = {
+        'strict': False,
+        'db_alias': 'relations',
+        'shard_key': {'user_id': 'hashed'}
+    }
     user_id = StringField(required=True)
     followed_user_id = StringField(required=True)
     feed_id = StringField(required=True)
@@ -154,9 +176,9 @@ class FollowingFeed(Document):
         if not feed:
             return True
         feed_id = str(feed.id)
-        obj = cls.get_by_user_id_feed_id(user_id, feed_id)
-        if obj:
-            return True
+        # obj = cls.get_by_user_id_feed_id(user_id, feed_id)
+        # if obj:
+        #     return True
         obj = cls()
         obj.user_id = user_id
         obj.followed_user_id = feed.user_id
@@ -202,11 +224,21 @@ class FeedLike(Document):
             if uids:
                 redis_client.sadd(key, *uids)
                 redis_client.expire(key, cls.CACHED_TIME)
+            # 在没有值的键上补充一个占位符，避免redis优化自动删除该键导致重复建立
+            else:
+                redis_client.sadd(key, NAN)
+                redis_client.expire(key, cls.CACHED_TIME)
 
     @classmethod
     def in_like(cls, uid, feed_id, feed_like_num):
+        """
+        根据uid,feed_id，判断uid对feed_id是否like
+        1. 如果feed_like_num小于等于LIKE_NUM_THRESHOLD-PROTECT，必须缓存进redis
+        2. 如果feed_like_num已经大于等于LIKE_NUM_THRESHOLD,必须清除缓存
+        3. 如果feed_like_num介于(LIKE_NUM_THRESHOLD-PROTECT,LIKE_NUM_THRESHOLD)，暂不清除缓存，但是用db检索数据
+        """
         key = cls.get_redis_key(feed_id)
-        if feed_like_num > cls.LIKE_NUM_THRESHOLD - cls.PROTECT:   #PROTECT 用来保护缓存不会因为like num 一上一下不断刷缓存
+        if feed_like_num > cls.LIKE_NUM_THRESHOLD - cls.PROTECT:  # PROTECT 用来保护缓存不会因为like num 一上一下不断刷缓存
             if feed_like_num >= cls.LIKE_NUM_THRESHOLD:
                 redis_client.delete(key)
             obj = cls.objects(uid=uid, feed_id=feed_id).first()
@@ -248,6 +280,7 @@ class FeedLike(Document):
     def reverse(cls, uid, feed_id, feed_like_num):
         '''
         返回最终是否是like
+        :param feed_like_num:
         :param uid:
         :param feed_id:
         :return:
@@ -260,6 +293,10 @@ class FeedLike(Document):
         else:
             obj.delete()
             like_now = False
+        # 1. 如果feed_like_num >= LIKE_NUM_THRESHOLD，则无论结果如何，不必将数据缓存
+        # 2. 如果feed_like_num属于[LIKE_NUM_THRESHOLD-PROTECT,LIKE_NUM_THRESHOLD)，
+        #       在该feed已经被缓存的情况下，如果新增like则缓存该项，如果去掉like则移除缓存该项
+        # 3. 如果feed_like_num < LIKE_NUM_THRESHOLD - PROTECT,必须确保有缓存，然后更新缓存
         if cls.LIKE_NUM_THRESHOLD > feed_like_num:
             key = cls.get_redis_key(feed_id)
             if cls.LIKE_NUM_THRESHOLD - cls.PROTECT <= feed_like_num:

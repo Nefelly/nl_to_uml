@@ -152,6 +152,11 @@ class UserService(object):
                 return loc
 
     @classmethod
+    def is_forbbiden(cls, user_id):
+        user = User.get_by_id(user_id)
+        return user and user.forbidden
+
+    @classmethod
     def unban_user(cls, user_id):
         user = User.get_by_id(user_id)
         if user:
@@ -159,6 +164,8 @@ class UserService(object):
             user.save()
             if user.huanxin and user.huanxin.user_id:
                 HuanxinService.active_user(user.huanxin.user_id)
+            return True
+        return False
 
     @classmethod
     def uid_by_huanxin_id(cls, huanxin_id):
@@ -800,11 +807,12 @@ class UserService(object):
         target_user = User.get_by_id(target_user_id)
         if not target_user:
             return USER_NOT_EXISTS, False
+        block_num = UserModel.get_block_num_by_user_id(user_id)
         basic_info = cls.get_basic_info(target_user)
         basic_info.update({
             # 'followed': Follow.in_follow(user_id, target_user_id),
             'followed': FollowService.in_follow(user_id, target_user_id) if target_user.follower > 0 else False,
-            'blocked': Blocked.in_block(user_id, target_user_id),
+            'blocked': Blocked.in_block(user_id, target_user_id, block_num),
             # 'is_blocked': Blocked.in_block(target_user_id, user_id),
             # 'is_followed': Follow.in_follow(target_user_id, user_id)
         })
