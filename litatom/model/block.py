@@ -93,9 +93,9 @@ class Blocked(Document):
             key = cls.get_redis_key(uid)
             if block_num <= cls.BLOCK_NUM_THRESHOLD - cls.PROTECT:
                 cls.ensure_cache(uid)
-                redis_client.sadd(key, uid)
+                redis_client.sadd(key, blocked)
             elif redis_client.exists(key):
-                redis_client.sadd(key, uid)
+                redis_client.sadd(key, blocked)
         return True
 
     @classmethod
