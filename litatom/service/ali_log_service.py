@@ -98,9 +98,10 @@ class AliLogService(object):
 
     @classmethod
     def get_log_by_time(cls, project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE, from_time=int(time() - 3600),
-                        to_time=int(time()), client=DEFAULT_CLIENT, size=-1, attributes=None):
+                        to_time=int(time()), client=DEFAULT_CLIENT, size=-1, attributes=None, query='*'):
         """
         仅通过时间筛选某logstore中的log
+        :param query:
         :param attributes: 需要select出来的属性，默认None表示所有属性，['attr1','attr2',...]
         :param project:
         :param logstore:
@@ -112,7 +113,7 @@ class AliLogService(object):
         :param size: 默认为-1， 即无limit
         :return:
         """
-        res = client.get_log(project=project, logstore=logstore, from_time=from_time, to_time=to_time, size=size)
+        res = client.get_log(project=project, logstore=logstore, from_time=from_time, to_time=to_time, size=size, query=query)
         if not attributes:
             res.log_print()
             return res
@@ -122,7 +123,7 @@ class AliLogService(object):
             return selected_res
 
     @classmethod
-    def get_log_by_time_and_topic(cls, project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE, topic=DEFAULT_TOPIC,
+    def get_log_by_time_and_topic(cls, project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE, topic=DEFAULT_TOPIC, query='*',
                                   from_time=int(time() - 3600), to_time=int(time()), line=-1, client=DEFAULT_CLIENT):
         """
         通过time和topic筛选某logstore中的log
@@ -136,7 +137,7 @@ class AliLogService(object):
         :return: 返回一个QueriedLog列表，每个元素有三个方法get_time(),get_source(),get_contents()三个方法获得log内容，contents为json格式
         """
         request = GetLogsRequest(project=project, logstore=logstore, fromTime=from_time, toTime=to_time, topic=topic,
-                                 query='*', line=line)
+                                 query=query, line=line)
         res = client.get_logs(request)
         client.get_histograms()
         res.log_print()
