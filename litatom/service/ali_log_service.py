@@ -78,7 +78,7 @@ class AliLogService(object):
     #             contents += [(tb_header[col], tb_data[stat+1][col])]
 
     @classmethod
-    def select_log_by_attributes(cls,logs,attributes):
+    def select_log_by_attributes(cls,res,attributes):
         """
         筛选logs，投影到特定的属性（组）上，
         :param logs:
@@ -86,15 +86,15 @@ class AliLogService(object):
         :return:
         """
         if not attributes:
-            return logs
-        for log in logs:
+            return res
+        for log in res.logs:
             contents = log.get_contents()
             res_contents={}
             for attribute in attributes:
                 if attribute in contents.keys():
                     res_contents[attribute] = contents[attribute]
             log.contents = res_contents.copy()
-        return logs
+        return res
 
     @classmethod
     def get_log_by_time(cls, project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE, from_time=int(time() - 3600),
@@ -117,7 +117,7 @@ class AliLogService(object):
             res.log_print()
             return res
         else:
-            selected_res = cls.select_log_by_attributes(res.logs, attributes)
+            selected_res = cls.select_log_by_attributes(res, attributes)
             selected_res.log_print()
             return selected_res
 
