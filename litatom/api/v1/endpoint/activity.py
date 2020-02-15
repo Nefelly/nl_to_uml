@@ -50,7 +50,7 @@ def times_left():
 
 def user_share(share_user_id):
     ShareStatService.add_stat_item(share_user_id, request.ip)
-    return redirect('/lit/activity/share_static')
+    return redirect('/api/sns/v1/lit/activity/share_static')
 
 
 def share_static():
