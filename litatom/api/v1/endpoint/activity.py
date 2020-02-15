@@ -19,7 +19,8 @@ from flask import (
     jsonify,
     request,
     current_app,
-    render_template
+    render_template,
+    redirect
 )
 
 from ....service import (
@@ -49,6 +50,10 @@ def times_left():
 
 def user_share(share_user_id):
     ShareStatService.add_stat_item(share_user_id, request.ip)
+    return redirect('/lit/activity/share_static')
+
+
+def share_static():
     return current_app.send_static_file('share_index.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
 
 def share_info():
