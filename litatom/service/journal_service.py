@@ -397,10 +397,10 @@ class JournalService(object):
                 #ali_log.append(('name',name))
                 #ali_log.append(('num',str(num)))
                 gender_cnt = [m[gender] for gender in cls.GENDERS]
-                for gender in cls.GENDERS:
+                # for gender in cls.GENDERS:
                 #    ali_log.append((gender,str(m[gender])))
                 region_cnt = [m[loc] for loc in cls.LOC_STATED]
-                for loc in cls.LOC_STATED:
+                #for loc in cls.LOC_STATED:
                 #    ali_log.append((loc,str(m[loc])))
                 #ali_log.append(('total_avr',str(num/daily_m['num'])))
                 avr_cnt = []
