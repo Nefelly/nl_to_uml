@@ -20,7 +20,8 @@ from ..service import (
     AntiSpamService,
     PalmService,
     UserService,
-    TrackActionService
+    TrackActionService,
+    AdService
 )
 from ..key import (
     REDIS_ACCOUNT_ACTION
@@ -195,10 +196,14 @@ class AccountService(object):
         return None, True
 
     @classmethod
-    def deposit_by_activity(cls, user_id, activity):
+    def deposit_by_activity(cls, user_id, activity, other_info={}):
         if activity not in cls.PAY_ACTIVITIES:
             return u'not recognized activity', False
         diamonds = cls.PAY_ACTIVITIES.get(activity)
+        if activity == cls.WATCH_AD:
+            data, status = AdService.verify_ad_viewed(user_id, other_info)
+            if not status:
+                return data, status
         err_msg = cls.change_diamonds(user_id, diamonds)
         if err_msg:
             return err_msg, False
