@@ -114,9 +114,10 @@ class AliLogService(object):
         """
         res = client.get_log(project=project, logstore=logstore, from_time=from_time, to_time=to_time, size=size)
         if not attributes:
+            res.log_print()
             return res
         else:
-            selected_res = cls.select_log_by_attributes(res, attributes)
+            selected_res = cls.select_log_by_attributes(res.logs, attributes)
             selected_res.log_print()
             return selected_res
 
