@@ -78,10 +78,30 @@ class AliLogService(object):
     #             contents += [(tb_header[col], tb_data[stat+1][col])]
 
     @classmethod
+    def select_log_by_attributes(cls,logs,attributes):
+        """
+        筛选logs，投影到特定的属性（组）上，
+        :param logs:
+        :param attributes:
+        :return:
+        """
+        if not attributes:
+            return logs
+        for log in logs:
+            contents = log.get_contents()
+            res_contents={}
+            for attribute in attributes:
+                if attribute in contents.keys():
+                    res_contents[attribute] = contents[attribute]
+            log.contents = res_contents.copy()
+        return logs
+
+    @classmethod
     def get_log_by_time(cls, project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE, from_time=int(time() - 3600),
-                        to_time=int(time()), client=DEFAULT_CLIENT, size=-1):
+                        to_time=int(time()), client=DEFAULT_CLIENT, size=-1, attributes=None):
         """
         仅通过时间筛选某logstore中的log
+        :param attributes: 需要select出来的属性，默认None表示所有属性，['attr1','attr2',...]
         :param project:
         :param logstore:
         :param from_time: the begin timestamp or format of time in readable time
@@ -93,8 +113,12 @@ class AliLogService(object):
         :return:
         """
         res = client.get_log(project=project, logstore=logstore, from_time=from_time, to_time=to_time, size=size)
-        res.log_print()
-        return res
+        if not attributes:
+            return res
+        else:
+            selected_res = cls.select_log_by_attributes(res, attributes)
+            selected_res.log_print()
+            return selected_res
 
     @classmethod
     def get_log_by_time_and_topic(cls, project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE, topic=DEFAULT_TOPIC,
@@ -134,7 +158,6 @@ class AliLogService(object):
         req = GetHistogramsRequest(project=project, logstore=logstore, fromTime=from_time, toTime=to_time, topic=topic,
                                    query=query)
         res = client.get_histograms(req)
-        res.log_print()
         return res
 
     # @classmethod
