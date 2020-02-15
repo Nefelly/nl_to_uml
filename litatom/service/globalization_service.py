@@ -57,6 +57,7 @@ class GlobalizationService(object):
     LOC_TE = 'TEST' # 测试,混杂区
     LOC_TH2 = 'th'
     LOC_INN = 'INN'
+    LOC_EN = 'EN'
     # LOC_KR = 'KR'
     # LOC_JP = 'JP'
     LOC_PH = 'PH'
@@ -112,6 +113,7 @@ class GlobalizationService(object):
     # }
 
     DEFAULT_REGION = REGION_EN
+    DEFAULT_LOC = LOC_EN
     BIG_REGIONS = {
         REGION_VN: LOC_VN,
         REGION_TH: LOC_TH
@@ -257,6 +259,14 @@ class GlobalizationService(object):
 
     @classmethod
     def region_by_uid(cls, user_id):
+        loc = cls.loc_by_uid(user_id)
+        if loc:
+            return cls.LOC_REGION.get(loc, cls.DEFAULT_REGION)
+        else:
+            return None
+
+    @classmethod
+    def loc_by_uid(cls, user_id):
         loc_key = REDIS_USER_LOC.format(user_id=user_id)
         tmp_loc = redis_client.get(loc_key)
         if not tmp_loc:
@@ -265,9 +275,9 @@ class GlobalizationService(object):
                 tmp_loc = user_setting.lang
         if tmp_loc and tmp_loc in cls.LOCS:
             loc = tmp_loc
-            return cls.LOC_REGION.get(loc, cls.DEFAULT_REGION)
-        else:
-            return None
+            return loc
+        return cls.DEFAULT_LOC
+
 
     @classmethod
     def get_region(cls, region=None):

@@ -26,7 +26,8 @@ from flask import (
 from ....service import (
     PalmService,
     GlobalizationService,
-    ShareStatService
+    ShareStatService,
+    UserService
 )
 
 
@@ -49,8 +50,10 @@ def times_left():
 
 
 def user_share(share_user_id):
+    loc = GlobalizationService.loc_by_uid(share_user_id)
+    url = '/api/sns/v1/lit/activity/share_static?loc=' + loc
     ShareStatService.add_stat_item(share_user_id, request.ip)
-    return redirect('/api/sns/v1/lit/activity/share_static')
+    return redirect(url)
 
 
 def share_static():
