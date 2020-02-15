@@ -19,7 +19,11 @@ from ..service import (
     VideoMatchService,
     AntiSpamService,
     PalmService,
-    UserService
+    UserService,
+    TrackActionService
+)
+from ..key import (
+    REDIS_ACCOUNT_ACTION
 )
 from ..redis import RedisClient
 from flask import (
@@ -170,11 +174,20 @@ class AccountService(object):
 
     @classmethod
     def deposit_diamonds(cls, user_id, payload):
+        token = payload.get('payload', {}).get('token')
         diamonds = payload.get('diamonds')
+        if not token:
+            AccountFlowRecord.create(user_id, AccountFlowRecord.WRONG, diamonds)
+        else:
+            key = REDIS_ACCOUNT_ACTION.format(key=('pay' + token))
+            r = redis_client.get(key)
+            if r:
+                return 'Already deposit success', False
+            redis_client.setex(key, ONE_WEEK, 1)
         if not isinstance(diamonds, int):
             return u'error request diamonds', False
-        if diamonds >= 10000:
-            return u'authorize false, please retry', False
+        # if diamonds >= 10000:
+        #     return u'authorize false, please retry', False
         err_msg = cls.change_diamonds(user_id, diamonds)
         if err_msg:
             return err_msg, False

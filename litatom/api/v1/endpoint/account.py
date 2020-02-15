@@ -1,5 +1,5 @@
 import logging
-
+import json
 from flask import (
     jsonify,
     request
@@ -24,7 +24,8 @@ from ..form import (
     PhoneLoginForm
 )
 from ....service import (
-    AccountService
+    AccountService,
+    TrackActionService
 )
 logger = logging.getLogger(__name__)
 
@@ -54,6 +55,7 @@ def diamond_products():
 @session_required
 def pay_inform():
     payload = request.json
+    TrackActionService.create_action(request.user_id, 'pay_inform', None, None, json.dumps(payload))
     data, status = AccountService.deposit_diamonds(request.user_id, payload)
     if not status:
         return fail(data)

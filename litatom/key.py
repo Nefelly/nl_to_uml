@@ -14,6 +14,7 @@ REDIS_HUANXIN_USER = 'huanxin_user:{huanxin_id}'
 REDIS_FEED_ID_AGE = 'feed_id_age:{feed_id}'
 REDIS_AD_TIMES_LEFT = 'ad_times_left:{user_date}'
 REDIS_REGION_FEED_TOP = 'region_feed_top:{region}'
+REDIS_ACCOUNT_ACTION = 'account:{key}'
 
 # share stat
 REDIS_SHARE_STAT = 'share_stat:{user_id}'
