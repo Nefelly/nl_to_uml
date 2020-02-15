@@ -78,12 +78,43 @@ class AliLogService(object):
     #             contents += [(tb_header[col], tb_data[stat+1][col])]
 
     @classmethod
+    def get_log_by_time(cls, project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE, from_time=int(time() - 3600),
+                        to_time=int(time()), client=DEFAULT_CLIENT, size=-1):
+        """
+
+        :param project:
+        :param logstore:
+        :param from_time: the begin timestamp or format of time in readable time
+        like "%Y-%m-%d %H:%M:%S<time_zone>" e.g. "2018-01-02 12:12:10+8:00", also support human readable string,
+        e.g. "1 hour ago", "now", "yesterday 0:0:0"
+        :param to_time:
+        :param client:
+        :param size: 默认为-1， 即无limit
+        :return:
+        """
+        res = client.get_log(project=project, logstore=logstore, from_time=from_time, to_time=to_time, size=size)
+        res.log_print()
+        return res
+
+    @classmethod
     def get_log_by_time_and_topic(cls, project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE, topic=DEFAULT_TOPIC,
-                                  from_time=int(time() - 3600), to_time=int(time()), client=DEFAULT_CLIENT):
+                                  from_time=int(time() - 3600), to_time=int(time()), line=-1, client=DEFAULT_CLIENT):
+        """
+
+        :param line:
+        :param project:
+        :param logstore:
+        :param topic:
+        :param from_time:
+        :param to_time:
+        :param client:
+        :return: 返回一个QueriedLog列表，每个元素有三个方法get_time(),get_source(),get_contents()三个方法获得log内容，contents为json格式
+        """
         request = GetLogsRequest(project=project, logstore=logstore, fromTime=from_time, toTime=to_time, topic=topic,
-                                 query='*')
+                                 query='*', line=line)
         res = client.get_logs(request)
         res.log_print()
+        return res
 
     # @classmethod
     # def pull_logs(cls, client=DEFAULT_CLIENT, project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE, compress=False):
