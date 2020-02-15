@@ -81,7 +81,7 @@ class AliLogService(object):
     def get_log_by_time(cls, project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE, from_time=int(time() - 3600),
                         to_time=int(time()), client=DEFAULT_CLIENT, size=-1):
         """
-
+        仅通过时间筛选某logstore中的log
         :param project:
         :param logstore:
         :param from_time: the begin timestamp or format of time in readable time
@@ -100,7 +100,7 @@ class AliLogService(object):
     def get_log_by_time_and_topic(cls, project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE, topic=DEFAULT_TOPIC,
                                   from_time=int(time() - 3600), to_time=int(time()), line=-1, client=DEFAULT_CLIENT):
         """
-
+        通过time和topic筛选某logstore中的log
         :param line:
         :param project:
         :param logstore:
@@ -113,6 +113,27 @@ class AliLogService(object):
         request = GetLogsRequest(project=project, logstore=logstore, fromTime=from_time, toTime=to_time, topic=topic,
                                  query='*', line=line)
         res = client.get_logs(request)
+        client.get_histograms()
+        res.log_print()
+        return res
+
+    @classmethod
+    def get_histogram_by_time_and_topic(cls, project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE, topic=DEFAULT_TOPIC,
+                                        from_time=int(time() - 3600), to_time=int(time()), query='*',
+                                        client=DEFAULT_CLIENT):
+        """
+        通过time和topic绘制某logstore中log的直方图
+        :param project:
+        :param logstore:
+        :param topic:
+        :param from_time:
+        :param to_time:
+        :param query:
+        :return:
+        """
+        req = GetHistogramsRequest(project=project, logstore=logstore, fromTime=from_time, toTime=to_time, topic=topic,
+                                   query=query)
+        res = client.get_histograms(req)
         res.log_print()
         return res
 
