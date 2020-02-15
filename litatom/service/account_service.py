@@ -53,8 +53,8 @@ class AccountService(object):
     SHARE = 'share'
     WATCH_AD = 'watch_video'
     PAY_ACTIVITIES = {
-        SHARE: 10,
-        WATCH_AD: 5
+        SHARE: 20,
+        WATCH_AD: 10
     }
 
     MEMBER_SHIPS = [WEEK_MEMBER]
