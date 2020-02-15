@@ -394,26 +394,26 @@ class JournalService(object):
                 # m为根据该统计量的id计算得到的结果
                 m = cls.cal_by_id(str(item.id))
                 name, num = m['name'], m['num']
-                ali_log.append(('name',name))
-                ali_log.append(('num',str(num)))，
+                #ali_log.append(('name',name))
+                #ali_log.append(('num',str(num)))
                 gender_cnt = [m[gender] for gender in cls.GENDERS]
                 for gender in cls.GENDERS:
-                    ali_log.append((gender,str(m[gender])))
+                #    ali_log.append((gender,str(m[gender])))
                 region_cnt = [m[loc] for loc in cls.LOC_STATED]
                 for loc in cls.LOC_STATED:
-                    ali_log.append((loc,str(m[loc])))
-                ali_log.append(('total_avr',str(num/daily_m['num'])))
+                #    ali_log.append((loc,str(m[loc])))
+                #ali_log.append(('total_avr',str(num/daily_m['num'])))
                 avr_cnt = []
                 for loc in cls.LOC_STATED:
                     if daily_m[loc]:
                         data = round(m.get(loc, 0)/daily_m[loc], 4)
                         avr_cnt.append(data)
-                        ali_log.append((loc+'avr',str(data)))
+                 #       ali_log.append((loc+'avr',str(data)))
                     else:
                         avr_cnt.append(0)
-                        ali_log.append((loc+'avr','0'))
+                 #       ali_log.append((loc+'avr','0'))
                 res_lst.append([name, num] + gender_cnt + region_cnt + [num/daily_m['num']] + avr_cnt)
-                AliLogService.put_daily_stat(ali_log,topic='business_type')
+                #AliLogService.put_daily_stat(ali_log,topic='business_type')
                 cnt += 1
             except Exception, e:
                 print e
