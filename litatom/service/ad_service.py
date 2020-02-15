@@ -21,7 +21,7 @@ class AdService(object):
     """
     广告服务
     """
-    MAX_TIMES = 5 if not setting.IS_DEV else 300
+    MAX_TIMES = 5 if not setting.IS_DEV else 10
 
     @classmethod
     def times_left(cls, user_id):
