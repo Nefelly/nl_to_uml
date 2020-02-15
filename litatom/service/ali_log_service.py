@@ -1,6 +1,6 @@
 # coding: utf-8
 import json
-import time
+from time import time
 import traceback
 from aliyun.log import *
 import logging
@@ -63,20 +63,27 @@ class AliLogService(object):
         response = client.put_logs(request)
         return response.get_all_headers()
 
-    '''
-    上传一条日常统计数据日志
-    '''
-
     @classmethod
     def put_daily_stat(cls, contents, topic='undefined'):
+        """上传一条日常统计数据日志"""
         cls.put_logs(contents, topic=topic, project='litatommonitor', logstore='daily-stat-monitor')
 
+    # @classmethod
+    # def put_dailt_stat_from_xlsx(cls, name):
+    #     tb_header, tb_data = read_data_from_xls(name)
+    #     contents = [('date', cls._read_date_from_addr(name))]
+    #     nstat = len(tb_data)
+    #     for stat in range(nstat):
+    #         for col in range(tb_data[0]):
+    #             contents += [(tb_header[col], tb_data[stat+1][col])]
+
     @classmethod
-    def put_dailt_stat_from_xlsx(cls, name):
-        tb_header, tb_data = read_data_from_xls(name)
-        contents = [('date', cls._read_date_from_addr(name))]
-        nstat = len(tb_data)
-        for stat in nstat:
+    def get_log_by_time_and_topic(cls, project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE, topic=DEFAULT_TOPIC,
+                                  from_time=int(time() - 3600), to_time=int(time()), client=DEFAULT_CLIENT):
+        request = GetLogsRequest(project=project, logstore=logstore, fromTime=from_time, toTime=to_time, topic=topic,
+                                 query='*')
+        res = client.get_logs(request)
+        res.log_print()
 
     # @classmethod
     # def pull_logs(cls, client=DEFAULT_CLIENT, project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE, compress=False):
