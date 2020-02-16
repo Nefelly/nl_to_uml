@@ -6,14 +6,14 @@ def run():
     start_match_logs = AliLogService.get_all_log_by_time_and_topic(
         query='remark:startMatch and action:match|select user_id,session_id,location',
         from_time="2020-02-15 00:00:00+8:00",
-        to_time="2020-02-16 00:00:00+8:00")
+        to_time="2020-02-15 03:00:00+8:00")
     total_count = 0
     i = 0
     print(type(start_match_logs))
     for log_set in start_match_logs:
         tmp = log_set.get_count()
         print(i, "#", tmp)
-        i+=1
+        i += 1
         total_count += log_set.get_count()
     print("total counts:", total_count)
     # for start_match_log in log_set.logs:
