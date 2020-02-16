@@ -13,7 +13,7 @@ def run():
         else:
             str_hour = str(hour)
         start = start_time[0:11] + str_hour + start_time[13:]
-        end = end_time[0:11] + str_hour + start_time[13:]
+        end = end_time[0:11] + str_hour + end_time[13:]
         start_match_logs = AliLogService.get_log_by_time(
             query='remark:startMatch and action:match', size=2000, from_time=start,
             to_time=end)
