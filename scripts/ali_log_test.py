@@ -14,15 +14,15 @@ def run():
         match_success_text_logs = AliLogService.get_log_by_time_and_topic(from_time=time, to_time=time + 180,
                                                                           query='remark:matchSuccesstext and '
                                                                                 'action:match and user_id:' + user_id +
-                                                                                'and session_id:' + session_id).logs
+                                                                                ' and session_id:' + session_id).logs
         match_success_voice_logs = AliLogService.get_log_by_time_and_topic(from_time=time, to_time=time + 180,
                                                                            query='remark:matchSuccessvoice and '
                                                                                  'action:match and user_id:' + user_id +
-                                                                                 'and session_id:' + session_id).logs
+                                                                                 ' and session_id:' + session_id).logs
         match_success_video_logs = AliLogService.get_log_by_time_and_topic(from_time=time, to_time=time + 180,
                                                                            query='remark:matchSuccessvideo and '
                                                                                  'action:match and user_id:' + user_id +
-                                                                                 'and session_id:' + session_id).logs
+                                                                                 ' and session_id:' + session_id).logs
         if not match_success_text_logs and not match_success_video_logs and not match_success_voice_logs:
             continue
         match_success_logs = []
