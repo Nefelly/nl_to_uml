@@ -4,12 +4,19 @@ from datetime import *
 
 
 def run():
-    start_time = datetime(2020, 2, 15, 0, 0, 0, 0)
+    start_time = "2020-02-15 00:00:00+8:00"
+    end_time = "2020-02-15 00:59:59+8:00"
     for i in range(24):
-        time = start_time + timedelta(0, i * 3600)
+        hour = int(start_time[11:13]) + i
+        if hour < 10:
+            str_hour = '0' + str(hour)
+        else:
+            str_hour = str(hour)
+        start = start_time[0:11] + str_hour + start_time[13:]
+        end = end_time[0:11] + str_hour + start_time[13:]
         start_match_logs = AliLogService.get_log_by_time(
-            query='remark:startMatch and action:match', size=2000, from_time=start_time,
-            to_time=start_time + timedelta(0, 3600))
+            query='remark:startMatch and action:match', size=2000, from_time=start,
+            to_time=end)
         start_match_logs.log_print()
     # for log_set in start_match_logs:
     #     for start_match_log in log_set.logs:
