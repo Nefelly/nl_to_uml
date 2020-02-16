@@ -159,7 +159,7 @@ class AliLogService(object):
         :param from_time:
         :param to_time:
         :param query:
-        :return:
+        :return:GetLogsResponse的列表,GetLogsResponse是一个结果集，其有logs属性，为一个QueriedLog的列表
         """
         res = client.get_log_all(project=project, logstore=logstore, topic=topic, from_time=from_time, to_time=to_time,
                                  query=query)
