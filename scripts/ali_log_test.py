@@ -15,7 +15,7 @@ def run():
         start = start_time[0:11] + str_hour + start_time[13:]
         end = end_time[0:11] + str_hour + end_time[13:]
         start_match_logs = AliLogService.get_log_by_time(
-            query='remark:startMatch and action:match|select session_id,user_id,', size=20, from_time=start,
+            query='remark:startMatch and action:match', size=20, from_time=start,
             to_time=end)
         for start_match_log in start_match_logs.logs:
             contents = start_match_log.get_contents()
