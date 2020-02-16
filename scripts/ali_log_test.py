@@ -23,8 +23,6 @@ def run():
                                                                            query='remark:matchSuccessvideo and '
                                                                                  'action:match and user_id:' + user_id +
                                                                                  ' and session_id:' + session_id).logs
-        if not match_success_text_logs and not match_success_video_logs and not match_success_voice_logs:
-            continue
         match_success_logs = []
         if match_success_voice_logs:
             match_success_logs = match_success_voice_logs
@@ -63,6 +61,7 @@ def run():
                 contents['chatTime'] = leave_min_time
         else:
             contents['matchTime'] = 180
+            contents['chatTime'] = 0
     start_match_logs.log_print()
 
 
