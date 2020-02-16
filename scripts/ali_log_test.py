@@ -3,18 +3,28 @@ from time import time
 
 
 def run():
-    start_match_logs = AliLogService.get_all_log_by_time_and_topic(
-        query='remark:startMatch and action:match|select user_id,session_id,location',
-        from_time="2020-02-15 00:00:00+8:00",
-        to_time="2020-02-15 23:59:59+8:00")
+    log_set_iter = AliLogService.get_all_log_by_time_and_topic(query='action:match',
+                                                               from_time="2020-02-15 00:00:00+8:00",
+                                                               to_time="2020-02-15 01:00:00+8:00")
     total_count = 0
     i = 0
-    print(type(start_match_logs))
-    for log_set in start_match_logs:
-        tmp = log_set.get_count()
-        print(i, "#", tmp)
+    for log_set in log_set_iter:
         total_count += log_set.get_count()
-    print("total counts:", total_count)
+        print(i, '#', log_set.get_count())
+        i += 1
+    print(total_count)
+    # start_match_logs = AliLogService.get_all_log_by_time_and_topic(
+    #     query='remark:startMatch and action:match|select user_id,session_id,location',
+    #     from_time="2020-02-15 00:00:00+8:00",
+    #     to_time="2020-02-15 00:59:59+8:00")
+    # total_count = 0
+    # i = 0
+    # print(type(start_match_logs))
+    # for log_set in start_match_logs:
+    #     tmp = log_set.get_count()
+    #     print(i, "#", tmp)
+    #     total_count += log_set.get_count()
+    # print("total counts:", total_count)
     # for start_match_log in log_set.logs:
     #     contents = start_match_log.get_contents()
     #     user_id = contents['user_id']
