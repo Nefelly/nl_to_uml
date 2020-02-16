@@ -13,18 +13,18 @@ def run():
             user_id = contents['user_id']
             session_id = contents['session_id']
             time = start_match_log.get_time()
-            match_success_text_logs = AliLogService.get_all_log_by_time_and_topic(from_time=time, to_time=time + 180,
-                                                                                  query='remark:matchSuccesstext and '
-                                                                                        'action:match and user_id:' + user_id +
-                                                                                        ' and session_id:' + session_id).logs
-            match_success_voice_logs = AliLogService.get_all_log_by_time_and_topic(from_time=time, to_time=time + 180,
-                                                                                   query='remark:matchSuccessvoice and '
-                                                                                         'action:match and user_id:' + user_id +
-                                                                                         ' and session_id:' + session_id).logs
-            match_success_video_logs = AliLogService.get_all_log_by_time_and_topic(from_time=time, to_time=time + 180,
-                                                                                   query='remark:matchSuccessvideo and '
-                                                                                         'action:match and user_id:' + user_id +
-                                                                                         ' and session_id:' + session_id).logs
+            match_success_text_logs = AliLogService.get_log_by_time_and_topic(from_time=time, to_time=time + 180,
+                                                                              query='remark:matchSuccesstext and '
+                                                                                    'action:match and user_id:' + user_id +
+                                                                                    ' and session_id:' + session_id).logs
+            match_success_voice_logs = AliLogService.get_log_by_time_and_topic(from_time=time, to_time=time + 180,
+                                                                               query='remark:matchSuccessvoice and '
+                                                                                     'action:match and user_id:' + user_id +
+                                                                                     ' and session_id:' + session_id).logs
+            match_success_video_logs = AliLogService.get_log_by_time_and_topic(from_time=time, to_time=time + 180,
+                                                                               query='remark:matchSuccessvideo and '
+                                                                                     'action:match and user_id:' + user_id +
+                                                                                     ' and session_id:' + session_id).logs
             match_success_logs = []
             if match_success_voice_logs:
                 match_success_logs = match_success_voice_logs
@@ -45,15 +45,15 @@ def run():
                 contents['matchTime'] = min_time - time
                 leave_logs = []
                 if contents['matchType'] == 'voice' or contents['matchType'] == 'video':
-                    leave_logs = AliLogService.get_all_log_by_time_and_topic(from_time=min_time, to_time=min_time + 420,
-                                                                             query='remark:leave and '
-                                                                                   'action:match and user_id:' + user_id +
-                                                                                   ' and session_id:' + session_id).logs
+                    leave_logs = AliLogService.get_log_by_time_and_topic(from_time=min_time, to_time=min_time + 420,
+                                                                         query='remark:leave and '
+                                                                               'action:match and user_id:' + user_id +
+                                                                               ' and session_id:' + session_id).logs
                 elif contents['matchType'] == 'text':
-                    leave_logs = AliLogService.get_all_log_by_time_and_topic(from_time=min_time, to_time=min_time + 180,
-                                                                             query='remark:leave and '
-                                                                                   'action:match and user_id:' + user_id +
-                                                                                   ' and session_id:' + session_id).logs
+                    leave_logs = AliLogService.get_log_by_time_and_topic(from_time=min_time, to_time=min_time + 180,
+                                                                         query='remark:leave and '
+                                                                               'action:match and user_id:' + user_id +
+                                                                               ' and session_id:' + session_id).logs
                 if leave_logs:
                     leave_min_time = leave_logs[0].get_time()
                     for log in leave_logs:
