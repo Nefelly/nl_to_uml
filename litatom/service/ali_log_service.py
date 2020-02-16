@@ -140,7 +140,6 @@ class AliLogService(object):
         request = GetLogsRequest(project=project, logstore=logstore, fromTime=from_time, toTime=to_time, topic=topic,
                                  query=query, line=line)
         res = client.get_logs(request)
-        client.get_histograms()
         res.log_print()
         return res
 
