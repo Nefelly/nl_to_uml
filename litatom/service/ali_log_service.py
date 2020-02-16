@@ -111,7 +111,8 @@ class AliLogService(object):
         :param to_time:
         :param client:
         :param size: 默认为-1， 即无limit
-        :return:
+        :return:返回一个GetLogsResponse对象，其logs属性为一个QueriedLog列表，每个元素有三个方法get_time(),get_source(),
+                get_contents()三个方法获得log内容，contents为json格式
         """
         res = client.get_log(project=project, logstore=logstore, from_time=from_time, to_time=to_time, size=size, query=query)
         if not attributes:
