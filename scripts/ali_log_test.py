@@ -81,10 +81,10 @@ def run():
                 contents['chatTime'] = leave_min_time - min_time
             else:
                 continue
-            data = [contents['matchTime'], contents['chatTime']]
+            data = [contents['matchTime'], contents['chatTime'], contents['matchType']]
             print(data)
             datas.append(data)
-    util.write_data_to_xls("success_match_data.csv", ['matchTime', 'chatTime'], datas)
+    util.write_data_to_xls("success_match_data.csv", ['matchTime', 'chatTime', 'matchType'], datas)
 
     # for log_set in start_match_logs:
     #     for start_match_log in log_set.logs:
