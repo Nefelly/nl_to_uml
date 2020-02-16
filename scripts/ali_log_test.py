@@ -21,16 +21,16 @@ def run():
             contents = start_match_log.get_contents()
             user_id = contents['user_id']
             session_id = contents['session_id']
-            start_time = start_match_log.get_time()
-            match_success_text_logs = AliLogService.get_log_by_time(from_time=start_time, to_time=start_time + 180,
+            start_match_time = start_match_log.get_time()
+            match_success_text_logs = AliLogService.get_log_by_time(from_time=start_match_time, to_time=start_match_time + 180,
                                                                     query='remark:matchSuccesstext and '
                                                                           'action:match and user_id:' + user_id +
                                                                           ' and session_id:' + session_id).logs
-            match_success_voice_logs = AliLogService.get_log_by_time(from_time=start_time, to_time=start_time + 180,
+            match_success_voice_logs = AliLogService.get_log_by_time(from_time=start_match_time, to_time=start_match_time + 180,
                                                                      query='remark:matchSuccessvoice and '
                                                                            'action:match and user_id:' + user_id +
                                                                            ' and session_id:' + session_id).logs
-            match_success_video_logs = AliLogService.get_log_by_time(from_time=start_time, to_time=start_time + 180,
+            match_success_video_logs = AliLogService.get_log_by_time(from_time=start_match_time, to_time=start_match_time + 180,
                                                                      query='remark:matchSuccessvideo and '
                                                                            'action:match and user_id:' + user_id +
                                                                            ' and session_id:' + session_id).logs
@@ -51,7 +51,7 @@ def run():
                         tmp_time = log.get_time()
                         if tmp_time < min_time:
                             min_time = tmp_time
-                contents['matchTime'] = min_time - start_time
+                contents['matchTime'] = min_time - start_match_time
             else:
                 continue
         start_match_logs.log_print()
