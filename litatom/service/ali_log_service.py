@@ -78,7 +78,7 @@ class AliLogService(object):
     #             contents += [(tb_header[col], tb_data[stat+1][col])]
 
     @classmethod
-    def select_log_by_attributes(cls,res,attributes):
+    def select_log_by_attributes(cls, res, attributes):
         """
         筛选logs，投影到特定的属性（组）上，
         :param logs:
@@ -89,7 +89,7 @@ class AliLogService(object):
             return res
         for log in res.logs:
             contents = log.get_contents()
-            res_contents={}
+            res_contents = {}
             for attribute in attributes:
                 if attribute in contents.keys():
                     res_contents[attribute] = contents[attribute]
@@ -114,17 +114,17 @@ class AliLogService(object):
         :return:返回一个GetLogsResponse对象，其logs属性为一个QueriedLog列表，每个元素有三个方法get_time(),get_source(),
                 get_contents()三个方法获得log内容，contents为json格式
         """
-        res = client.get_log(project=project, logstore=logstore, from_time=from_time, to_time=to_time, size=size, query=query)
+        res = client.get_log(project=project, logstore=logstore, from_time=from_time, to_time=to_time, size=size,
+                             query=query)
         if not attributes:
-            res.log_print()
             return res
         else:
             selected_res = cls.select_log_by_attributes(res, attributes)
-            selected_res.log_print()
             return selected_res
 
     @classmethod
-    def get_log_by_time_and_topic(cls, project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE, topic=DEFAULT_TOPIC, query='*',
+    def get_log_by_time_and_topic(cls, project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE, topic=DEFAULT_TOPIC,
+                                  query='*',
                                   from_time=int(time() - 3600), to_time=int(time()), line=-1, client=DEFAULT_CLIENT):
         """
         通过time和topic筛选某logstore中的log
@@ -140,7 +140,6 @@ class AliLogService(object):
         request = GetLogsRequest(project=project, logstore=logstore, fromTime=from_time, toTime=to_time, topic=topic,
                                  query=query, line=line)
         res = client.get_logs(request)
-        res.log_print()
         return res
 
     @classmethod
