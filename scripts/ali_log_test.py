@@ -42,7 +42,7 @@ def run():
                     tmp_time = log.get_time()
                     if tmp_time < min_time:
                         min_time = tmp_time
-            contents['matchTime'] = min_time
+            contents['matchTime'] = min_time - time
         else:
             contents['matchTime'] = 180
     start_match_logs.log_print()
