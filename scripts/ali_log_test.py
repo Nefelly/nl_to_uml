@@ -8,6 +8,7 @@ def run():
     start_time = "2020-02-15 00:00:00+8:00"
     end_time = "2020-02-15 00:59:59+8:00"
     datas = []
+    j = 0
     for i in range(24):
         hour = int(start_time[11:13]) + i
         if hour < 10:
@@ -82,8 +83,10 @@ def run():
             else:
                 continue
             data = [contents['matchTime'], contents['chatTime'], contents['matchType']]
-            print(data)
             datas.append(data)
+            j += 1
+            if j % 500 == 0:
+                print(j, data)
     util.write_data_to_xls("success_match_data.csv", ['matchTime', 'chatTime', 'matchType'], datas)
 
     # for log_set in start_match_logs:
