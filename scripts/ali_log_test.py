@@ -13,6 +13,7 @@ def run():
     for log_set in start_match_logs:
         tmp = log_set.get_count()
         print(i, "#", tmp)
+        i+=1
         total_count += log_set.get_count()
     print("total counts:", total_count)
     # for start_match_log in log_set.logs:
