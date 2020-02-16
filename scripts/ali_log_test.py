@@ -3,8 +3,8 @@ from time import time
 
 
 def run():
-    start_match_logs = AliLogService.get_log_by_time(query='remark:startMatch and action:match', size=100,
-                                                     from_time="2020-02-15 00:00:00+8:00",
+    start_match_logs = AliLogService.get_log_by_time(query='remark:startMatch and action:match|select user_id,session_id,location',
+                                                     from_time="2020-02-15 00:00:00+8:00", size=100,
                                                      to_time="2020-02-15 00:22:00+8:00")
     for start_match_log in start_match_logs.logs:
         contents = start_match_log.get_contents()
