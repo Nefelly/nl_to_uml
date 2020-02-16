@@ -9,6 +9,7 @@ def run():
         to_time="2020-02-15 23:59:59+8:00")
     total_count = 0
     i = 0
+    print(type(start_match_logs))
     for log_set in start_match_logs:
         tmp = log_set.get_count()
         print(i, "#", tmp)
