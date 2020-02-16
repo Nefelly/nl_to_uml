@@ -43,6 +43,24 @@ def run():
                     if tmp_time < min_time:
                         min_time = tmp_time
             contents['matchTime'] = min_time - time
+            leave_logs = []
+            if contents['matchType'] == 'voice' or contents['matchType'] == 'video':
+                leave_logs = AliLogService.get_log_by_time(from_time=min_time, to_time=min_time + 420,
+                                                           query='remark:leave and '
+                                                                 'action:match and user_id:' + user_id +
+                                                                 ' and session_id:' + session_id).logs
+            elif contents['matchType'] == 'text':
+                leave_logs = AliLogService.get_log_by_time(from_time=min_time, to_time=min_time + 180,
+                                                           query='remark:leave and '
+                                                                 'action:match and user_id:' + user_id +
+                                                                 ' and session_id:' + session_id).logs
+            if leave_logs:
+                leave_min_time = leave_logs[0].get_time()
+                for log in leave_logs:
+                    tmp_time = log.get_time()
+                    if tmp_time < leave_min_time:
+                        leave_min_time = tmp_time
+                contents['chatTime'] = leave_min_time
         else:
             contents['matchTime'] = 180
     start_match_logs.log_print()
