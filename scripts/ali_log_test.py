@@ -66,7 +66,7 @@ def run():
             else:
                 contents['matchTime'] = 180
                 contents['chatTime'] = 0
-    start_match_logs.log_print()
+        log_set.log_print()
 
 
 if __name__ == "__main__":
