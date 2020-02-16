@@ -147,6 +147,25 @@ class AliLogService(object):
         return res
 
     @classmethod
+    def get_all_log_by_time_and_topic(cls, project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE, client=DEFAULT_CLIENT,
+                                      topic=DEFAULT_TOPIC, from_time=int(time() - 3600), to_time=int(time()),
+                                      query='*'):
+        """
+        返回所有的logs
+        :param project:
+        :param logstore:
+        :param client:
+        :param topic:
+        :param from_time:
+        :param to_time:
+        :param query:
+        :return:
+        """
+        res = client.get_log_all(project=project, logstore=logstore, topic=topic, from_time=from_time, to_time=to_time,
+                                 query=query)
+        return res
+
+    @classmethod
     def get_histogram_by_time_and_topic(cls, project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE, topic=DEFAULT_TOPIC,
                                         from_time=int(time() - 3600), to_time=int(time()), query='*',
                                         client=DEFAULT_CLIENT):
