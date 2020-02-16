@@ -58,7 +58,9 @@ def run():
                     tmp_time = log.get_time()
                     if tmp_time < leave_min_time:
                         leave_min_time = tmp_time
-                contents['chatTime'] = leave_min_time
+                contents['chatTime'] = leave_min_time - min_time
+            else:
+                contents['chatTime'] = 0
         else:
             contents['matchTime'] = 180
             contents['chatTime'] = 0
