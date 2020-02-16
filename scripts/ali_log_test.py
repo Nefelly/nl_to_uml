@@ -82,6 +82,7 @@ def run():
             else:
                 continue
             data = [contents['matchTime'], contents['chatTime']]
+            print(data)
             datas.append(data)
     util.write_data_to_xls("success_match_data.csv", ['matchTime', 'chatTime'], datas)
 
