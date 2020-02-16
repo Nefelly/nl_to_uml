@@ -8,8 +8,7 @@ def run():
     for i in range(24):
         time = start_time + timedelta(0, i * 3600)
         start_match_logs = AliLogService.get_log_by_time(
-            query='remark:startMatch and action:match',
-            from_time=start_time,
+            query='remark:startMatch and action:match', size=2000, from_time=start_time,
             to_time=start_time + timedelta(0, 3600))
         start_match_logs.log_print()
     # for log_set in start_match_logs:
