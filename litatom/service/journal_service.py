@@ -107,8 +107,8 @@ class JournalService(object):
         }
         table_name = item.table_name
         judge_field = item.judge_field
-        if table_name == 'UserAction':
-            
+        # if table_name == 'UserAction':
+
         time_str = cls._get_time_str(table_name, judge_field)
         exc_str = '%s.objects(%s).distinct("user_id")' % (table_name, time_str)
         cnt = 0.0
