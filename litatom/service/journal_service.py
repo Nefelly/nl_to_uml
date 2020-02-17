@@ -41,6 +41,7 @@ class JournalService(object):
     ZERO_TODAY = None
     GENDERS = ['boy','girl']
     USER_GEN = {}   # user_id:gender
+    ALI_LOG_STORE = ['UserAction']  # 存在ali_log_service的部分表
 
     @classmethod
     def load_user_loc(cls):
@@ -90,65 +91,40 @@ class JournalService(object):
     @classmethod
     def daily_active(cls, item, date=None):
         """
-        :param item: StatItems Document
+        专门计算抽样日活统计量的函数
+        :param item: StatItems Document(daily_active)
         :param date:
-        :return: 返回一个dict，返回该item的id,name,num：最近一天item对应表中的用户数量,以及
-        各种location,new_loc,count_loc最近一天对应表中的用户数量
+        :return: 返回一个dict，返回daily_active的id,name,num：最近一天UserAction中的用户数量,以及
+        各种location,new_loc,count_loc最近一天的用户数量
         """
         res = {
             "id": str(item.id),
             "name": item.name
         }
-        table_name = item.table_name
-        judge_field = item.judge_field
-        # from_time= cls._get_stat_date()
-        # to_time = cls._get_stat_date()
+        from_time, to_time= cls._get_alilog_time_str(date)
         loc_cnts = {}
         for loc in cls.LOC_STATED:
             loc_cnts[loc] = 0.0
         gender_cnts = {}
         for gender in cls.GENDERS:
             gender_cnts[gender] = 0.0
-        if table_name == 'UserAction':
-            res= AliLogService.get_log_by_time(query='*|select distinct user_id,location')
-            cnt =0.0
-            cnt += res.get_count()
-            res['num'] += cnt
-            for log in res.logs:
-                contents = log.get_contents()
-                user_id = contents['user_id']
-                location = contents['location']
-                gender = cls.USER_GEN.get(user_id)
-                if gender in gender_cnts:
-                    gender_cnts[gender] += 1
-                if location in cls.LOC_STATED:
-                    loc_cnts[location] += 1
-                new_loc = cls.NEW_USER_LOC.get(user_id)
-                if new_loc in cls.LOC_STATED:
-                    loc_cnts[cls._get_count_loc(new_loc)] += 1
-                    loc_cnts[cls._get_new_loc(new_loc)] += 1
-            res.update(gender_cnts)
-            res.update(loc_cnts)
-
-
-        time_str = cls._get_time_str(table_name, judge_field)
-        exc_str = '%s.objects(%s).distinct("user_id")' % (table_name, time_str)
-        cnt = 0.0
-
-        # 遍历item对应表中的最近一天结果集的每一个user_id
-        for user_id in eval(exc_str):
-            cnt += 1
-            gender = cls.USER_GEN.get(str(user_id))
+        resp = AliLogService.get_log_by_time(from_time=from_time,to_time=to_time,query='*|select distinct user_id,location',size=-1)
+        cnt =0.0
+        cnt += resp.get_count()
+        res['num'] += cnt
+        for log in resp.logs:
+            contents = log.get_contents()
+            user_id = contents['user_id']
+            location = contents['location']
+            gender = cls.USER_GEN.get(user_id)
             if gender in gender_cnts:
                 gender_cnts[gender] += 1
-            loc = cls.USER_LOC.get(user_id)
-            if loc in cls.LOC_STATED:
-                loc_cnts[loc] += 1
+            if location in cls.LOC_STATED:
+                loc_cnts[location] += 1
             new_loc = cls.NEW_USER_LOC.get(user_id)
             if new_loc in cls.LOC_STATED:
-                loc_cnts[cls._get_new_loc(new_loc)] += 1
                 loc_cnts[cls._get_count_loc(new_loc)] += 1
-        res["num"] = cnt
+                loc_cnts[cls._get_new_loc(new_loc)] += 1
         res.update(gender_cnts)
         res.update(loc_cnts)
         return res
@@ -266,23 +242,25 @@ class JournalService(object):
         to_time = zeroToday.strftime("%Y-%m-%d %H:%M:%S+8:00")
         return from_time,to_time
 
-    '''
-    通过输入date，返回daily-stat应当记录的日期；默认返回当前日期的前一天
-    '''
     @classmethod
     def _get_stat_date(cls,date):
+        """
+        :param date: datetime类型
+        :return: datetime类型，为输入日期的前一天
+        """
         if date:
             return (date - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
         else:
             return (datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
 
-
-    '''
-    通过统计量对应的id,返回一个dict，有id,name,num,loc,new_loc,count_loc各个字段，
-    对满足item条件限制的对象不做去重
-    '''
     @classmethod
     def cal_by_id(cls, item_id, need_loc=True):
+        """
+        对满足item条件限制的对象不做去重
+        :param item_id: 一个统计量对应的id
+        :param need_loc:
+        :return: 返回一个dict，有id,name,num,loc,new_loc,count_loc各个字段
+        """
         def check_valid_string(word):
             chars = string.ascii_letters + '_' + string.digits
             for chr in word:
@@ -338,6 +316,10 @@ class JournalService(object):
         # 有expression时，其包含若干字段，每一个字段作为一个检索数据库的限制条件
         # id,name,num为返回结果res，类型为一个dict
         # 如果need_loc，则res中增加各种loc,new_loc,count_loc字段
+        elif table_name in cls.ALI_LOG_STORE:
+            from_time, to_time = cls._get_alilog_time_str()
+            if not expression:
+                resp = AliLogService.get_log_by_time(from_time=from_time, to_time=to_time, query='*')
         else:
             time_str = cls._get_time_str(table_name, judge_field)
             expression = '' if not expression else expression
