@@ -322,6 +322,7 @@ class JournalService(object):
                 resp = AliLogService.get_log_by_time(from_time=from_time, to_time=to_time, query='*')
             else:
                 expression = expression.replace('=',':')
+                expression = expression.replace(','," and ")
                 resp = AliLogService.get_log_by_time(from_time=from_time, to_time=to_time, query=expression)
             cnt = resp.get_count()
             if not cnt:
