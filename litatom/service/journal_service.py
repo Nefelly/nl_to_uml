@@ -111,7 +111,7 @@ class JournalService(object):
         resp = AliLogService.get_log_by_time(from_time=from_time,to_time=to_time,query='*|select distinct user_id,location')
         cnt =0.0
         cnt += resp.get_count()
-        res['num'] += cnt
+        res['num'] = cnt
         for log in resp.logs:
             contents = log.get_contents()
             user_id = contents['user_id']
