@@ -324,7 +324,6 @@ class JournalService(object):
                 expression = expression.replace('=',':')
                 expression = expression.replace(','," and ")
                 resp = AliLogService.get_log_by_time(from_time=from_time, to_time=to_time, query=expression)
-            print(1)
             cnt = resp.get_count()
             if not cnt:
                 cnt = 0
@@ -332,7 +331,6 @@ class JournalService(object):
             for gender in cls.GENDERS:
                 gender_cnts[gender]=0.0
             loc_cnts = {}
-            print(2)
             # 对每个location，在loc_cnts这个dict中，存三个字段，loc,new_loc,count_loc
             if need_loc:
                 for loc in cls.LOC_STATED:
@@ -341,11 +339,9 @@ class JournalService(object):
                     loc_cnts[cls._get_count_loc(loc)] = 0.0
                 # 只对有count且不大于1000000的才进行分location统计
                 if cnt and cnt < 1000000:
-                    print(3)
                     new_user_acted = {}
                     # 遍历满足统计量限制的结果集
                     for log in resp.logs:
-                        print(4)
                         contents = log.get_contents()
                         user_id = contents['user_id']
                         gender=cls.USER_GEN.get(user_id)
@@ -374,7 +370,6 @@ class JournalService(object):
             }
             res.update(loc_cnts)
             res.update(gender_cnts)
-            print(res)
         else:
             time_str = cls._get_time_str(table_name, judge_field)
             expression = '' if not expression else expression
@@ -472,6 +467,7 @@ class JournalService(object):
                 # m为根据该统计量的id计算得到的结果
                 m = cls.cal_by_id(str(item.id))
                 name, num = m['name'], m['num']
+                print(m,name,num)
                 #ali_log.append(('name',name))
                 #ali_log.append(('num',str(num)))
                 gender_cnt = [m[gender] for gender in cls.GENDERS]
