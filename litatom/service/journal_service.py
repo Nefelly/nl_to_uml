@@ -156,14 +156,14 @@ class JournalService(object):
                 str_buff = ''
         return m
 
-    '''
-    expression是一个表达式，str类型，包含若干操作数和基本运算符(python eval()可以接受的运算符);
-    操作数是一个24位的统计量ID，expression是基于其它统计量的一个运算；
-    返回一个dict，key为'num'的为主要计算结果，基于其它统计量的'num'结果
-    如果need_loc=True，会针对每个location，分别基于其它统计量的'loc'结果，进行计算，key为各种'loc'
-    '''
     @classmethod
     def _cal_by_others(cls, expression, need_loc=True):
+        """
+        :param expression: 一个表达式，str类型，包含若干操作数和基本运算符(python eval()可以接受的运算符);
+        操作数是一个24位的统计量ID，expression是基于其它统计量的一个运算；
+        :param need_loc: 如果need_loc=True，会针对每个location，分别基于其它统计量的'loc'结果，进行计算，key为各种'loc'
+        :return: 一个dict，key为'num'的为主要计算结果，基于其它统计量的'num'结果
+        """
         def cal_exp(exp):
             try:
                 if '/' in exp:
@@ -334,8 +334,45 @@ class JournalService(object):
                 "Report": "target_uid",
                 "Feedback": "uid"
             }
-
             # 对每个location，在loc_cnts这个dict中，存三个字段，loc,new_loc,count_loc
+            if need_loc:
+                for loc in cls.LOC_STATED:
+                    loc_cnts[loc] = 0
+                    loc_cnts[cls._get_new_loc(loc)] = 0.0
+                    loc_cnts[cls._get_count_loc(loc)] = 0.0
+                # 只对有count且不大于1000000的才进行分location统计
+                if cnt and cnt < 1000000:
+                    new_user_acted = {}
+                    # 遍历满足统计量限制的结果集
+                    for log in resp.logs:
+                        contents = log.get_contents()
+                        user_id = contents['user_id']
+                        gender=cls.USER_GEN.get(str(user_id))
+                        if gender in gender_cnts:
+                            gender_cnts[gender] += 1
+                        loc = cls.USER_LOC.get(user_id)
+                        if loc and loc in loc_cnts:
+                            loc_cnts[loc] += 1
+                        new_loc = cls.NEW_USER_LOC.get(user_id)
+                        if new_loc in cls.LOC_STATED:
+                            loc_cnts[cls._get_new_loc(new_loc)] += 1
+                            if not new_user_acted.get(user_id):
+                                loc_cnts[cls._get_count_loc(new_loc)] += 1
+                                new_user_acted[user_id] = 1
+            else:
+                for log in resp.logs:
+                    contents = log.get_contents()
+                    user_id = contents['user_id']
+                    gender=cls.USER_GEN.get(user_id)
+                    if gender in gender_cnts:
+                        gender_cnts[gender] += 1
+            res = {
+                "id": item_id,
+                "num": cnt,
+                "name": item.name
+            }
+            res.update(loc_cnts)
+            res.update(gender_cnts)
         else:
             time_str = cls._get_time_str(table_name, judge_field)
             expression = '' if not expression else expression
