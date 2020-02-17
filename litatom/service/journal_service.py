@@ -32,7 +32,7 @@ redis_client = RedisClient()['lit']
 
 class JournalService(object):
     IS_TESTING = False
-    DATE_DIS = datetime.timedelta(hours=0)
+    DATE_DIS = datetime.timedelta(hours=20)
 
     USER_LOC = {}   # user_id:language
     NEW_USER_LOC = {}   # 最近一天创建的用户为新用户 user_id:language
