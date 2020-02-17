@@ -93,19 +93,22 @@ class JournalService(object):
     def _get_count_loc(cls, loc):
         return 'new_count_' + loc
 
-    '''
-    输入一个StatItems Document，
-    返回一个dict，返回该item的id,name,num：最近一天item对应表中的用户数量
-    以及各种location,new_loc,count_loc最近一天对应表中的用户数量
-    '''
     @classmethod
     def daily_active(cls, item, date=None):
+        """
+        :param item: StatItems Document
+        :param date:
+        :return: 返回一个dict，返回该item的id,name,num：最近一天item对应表中的用户数量,以及
+        各种location,new_loc,count_loc最近一天对应表中的用户数量
+        """
         res = {
             "id": str(item.id),
             "name": item.name
         }
         table_name = item.table_name
         judge_field = item.judge_field
+        if table_name == 'UserAction':
+            
         time_str = cls._get_time_str(table_name, judge_field)
         exc_str = '%s.objects(%s).distinct("user_id")' % (table_name, time_str)
         cnt = 0.0
@@ -202,13 +205,15 @@ class JournalService(object):
                 loc_cnts[loc] = cal_exp(tmp_exp)
         return loc_cnts
 
-    '''
-    返回前一天的时间段，时间是从ZERO_TODAY往前倒数一天，ZERO_TODAY：1.类属性设定 2.调用时指定 3.当前时间
-    table_name.judge_field为IntField或FloatField，用于判断数据库访问字符串格式
-    返回的时间段限制字符串可以直接用于检索数据库
-    '''
     @classmethod
     def _get_time_str(cls, table_name, judge_field, date=None):
+        """
+        返回前一天的时间段，时间是从ZERO_TODAY往前倒数一天，ZERO_TODAY：1.类属性设定 2.调用时指定 3.当前时间
+        :param table_name:
+        :param judge_field:table_name.judge_field为IntField或FloatField，用于判断数据库访问字符串格式
+        :param date:
+        :return:返回时间段限制字符串可以直接用于检索数据库
+        """
         if date:
             zeroToday = date
         else:
@@ -385,7 +390,7 @@ class JournalService(object):
         res_lst = []
         cls.DATE_DIS = datetime.timedelta(hours=0)
         cnt = 0
-        # daily_m是一个dict类型变量,id,name为抽样日活，num为最近一日日活用户数量，以及各种loc中的各种日活用户数量
+        # daily_m是一个字典,id,name为抽样日活，num为最近一日日活用户数量，以及各种loc中的各种日活用户数量
         daily_m = cls.daily_active(StatItems.objects(name=u'抽样日活').first())
         print 'load daily_m'
         # 遍历StatItems中所有类型为BUSINESS_TYPE的统计量item
