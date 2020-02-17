@@ -103,17 +103,38 @@ class JournalService(object):
         judge_field = item.judge_field
         # from_time= cls._get_stat_date()
         # to_time = cls._get_stat_date()
-        # if table_name == 'UserAction':
-        #     res= AliLogService.get_log_by_time(from_time=from_time,to_time=to_time, query='*|select distinct user_id,location')
-        time_str = cls._get_time_str(table_name, judge_field)
-        exc_str = '%s.objects(%s).distinct("user_id")' % (table_name, time_str)
-        cnt = 0.0
         loc_cnts = {}
         for loc in cls.LOC_STATED:
             loc_cnts[loc] = 0.0
         gender_cnts = {}
         for gender in cls.GENDERS:
             gender_cnts[gender] = 0.0
+        if table_name == 'UserAction':
+            res= AliLogService.get_log_by_time(query='*|select distinct user_id,location')
+            cnt =0.0
+            cnt += res.get_count()
+            res['num'] += cnt
+            for log in res.logs:
+                contents = log.get_contents()
+                user_id = contents['user_id']
+                location = contents['location']
+                gender = cls.USER_GEN.get(user_id)
+                if gender in gender_cnts:
+                    gender_cnts[gender] += 1
+                if location in cls.LOC_STATED:
+                    loc_cnts[location] += 1
+                new_loc = cls.NEW_USER_LOC.get(user_id)
+                if new_loc in cls.LOC_STATED:
+                    loc_cnts[cls._get_count_loc(new_loc)] += 1
+                    loc_cnts[cls._get_new_loc(new_loc)] += 1
+            res.update(gender_cnts)
+            res.update(loc_cnts)
+
+
+        time_str = cls._get_time_str(table_name, judge_field)
+        exc_str = '%s.objects(%s).distinct("user_id")' % (table_name, time_str)
+        cnt = 0.0
+
         # 遍历item对应表中的最近一天结果集的每一个user_id
         for user_id in eval(exc_str):
             cnt += 1
@@ -139,12 +160,13 @@ class JournalService(object):
         StatItems.create(name, table_name, stat_type, judge_field, expression)
         return None, True
 
-    '''
-    无table_name的统计量中，expression的操作数即为一个统计量id,都是24位十六进制，
-    get_objids()返回一个dict，每一项都是一个操作数，类型都为str
-    '''
     @classmethod
     def get_objids(cls, expression):
+        """
+        无table_name的统计量中，expression的操作数即为一个统计量id,都是24位十六进制，
+        :param expression: 表达式
+        :return: 一个dict，每一项都是一个操作数，类型都为str
+        """
         m = {}
         chrs = set([chr(ord('0') + el) for el in range(10)] + [chr(ord('a') + el) for el in range(26)])
         str_buff = ''
@@ -225,6 +247,24 @@ class JournalService(object):
             time_str = "%s__gte=%r, %s__lte=%r" % (
             judge_field, date_to_int_time(zeroYesterday), judge_field, date_to_int_time(zeroToday))
         return time_str
+
+    @classmethod
+    def _get_alilog_time_str(cls, date=None):
+        """
+        返回满足阿里云日志服务的
+        :param date:
+        :return:返回一个tuple，前一项表示from_time，后一项表示to_time
+        """
+        if date:
+            zeroToday = date
+        else:
+            zeroToday = get_zero_today()
+        if cls.ZERO_TODAY:
+            zeroToday = cls.ZERO_TODAY
+        zeroYesterday = next_date(zeroToday, -1) + cls.DATE_DIS
+        from_time =zeroYesterday.strftime("%Y-%m-%d %H:%M:%S+8:00")
+        to_time = zeroToday.strftime("%Y-%m-%d %H:%M:%S+8:00")
+        return from_time,to_time
 
     '''
     通过输入date，返回daily-stat应当记录的日期；默认返回当前日期的前一天
