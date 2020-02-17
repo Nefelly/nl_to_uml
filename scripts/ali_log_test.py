@@ -2,7 +2,7 @@ from litatom.service import AliLogService
 
 
 def run():
-    res = AliLogService.get_log_by_time(query='action:match | SELECT DISTINCT user_id LIMIT 1000')
+    res = AliLogService.get_log_by_time(query='action:match | SELECT DISTINCT user_id,location LIMIT 10000')
     res.log_print()
 
 

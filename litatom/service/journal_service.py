@@ -31,8 +31,6 @@ logger = logging.getLogger(__name__)
 redis_client = RedisClient()['lit']
 
 class JournalService(object):
-    '''
-    '''
     IS_TESTING = False
     DATE_DIS = datetime.timedelta(hours=0)
 
@@ -44,11 +42,9 @@ class JournalService(object):
     GENDERS = ['boy','girl']
     USER_GEN = {}   # user_id:gender
 
-    '''
-    类的预装载函数，把现有的LOC_STATED，加上new_，和count_前缀,同时准备USER_LOC,NEW_USER_LOC
-    '''
     @classmethod
     def load_user_loc(cls):
+        """类的预装载函数，把现有的LOC_STATED，加上new_，和count_前缀,同时准备USER_LOC,NEW_USER_LOC"""
         to_append = []
         for loc in cls.LOC_STATED:
             to_append.append(cls._get_new_loc(loc))
@@ -65,11 +61,9 @@ class JournalService(object):
         for obj in new_users:
             cls.NEW_USER_LOC[obj.user_id] = obj.lang
 
-    '''
-    预装载函数，将用户性别信息写入USER_GEN
-    '''
     @classmethod
     def load_user_gen(cls):
+        """预装载函数，将用户性别信息写入USER_GEN"""
         if not cls.IS_TESTING:
             objs = User.objects()
         else:
@@ -107,8 +101,10 @@ class JournalService(object):
         }
         table_name = item.table_name
         judge_field = item.judge_field
+        # from_time= cls._get_stat_date()
+        # to_time = cls._get_stat_date()
         # if table_name == 'UserAction':
-
+        #     res= AliLogService.get_log_by_time(from_time=from_time,to_time=to_time, query='*|select distinct user_id,location')
         time_str = cls._get_time_str(table_name, judge_field)
         exc_str = '%s.objects(%s).distinct("user_id")' % (table_name, time_str)
         cnt = 0.0
