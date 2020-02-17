@@ -356,6 +356,7 @@ class JournalService(object):
                             if not new_user_acted.get(user_id):
                                 loc_cnts[cls._get_count_loc(new_loc)] += 1
                                 new_user_acted[user_id] = 1
+                print("!!!")
             else:
                 for log in resp.logs:
                     contents = log.get_contents()
@@ -370,6 +371,7 @@ class JournalService(object):
             }
             res.update(loc_cnts)
             res.update(gender_cnts)
+            print(res)
         else:
             time_str = cls._get_time_str(table_name, judge_field)
             expression = '' if not expression else expression
@@ -466,8 +468,8 @@ class JournalService(object):
             try:
                 # m为根据该统计量的id计算得到的结果
                 m = cls.cal_by_id(str(item.id))
+                print(m['name'])
                 name, num = m['name'], m['num']
-                print(m,name,num)
                 #ali_log.append(('name',name))
                 #ali_log.append(('num',str(num)))
                 gender_cnt = [m[gender] for gender in cls.GENDERS]
