@@ -98,7 +98,7 @@ class AliLogService(object):
 
     @classmethod
     def get_log_by_time(cls, project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE, from_time=int(time() - 3600),
-                        to_time=int(time()), client=DEFAULT_CLIENT, size=-1, attributes=None, query='*'):
+                        to_time=int(time()), client=DEFAULT_CLIENT, size=1000000, attributes=None, query='*'):
         """
         仅通过时间筛选某logstore中的log
         :param query:
