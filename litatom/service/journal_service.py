@@ -320,6 +320,10 @@ class JournalService(object):
             from_time, to_time = cls._get_alilog_time_str()
             if not expression:
                 resp = AliLogService.get_log_by_time(from_time=from_time, to_time=to_time, query='*')
+            else:
+                expression = expression.replace('=',':')
+                resp = AliLogService.get_log_by_time(from_time=from_time, to_time=to_time, query=expression)
+
         else:
             time_str = cls._get_time_str(table_name, judge_field)
             expression = '' if not expression else expression
