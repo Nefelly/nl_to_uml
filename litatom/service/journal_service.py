@@ -491,6 +491,7 @@ class JournalService(object):
                  #       ali_log.append((loc+'avr','0'))
                 res_lst.append([name, num] + gender_cnt + region_cnt + [num/daily_m['num']] + avr_cnt)
                 #AliLogService.put_daily_stat(ali_log,topic='business_type')
+                print(name,num)
                 cnt += 1
             except Exception, e:
                 print e
