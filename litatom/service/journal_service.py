@@ -323,7 +323,19 @@ class JournalService(object):
             else:
                 expression = expression.replace('=',':')
                 resp = AliLogService.get_log_by_time(from_time=from_time, to_time=to_time, query=expression)
+            cnt = resp.get_count()
+            if not cnt:
+                cnt = 0
+            gender_cnts={}
+            for gender in cls.GENDERS:
+                gender_cnts[gender]=0.0
+            loc_cnts = {}
+            table_user_id = {
+                "Report": "target_uid",
+                "Feedback": "uid"
+            }
 
+            # 对每个location，在loc_cnts这个dict中，存三个字段，loc,new_loc,count_loc
         else:
             time_str = cls._get_time_str(table_name, judge_field)
             expression = '' if not expression else expression
