@@ -356,7 +356,6 @@ class JournalService(object):
                             if not new_user_acted.get(user_id):
                                 loc_cnts[cls._get_count_loc(new_loc)] += 1
                                 new_user_acted[user_id] = 1
-                print("!!!")
             else:
                 for log in resp.logs:
                     contents = log.get_contents()
@@ -371,7 +370,6 @@ class JournalService(object):
             }
             res.update(loc_cnts)
             res.update(gender_cnts)
-            print(res)
         else:
             time_str = cls._get_time_str(table_name, judge_field)
             expression = '' if not expression else expression
@@ -468,7 +466,6 @@ class JournalService(object):
             try:
                 # m为根据该统计量的id计算得到的结果
                 m = cls.cal_by_id(str(item.id))
-                print(m['name'])
                 name, num = m['name'], m['num']
                 #ali_log.append(('name',name))
                 #ali_log.append(('num',str(num)))
@@ -513,25 +510,25 @@ class JournalService(object):
         for item in StatItems.get_items_by_type(StatItems.AD_TYPE):
             try:
                 m = cls.cal_by_id(str(item.id))
-                ali_log=[('date', stat_date)]
+                # ali_log=[('date', stat_date)]
                 name, num = m['name'], m['num']
-                ali_log.append(('name',name))
-                ali_log.append(('num',str(num)))
+                # ali_log.append(('name',name))
+                # ali_log.append(('num',str(num)))
                 region_cnt = [m[loc] for loc in cls.LOC_STATED]
-                for loc in cls.LOC_STATED:
-                    ali_log.append((loc,str(m[loc])))
-                ali_log.append(('total_avr',str(num/daily_m['num'])))
+                # for loc in cls.LOC_STATED:
+                #    ali_log.append((loc,str(m[loc])))
+                # ali_log.append(('total_avr',str(num/daily_m['num'])))
                 avr_cnt = []
                 for loc in cls.LOC_STATED:
                     if daily_m[loc]:
                         data=round(m.get(loc, 0) / daily_m[loc], 4)
                         avr_cnt.append(data)
-                        ali_log.append((loc+'avr',str(data)))
+                #        ali_log.append((loc+'avr',str(data)))
                     else:
                         avr_cnt.append(0)
-                        ali_log.append((loc+'avr','0'))
+                #        ali_log.append((loc+'avr','0'))
                 res_lst.append([name, num] + region_cnt + [num / daily_m['num']] + avr_cnt)
-                AliLogService.put_logs(ali_log,topic='ad_type',project='litatommonitor',logstore='daily-stat-monitor')
+                # AliLogService.put_logs(ali_log,topic='ad_type',project='litatommonitor',logstore='daily-stat-monitor')
                 cnt += 1
             except Exception, e:
                 print e
