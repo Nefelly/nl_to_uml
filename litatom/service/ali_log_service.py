@@ -132,6 +132,7 @@ class AliLogService(object):
                                   from_time=int(time() - 3600), to_time=int(time()), line=-1, client=DEFAULT_CLIENT):
         """
         通过time和topic筛选某logstore中的log
+        :param query:
         :param line:
         :param project:
         :param logstore:
