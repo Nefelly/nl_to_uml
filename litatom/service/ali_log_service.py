@@ -1,6 +1,6 @@
 # coding: utf-8
 import json
-from time import time
+import time
 import datetime
 import traceback
 from aliyun.log import *
