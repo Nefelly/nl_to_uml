@@ -129,8 +129,8 @@ class UserMessageService(object):
         obj = UserMessage.get_by_id(message_id)
         if not obj:
             return None, True
-        if obj.uid != user_id:
-            return NOT_AUTHORIZED, False
+        # if obj.uid != user_id:
+        #     return NOT_AUTHORIZED, False
         obj.delete()
         return None, True
     
