@@ -32,7 +32,7 @@ redis_client = RedisClient()['lit']
 
 
 class JournalService(object):
-    IS_TESTING = False
+    IS_TESTING = True
     DATE_DIS = datetime.timedelta(hours=0)
 
     USER_LOC = {}  # user_id:language
@@ -482,7 +482,7 @@ class JournalService(object):
         cls.DATE_DIS = datetime.timedelta(hours=0)
         cnt = 0
         # daily_m是一个字典,id,name为抽样日活，num为最近一日日活用户数量，以及各种loc中的各种日活用户数量
-        daily_m = cls.daily_active(StatItems.objects(name=u'抽样日活').first())
+        daily_m = cls.daily_active(StatItems.objects(name=u'抽样日活').first(), date)
         print('load daily_m')
         # 遍历StatItems中所有类型为BUSINESS_TYPE的统计量item
         for item in StatItems.get_items_by_type(StatItems.BUSINESS_TYPE):
