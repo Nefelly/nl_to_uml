@@ -82,7 +82,7 @@ class AliLogService(object):
     def select_log_by_attributes(cls, res, attributes):
         """
         筛选logs，投影到特定的属性（组）上，
-        :param logs:
+        :param res:
         :param attributes:
         :return:
         """
