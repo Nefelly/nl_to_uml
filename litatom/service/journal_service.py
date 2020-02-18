@@ -78,7 +78,7 @@ class JournalService(object):
     def load_ali_log(cls, date):
         """预装载函数，返回一个迭代器"""
         from_time, to_time = cls._get_alilog_time_str(date)
-        cls.CACHED_ALI_LOG = AliLogService.get_ali_log_by_time_and_topic(from_time=from_time, to_time=to_time)
+        cls.CACHED_ALI_LOG = AliLogService.get_all_log_by_time_and_topic(from_time=from_time, to_time=to_time)
 
 
     @classmethod
@@ -116,23 +116,24 @@ class JournalService(object):
         gender_cnts = {}
         for gender in cls.GENDERS:
             gender_cnts[gender] = 0.0
-        resp = AliLogService.get_log_by_time_and_topic(from_time=from_time, to_time=to_time, query='*|select distinct user_id,location')
+        resp_set = AliLogService.get_log_by_time_and_topic(from_time=from_time, to_time=to_time, query='*|select distinct user_id,location',size=-1)
         cnt =0.0
-        cnt += resp.get_count()
+        for resp in resp_set:
+            cnt += resp.get_count()
+            for log in resp.logs:
+                contents = log.get_contents()
+                user_id = contents['user_id']
+                location = contents['location']
+                gender = cls.USER_GEN.get(user_id)
+                if gender in gender_cnts:
+                    gender_cnts[gender] += 1
+                if location in cls.LOC_STATED:
+                    loc_cnts[location] += 1
+                new_loc = cls.NEW_USER_LOC.get(user_id)
+                if new_loc in cls.LOC_STATED:
+                    loc_cnts[cls._get_count_loc(new_loc)] += 1
+                    loc_cnts[cls._get_new_loc(new_loc)] += 1
         res['num'] = cnt
-        for log in resp.logs:
-            contents = log.get_contents()
-            user_id = contents['user_id']
-            location = contents['location']
-            gender = cls.USER_GEN.get(user_id)
-            if gender in gender_cnts:
-                gender_cnts[gender] += 1
-            if location in cls.LOC_STATED:
-                loc_cnts[location] += 1
-            new_loc = cls.NEW_USER_LOC.get(user_id)
-            if new_loc in cls.LOC_STATED:
-                loc_cnts[cls._get_count_loc(new_loc)] += 1
-                loc_cnts[cls._get_new_loc(new_loc)] += 1
         res.update(gender_cnts)
         res.update(loc_cnts)
         return res
@@ -331,7 +332,7 @@ class JournalService(object):
             else:
                 expression = expression.replace('=',':')
                 expression = expression.replace(','," and ")
-                resp_set = AliLogService.get_ali_log_by_time_and_topic(from_time=from_time, to_time=to_time, query=expression)
+                resp_set = AliLogService.get_all_log_by_time_and_topic(from_time=from_time, to_time=to_time, query=expression)
             cnt = 0
             gender_cnts={}
             for gender in cls.GENDERS:
@@ -393,7 +394,6 @@ class JournalService(object):
                 exc_str = '%s.objects(%s,%s).count()' % (table_name, time_str, expression)
             else:
                 exc_str = '%s.objects(%s,%s).limit(1000).count()' % (table_name, time_str, expression)
-            print exc_str
             # cnt表示一天时间内，满足该统计量限制的记录个数
             cnt = eval(exc_str)
             if not cnt:
@@ -469,14 +469,14 @@ class JournalService(object):
     @classmethod
     def out_port_result(cls, dst_addr, date):
         cls.load_user_loc()
-        print 'load succ', cls.LOC_STATED
+        print('load succ', cls.LOC_STATED)
         cls.load_user_gen()
         res_lst = []
         cls.DATE_DIS = datetime.timedelta(hours=0)
         cnt = 0
         # daily_m是一个字典,id,name为抽样日活，num为最近一日日活用户数量，以及各种loc中的各种日活用户数量
         daily_m = cls.daily_active(StatItems.objects(name=u'抽样日活').first())
-        print 'load daily_m'
+        print('load daily_m')
         # 遍历StatItems中所有类型为BUSINESS_TYPE的统计量item
         for item in StatItems.get_items_by_type(StatItems.BUSINESS_TYPE):
             try:
@@ -505,8 +505,8 @@ class JournalService(object):
                 #AliLogService.put_daily_stat(ali_log,topic='business_type')
                 print(name,num)
                 cnt += 1
-            except Exception, e:
-                print e
+            except Exception as e:
+                print(e)
                 continue
             # if cnt >= 3:
             #     break
@@ -546,8 +546,8 @@ class JournalService(object):
                 res_lst.append([name, num] + region_cnt + [num / daily_m['num']] + avr_cnt)
                 # AliLogService.put_logs(ali_log,topic='ad_type',project='litatommonitor',logstore='daily-stat-monitor')
                 cnt += 1
-            except Exception, e:
-                print e
+            except Exception as e:
+                print(e)
                 continue
             # if cnt >= 3:
             #     break

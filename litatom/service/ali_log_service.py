@@ -130,11 +130,10 @@ class AliLogService(object):
         :param to_time:
         :param client:
         :param size: 最大为1000000
-        :return:返回一个GetLogsResponse对象，其logs属性为一个QueriedLog列表，每个元素有三个方法get_time(),get_source(),
-                get_contents()三个方法获得log内容，contents为json格式
+        :return:返回一个GetLogsResponse对象的迭代器，其logs属性为一个QueriedLog列表，每个元素有三个方法get_time(),
+        get_source(),get_contents()三个方法获得log内容，contents为json格式
         """
         if size == -1 or size > 400000:
-            result = None
             if isinstance(from_time, int) and isinstance(to_time, int):
                 time_delta = (to_time - from_time) / 24.0
                 for i in range(24):
@@ -142,11 +141,7 @@ class AliLogService(object):
                     end_time = from_time + (i + 1) * time_delta
                     resp = cls._get_log_atom(project=project, logstore=logstore, from_time=round(start_time),
                                              to_time=round(end_time), size=1000000, query=query, client=client)
-                    if result:
-                        result.merge(resp)
-                    else:
-                        result = resp
-                return result
+                    yield resp
             elif isinstance(from_time, str) and isinstance(to_time, str):
                 from_time_date = datetime.datetime.strptime(from_time, "%Y-%m-%d %H:%M:%S+8:00")
                 to_time_date = datetime.datetime.strptime(to_time, "%Y-%m-%d %H:%M:%S+8:00")
@@ -156,19 +151,13 @@ class AliLogService(object):
                     end_time = (from_time_date + (i + 1) * time_delta).strftime("%Y-%m-%d %H:%M:%S+8:00")
                     resp = cls._get_log_atom(project=project, logstore=logstore, from_time=start_time, to_time=end_time,
                                              size=1000000, query=query, client=client)
-                    if result:
-                        result.merge(resp)
-                    else:
-                        result = resp
-                return result
-            else:
-                return None
+                    yield resp
         else:
-            return cls._get_log_atom(project=project, logstore=logstore, from_time=from_time, to_time=to_time,
-                                     size=size, query=query, client=client)
+            yield cls._get_log_atom(project=project, logstore=logstore, from_time=from_time, to_time=to_time,
+                                    size=size, query=query, client=client)
 
     @classmethod
-    def get_ali_log_by_time_and_topic(cls, project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE, client=DEFAULT_CLIENT,
+    def get_all_log_by_time_and_topic(cls, project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE, client=DEFAULT_CLIENT,
                                       topic=DEFAULT_TOPIC, from_time=int(time() - 3600), to_time=int(time()),
                                       query='*'):
         """
