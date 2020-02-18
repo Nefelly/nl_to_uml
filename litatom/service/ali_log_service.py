@@ -133,7 +133,7 @@ class AliLogService(object):
         :return:返回一个GetLogsResponse对象，其logs属性为一个QueriedLog列表，每个元素有三个方法get_time(),get_source(),
                 get_contents()三个方法获得log内容，contents为json格式
         """
-        if size == -1 or size > 1000000:
+        if size == -1 or size > 400000:
             result = None
             if isinstance(from_time, int) and isinstance(to_time, int):
                 time_delta = (to_time - from_time) / 24.0
