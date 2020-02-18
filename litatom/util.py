@@ -192,6 +192,19 @@ def is_emoji(schar):
         return True
     return False
 
+'''
+从xlsx文件name中读取第一张表，返回list: tb_heads, 为表中第一行；返回list[list]: data，为表中各行 
+'''
+def read_data_from_xls(name):
+    import xlrd
+    tb = xlrd.open_workbook(name).sheets()[0]
+    tb_heads = tb.row_values(0)
+    nrows = tb.nrows-1
+    data = []
+    for row in range(nrows):
+        data.append(tb.row_value(row+1))
+    return tb_heads,data
+
 
 def write_data_to_xls(name, tb_heads, datas):
     import xlwt

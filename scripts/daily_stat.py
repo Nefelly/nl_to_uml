@@ -3,7 +3,7 @@ import sys
 import fcntl
 import datetime
 from hendrix.conf import setting
-from litatom.service import AlertService, JournalService
+from litatom.service import AlertService, JournalService, AliLogService
 import time
 import datetime
 from litatom.util import (
@@ -25,9 +25,9 @@ def run(stat_date=None):
             '%Y-%m-%d')
     ensure_path(dst_addr)
     if not os.path.exists(dst_addr) or 1:
-        JournalService.out_port_result(dst_addr)
+        JournalService.out_port_result(dst_addr,stat_date)
     AlertService.send_file(["litatomwang@gmail.com", "w326571@126.com", '382365209@qq.com'], dst_addr)
-    JournalService.ad_res(ad_addr)
+    JournalService.ad_res(ad_addr,stat_date)
     AlertService.send_file(["litatomwang@gmail.com", "w326571@126.com", '382365209@qq.com'], ad_addr)
 
 

@@ -20,31 +20,34 @@ from mongoengine import (
 
 )
 
+from ..service import (
+    AliLogService
+)
+
 from ..redis import RedisClient
 
 logger = logging.getLogger(__name__)
 
 redis_client = RedisClient()['lit']
 
+
 class JournalService(object):
-    '''
-    '''
     IS_TESTING = False
     DATE_DIS = datetime.timedelta(hours=0)
 
-    USER_LOC = {}   # user_id:language
-    NEW_USER_LOC = {}   # 最近一天创建的用户为新用户 user_id:language
-    LOC_STATED = ['TH', 'VN', 'PH'] # new_TH, count_TH
+    USER_LOC = {}  # user_id:language
+    NEW_USER_LOC = {}  # 最近一天创建的用户为新用户 user_id:language
+    LOC_STATED = ['TH', 'VN', 'PH']  # new_TH, count_TH
     CACHED_RES = {}
     ZERO_TODAY = None
-    GENDERS = ['boy','girl']
-    USER_GEN = {}   # user_id:gender
+    GENDERS = ['boy', 'girl']
+    USER_GEN = {}  # user_id:gender
+    ALI_LOG_STORE = ['UserAction']  # 存在ali_log_service的部分表
+    CACHED_ALI_LOG = None  # 迭代器类型
 
-    '''
-    类的预装载函数，把现有的LOC_STATED，加上new_，和count_前缀,同时准备USER_LOC,NEW_USER_LOC
-    '''
     @classmethod
     def load_user_loc(cls):
+        """类的预装载函数，把现有的LOC_STATED，加上new_，和count_前缀,同时准备USER_LOC,NEW_USER_LOC"""
         to_append = []
         for loc in cls.LOC_STATED:
             to_append.append(cls._get_new_loc(loc))
@@ -61,11 +64,9 @@ class JournalService(object):
         for obj in new_users:
             cls.NEW_USER_LOC[obj.user_id] = obj.lang
 
-    '''
-    预装载函数，将用户性别信息写入USER_GEN
-    '''
     @classmethod
     def load_user_gen(cls):
+        """预装载函数，将用户性别信息写入USER_GEN"""
         if not cls.IS_TESTING:
             objs = User.objects()
         else:
@@ -73,6 +74,12 @@ class JournalService(object):
         for obj in objs:
             if obj.gender in cls.GENDERS:
                 cls.USER_GEN[str(obj.id)] = obj.gender
+
+    @classmethod
+    def load_ali_log(cls, date):
+        """预装载函数，返回一个迭代器"""
+        from_time, to_time = cls._get_alilog_time_str(date)
+        cls.CACHED_ALI_LOG = AliLogService.get_all_log_by_time_and_topic(from_time=from_time, to_time=to_time)
 
     @classmethod
     def get_journal_items(cls, stat_type):
@@ -89,42 +96,45 @@ class JournalService(object):
     def _get_count_loc(cls, loc):
         return 'new_count_' + loc
 
-    '''
-    输入一个StatItems Document，
-    返回一个dict，返回该item的id,name,num：最近一天item对应表中的用户数量
-    以及各种location,new_loc,count_loc最近一天对应表中的用户数量
-    '''
     @classmethod
     def daily_active(cls, item, date=None):
+        """
+        专门计算抽样日活统计量的函数
+        :param item: StatItems Document(daily_active)
+        :param date:
+        :return: 返回一个dict，返回daily_active的id,name,num：最近一天UserAction中的用户数量,以及
+        各种location,new_loc,count_loc最近一天的用户数量
+        """
         res = {
             "id": str(item.id),
             "name": item.name
         }
-        table_name = item.table_name
-        judge_field = item.judge_field
-        time_str = cls._get_time_str(table_name, judge_field)
-        exc_str = '%s.objects(%s).distinct("user_id")' % (table_name, time_str)
-        cnt = 0.0
+        from_time, to_time = cls._get_alilog_time_str(date)
         loc_cnts = {}
         for loc in cls.LOC_STATED:
             loc_cnts[loc] = 0.0
         gender_cnts = {}
         for gender in cls.GENDERS:
             gender_cnts[gender] = 0.0
-        # 遍历item对应表中的最近一天结果集的每一个user_id
-        for user_id in eval(exc_str):
-            cnt += 1
-            gender = cls.USER_GEN.get(str(user_id))
-            if gender in gender_cnts:
-                gender_cnts[gender] += 1
-            loc = cls.USER_LOC.get(user_id)
-            if loc in cls.LOC_STATED:
-                loc_cnts[loc] += 1
-            new_loc = cls.NEW_USER_LOC.get(user_id)
-            if new_loc in cls.LOC_STATED:
-                loc_cnts[cls._get_new_loc(new_loc)] += 1
-                loc_cnts[cls._get_count_loc(new_loc)] += 1
-        res["num"] = cnt
+        resp_set = AliLogService.get_log_by_time_and_topic(from_time=from_time, to_time=to_time,
+                                                           query='*|select distinct user_id,location', size=-1)
+        cnt = 0.0
+        for resp in resp_set:
+            cnt += resp.get_count()
+            for log in resp.logs:
+                contents = log.get_contents()
+                user_id = contents['user_id']
+                location = contents['location']
+                gender = cls.USER_GEN.get(user_id)
+                if gender in gender_cnts:
+                    gender_cnts[gender] += 1
+                if location in cls.LOC_STATED:
+                    loc_cnts[location] += 1
+                new_loc = cls.NEW_USER_LOC.get(user_id)
+                if new_loc in cls.LOC_STATED:
+                    loc_cnts[cls._get_count_loc(new_loc)] += 1
+                    loc_cnts[cls._get_new_loc(new_loc)] += 1
+        res['num'] = cnt
         res.update(gender_cnts)
         res.update(loc_cnts)
         return res
@@ -136,12 +146,13 @@ class JournalService(object):
         StatItems.create(name, table_name, stat_type, judge_field, expression)
         return None, True
 
-    '''
-    无table_name的统计量中，expression的操作数即为一个统计量id,都是24位十六进制，
-    get_objids()返回一个dict，每一项都是一个操作数，类型都为str
-    '''
     @classmethod
     def get_objids(cls, expression):
+        """
+        无table_name的统计量中，expression的操作数即为一个统计量id,都是24位十六进制，
+        :param expression: 表达式
+        :return: 一个dict，每一项都是一个操作数，类型都为str
+        """
         m = {}
         chrs = set([chr(ord('0') + el) for el in range(10)] + [chr(ord('a') + el) for el in range(26)])
         str_buff = ''
@@ -155,14 +166,15 @@ class JournalService(object):
                 str_buff = ''
         return m
 
-    '''
-    expression是一个表达式，str类型，包含若干操作数和基本运算符(python eval()可以接受的运算符);
-    操作数是一个24位的统计量ID，expression是基于其它统计量的一个运算；
-    返回一个dict，key为'num'的为主要计算结果，基于其它统计量的'num'结果
-    如果need_loc=True，会针对每个location，分别基于其它统计量的'loc'结果，进行计算，key为各种'loc'
-    '''
     @classmethod
     def _cal_by_others(cls, expression, need_loc=True):
+        """
+        :param expression: 一个表达式，str类型，包含若干操作数和基本运算符(python eval()可以接受的运算符);
+        操作数是一个24位的统计量ID，expression是基于其它统计量的一个运算；
+        :param need_loc: 如果need_loc=True，会针对每个location，分别基于其它统计量的'loc'结果，进行计算，key为各种'loc'
+        :return: 一个dict，key为'num'的为主要计算结果，基于其它统计量的'num'结果
+        """
+
         def cal_exp(exp):
             try:
                 if '/' in exp:
@@ -170,6 +182,7 @@ class JournalService(object):
                 return eval(exp)
             except:
                 return 0
+
         # m是一个字典，其中包含Expression各个操作数，每个操作数实际上是一个统计量
         m = cls.get_objids(expression)
         # 在res_m中，对各个统计量递归的分别计算结果
@@ -187,7 +200,7 @@ class JournalService(object):
         for gender in cls.GENDERS:
             tmp_exp = expression
             for el in res_m:
-                tmp_exp=tmp_exp.replace(el,str(res_m[el][gender]))
+                tmp_exp = tmp_exp.replace(el, str(res_m[el][gender]))
             loc_cnts[gender] = cal_exp(tmp_exp)
         # 如果需要location信息，则对每个location的数量分别计算
         if need_loc:
@@ -198,13 +211,15 @@ class JournalService(object):
                 loc_cnts[loc] = cal_exp(tmp_exp)
         return loc_cnts
 
-    '''
-    返回前一天的时间段，时间是从ZERO_TODAY往前倒数一天，ZERO_TODAY：1.类属性设定 2.调用时指定 3.当前时间
-    table_name.judge_field为IntField或FloatField，用于判断数据库访问字符串格式
-    返回的时间段限制字符串可以直接用于检索数据库
-    '''
     @classmethod
     def _get_time_str(cls, table_name, judge_field, date=None):
+        """
+        返回前一天的时间段，时间是从ZERO_TODAY往前倒数一天，ZERO_TODAY：1.类属性设定 2.调用时指定 3.当前时间
+        :param table_name:
+        :param judge_field:table_name.judge_field为IntField或FloatField，用于判断数据库访问字符串格式
+        :param date:
+        :return:返回时间段限制字符串可以直接用于检索数据库
+        """
         if date:
             zeroToday = date
         else:
@@ -218,21 +233,54 @@ class JournalService(object):
             time_str = "%s__gte=%r, %s__lte=%r" % (judge_field, zeroYesterday, judge_field, zeroToday)
         else:
             time_str = "%s__gte=%r, %s__lte=%r" % (
-            judge_field, date_to_int_time(zeroYesterday), judge_field, date_to_int_time(zeroToday))
+                judge_field, date_to_int_time(zeroYesterday), judge_field, date_to_int_time(zeroToday))
         return time_str
 
-    '''
-    通过统计量对应的id,返回一个dict，有id,name,num,loc,new_loc,count_loc各个字段，
-    对满足item条件限制的对象不做去重
-    '''
+    @classmethod
+    def _get_alilog_time_str(cls, date=None):
+        """
+        返回满足阿里云日志服务的
+        :param date:
+        :return:返回一个tuple，前一项表示from_time，后一项表示to_time
+        """
+        if date:
+            zeroToday = date
+        else:
+            zeroToday = get_zero_today()
+        if cls.ZERO_TODAY:
+            zeroToday = cls.ZERO_TODAY
+        zeroYesterday = next_date(zeroToday, -1) + cls.DATE_DIS
+        from_time = zeroYesterday.strftime("%Y-%m-%d %H:%M:%S+8:00")
+        to_time = zeroToday.strftime("%Y-%m-%d %H:%M:%S+8:00")
+        return from_time, to_time
+
+    @classmethod
+    def _get_stat_date(cls, date):
+        """
+        :param date: datetime类型
+        :return: datetime类型，为输入日期的前一天
+        """
+        if date:
+            return (date - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
+        else:
+            return (datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
+
     @classmethod
     def cal_by_id(cls, item_id, need_loc=True):
+        """
+        对满足item条件限制的对象不做去重
+        :param item_id: 一个统计量对应的id
+        :param need_loc:
+        :return: 返回一个dict，有id,name,num,loc,new_loc,count_loc各个字段
+        """
+
         def check_valid_string(word):
             chars = string.ascii_letters + '_' + string.digits
             for chr in word:
                 if chr not in chars:
                     return False
             return True
+
         if cls.CACHED_RES.get(item_id):
             return cls.CACHED_RES[item_id]
 
@@ -278,7 +326,70 @@ class JournalService(object):
                 "name": item.name
             }
             res.update(loc_cnts)
-        # 如果该统计量需要的信息都在某一表内，其表达式expression与上一种情况格式不同，可有可无；
+        # 如果该统计量需要的信息都在某一表内，且该表在阿里云上，其表达式expression与上一种情况格式不同，可有可无；
+        # 有expression时，其包含若干字段，每一个字段作为一个检索数据库的限制条件
+        # id,name,num为返回结果res，类型为一个dict
+        # 如果need_loc，则res中增加各种loc,new_loc,count_loc字段
+        elif table_name in cls.ALI_LOG_STORE:
+            from_time, to_time = cls._get_alilog_time_str()
+            if not expression:
+                resp_set = cls.CACHED_ALI_LOG
+            else:
+                expression = expression.replace('=', ':')
+                expression = expression.replace(',', " and ")
+                resp_set = AliLogService.get_all_log_by_time_and_topic(from_time=from_time, to_time=to_time,
+                                                                       query=expression)
+            cnt = 0
+            gender_cnts = {}
+            for gender in cls.GENDERS:
+                gender_cnts[gender] = 0.0
+            loc_cnts = {}
+            if need_loc:
+                for loc in cls.LOC_STATED:
+                    loc_cnts[loc] = 0
+                    loc_cnts[cls._get_new_loc(loc)] = 0.0
+                    loc_cnts[cls._get_count_loc(loc)] = 0.0
+            for resp in resp_set:
+                tmp_cnt = resp.get_count()
+                if tmp_cnt:
+                    cnt += resp.get_count()
+                # 对每个location，在loc_cnts这个dict中，存三个字段，loc,new_loc,count_loc
+                if need_loc:
+                    # 只对有count且不大于1000000的才进行分location统计
+                    if cnt and cnt < 1000000:
+                        new_user_acted = {}
+                        # 遍历满足统计量限制的结果集
+                        for log in resp.logs:
+                            contents = log.get_contents()
+                            user_id = contents['user_id']
+                            gender = cls.USER_GEN.get(user_id)
+                            if gender in gender_cnts:
+                                gender_cnts[gender] += 1
+                            loc = cls.USER_LOC.get(user_id)
+                            if loc and loc in loc_cnts:
+                                loc_cnts[loc] += 1
+                            new_loc = cls.NEW_USER_LOC.get(user_id)
+                            if new_loc in cls.LOC_STATED:
+                                loc_cnts[cls._get_new_loc(new_loc)] += 1
+                                if not new_user_acted.get(user_id):
+                                    loc_cnts[cls._get_count_loc(new_loc)] += 1
+                                    new_user_acted[user_id] = 1
+                # 若无需地理位置统计
+                else:
+                    for log in resp.logs:
+                        contents = log.get_contents()
+                        user_id = contents['user_id']
+                        gender = cls.USER_GEN.get(user_id)
+                        if gender in gender_cnts:
+                            gender_cnts[gender] += 1
+            res = {
+                "id": item_id,
+                "num": cnt,
+                "name": item.name
+            }
+            res.update(loc_cnts)
+            res.update(gender_cnts)
+        # 如果该统计量需要的信息都在某一表内，且该表在数据库里，其表达式expression与上一种情况格式不同，可有可无；
         # 有expression时，其包含若干字段，每一个字段作为一个检索数据库的限制条件
         # id,name,num为返回结果res，类型为一个dict
         # 如果need_loc，则res中增加各种loc,new_loc,count_loc字段
@@ -289,14 +400,13 @@ class JournalService(object):
                 exc_str = '%s.objects(%s,%s).count()' % (table_name, time_str, expression)
             else:
                 exc_str = '%s.objects(%s,%s).limit(1000).count()' % (table_name, time_str, expression)
-            print exc_str
             # cnt表示一天时间内，满足该统计量限制的记录个数
             cnt = eval(exc_str)
             if not cnt:
                 cnt = 0
-            gender_cnts={}
+            gender_cnts = {}
             for gender in cls.GENDERS:
-                gender_cnts[gender]=0.0
+                gender_cnts[gender] = 0.0
             loc_cnts = {}
             table_user_id = {
                 "Report": "target_uid",
@@ -323,7 +433,7 @@ class JournalService(object):
                             # user_id = str(obj.target_uid)
                         else:
                             user_id = obj.user_id
-                        gender=cls.USER_GEN.get(str(user_id))
+                        gender = cls.USER_GEN.get(str(user_id))
                         if gender in gender_cnts:
                             gender_cnts[gender] += 1
                         loc = cls.USER_LOC.get(user_id)
@@ -344,7 +454,7 @@ class JournalService(object):
                         user_id = getattr(obj, table_user_id[table_name])
                     else:
                         user_id = obj.user_id
-                    gender=cls.USER_GEN.get(str(user_id))
+                    gender = cls.USER_GEN.get(str(user_id))
                     if gender in gender_cnts:
                         gender_cnts[gender] += 1
             res = {
@@ -363,66 +473,90 @@ class JournalService(object):
         return None, True
 
     @classmethod
-    def out_port_result(cls, dst_addr):
+    def out_port_result(cls, dst_addr, date):
         cls.load_user_loc()
-        print 'load succ', cls.LOC_STATED
+        print('load user location succ', cls.LOC_STATED)
         cls.load_user_gen()
-        print 'load gender succ',cls.USER_GEN
+        print('load user gender succ', cls.LOC_STATED)
         res_lst = []
         cls.DATE_DIS = datetime.timedelta(hours=0)
         cnt = 0
-        # daily_m是一个dict类型变量,id,name为抽样日活，num为最近一日日活用户数量，以及各种loc中的各种日活用户数量
-        daily_m = cls.daily_active(StatItems.objects(name=u'抽样日活').first())
-        print 'load daily_m'
+        # daily_m是一个字典,id,name为抽样日活，num为最近一日日活用户数量，以及各种loc中的各种日活用户数量
+        daily_m = cls.daily_active(StatItems.objects(name=u'抽样日活').first(), date)
+        print('load daily_m')
         # 遍历StatItems中所有类型为BUSINESS_TYPE的统计量item
         for item in StatItems.get_items_by_type(StatItems.BUSINESS_TYPE):
             try:
                 # m为根据该统计量的id计算得到的结果
                 m = cls.cal_by_id(str(item.id))
                 name, num = m['name'], m['num']
+                # ali_log.append(('name',name))
+                # ali_log.append(('num',str(num)))
                 gender_cnt = [m[gender] for gender in cls.GENDERS]
-                print gender_cnt
+                # for gender in cls.GENDERS:
+                #    ali_log.append((gender,str(m[gender])))
                 region_cnt = [m[loc] for loc in cls.LOC_STATED]
+                # for loc in cls.LOC_STATED:
+                #    ali_log.append((loc,str(m[loc])))
+                # ali_log.append(('total_avr',str(num/daily_m['num'])))
                 avr_cnt = []
                 for loc in cls.LOC_STATED:
                     if daily_m[loc]:
-                        avr_cnt.append(round(m.get(loc, 0)/daily_m[loc], 4))
+                        data = round(m.get(loc, 0) / daily_m[loc], 4)
+                        avr_cnt.append(data)
+                    #       ali_log.append((loc+'avr',str(data)))
                     else:
                         avr_cnt.append(0)
-                res_lst.append([name, num] + gender_cnt + region_cnt + [num/daily_m['num']] + avr_cnt)
+                #       ali_log.append((loc+'avr','0'))
+                res_lst.append([name, num] + gender_cnt + region_cnt + [num / daily_m['num']] + avr_cnt)
+                # AliLogService.put_daily_stat(ali_log,topic='business_type')
+                print(name, num)
                 cnt += 1
-            except Exception, e:
-                print e
+            except Exception as e:
+                print(e)
                 continue
             # if cnt >= 3:
             #     break
         # dst_addr = '/data/statres/%s.xlsx' % now_date_key()
         # ensure_path(dst_addr)
         # print res_lst
-        write_data_to_xls(dst_addr, [u'名字', u'数量'] + cls.GENDERS + cls.LOC_STATED + ['total avr'] + [el + 'avr' for el in cls.LOC_STATED], res_lst)
+        write_data_to_xls(dst_addr,
+                          [u'名字', u'数量'] + cls.GENDERS + cls.LOC_STATED + ['total avr'] + [el + 'avr' for el in
+                                                                                           cls.LOC_STATED], res_lst)
 
     @classmethod
-    def ad_res(cls, dst_addr):
+    def ad_res(cls, dst_addr, date):
         # cls.load_user_loc()
         res_lst = []
         cnt = 0
         daily_m = cls.daily_active(StatItems.objects(name=u'抽样日活').first())
         cls.DATE_DIS = datetime.timedelta(hours=-16)
+        stat_date = cls._get_stat_date(date)
         for item in StatItems.get_items_by_type(StatItems.AD_TYPE):
             try:
                 m = cls.cal_by_id(str(item.id))
+                # ali_log=[('date', stat_date)]
                 name, num = m['name'], m['num']
+                # ali_log.append(('name',name))
+                # ali_log.append(('num',str(num)))
                 region_cnt = [m[loc] for loc in cls.LOC_STATED]
+                # for loc in cls.LOC_STATED:
+                #    ali_log.append((loc,str(m[loc])))
+                # ali_log.append(('total_avr',str(num/daily_m['num'])))
                 avr_cnt = []
                 for loc in cls.LOC_STATED:
                     if daily_m[loc]:
-                        avr_cnt.append(round(m.get(loc, 0) / daily_m[loc], 4))
+                        data = round(m.get(loc, 0) / daily_m[loc], 4)
+                        avr_cnt.append(data)
+                    #        ali_log.append((loc+'avr',str(data)))
                     else:
                         avr_cnt.append(0)
+                #        ali_log.append((loc+'avr','0'))
                 res_lst.append([name, num] + region_cnt + [num / daily_m['num']] + avr_cnt)
+                # AliLogService.put_logs(ali_log,topic='ad_type',project='litatommonitor',logstore='daily-stat-monitor')
                 cnt += 1
-            except Exception, e:
-                print e
+            except Exception as e:
+                print(e)
                 continue
             # if cnt >= 3:
             #     break
