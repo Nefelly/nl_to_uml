@@ -475,8 +475,9 @@ class JournalService(object):
     @classmethod
     def out_port_result(cls, dst_addr, date):
         cls.load_user_loc()
-        print('load succ', cls.LOC_STATED)
+        print('load user location succ', cls.LOC_STATED)
         cls.load_user_gen()
+        print('load user gender succ', cls.LOC_STATED)
         res_lst = []
         cls.DATE_DIS = datetime.timedelta(hours=0)
         cnt = 0
