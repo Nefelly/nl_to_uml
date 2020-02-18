@@ -32,7 +32,7 @@ redis_client = RedisClient()['lit']
 
 class JournalService(object):
     IS_TESTING = False
-    DATE_DIS = datetime.timedelta(hours=20)
+    DATE_DIS = datetime.timedelta(hours=15)
 
     USER_LOC = {}   # user_id:language
     NEW_USER_LOC = {}   # 最近一天创建的用户为新用户 user_id:language
@@ -42,6 +42,7 @@ class JournalService(object):
     GENDERS = ['boy','girl']
     USER_GEN = {}   # user_id:gender
     ALI_LOG_STORE = ['UserAction']  # 存在ali_log_service的部分表
+    CACHED_ALI_LOG = None   # 迭代器类型
 
     @classmethod
     def load_user_loc(cls):
@@ -72,6 +73,13 @@ class JournalService(object):
         for obj in objs:
             if obj.gender in cls.GENDERS:
                 cls.USER_GEN[str(obj.id)] = obj.gender
+
+    @classmethod
+    def load_ali_log(cls, date):
+        """预装载函数，返回一个迭代器"""
+        from_time, to_time = cls._get_alilog_time_str(date)
+        cls.CACHED_ALI_LOG = AliLogService.get_all_log_by_time_and_topic(from_time=from_time,to_time=to_time)
+
 
     @classmethod
     def get_journal_items(cls, stat_type):
@@ -312,57 +320,61 @@ class JournalService(object):
                 "name": item.name
             }
             res.update(loc_cnts)
-        # 如果该统计量需要的信息都在某一表内，其表达式expression与上一种情况格式不同，可有可无；
+        # 如果该统计量需要的信息都在某一表内，且该表在阿里云上，其表达式expression与上一种情况格式不同，可有可无；
         # 有expression时，其包含若干字段，每一个字段作为一个检索数据库的限制条件
         # id,name,num为返回结果res，类型为一个dict
         # 如果need_loc，则res中增加各种loc,new_loc,count_loc字段
         elif table_name in cls.ALI_LOG_STORE:
             from_time, to_time = cls._get_alilog_time_str()
             if not expression:
-                resp = AliLogService.get_log_by_time(from_time=from_time, to_time=to_time, query='*')
+                resp_set = cls.CACHED_ALI_LOG
             else:
                 expression = expression.replace('=',':')
                 expression = expression.replace(','," and ")
-                resp = AliLogService.get_log_by_time(from_time=from_time, to_time=to_time, query=expression)
-            cnt = resp.get_count()
-            if not cnt:
-                cnt = 0
+                resp_set = AliLogService.get_all_log_by_time_and_topic(from_time=from_time, to_time=to_time, query=expression)
+            cnt = 0
             gender_cnts={}
             for gender in cls.GENDERS:
                 gender_cnts[gender]=0.0
             loc_cnts = {}
-            # 对每个location，在loc_cnts这个dict中，存三个字段，loc,new_loc,count_loc
             if need_loc:
                 for loc in cls.LOC_STATED:
                     loc_cnts[loc] = 0
                     loc_cnts[cls._get_new_loc(loc)] = 0.0
                     loc_cnts[cls._get_count_loc(loc)] = 0.0
-                # 只对有count且不大于1000000的才进行分location统计
-                if cnt and cnt < 1000000:
-                    new_user_acted = {}
-                    # 遍历满足统计量限制的结果集
+            for resp in resp_set:
+                tmp_cnt = resp.get_count()
+                if tmp_cnt:
+                    cnt += resp.get_count()
+                # 对每个location，在loc_cnts这个dict中，存三个字段，loc,new_loc,count_loc
+                if need_loc:
+                    # 只对有count且不大于1000000的才进行分location统计
+                    if cnt and cnt < 1000000:
+                        new_user_acted = {}
+                        # 遍历满足统计量限制的结果集
+                        for log in resp.logs:
+                            contents = log.get_contents()
+                            user_id = contents['user_id']
+                            gender=cls.USER_GEN.get(user_id)
+                            if gender in gender_cnts:
+                                gender_cnts[gender] += 1
+                            loc = cls.USER_LOC.get(user_id)
+                            if loc and loc in loc_cnts:
+                                loc_cnts[loc] += 1
+                            new_loc = cls.NEW_USER_LOC.get(user_id)
+                            if new_loc in cls.LOC_STATED:
+                                loc_cnts[cls._get_new_loc(new_loc)] += 1
+                                if not new_user_acted.get(user_id):
+                                    loc_cnts[cls._get_count_loc(new_loc)] += 1
+                                    new_user_acted[user_id] = 1
+                # 若无需地理位置统计
+                else:
                     for log in resp.logs:
                         contents = log.get_contents()
                         user_id = contents['user_id']
                         gender=cls.USER_GEN.get(user_id)
                         if gender in gender_cnts:
                             gender_cnts[gender] += 1
-                        loc = cls.USER_LOC.get(user_id)
-                        if loc and loc in loc_cnts:
-                            loc_cnts[loc] += 1
-                        new_loc = cls.NEW_USER_LOC.get(user_id)
-                        if new_loc in cls.LOC_STATED:
-                            loc_cnts[cls._get_new_loc(new_loc)] += 1
-                            if not new_user_acted.get(user_id):
-                                loc_cnts[cls._get_count_loc(new_loc)] += 1
-                                new_user_acted[user_id] = 1
-            else:
-                for log in resp.logs:
-                    contents = log.get_contents()
-                    user_id = contents['user_id']
-                    gender=cls.USER_GEN.get(user_id)
-                    if gender in gender_cnts:
-                        gender_cnts[gender] += 1
             res = {
                 "id": item_id,
                 "num": cnt,
@@ -370,6 +382,10 @@ class JournalService(object):
             }
             res.update(loc_cnts)
             res.update(gender_cnts)
+        # 如果该统计量需要的信息都在某一表内，且该表在数据库里，其表达式expression与上一种情况格式不同，可有可无；
+        # 有expression时，其包含若干字段，每一个字段作为一个检索数据库的限制条件
+        # id,name,num为返回结果res，类型为一个dict
+        # 如果need_loc，则res中增加各种loc,new_loc,count_loc字段
         else:
             time_str = cls._get_time_str(table_name, judge_field)
             expression = '' if not expression else expression
