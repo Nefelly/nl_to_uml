@@ -1,6 +1,6 @@
 # coding: utf-8
 import json
-import time
+from time import time
 import datetime
 import traceback
 from aliyun.log import *
@@ -57,7 +57,7 @@ class AliLogService(object):
                  logstore=DEFAULT_LOGSTORE, client=DEFAULT_CLIENT):
         logitemList = []  # LogItem list
         logItem = LogItem()
-        logItem.set_time(int(time.time()))
+        logItem.set_time(int(time()))
         logItem.set_contents(contents)
         logitemList.append(logItem)
         request = PutLogsRequest(project, logstore, topic, source, logitemList)
