@@ -66,10 +66,10 @@ def pay_inform():
 def deposit_by_activity():
     data = request.json
     activity = data.get('activity')
-    other_info = data.get('other_info')
-    if not other_info:
-        return fail(u'please request with a valid other_info')
-    data, status = AccountService.deposit_by_activity(request.user_id, activity)
+    other_info = data.get('other_info',{})
+    # if not other_info:
+    #     return fail(u'please request with a valid other_info')
+    data, status = AccountService.deposit_by_activity(request.user_id, activity, other_info)
     if not status:
         return fail(data)
     return success(data)
