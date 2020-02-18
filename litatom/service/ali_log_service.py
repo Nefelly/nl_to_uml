@@ -1,6 +1,7 @@
 # coding: utf-8
 import json
 from time import time
+import datetime
 import traceback
 from aliyun.log import *
 import logging
@@ -97,8 +98,26 @@ class AliLogService(object):
         return res
 
     @classmethod
-    def get_log_by_time(cls, project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE, from_time=int(time() - 3600),
-                        to_time=int(time()), client=DEFAULT_CLIENT, size=1000000, attributes=None, query='*'):
+    def _get_log_atom(cls, project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE, from_time=int(time() - 3600),
+                      to_time=int(time()), client=DEFAULT_CLIENT, size=1000000, attributes=None, query='*'):
+        """
+        单次读取一份log
+        :return:
+        """
+        try:
+            res = client.get_log(project=project, logstore=logstore, from_time=from_time, to_time=to_time,
+                                 size=size, query=query)
+        except LogException as e:
+            print(e)
+        else:
+            if not attributes:
+                return res
+            else:
+                return cls.select_log_by_attributes(res, attributes)
+
+    @classmethod
+    def get_log_by_time_and_topic(cls, project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE, from_time=int(time() - 3600),
+                                  to_time=int(time()), client=DEFAULT_CLIENT, size=1000000, attributes=None, query='*'):
         """
         仅通过时间筛选某logstore中的log
         :param query:
@@ -110,49 +129,50 @@ class AliLogService(object):
         e.g. "1 hour ago", "now", "yesterday 0:0:0"
         :param to_time:
         :param client:
-        :param size: 默认为-1， 即无limit
+        :param size: 最大为1000000
         :return:返回一个GetLogsResponse对象，其logs属性为一个QueriedLog列表，每个元素有三个方法get_time(),get_source(),
                 get_contents()三个方法获得log内容，contents为json格式
         """
-        try:
-            res = client.get_log(project=project, logstore=logstore, from_time=from_time, to_time=to_time, size=size,
-                                 query=query)
-        except LogException as e:
-            print(e)
-        else:
-            if not attributes:
-                return res
+        if size == -1 or size > 1000000:
+            result = None
+            if isinstance(from_time, int) and isinstance(to_time, int):
+                time_delta = (to_time - from_time) / 24.0
+                for i in range(24):
+                    start_time = from_time + i * time_delta
+                    end_time = from_time + (i + 1) * time_delta
+                    resp = cls._get_log_atom(project=project, logstore=logstore, from_time=round(start_time),
+                                             to_time=round(end_time), size=1000000, query=query, client=client)
+                    if result:
+                        result.merge(resp)
+                    else:
+                        result = resp
+                return result
+            elif isinstance(from_time, str) and isinstance(to_time, str):
+                from_time_date = datetime.datetime.strptime(from_time, "%Y-%m-%d %H:%M:%S+8:00")
+                to_time_date = datetime.datetime.strptime(to_time, "%Y-%m-%d %H:%M:%S+8:00")
+                time_delta = (to_time_date - from_time_date) / 24
+                for i in range(24):
+                    start_time = (from_time_date + i * time_delta).strftime("%Y-%m-%d %H:%M:%S+8:00")
+                    end_time = (from_time_date + (i + 1) * time_delta).strftime("%Y-%m-%d %H:%M:%S+8:00")
+                    resp = cls._get_log_atom(project=project, logstore=logstore, from_time=start_time, to_time=end_time,
+                                             size=1000000, query=query, client=client)
+                    if result:
+                        result.merge(resp)
+                    else:
+                        result = resp
+                return result
             else:
-                selected_res = cls.select_log_by_attributes(res, attributes)
-                return selected_res
+                return None
+        else:
+            return cls._get_log_atom(project=project, logstore=logstore, from_time=from_time, to_time=to_time,
+                                     size=size, query=query, client=client)
 
     @classmethod
-    def get_log_by_time_and_topic(cls, project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE, topic=DEFAULT_TOPIC,
-                                  query='*',
-                                  from_time=int(time() - 3600), to_time=int(time()), line=-1, client=DEFAULT_CLIENT):
-        """
-        通过time和topic筛选某logstore中的log
-        :param query:
-        :param line:
-        :param project:
-        :param logstore:
-        :param topic:
-        :param from_time:
-        :param to_time:
-        :param client:
-        :return: 返回一个QueriedLog列表，每个元素有三个方法get_time(),get_source(),get_contents()三个方法获得log内容，contents为json格式
-        """
-        request = GetLogsRequest(project=project, logstore=logstore, fromTime=from_time, toTime=to_time, topic=topic,
-                                 query=query, line=line)
-        res = client.get_logs(request)
-        return res
-
-    @classmethod
-    def get_all_log_by_time_and_topic(cls, project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE, client=DEFAULT_CLIENT,
+    def get_ali_log_by_time_and_topic(cls, project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE, client=DEFAULT_CLIENT,
                                       topic=DEFAULT_TOPIC, from_time=int(time() - 3600), to_time=int(time()),
                                       query='*'):
         """
-        返回所有的logs
+        返回所有的logs，注意此时query语句不能有分析语法，例如select
         :param project:
         :param logstore:
         :param client:
@@ -184,29 +204,3 @@ class AliLogService(object):
                                    query=query)
         res = client.get_histograms(req)
         return res
-
-    # @classmethod
-    # def pull_logs(cls, client=DEFAULT_CLIENT, project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE, compress=False):
-    #     res = client.get_cursor(project, logstore, 0, int(time.time() - 60))
-    #     res.log_print()
-    #     cursor = res.get_cursor()
-    #
-    #     res = client.pull_logs(project, logstore, 0, cursor, 1, compress=compress)
-    #     res.log_print()
-    #
-    #     # test readable start time
-    #     res = client.get_cursor(project, logstore, 0,
-    #                             datetime.fromtimestamp(int(time.time() - 60)).strftime('%Y-%m-%d %H:%M:%S'))
-    #     res.log_print()
-    #
-    #     # test pull_log
-    #     res = client.pull_log(project, logstore, 0,
-    #                           datetime.fromtimestamp(int(time.time() - 60)).strftime('%Y-%m-%d %H:%M:%S'),
-    #                           datetime.fromtimestamp(int(time.time())).strftime('%Y-%m-%d %H:%M:%S'))
-    #     for x in res:
-    #         x.log_print()
-
-    # # list 所有的logstore
-    # req1 = ListLogstoresRequest(project)
-    # res1 = client.list_logstores(req1)
-    # res1.log_print()

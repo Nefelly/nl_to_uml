@@ -78,7 +78,7 @@ class JournalService(object):
     def load_ali_log(cls, date):
         """预装载函数，返回一个迭代器"""
         from_time, to_time = cls._get_alilog_time_str(date)
-        cls.CACHED_ALI_LOG = AliLogService.get_all_log_by_time_and_topic(from_time=from_time,to_time=to_time)
+        cls.CACHED_ALI_LOG = AliLogService.get_ali_log_by_time_and_topic(from_time=from_time, to_time=to_time)
 
 
     @classmethod
@@ -116,7 +116,7 @@ class JournalService(object):
         gender_cnts = {}
         for gender in cls.GENDERS:
             gender_cnts[gender] = 0.0
-        resp = AliLogService.get_log_by_time(from_time=from_time,to_time=to_time,query='*|select distinct user_id,location')
+        resp = AliLogService.get_log_by_time_and_topic(from_time=from_time, to_time=to_time, query='*|select distinct user_id,location')
         cnt =0.0
         cnt += resp.get_count()
         res['num'] = cnt
@@ -331,7 +331,7 @@ class JournalService(object):
             else:
                 expression = expression.replace('=',':')
                 expression = expression.replace(','," and ")
-                resp_set = AliLogService.get_all_log_by_time_and_topic(from_time=from_time, to_time=to_time, query=expression)
+                resp_set = AliLogService.get_ali_log_by_time_and_topic(from_time=from_time, to_time=to_time, query=expression)
             cnt = 0
             gender_cnts={}
             for gender in cls.GENDERS:
