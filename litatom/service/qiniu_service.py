@@ -65,6 +65,8 @@ class QiniuService(object):
                         # logger.error('pic not past, url:%r, reason:%r', out_url, r)
                         # print r
                         return r
+                    if details and details[0].get('suggestion') == 'block':
+                        return r
                 return ''
             except Exception, e:
                 logger.error(traceback.format_exc())
