@@ -62,6 +62,7 @@ class QiniuService(object):
                     details = scenes[r].get('details', [])
                     if details and details[0]['label'] != 'normal' and details[0]['score'] > cls.JUDGE_SCORE:
                         # logger.error('pic not past, url:%r, reason:%r', out_url, r)
+                        print r
                         return r
                 return ''
             except Exception, e:
