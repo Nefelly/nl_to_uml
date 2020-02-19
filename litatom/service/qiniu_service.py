@@ -14,7 +14,7 @@ class QiniuService(object):
     AK = "KRI2AE8Cedn4hmtTQQnS9RjVhXNJEyvx2MCAbLS3"
     SK = "aDQkhwOsRKwXgAFPSRcMtVoNT5F1UolZECaPIBCm"
     AUTH = QiniuMacAuth(AK, SK)
-    JUDGE_SCORE = 0.73
+    JUDGE_SCORE = 0.93
 
     '''
     docs :https://developer.qiniu.com/censor/api/5588/image-censor
@@ -58,12 +58,12 @@ class QiniuService(object):
                     time.sleep(0.3)
                     continue
                 scenes = test_res['result']['scenes']
-                print scenes
+                # print scenes
                 for r in scenes:
                     details = scenes[r].get('details', [])
                     if details and details[0]['label'] != 'normal' and details[0]['score'] > cls.JUDGE_SCORE:
                         # logger.error('pic not past, url:%r, reason:%r', out_url, r)
-                        print r
+                        # print r
                         return r
                 return ''
             except Exception, e:
