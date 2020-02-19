@@ -10,7 +10,7 @@ blueprint = b = Blueprint('api_v1', __name__)
 b.add_url_rule('/lit/test', 'lit-test', endpoint.test.test)
 b.add_url_rule('/lit/hello', 'lit-hello', endpoint.test.hello)
 
-# 验证码
+# sms-code
 b.add_url_rule('/lit/get_sms_code', 'get-sms-code', endpoint.sms_code.get_sms_code, methods=['POST'])
 
 # user
@@ -89,7 +89,7 @@ b.add_url_rule('/lit/admin/mongo_gen_csv', 'admin-mongo_gen_csv', endpoint.admin
 b.add_url_rule('/lit/admin/mongo_gen_csv_page', 'admin-mongo_gen_csv_page', endpoint.admin.mongo_gen_csv_page)
 
 
-# 图片
+# picture
 b.add_url_rule('/lit/image/upload', 'image-upload', endpoint.oss.upload_image_from_file, methods=['POST'])
 b.add_url_rule('/lit/image/chat_upload', 'image-upload', endpoint.oss.upload_image_from_file, methods=['POST'])
 # b.add_url_rule('/lit/image/<fileid>', 'get-image', endpoint.oss.get_image)
