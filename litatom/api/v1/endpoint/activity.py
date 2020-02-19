@@ -76,7 +76,7 @@ def getDesMeta(loc='EN'):
 def share_static():
     loc = request.args.get('loc')
     r = make_response(render_template("litShare.html", ogUrl='http://test.litatom.com/api/sns/v1/lit/activity/share_static', ogImage=getImageMeta(loc), ogDescription=getDesMeta(loc)))
-    r.headers.set('Content-Type': 'text/html; charset=utf-8')
+    r.headers.set('Content-Type', 'text/html; charset=utf-8')
     # return current_app.send_static_file('share_index.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
     return r
     
