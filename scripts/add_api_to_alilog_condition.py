@@ -1,7 +1,7 @@
 import re
 
 def run():
-    with open('../litatom/api/v1/__init__.py') as f:
+    with open('litatom/api/v1/__init__.py') as f:
         print(f.readlines())
 
 
