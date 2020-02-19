@@ -20,7 +20,8 @@ from flask import (
     request,
     current_app,
     render_template,
-    redirect
+    redirect,
+    make_response
 )
 
 from ....service import (
@@ -74,9 +75,11 @@ def getDesMeta(loc='EN'):
 
 def share_static():
     loc = request.args.get('loc')
+    r = make_response(render_template("litShare.html", ogUrl='http://test.litatom.com/api/sns/v1/lit/activity/share_static', ogImage=getImageMeta(loc), ogDescription=getDesMeta(loc)))
+    r.headers.set('Content-Type': 'text/html; charset=utf-8')
     # return current_app.send_static_file('share_index.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
-    return render_template("litShare.html", ogUrl='http://test.litatom.com/api/sns/v1/lit/activity/share_static', ogImage=getImageMeta(loc), ogDescription=getDesMeta(loc))
-
+    return r
+    
 def share_info():
     result_id = request.values.get('result_id')
     analys_results = PalmService.get_res_by_result_id(result_id)
