@@ -14,7 +14,7 @@ class QiniuService(object):
     AK = "KRI2AE8Cedn4hmtTQQnS9RjVhXNJEyvx2MCAbLS3"
     SK = "aDQkhwOsRKwXgAFPSRcMtVoNT5F1UolZECaPIBCm"
     AUTH = QiniuMacAuth(AK, SK)
-    JUDGE_SCORE = 0.93
+    JUDGE_SCORE = 0.73
 
     '''
     docs :https://developer.qiniu.com/censor/api/5588/image-censor
@@ -50,7 +50,6 @@ class QiniuService(object):
                     time.sleep(0.3)
                     continue
                 test_res = json.loads(res.text_body)
-                print test_res
                 #print test_res
                 err = test_res.get('error', '')
                 if 'Rectangle invalid' in err:
@@ -66,7 +65,6 @@ class QiniuService(object):
                         return r
                 return ''
             except Exception, e:
-                print 'jhhh'
                 logger.error(traceback.format_exc())
                 logger.error('Error verify Qiniu, url: %r, err: %r, test_res:%r', out_url, e, test_res)
         return ''
