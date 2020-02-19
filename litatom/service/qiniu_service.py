@@ -50,6 +50,7 @@ class QiniuService(object):
                     time.sleep(0.3)
                     continue
                 test_res = json.loads(res.text_body)
+                print test_res
                 #print test_res
                 err = test_res.get('error', '')
                 if 'Rectangle invalid' in err:
