@@ -4,6 +4,9 @@ import time
 import traceback
 import logging
 from qiniu import Auth, QiniuMacAuth, http
+from ..service import (
+    AliLogService
+)
 from ..redis import RedisClient
 
 logger = logging.getLogger(__name__)
@@ -23,6 +26,13 @@ class QiniuService(object):
     @classmethod
     def should_pic_block_from_file_id(cls, fileid):
         return cls.should_pic_block_from_url("http://www.litatom.com/api/sns/v1/lit/image/" + fileid)
+
+    @classmethod
+    def record_fail(cls, file_id, scenes, result):
+        infos = scenes
+        infos['result'] = result
+        content = [('id', file_id), ('name', ''), ('infos', infos)]
+        AliLogService.put_logs(content, '', '', 'records', 'records')
 
     @classmethod
     def should_pic_block_from_url(cls, out_url):
@@ -66,6 +76,7 @@ class QiniuService(object):
                     #     # print r
                     #     return r
                     if details and details[0].get('suggestion') == 'block':
+                        cls.record_fail(out_url, scenes, r)
                         return r
                 return ''
             except Exception, e:

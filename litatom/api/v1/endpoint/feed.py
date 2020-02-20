@@ -45,7 +45,6 @@ def create_feed():
         if not feed_status:
             feed_info = {}
         return success({'feed_id': feed_id, 'feed_info': feed_info})
-
     return fail(feed_id)
 
 
