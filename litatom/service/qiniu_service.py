@@ -75,8 +75,8 @@ class QiniuService(object):
                     #     # logger.error('pic not past, url:%r, reason:%r', out_url, r)
                     #     # print r
                     #     return r
+                    print scenes
                     if details and details[0].get('suggestion') == 'block':
-                        print scenes
                         cls.record_fail(out_url, scenes, r)
                         return r
                 return ''
