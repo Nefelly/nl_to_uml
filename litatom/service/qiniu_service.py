@@ -2,6 +2,7 @@
 import json
 import time
 import traceback
+from copy import deepcopy
 import logging
 from qiniu import Auth, QiniuMacAuth, http
 from ..service import (
@@ -29,8 +30,9 @@ class QiniuService(object):
 
     @classmethod
     def record_fail(cls, file_id, scenes, result):
-        infos = scenes
+        infos = deepcopy(scenes)
         infos['result'] = result
+        infos = json.dumps(infos)
         content = [('id', file_id), ('name', ''), ('infos', infos)]
         AliLogService.put_logs(content, '', '', 'records', 'records')
 
