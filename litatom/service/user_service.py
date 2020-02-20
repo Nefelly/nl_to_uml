@@ -79,6 +79,10 @@ class UserService(object):
     BIO_ELN_LIMIT = 150
 
     @classmethod
+    def get_all_ids(cls):
+        return [el.user_id for el in UserSetting.objects()]
+
+    @classmethod
     def login_job(cls, user):
         """
         登录的动作

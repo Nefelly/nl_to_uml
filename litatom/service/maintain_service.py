@@ -1,19 +1,21 @@
 # coding: utf-8
 import json
 import time
+import datetime
 import traceback
 import logging
 from ..model import (
     FollowingFeed,
     UserMessage,
     User,
-    UserSetting
+    UserConversation
 )
 from ..service import (
     GlobalizationService,
     AnoyMatchService,
     VoiceMatchService,
-    VideoMatchService
+    VideoMatchService,
+    UserService
 )
 from ..key import (
     REDIS_VOICE_ANOY_CHECK_POOL,
@@ -101,7 +103,7 @@ class MaintainService(object):
         try:
             ids = FollowingFeed.objects(feed_create_time__gte=judge).distinct('user_id')
         except:
-            ids = [el.user_id for el in UserSetting.objects()]
+            ids = UserService.get_all_ids()
         clear_cnt = 0
 
         for _ in ids:
@@ -118,7 +120,8 @@ class MaintainService(object):
 
     @classmethod
     def clear_user_conversations(cls):
-        return
+        judge = datetime.datetime.now() - datetime.timedelta(days=15)
+        print UserConversation.objects(create_time__lte=judge).count()
 
     @classmethod
     def clear_UserMessages(cls):
