@@ -33,7 +33,7 @@ class QiniuService(object):
         infos = deepcopy(scenes)
         infos['result'] = result
         infos = json.dumps(infos)
-        content = [('id', file_id), ('name', ''), ('infos', infos)]
+        content = [('id', file_id), ('name', 'pulb'), ('infos', infos)]
         AliLogService.put_logs(content, '', '', 'records', 'records')
 
     @classmethod
@@ -77,7 +77,7 @@ class QiniuService(object):
                     #     # logger.error('pic not past, url:%r, reason:%r', out_url, r)
                     #     # print r
                     #     return r
-                    print scenes
+                    # print scenes
                     if details and details[0].get('suggestion') == 'block':
                         cls.record_fail(out_url, scenes, r)
                         return r
