@@ -1,9 +1,11 @@
 import re
+import os
 
 
 def run():
     res = []
-    with open('../litatom/api/v1/__init__.py') as f:
+    file_path = os.getcwd() + '/litatom/api/v1/__init__.py'
+    with open(file_path) as f:
         lines = f.readlines()
         valid_head_pattern = 'b.add_url_rule\(\'/lit/'
         valid_body_pattern = '[a-z0-9_]+[/\']'
