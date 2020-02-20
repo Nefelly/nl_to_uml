@@ -76,10 +76,12 @@ class QiniuService(object):
                     #     # print r
                     #     return r
                     if details and details[0].get('suggestion') == 'block':
+                        print scenes
                         cls.record_fail(out_url, scenes, r)
                         return r
                 return ''
             except Exception, e:
+                print traceback.format_exc()
                 logger.error(traceback.format_exc())
                 logger.error('Error verify Qiniu, url: %r, err: %r, test_res:%r', out_url, e, test_res)
         return ''
