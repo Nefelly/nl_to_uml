@@ -16,6 +16,8 @@ def run():
         condition_tail_post = ' AND request_method:POST'
         for line in lines:
             # print(line)
+            if line.strip()[0] == '#':
+                continue
             head = re.match(valid_head_pattern, line)
             if head:
                 end_head_pos = head.span()[1]
