@@ -182,13 +182,18 @@ class UserService(object):
         return True
 
     @classmethod
-    def alert_to_user(cls, user_id, alert_type=None):
-        msg = GlobalizationService.get_region_word('alert_word')
-        cls.msg_to_user(msg, user_id)
+    def add_alert_num(cls, user_id):
         should_block = UserModel.add_alert_num(user_id)
         if should_block:
             cls._forbid_action(user_id, 3 * ONE_DAY)
             UserRecord.add_spam_forbidden(user_id)
+        return should_block
+
+    @classmethod
+    def alert_to_user(cls, user_id, alert_type=None):
+        msg = GlobalizationService.get_region_word('alert_word')
+        cls.msg_to_user(msg, user_id)
+        should_block = cls.add_alert_num(user_id)
         return should_block
 
     @classmethod

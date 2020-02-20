@@ -87,6 +87,7 @@ class FeedService(object):
                 UserService.msg_to_user(
                     u'Your post have been deleted due to reason: %s. Please keep your feed positive.' % reason,
                     feed.user_id)
+                UserService.add_alert_num(feed.user_id)
                 FeedLike.del_by_feedid(feed_id)
                 FeedComment.objects(feed_id=feed_id).delete()
                 feed.delete()
