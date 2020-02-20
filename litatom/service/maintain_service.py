@@ -117,11 +117,10 @@ class MaintainService(object):
             except:
                 continue
 
-
     @classmethod
     def clear_user_conversations(cls):
-        judge = datetime.datetime.now() - datetime.timedelta(days=15)
-        print UserConversation.objects(create_time__lte=judge).count()
+        judge = datetime.datetime.now() - datetime.timedelta(days=30)
+        UserConversation.objects(create_time__lte=judge).delete()
 
     @classmethod
     def clear_UserMessages(cls):
