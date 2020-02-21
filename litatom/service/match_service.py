@@ -471,7 +471,7 @@ class MatchService(object):
         if not gender:
             return PROFILE_NOT_COMPLETE, False
         fake_id, pwd = cls._get_anoy_id(user)
-        return fake_id
+        return fake_id, True
 
     @classmethod
     def create_fakeid(cls, user_id):
@@ -657,7 +657,10 @@ class MatchService(object):
 
     @classmethod
     def _fakeid_by_uid(cls, user_id):
-        return redis_client.get(cls.TYPE_UID_FAKE_ID.format(user_id=user_id))
+        fakeid = redis_client.get(cls.TYPE_UID_FAKE_ID.format(user_id=user_id))
+        if not fakeid:
+            fakeid, status = cls.pure_get_fake_id(user_id)
+        return fakeid
 
     @classmethod
     def _other_fakeid_byfake_id(cls, fake_id):
