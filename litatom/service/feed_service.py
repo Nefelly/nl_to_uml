@@ -78,7 +78,6 @@ class FeedService(object):
             for pic in pics:
                 reason = QiniuService.should_pic_block_from_file_id(pic)
                 if reason:
-                    print reason
                     break
         feed = Feed.get_by_id(feed_id)
         if feed:
@@ -88,6 +87,7 @@ class FeedService(object):
                 UserService.msg_to_user(
                     u'Your post have been deleted due to reason: %s. Please keep your feed positive.' % reason,
                     feed.user_id)
+                UserService.add_alert_num(feed.user_id)
                 FeedLike.del_by_feedid(feed_id)
                 FeedComment.objects(feed_id=feed_id).delete()
                 feed.delete()

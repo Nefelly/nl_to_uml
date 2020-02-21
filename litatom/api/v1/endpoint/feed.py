@@ -41,7 +41,10 @@ def create_feed():
         return jsonify(FailedLackOfField)
     feed_id, status = FeedService.create_feed(request.user_id, content, pics, audios)
     if status:
-        return success({'feed_id': feed_id})
+        feed_info, feed_status =  FeedService.get_feed_info(request.user_id, feed_id)
+        if not feed_status:
+            feed_info = {}
+        return success({'feed_id': feed_id, 'feed_info': feed_info})
     return fail(feed_id)
 
 
