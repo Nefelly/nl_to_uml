@@ -24,7 +24,7 @@ class MonitorService(object):
             lines = f.readlines()
             valid_head_pattern = 'b.add_url_rule\(\'/lit/'
             valid_body_pattern = '[a-z0-9_]+[/\']'
-            uri_pattern = "'.+'"
+            uri_pattern = "'[^']+'"
             post_pattern = 'POST'
             name_head = 'ALILOG'
             condition_head = 'request_uri:/api/sns/v1/lit'
