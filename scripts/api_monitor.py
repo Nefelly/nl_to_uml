@@ -36,7 +36,7 @@ def accum_stat(resp_set):
         for logs in resp.logs:
             contents = logs.get_contents()
             resp_time = contents['upstream_response_time']
-            if resp_time:
+            if resp_time != '-':
                 sum_resp_time += float(resp_time)
             status = int(contents['status'])
             if status in status_set:
@@ -50,8 +50,10 @@ def accum_stat(resp_set):
 
 
 def put_stat_to_alilog(name, time, avg_resp_time, called_num, error_rate, status_num):
-    contents = [('from_time', AliLogService.datetime_to_alitime(time[0])), ('to_time', AliLogService.datetime_to_alitime(time[1])),
-                ('avg_response_time', str(avg_resp_time)), ('called_num', str(called_num)), ('error_rate', str(error_rate))]
+    contents = [('from_time', AliLogService.datetime_to_alitime(time[0])),
+                ('to_time', AliLogService.datetime_to_alitime(time[1])),
+                ('avg_response_time', str(avg_resp_time)), ('called_num', str(called_num)),
+                ('error_rate', str(error_rate))]
     if status_num:
         status_str = ''
         for status in status_num.keys():
