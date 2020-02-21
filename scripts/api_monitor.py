@@ -52,14 +52,15 @@ def accum_stat(resp_set):
 def put_stat_to_alilog(name, time, avg_resp_time, called_num, error_rate, status_num):
     contents = [('from_time', time[0]), ('to_time', time[1]), ('avg_response_time', avg_resp_time),
                 ('called_num', called_num), ('error_rate', error_rate)]
-    status_str = ''
-    for status in status_num.keys():
-        if status_num[status] > 0:
-            status_str += status
-            status_str += ':'
-            status_str += status_num[status]
-            status_str += ' '
-    contents.append(('status_stat', status_str))
+    if status_num:
+        status_str = ''
+        for status in status_num.keys():
+            if status_num[status] > 0:
+                status_str += status
+                status_str += ':'
+                status_str += status_num[status]
+                status_str += ' '
+        contents.append(('status_stat', status_str))
     AliLogService.put_logs(contents, project='litatommonitor', logstore='up-res-time-monitor', topic=name)
 
 
