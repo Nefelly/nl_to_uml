@@ -252,6 +252,15 @@ def is_alphabet(uchar):
     else:
         return False
 
+def str2float(str):
+    """转换str中第一个浮点数，没有数返回None"""
+    pattern = '[0-9]+\.[0-9]+'
+    res = re.search(pattern, str)
+    if res:
+        res = res.span()
+        return float(str[res[0]:res[1] - 1])
+    return None
+
 
 def dsn2srv(dsn):
     parsed = urlparse.urlparse(dsn)
