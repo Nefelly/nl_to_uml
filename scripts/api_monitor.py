@@ -1,7 +1,7 @@
 from litatom.service import AliLogService
 from . import add_api_to_alilog_condition
 from datetime import *
-from litatom.util import *
+from litatom.util import str2float
 
 file_set = ['/litatom/api/v1/__init__.py']
 status_set = {200, 400, 404, 405, 408, 499, 500, 502, 503, 504}
