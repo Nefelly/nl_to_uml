@@ -119,6 +119,26 @@ class MaintainService(object):
 
     @classmethod
     def clear_user_conversations(cls):
+        yestoday = datetime.datetime.now() - datetime.timedelta(days=1)
+        try:
+            ids = UserConversation.objects(create_time__gte=yestoday).distinct('user_id')
+        except:
+            ids = UserService.get_all_ids()
+        print len(ids)
+        clear_cnt = 0
+        maintain_num = 60
+        clear_interval = 30
+        judge_num = maintain_num + clear_interval
+        for _ in ids:
+            # try:
+                cnt = UserConversation.objects(user_id=_).count()
+                if cnt > judge_num:
+                    UserConversation.objects(user_id=_).order_by('-create_time').skip(maintain_num).delete()
+                    clear_cnt += 1
+                    if clear_cnt % 100 == 0:
+                        print clear_cnt
+            # except:
+            #     continue
         judge = datetime.datetime.now() - datetime.timedelta(days=30)
         UserConversation.objects(create_time__lte=judge).delete()
 
