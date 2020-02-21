@@ -213,3 +213,7 @@ class AccountService(object):
     @classmethod
     def get_product_info(cls, user_id=None):
         return cls.PRODUCT_INFOS, True
+
+    @classmethod
+    def get_pay_activities(cls):
+        return cls.PAY_ACTIVITIES, True
