@@ -43,8 +43,10 @@ def accum_stat(resp_set):
                 status_num[status] += 1
                 if status >= 400:
                     error_num += 1
-
-    return sum_resp_time / called_num, called_num, error_num / called_num, status_num
+    if called_num > 0:
+        return sum_resp_time / called_num, called_num, error_num / called_num, status_num
+    else:
+        return 0, 0, 0, None
 
 
 def put_stat_to_alilog(name, time, avg_resp_time, called_num, error_rate, status_num):
