@@ -43,7 +43,7 @@ class FollowingFeedService(object):
     @classmethod
     def _add_feed(cls, feed):
         uids = cls._user_ids_by_feed(feed)
-        uids.append(feed.user_id)
+        # uids.append(feed.user_id)
         for uid in uids:
             FollowingFeed.add_feed(uid, feed)
 
