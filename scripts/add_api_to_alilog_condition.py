@@ -22,6 +22,8 @@ def get_query_is(file_path):
         condition_tail_get = ' AND request_method:GET'
         condition_tail_post = ' AND request_method:POST'
         for line in lines:
+            if not line or not line.strip():
+                continue
             if line.strip()[0] == '#':
                 continue
             head = re.match(valid_head_pattern, line)
