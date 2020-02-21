@@ -12,8 +12,8 @@ def fetch_log(query):
     :param query:
     :return:一个迭代器，迭代一个GetLogsResponse对象; 一个tuple描述起止时间
     """
-    start_time = datetime.now()
-    end_time = start_time + timedelta(minutes=-1)
+    end_time = datetime.now()
+    start_time = end_time + timedelta(minutes=-1)
     return AliLogService.get_log_by_time_and_topic(project='litatom', logstore='litatomstore', query=query,
                                                    from_time=AliLogService.datetime_to_alitime(start_time),
                                                    to_time=AliLogService.datetime_to_alitime(end_time)), (
