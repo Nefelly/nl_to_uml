@@ -38,14 +38,15 @@ class MonitorService(object):
                 head = re.match(valid_head_pattern, line)
                 if head:
                     end_head_pos = head.span()[1]
-                    post_tag = False
-                    if re.search(post_pattern, line):
-                        post_tag = True
-                    line = line[end_head_pos:]
                     uri = re.search(uri_pattern, line)
                     if uri:
                         uri = uri.span()
                         uri = line[uri[0]:uri[1]]
+
+                    post_tag = False
+                    if re.search(post_pattern, line):
+                        post_tag = True
+                    line = line[end_head_pos:]
                     body = []
                     while True:
                         body_part = re.match(valid_body_pattern, line)
