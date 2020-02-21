@@ -258,7 +258,7 @@ def str2float(str):
     res = re.search(pattern, str)
     if res:
         res = res.span()
-        return str[res[0]:res[1] - 1]
+        return float(str[res[0]:res[1] - 1])
     return None
 
 
