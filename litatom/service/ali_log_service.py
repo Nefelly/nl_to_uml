@@ -32,12 +32,21 @@ class AliLogService(object):
     DEFAULT_TOPIC = "default_topic"
     DEFAULT_SOURCE = "default_source"  # 日志来源机器ip
 
-    '''
-    从daily_stat文件地址获取当前日期
-    '''
+    @classmethod
+    def datetime_to_alitime(cls, t):
+        return t.strftime("%Y-%m-%d %H:%M:%S+8:00")
+
+    @classmethod
+    def alitime_to_datetime(cls, ali_time):
+        return datetime.datetime.strptime(ali_time, "%Y-%m-%d %H:%M:%S+8:00")
 
     @classmethod
     def _read_date_from_addr(cls, addr):
+        """
+        从daily_stat文件地址获取当前日期
+        :param addr:
+        :return:
+        """
         import re
         pattern0 = "/data/statres/"
         res = re.sub(pattern0, '', addr)
@@ -143,12 +152,12 @@ class AliLogService(object):
                                              to_time=round(end_time), size=1000000, query=query, client=client)
                     yield resp
             elif isinstance(from_time, str) and isinstance(to_time, str):
-                from_time_date = datetime.datetime.strptime(from_time, "%Y-%m-%d %H:%M:%S+8:00")
-                to_time_date = datetime.datetime.strptime(to_time, "%Y-%m-%d %H:%M:%S+8:00")
+                from_time_date = cls.alitime_to_datetime(from_time)
+                to_time_date = cls.alitime_to_datetime(to_time)
                 time_delta = (to_time_date - from_time_date) / 24
                 for i in range(24):
-                    start_time = (from_time_date + i * time_delta).strftime("%Y-%m-%d %H:%M:%S+8:00")
-                    end_time = (from_time_date + (i + 1) * time_delta).strftime("%Y-%m-%d %H:%M:%S+8:00")
+                    start_time = cls.datetime_to_alitime(from_time_date + i * time_delta)
+                    end_time = cls.datetime_to_alitime(from_time_date + (i + 1) * time_delta)
                     resp = cls._get_log_atom(project=project, logstore=logstore, from_time=start_time, to_time=end_time,
                                              size=1000000, query=query, client=client)
                     yield resp
