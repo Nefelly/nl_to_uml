@@ -32,6 +32,7 @@ def accum_stat(resp_set):
     for status in status_set:
         status_num[status] = 0
     for resp in resp_set:
+        resp.log_print()
         called_num += resp.get_count()
         for logs in resp.logs:
             contents = logs.get_contents()
