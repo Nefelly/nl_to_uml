@@ -36,7 +36,8 @@ def accum_stat(resp_set):
         for logs in resp.logs:
             contents = logs.get_contents()
             resp_time = contents['upstream_response_time']
-            sum_resp_time += float(resp_time)
+            if resp_time:
+                sum_resp_time += float(resp_time)
             status = int(contents['status'])
             if status in status_set:
                 status_num[status] += 1
