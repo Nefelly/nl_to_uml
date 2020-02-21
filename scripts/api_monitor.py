@@ -1,6 +1,7 @@
 from litatom.service import AliLogService
 from . import add_api_to_alilog_condition
 from datetime import *
+from litatom.util import *
 
 file_set = ['/litatom/api/v1/__init__.py']
 status_set = {200, 400, 404, 405, 408, 499, 500, 502, 503, 504}
@@ -36,8 +37,9 @@ def accum_stat(resp_set):
         for logs in resp.logs:
             contents = logs.get_contents()
             resp_time = contents['upstream_response_time']
-            if resp_time != '-':
-                sum_resp_time += float(resp_time)
+            resp_time = str2float(resp_time)
+            if resp_time:
+                sum_resp_time += resp_time
             status = int(contents['status'])
             if status in status_set:
                 status_num[status] += 1
