@@ -153,7 +153,6 @@ class MonitorService(object):
     @classmethod
     def read_stat(cls, logs):
         for log in logs:
-            log.log_print()
             contents = log.get_contents()
             try:
                 avg_response_time = contents['avg_resp_time']
