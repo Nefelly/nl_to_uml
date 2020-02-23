@@ -70,10 +70,7 @@ class AliLogService(object):
         logItem.set_contents(contents)
         logitemList.append(logItem)
         request = PutLogsRequest(project, logstore, topic, source, logitemList)
-        try:
-            response = client.put_logs(request)
-        except Exception, e:
-            return None
+        response = client.put_logs(request)
         return response.get_all_headers()
 
     @classmethod
