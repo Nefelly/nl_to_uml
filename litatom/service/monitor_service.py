@@ -153,17 +153,13 @@ class MonitorService(object):
     @classmethod
     def read_stat(cls, logs):
         for log in logs:
-            log.log_print()
             contents = log.get_contents()
-            # try:
             called_num = contents['called_num']
             if not called_num :
                 return 0, 0, 0
             avg_response_time = contents['avg_response_time']
             avg_status = contents['avg_status']
             return avg_response_time, called_num, avg_status
-            # except KeyError as e:
-            #     return 0, 0, 0
 
     @classmethod
     def put_stat_2_alilog(cls, name, time, avg_resp_time, called_num, avg_status, uri, is_post):
