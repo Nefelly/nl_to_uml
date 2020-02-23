@@ -150,15 +150,14 @@ class MonitorService(object):
             contents.append(('status_stat', status_str))
         AliLogService.put_logs(contents, project='litatommonitor', logstore='up-res-time-monitor', topic=name)
 
-    @classmethod
-    def read_stat
+    # @classmethod
+    # def read_stat
 
     @classmethod
     def monitor_report(cls):
-
         query_list = cls.get_query_from_files(cls.FILE_SET)
         for query, name, uri, is_post in query_list:
             resp_set, time = cls.fetch_log(query+cls.QUERY_ANALYSIS)
-            # avg_resp_time, called_num, error_rate, status_num = cls.accum_stat(resp_set)
+            avg_resp_time, called_num, error_rate, status_num = cls.accum_stat(resp_set)
             cls.put_stat_to_alilog(name, time, avg_resp_time, called_num, error_rate, status_num, uri, is_post)
 
