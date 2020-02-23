@@ -8,8 +8,7 @@ def run():
                                                 'count(1) as called_num,avg(status) as avg_status',
                                          from_time='2020-02-23 20:30:00+8:00',
                                          to_time='2020-02-23 20:31:00+8:00')
-    for res in res_set:
-        res.log_print()
+    res_set.log_print()
 
 
 if __name__ == '__main__':
