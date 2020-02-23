@@ -153,6 +153,7 @@ class MonitorService(object):
     @classmethod
     def read_stat(cls, logs):
         for log in logs:
+            log.log_print()
             contents = log.get_contents()
             # try:
             called_num = contents['called_num']
