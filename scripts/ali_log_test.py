@@ -8,6 +8,11 @@ def run():
                                                 'count(1) as called_num,avg(status) as avg_status',
                                          from_time='2020-02-23 20:30:00+8:00',
                                          to_time='2020-02-23 20:31:00+8:00')
+    for log in res_set.logs:
+        contents=log.get_contents()
+        print(contents['avg_resp_time'])
+        print(contents['called_num'])
+        print(contents['avg_status'])
     res_set.log_print()
 
 
