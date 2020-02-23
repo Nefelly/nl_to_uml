@@ -97,7 +97,7 @@ class MonitorService(object):
         start_time = end_time + timedelta(minutes=-1)
         return AliLogService.get_log_atom(project='litatom', logstore='litatomstore', query=query,
                                           from_time=AliLogService.datetime_to_alitime(start_time),
-                                          to_time=AliLogService.datetime_to_alitime(end_time)), (
+                                          to_time=AliLogService.datetime_to_alitime(end_time)).logs, (
                    start_time, end_time)
 
     @classmethod
@@ -151,9 +151,9 @@ class MonitorService(object):
         AliLogService.put_logs(contents, project='litatommonitor', logstore='up-res-time-monitor', topic=name)
 
     @classmethod
-    def read_stat(cls, resp):
-        logs = resp.get_logs()
+    def read_stat(cls, logs):
         for log in logs:
+            log.log_print()
             contents = log.get_contents()
             avg_response_time = contents['avg_resp_time']
             called_num = contents['called_num']
@@ -175,8 +175,8 @@ class MonitorService(object):
     def monitor_report(cls):
         query_list = cls.get_query_from_files(cls.FILE_SET)
         for query, name, uri, is_post in query_list:
-            resp, time = cls.fetch_log(query + cls.QUERY_ANALYSIS)
+            logs, time = cls.fetch_log(query + cls.QUERY_ANALYSIS)
             # avg_resp_time, called_num, error_rate, status_num = cls.accum_stat(resp_set)
-            avg_response_time, called_num, avg_status = cls.read_stat(resp)
+            avg_response_time, called_num, avg_status = cls.read_stat(logs)
             cls.put_stat_2_alilog(name, time, avg_response_time, called_num, avg_status, uri, is_post)
             # cls.put_stat_to_alilog(name, time, avg_resp_time, called_num, error_rate, status_num, uri, is_post)
