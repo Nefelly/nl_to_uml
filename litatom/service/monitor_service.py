@@ -7,8 +7,10 @@ from ..service import AliLogService
 
 
 class MonitorService(object):
-    file_set = ['/litatom/api/v1/__init__.py']
-    status_set = {200, 400, 404, 405, 408, 499, 500, 502, 503, 504}
+    FILE_SET = ['/litatom/api/v1/__init__.py']
+    STATUS_SET = {200, 400, 404, 405, 408, 499, 500, 502, 503, 504}
+    QUERY_ANALYSIS = '|SELECT avg(upstream_response_time) as avg_response_time,' \
+                     'count(1) as called_num,avg(status) as avg_status'
 
     @classmethod
     def get_query_is(cls, file_path):
@@ -108,7 +110,7 @@ class MonitorService(object):
         called_num = 0
         error_num = 0.0
         status_num = {}
-        for status in cls.status_set:
+        for status in cls.STATUS_SET:
             status_num[status] = 0
         for resp in resp_set:
             called_num += resp.get_count()
@@ -119,7 +121,7 @@ class MonitorService(object):
                 if resp_time:
                     sum_resp_time += resp_time
                 status = int(contents['status'])
-                if status in cls.status_set:
+                if status in cls.STATUS_SET:
                     status_num[status] += 1
                     if status >= 400:
                         error_num += 1
@@ -149,11 +151,14 @@ class MonitorService(object):
         AliLogService.put_logs(contents, project='litatommonitor', logstore='up-res-time-monitor', topic=name)
 
     @classmethod
+    def read_stat
+
+    @classmethod
     def monitor_report(cls):
-        query_head = '|select'
-        query_list = cls.get_query_from_files(cls.file_set)
+
+        query_list = cls.get_query_from_files(cls.FILE_SET)
         for query, name, uri, is_post in query_list:
-            resp_set, time = cls.fetch_log(query)
-            avg_resp_time, called_num, error_rate, status_num = cls.accum_stat(resp_set)
+            resp_set, time = cls.fetch_log(query+cls.QUERY_ANALYSIS)
+            # avg_resp_time, called_num, error_rate, status_num = cls.accum_stat(resp_set)
             cls.put_stat_to_alilog(name, time, avg_resp_time, called_num, error_rate, status_num, uri, is_post)
 
