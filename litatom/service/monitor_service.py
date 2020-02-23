@@ -159,7 +159,7 @@ class MonitorService(object):
             called_num = contents['called_num']
             if called_num == '0':
                 return 0, 0, 0
-            avg_response_time = contents['avg_resp_time']
+            avg_response_time = contents['avg_response_time']
             avg_status = contents['avg_status']
             return avg_response_time, called_num, avg_status
             # except KeyError as e:
