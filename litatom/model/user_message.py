@@ -47,7 +47,11 @@ class UserConversation(Document):
     '''
     用户登录时给用户推送的消息
     '''
-
+    meta = {
+        'strict': False,
+        'db_alias': 'relations',
+        'shard_key': {'user_id': 'hashed'}
+    }
     user_id = StringField(required=True)
     other_user_id = StringField()
     conversation_id = StringField(required=True)
