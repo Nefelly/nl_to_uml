@@ -156,7 +156,7 @@ class MonitorService(object):
             contents = log.get_contents()
             # try:
             called_num = contents['called_num']
-            if called_num == 0:
+            if called_num == '0':
                 return 0, 0, 0
             avg_response_time = contents['avg_resp_time']
             avg_status = contents['avg_status']
