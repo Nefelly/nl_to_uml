@@ -150,6 +150,7 @@ class MonitorService(object):
 
     @classmethod
     def monitor_report(cls):
+        query_head = '|select'
         query_list = cls.get_query_from_files(cls.file_set)
         for query, name, uri, is_post in query_list:
             resp_set, time = cls.fetch_log(query)
