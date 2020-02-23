@@ -89,9 +89,9 @@ class MonitorService(object):
     @classmethod
     def fetch_log(cls, query):
         """
-        根据输入的query，找出litatomstore近一分钟的日志
+        根据输入的query，找出litatomstore近一分钟的日志；由于要直接做分析，所以调用get_log_atom接口，结果总数不能超过1000000
         :param query:
-        :return:一个迭代器，迭代一个GetLogsResponse对象; 一个tuple描述起止时间
+        :return:一个GetLogsResponse对象
         """
         end_time = datetime.now()
         start_time = end_time + timedelta(minutes=-1)
@@ -100,67 +100,69 @@ class MonitorService(object):
                                           to_time=AliLogService.datetime_to_alitime(end_time)).logs, (
                    start_time, end_time)
 
-    @classmethod
-    def accum_stat(cls, resp_set):
-        """
-        :param resp_set: 一个迭代器，迭代一个GetLogsResponse对象
-        :return:平均响应时间，调用次数，错误返回频率，状态码计数
-        """
-        sum_resp_time = 0.0
-        called_num = 0
-        error_num = 0.0
-        status_num = {}
-        for status in cls.STATUS_SET:
-            status_num[status] = 0
-        for resp in resp_set:
-            called_num += resp.get_count()
-            for logs in resp.logs:
-                contents = logs.get_contents()
-                resp_time = contents['upstream_response_time']
-                resp_time = str2float(resp_time)
-                if resp_time:
-                    sum_resp_time += resp_time
-                status = int(contents['status'])
-                if status in cls.STATUS_SET:
-                    status_num[status] += 1
-                    if status >= 400:
-                        error_num += 1
-        if called_num > 0:
-            return sum_resp_time / called_num, called_num, error_num / called_num, status_num
-        else:
-            return 0, 0, 0, None
+    # @classmethod
+    # def accum_stat(cls, resp_set):
+    #     """
+    #     :param resp_set: 一个迭代器，迭代一个GetLogsResponse对象
+    #     :return:平均响应时间，调用次数，错误返回频率，状态码计数
+    #     """
+    #     sum_resp_time = 0.0
+    #     called_num = 0
+    #     error_num = 0.0
+    #     status_num = {}
+    #     for status in cls.STATUS_SET:
+    #         status_num[status] = 0
+    #     for resp in resp_set:
+    #         called_num += resp.get_count()
+    #         for logs in resp.logs:
+    #             contents = logs.get_contents()
+    #             resp_time = contents['upstream_response_time']
+    #             resp_time = str2float(resp_time)
+    #             if resp_time:
+    #                 sum_resp_time += resp_time
+    #             status = int(contents['status'])
+    #             if status in cls.STATUS_SET:
+    #                 status_num[status] += 1
+    #                 if status >= 400:
+    #                     error_num += 1
+    #     if called_num > 0:
+    #         return sum_resp_time / called_num, called_num, error_num / called_num, status_num
+    #     else:
+    #         return 0, 0, 0, None
 
-    @classmethod
-    def put_stat_to_alilog(cls, name, time, avg_resp_time, called_num, error_rate, status_num, uri, is_post):
-        contents = [('from_time', AliLogService.datetime_to_alitime(time[0])), ('request_uri', uri),
-                    ('to_time', AliLogService.datetime_to_alitime(time[1])), ('error_rate', str(error_rate)),
-                    ('avg_response_time', str(avg_resp_time)), ('called_num', str(called_num))]
-        if is_post:
-            contents.append(('request_method', 'POST'))
-        else:
-            contents.append(('request_method', 'GET'))
-        if status_num:
-            status_str = ''
-            for status in status_num.keys():
-                if status_num[status] > 0:
-                    status_str += str(status)
-                    status_str += ':'
-                    status_str += str(status_num[status])
-                    status_str += ' '
-            contents.append(('status_stat', status_str))
-        AliLogService.put_logs(contents, project='litatommonitor', logstore='up-res-time-monitor', topic=name)
+    # @classmethod
+    # def put_stat_to_alilog(cls, name, time, avg_resp_time, called_num, error_rate, status_num, uri, is_post):
+    #     contents = [('from_time', AliLogService.datetime_to_alitime(time[0])), ('request_uri', uri),
+    #                 ('to_time', AliLogService.datetime_to_alitime(time[1])), ('error_rate', str(error_rate)),
+    #                 ('avg_response_time', str(avg_resp_time)), ('called_num', str(called_num))]
+    #     if is_post:
+    #         contents.append(('request_method', 'POST'))
+    #     else:
+    #         contents.append(('request_method', 'GET'))
+    #     if status_num:
+    #         status_str = ''
+    #         for status in status_num.keys():
+    #             if status_num[status] > 0:
+    #                 status_str += str(status)
+    #                 status_str += ':'
+    #                 status_str += str(status_num[status])
+    #                 status_str += ' '
+    #         contents.append(('status_stat', status_str))
+    #     AliLogService.put_logs(contents, project='litatommonitor', logstore='up-res-time-monitor', topic=name)
 
     @classmethod
     def read_stat(cls, logs):
         for log in logs:
             contents = log.get_contents()
             try:
-                avg_response_time = contents['avg_resp_time']
                 called_num = contents['called_num']
+                if not called_num:
+                    return 0,0,0
+                avg_response_time = contents['avg_resp_time']
                 avg_status = contents['avg_status']
                 return avg_response_time, called_num, avg_status
-            except KeyError as e:
-                return 0, 0, 0
+            # except KeyError as e:
+            #     return 0, 0, 0
 
     @classmethod
     def put_stat_2_alilog(cls, name, time, avg_resp_time, called_num, avg_status, uri, is_post):
