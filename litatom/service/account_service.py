@@ -20,8 +20,8 @@ from ..service import (
     AntiSpamService,
     PalmService,
     UserService,
-    TrackActionService,
-    AdService
+    AdService,
+    AliLogService
 )
 from ..key import (
     REDIS_ACCOUNT_ACTION
@@ -80,27 +80,32 @@ class AccountService(object):
         unban_pay = 100
         if not UserService.is_forbbiden(user_id):
             return u'you are not forbbiden', False
-        msg = cls.change_diamonds(user_id, -unban_pay)
+        msg = cls.change_diamonds(user_id, -unban_pay, 'unban_by_diamonds')
         if not msg:
             if UserService.unban_user(user_id):
                  return None, True
-            cls.change_diamonds(user_id, unban_pay)
-            return u'unban failed', False
         return msg, False
 
     @classmethod
-    def change_diamonds(cls, user_id, diamonds):
+    def record_to_ali(cls, user_id, name, diamonds):
+        content = [('user_id', user_id), ('name', name), ('diamonds', diamonds)]
+        AliLogService.put_logs(content, '', '', 'litatom-account', 'account_flow')
+
+    @classmethod
+    def change_diamonds(cls, user_id, diamonds, name='unknown'):
         user_account = UserAccount.get_by_user_id(user_id)
         if not user_account:
             user_account = UserAccount.create_account(user_id)
         if diamonds >= 0:
             user_account.diamonds += diamonds
             user_account.save()
+            cls.record_to_ali(user_id, name, diamonds)
             return None
         else:
             if user_account.diamonds + diamonds >= 0:
                 user_account.diamonds += diamonds
                 user_account.save()
+                cls.record_to_ali(user_id, name, diamonds)
                 return None
             return cls.ERR_DIAMONDS_NOT_ENOUGH
 
@@ -167,7 +172,7 @@ class AccountService(object):
             data, status = PalmService.can_get_result(user_id)
             if not status:
                 return data, False
-        err_msg = cls.change_diamonds(user_id, -diamonds)
+        err_msg = cls.change_diamonds(user_id, -diamonds, product)
         if err_msg:
             return err_msg, False
         AccountFlowRecord.create(user_id, AccountFlowRecord.CONSUME, diamonds)
@@ -189,7 +194,7 @@ class AccountService(object):
             return u'error request diamonds', False
         # if diamonds >= 10000:
         #     return u'authorize false, please retry', False
-        err_msg = cls.change_diamonds(user_id, diamonds)
+        err_msg = cls.change_diamonds(user_id, diamonds, 'deposit')
         if err_msg:
             return err_msg, False
         AccountFlowRecord.create(user_id, AccountFlowRecord.DEPOSIT, diamonds)
@@ -204,7 +209,7 @@ class AccountService(object):
             data, status = AdService.verify_ad_viewed(user_id, other_info)
             if not status:
                 return data, status
-        err_msg = cls.change_diamonds(user_id, diamonds)
+        err_msg = cls.change_diamonds(user_id, diamonds, activity)
         if err_msg:
             return err_msg, False
         AccountFlowRecord.create(user_id, AccountFlowRecord.ADD_BY_ACTIVITY, diamonds)
