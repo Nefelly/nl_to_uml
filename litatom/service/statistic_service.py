@@ -390,7 +390,7 @@ class DiamStatService(object):
                 contents.append(('match_num ' + key + '/no_mem_no_diam', str(match_num[key][1])))
                 contents.append(('match_num ' + key + '/is_mem_no_diam', str(match_num[key][2])))
                 contents.append(('match_num' + key + '/is_mem_is_diam', str(match_num[key][3])))
-            AliLogService.put_logs(contents, topic=name, project='litatom-account', logstore='diamond-match')
+            AliLogService.put_logs(contents, topic=name, project='litatom-account', logstore='diamond_match')
 
     @classmethod
     def cal_stats_from_list(cls, list, from_time, to_time):
@@ -419,7 +419,7 @@ class DiamStatService(object):
         mem_num = cls.cal_mem_num(time_today, time_yesterday)
         data.append(('member_num', str(mem_num)))
         data += cls.cal_stats_from_list(cls.STAT_QUERY_LIST, from_time, to_time)
-        AliLogService.put_logs(data, project='litatom-account', logstore='diamond-stat')
+        AliLogService.put_logs(data, project='litatom-account', logstore='diamond_stat')
 
     @classmethod
     def diam_free_report(cls, date):
@@ -430,7 +430,7 @@ class DiamStatService(object):
         to_time = AliLogService.datetime_to_alitime(date)
         data = []
         data += cls.cal_stats_from_list(cls.FREE_QUERY_LIST, from_time, to_time)
-        AliLogService.put_logs(project='litatom-account', logstore='diamond-match', contents=data,
+        AliLogService.put_logs(project='litatom-account', logstore='diamond_match', contents=data,
                                topic='diamonds_incr')
         cls.cal_all_match_num(from_time, to_time, time_yesterday, time_today)
 
