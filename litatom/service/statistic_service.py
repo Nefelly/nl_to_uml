@@ -356,8 +356,8 @@ class DiamStatService(object):
         resp = cls.fetch_log(from_time=from_time, to_time=to_time, project='litatomaction', logstore='litatomactionstore', query=query)
         match_num = {}
         for i in range(12):
-            match_num[str(i + 1)] = (0, 0, 0, 0)
-        match_num['>12'] = (0, 0, 0, 0)
+            match_num[str(i + 1)] = [0, 0, 0, 0]
+        match_num['>12'] = [0, 0, 0, 0]
         for log in resp.logs:
             contents = log.get_contents()
             # 匹配成功次数
