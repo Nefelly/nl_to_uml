@@ -493,6 +493,7 @@ class DiamStatService(object):
             for col in range(1,4):
                 sheet.write(1,col,col_head[col-1])
         for i in range(3):
+            print(sheet_data)
             sheet_data = data[i]
             sheet = sheets[i]
             for row in range(13):
