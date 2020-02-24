@@ -353,11 +353,12 @@ class DiamStatService(object):
         计算匹配过程中钻石与会员等数量统计
         :return: 一个字典，key为1-12,>12，value为一个元组，(匹配成功key次的人数，未使用钻石非会员人数，未使用钻石会员人数，使用钻石会员人数)
         """
-        resp = cls.fetch_log(from_time, to_time, project='liatomaction', logstore='liatomactionstore', query=query)
+        resp = cls.fetch_log(from_time=from_time, to_time=to_time, project='liatomaction', logstore='liatomactionstore', query=query)
         match_num = {}
         for i in range(12):
             match_num[str(i + 1)] = (0, 0, 0, 0)
         match_num['>12'] = (0, 0, 0, 0)
+        resp.log_print()
         for log in resp.logs:
             contents = log.get_contents()
             # 匹配成功次数
@@ -384,6 +385,7 @@ class DiamStatService(object):
     def cal_all_match_num(cls, from_time, to_time, from_timestamp, to_timestamp):
         for name in cls.MATCH_QUERY_LIST:
             contents = []
+            print(name)
             match_num = cls.cal_match_num(from_time, to_time, from_timestamp, to_timestamp, cls.MATCH_QUERY_LIST[name])
             for key in match_num:
                 contents.append(('match_num ' + key, str(match_num[key][0])))
