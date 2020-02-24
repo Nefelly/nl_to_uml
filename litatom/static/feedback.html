@@ -95,7 +95,7 @@ methods: {
     next_page: function() {
         this.$http.get(BASE_URL + 'admin/feedbacks', {params:{start_ts: this.next_start, loc:Loc, dealed:Dealed}}).then(function(result){
             var data = result.data.data;
-            this.objs = data.objs;
+            this.objs = data.feedbacks;
             this.items1 = this.objs;
             this.next_start = data.next_start;
             if(this.next_start===0){
@@ -107,7 +107,7 @@ methods: {
     previous_page: function() {
         this.$http.get(BASE_URL + 'admin/feedbacks', {params:{start_pos: this.previous_start, loc:Loc}}).then(function(result){
             var data = result.data.data;
-            this.feeds = data.feeds;
+            this.feedbacks = data.feedbacks;
             this.next_start = this.previous_start;
             if(this.next_start===0){
                 this.previous_start = -1;
