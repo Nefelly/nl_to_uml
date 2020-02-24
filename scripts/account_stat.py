@@ -1,19 +1,10 @@
-import os
 import sys
-import fcntl
-import datetime
-from hendrix.conf import setting
 from litatom.service import AlertService, JournalService, AliLogService, DiamStatService
-import time
 import datetime
-from litatom.util import (
-    write_data_to_xls,
-    ensure_path,
-    now_date_key
-)
+from litatom.util import ensure_path
 
 
-def run(stat_date=None):
+def run(stat_date=datetime.datetime.now()):
     # stat_date = datetime.datetime(2019, 11, 27)
     if stat_date:
         JournalService.ZERO_TODAY = stat_date
