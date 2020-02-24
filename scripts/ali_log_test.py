@@ -2,13 +2,13 @@ from litatom.service import AliLogService
 
 
 def run():
-    res_set = AliLogService.get_log_atom(project='litatomaction', logstore='litatomactionstore',
-                                         query='action:match and remark:matchSuccess*|SELECT COUNT(1) as res GROUP BY user_id HAVING res=1 limit 1000000',
+    res_set = AliLogService.get_log_atom(project='litatom-account', logstore='account_flow',
+                                         query='name:deposit and diamonds=50|SELECT COUNT(DISTINCT user_id) as res',
                                          from_time='2020-02-22 20:30:00+8:00',
                                          to_time='2020-02-23 20:30:00+8:00')
+    print(res_set.get_count())
     for log in res_set.logs:
         log.log_print()
-        print(res_set.get_count())
 
 
 if __name__ == '__main__':
