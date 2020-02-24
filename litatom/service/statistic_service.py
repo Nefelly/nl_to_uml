@@ -1,7 +1,7 @@
 # coding: utf-8
 import time
 import random
-from datetime import *
+import datetime
 from ..redis import RedisClient
 from ..key import (
     REDIS_ONLINE_CNT_CACHE
@@ -409,7 +409,7 @@ class DiamStatService(object):
 
     @classmethod
     def diam_stat_report(cls, date):
-        yesterday = date + timedelta(days=-1)
+        yesterday = date + datetime.timedelta(days=-1)
         time_today = time.mktime(date.timetuple())
         time_yesterday = time.mktime(yesterday.timetuple())
         from_time = AliLogService.datetime_to_alitime(yesterday)
@@ -423,7 +423,7 @@ class DiamStatService(object):
 
     @classmethod
     def diam_free_report(cls, date):
-        yesterday = date + timedelta(days=-1)
+        yesterday = date + datetime.timedelta(days=-1)
         time_today = time.mktime(date.timetuple())
         time_yesterday = time.mktime(yesterday.timetuple())
         from_time = AliLogService.datetime_to_alitime(yesterday)
@@ -435,7 +435,7 @@ class DiamStatService(object):
         cls.cal_all_match_num(from_time, to_time, time_yesterday, time_today)
 
     @classmethod
-    def diam_report(cls, date=datetime.now()):
+    def diam_report(cls, date=datetime.datetime.now()):
         cls._load_user_account()
         cls.diam_stat_report(date)
         cls.diam_free_report(date)
