@@ -69,7 +69,7 @@ methods: {
       submitForm: function() {
         this.$http.get(BASE_URL + 'admin/feedbacks?sid=session.1239394106468792255&dealed=False' + '&loc=' + Loc).then(function(result){
             console.log(result.data);
-        var data = result.data..data;
+        var data = result.data.data;
 	this.items1 = data.feedbacks;
     this.previous_start = this.next_start;
                     this.next_start = data.next_start;
