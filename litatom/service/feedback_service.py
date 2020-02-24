@@ -5,11 +5,12 @@ from ..model import Feedback
 class FeedbackService(object):
 
     @classmethod
-    def feedback(cls, user_id, content, pics=[]):
+    def feedback(cls, user_id, content, pics=[], phone=None):
         feedback = Feedback()
         feedback.uid = user_id
         feedback.content = content
         feedback.pics = pics
+        feedback.phone = phone
         feedback.create_ts = int(time.time())
         feedback.save()
         return {'feedback_id': str(feedback.id)}, True

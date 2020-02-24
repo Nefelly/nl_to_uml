@@ -21,6 +21,7 @@ class Feedback(Document):
     content = StringField(required=True)
     uid = StringField(required=True)
     pics = ListField(required=False, default=[])
+    phone = StringField(required=False)
     deal_res = StringField()
     passed = BooleanField(required=True, default=False)
     create_ts = IntField(required=True)
@@ -39,6 +40,7 @@ class Feedback(Document):
             'content': self.content,
             'user_id': self.uid,
             'pics': self.pics,
+            'phone': self.phone
             'deal_result': self.deal_res if self.deal_res else '',
             'create_time': format_standard_time(date_from_unix_ts(self.create_ts))
         }

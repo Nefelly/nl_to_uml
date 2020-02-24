@@ -218,12 +218,14 @@ def report_info(report_id):
 @session_finished_required
 def feedback():
     user_id = request.user_id
-    form = FeedbackForm(data=request.json)
-    content = form.content.data
-    pics = form.pics.data
+    # form = FeedbackForm(data=request.json)
+    data = request.json
+    content = data.get('content')
+    pics = data.get('pics', [])
+    phone = data.get('phone')
     if not content:
         return fail()
-    data, status = FeedbackService.feedback(user_id, content, pics)
+    data, status = FeedbackService.feedback(user_id, content, pics, phone)
     if status:
         return success(data)
     return fail(data)
