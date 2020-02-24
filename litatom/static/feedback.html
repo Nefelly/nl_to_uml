@@ -67,7 +67,7 @@ created() {this.submitForm();},
 
 methods: {
       submitForm: function() {
-        this.$http.get(BASE_URL + 'admin/feedback_page?sid=session.1239394106468792255&dealed=False' + '&loc=' + Loc).then(function(result){
+        this.$http.get(BASE_URL + 'admin/feedbacks?sid=session.1239394106468792255&dealed=False' + '&loc=' + Loc).then(function(result){
         var data = result.data.data;
 	this.items1 = data.objs;
     this.previous_start = this.next_start;
@@ -92,7 +92,7 @@ methods: {
       })
     },
     next_page: function() {
-        this.$http.get(BASE_URL + 'admin/feedback_page', {params:{start_ts: this.next_start, loc:Loc, dealed:Dealed}}).then(function(result){
+        this.$http.get(BASE_URL + 'admin/feedbacks', {params:{start_ts: this.next_start, loc:Loc, dealed:Dealed}}).then(function(result){
             var data = result.data.data;
             this.objs = data.objs;
             this.items1 = this.objs;
@@ -104,7 +104,7 @@ methods: {
     },
 
     previous_page: function() {
-        this.$http.get(BASE_URL + 'admin/feedback_page', {params:{start_pos: this.previous_start, loc:Loc}}).then(function(result){
+        this.$http.get(BASE_URL + 'admin/feedbacks', {params:{start_pos: this.previous_start, loc:Loc}}).then(function(result){
             var data = result.data.data;
             this.feeds = data.feeds;
             this.next_start = this.previous_start;
