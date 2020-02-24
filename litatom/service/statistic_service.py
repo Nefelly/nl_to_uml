@@ -398,6 +398,7 @@ class DiamStatService(object):
     def cal_stats_from_list(cls, list, from_time, to_time):
         data = []
         for item in list:
+            print(item,list[item])
             resp = cls.fetch_log(from_time=from_time, to_time=to_time, query=list[item])
             for log in resp.logs:
                 contents = log.get_contents()
@@ -407,6 +408,7 @@ class DiamStatService(object):
                     res = 0
                 finally:
                     data.append((item, str(res)))
+                    print(str(res))
         return data
 
     @classmethod
