@@ -468,7 +468,8 @@ class DiamStatService(object):
         from_time = AliLogService.datetime_to_alitime(yesterday)
         to_time = AliLogService.datetime_to_alitime(date)
         data = []
-        data += cls.cal_stats_from_list(cls.FREE_QUERY_LIST, from_time, to_time)
+        data_next, dic += cls.cal_stats_from_list(cls.FREE_QUERY_LIST, from_time, to_time)
+        data += data_next
         AliLogService.put_logs(project='litatom-account', logstore='diamond_match', contents=data,
                                topic='diamonds_incr')
         excel_data = cls.cal_all_match_num(from_time, to_time, time_yesterday, time_today)
