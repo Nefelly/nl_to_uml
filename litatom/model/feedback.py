@@ -22,6 +22,7 @@ class Feedback(Document):
     uid = StringField(required=True)
     pics = ListField(required=False, default=[])
     phone = StringField(required=False)
+    region = StringField(required=False, default='th')
     deal_res = StringField()
     passed = BooleanField(required=True, default=False)
     create_ts = IntField(required=True)
