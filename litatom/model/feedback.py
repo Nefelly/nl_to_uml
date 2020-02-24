@@ -40,7 +40,7 @@ class Feedback(Document):
             'content': self.content,
             'user_id': self.uid,
             'pics': self.pics,
-            'phone': self.phone,
+            'phone': self.phone if self.phone else '',
             'deal_result': self.deal_res if self.deal_res else '',
             'create_time': format_standard_time(date_from_unix_ts(self.create_ts))
         }
