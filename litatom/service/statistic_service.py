@@ -385,7 +385,7 @@ class DiamStatService(object):
 
     @classmethod
     def cal_all_match_num(cls, from_time, to_time, from_timestamp, to_timestamp):
-        data = []
+        data = [[] for i in range(3)]
         for name in cls.MATCH_QUERY_LIST:
             if name == "text_match_num":
                 row = 0
