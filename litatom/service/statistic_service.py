@@ -1,6 +1,7 @@
 # coding: utf-8
 import time
 import random
+from datetime import *
 from ..redis import RedisClient
 from ..key import (
     REDIS_ONLINE_CNT_CACHE
@@ -19,15 +20,19 @@ from ..const import (
 from ..service import (
     UserService,
     GlobalizationService,
-    UserFilterService
+    UserFilterService,
+    AliLogService
 )
 from ..model import (
     User,
     TrackChat,
     UserSetting,
-    OnlineLimit
+    OnlineLimit,
+    UserAccount
 )
+
 redis_client = RedisClient()['lit']
+
 
 class StatisticService(object):
     MAX_SELECT_POOL = 1000
@@ -70,8 +75,8 @@ class StatisticService(object):
     def _user_infos_by_uids(cls, uids):
         user_infos = []
         if uids:
-            all_online = UserService.uid_online(uids[-1]) == True   # last user online
-            all_not_online = UserService.uid_online(uids[0]) == False   # first user not online
+            all_online = UserService.uid_online(uids[-1]) == True  # last user online
+            all_not_online = UserService.uid_online(uids[0]) == False  # first user not online
             for uid in uids:
                 _ = UserService.get_basic_info(User.get_by_id(uid))
                 if not _:
@@ -115,7 +120,7 @@ class StatisticService(object):
 
     @classmethod
     def online_users_by_interval(cls, gender, interval, user_id=None):
-        #GlobalizationService.set_current_region_for_script(GlobalizationService.REGION_TH)
+        # GlobalizationService.set_current_region_for_script(GlobalizationService.REGION_TH)
         key = GlobalizationService._online_key_by_region_gender(gender)
         time_now = int(time.time())
         raw_uids = redis_client.zrangebyscore(key, time_now - interval, time_now, 0, cls.MAX_SELECT_POOL)
@@ -136,10 +141,12 @@ class StatisticService(object):
                 '''girls has to have some girl'''
                 b_ratio = 0.3
                 girl_num = int(num * b_ratio)
-                num = boy_num = int(num)   # set num to this for next get
+                num = boy_num = int(num)  # set num to this for next get
                 girl_start_p = int(start_p * b_ratio) + 1
-                girl_uids = redis_client.zrevrange(GlobalizationService._online_key_by_region_gender(GIRL), girl_start_p, girl_start_p + girl_num)
-                boy_uids = redis_client.zrevrange(GlobalizationService._online_key_by_region_gender(BOY), start_p, start_p + boy_num)
+                girl_uids = redis_client.zrevrange(GlobalizationService._online_key_by_region_gender(GIRL),
+                                                   girl_start_p, girl_start_p + girl_num)
+                boy_uids = redis_client.zrevrange(GlobalizationService._online_key_by_region_gender(BOY), start_p,
+                                                  start_p + boy_num)
                 uids = girl_uids + boy_uids
             # else:
             #     uids = redis_client.zrevrange(key, start_p, start_p + num)
@@ -283,3 +290,101 @@ class StatisticService(object):
         track.create_ts = int(time.time())
         track.save()
         return {"track_id": str(track.id)}, True
+
+
+class DiamStatService(object):
+    STAT_QUERY_LIST = {
+        'diam_cons_num': 'diamonds<0 |SELECT -sum(diamonds) as res',
+        'diam_cons_people_num': 'diamonds<0 |SELECT COUNT(DISTINCT user_id) as res',
+        'diam_deposit_num': 'name:deposit|SELECT sum(diamonds) as res',
+        'diam_deposit_people_num': 'name:deposit|SELECT COUNT(DISTINCT user_id) as res',
+        'diam_deposit50_people_num': 'name:deposit and diamonds=50|SELECT COUNT(DISTINCT user_id) as res',
+        'diam_deposit100_people_num': 'name:deposit and diamonds=100|SELECT COUNT(DISTINCT user_id) as res',
+        'diam_deposit200_people_num': 'name:deposit and diamonds=200|SELECT COUNT(DISTINCT user_id) as res',
+        'diam_deposit500_people_num': 'name:deposit and diamonds=500|SELECT COUNT(DISTINCT user_id) as res',
+        'week_member_consumer_num': 'name:week_member |SELECT COUNT(DISTINCT user_id) as res',
+        'week_member_diam_cons_num': 'name:week_member |SELECT -sum(diamonds) as res',
+        'acce_consumer_num': 'name:accelerate | SELECT count(DISTINCT user_id) as res',
+        'acce_diam_cons_num': 'name:accelerate | SELECT -sum(diamonds) as res',
+    }
+    FREE_QUERY_LIST = {
+        'diam_incr_num': 'diamonds>0|select sum(diamonds) as res',
+
+    }
+    DEFAULT_PROJECT = 'litatom-account'
+    DEFAULT_LOGSTORE = 'account_flow'
+    USER_MEM_TIME = {}  # user_id:membership_time
+
+    @classmethod
+    def _load_user_account(cls):
+        """预装载函数，从UserAccount表中抽取user_id, membership_time"""
+        members = UserAccount.objects(membership_time__ne=0)
+        for member in members:
+            cls.USER_MEM_TIME[member.user_id] = member.membership_time
+
+    @classmethod
+    def fetch_log(cls, from_time, to_time, query, size=-1, project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE):
+        """
+        :return: 如果size要求在400000一下，或者全部，则返回一个GetLogResponse对象；如果超过，则返回一个GetLogResponse迭代器
+        注意，如果size==-1,则要求总条数不得超过1000000
+        """
+        if size < 400000:
+            return AliLogService.get_log_atom(project=project, logstore=logstore, from_time=from_time, to_time=to_time)
+        else:
+            return AliLogService.get_log_by_time_and_topic(project=project, logstore=logstore, from_time=from_time,
+                                                           to_time=to_time, query=query)
+
+    @classmethod
+    def cal_mem_num(cls, to_time, from_time):
+        """计算会员总数"""
+        res = 0
+        for id in cls.USER_MEM_TIME:
+            if from_time <= cls.USER_MEM_TIME[id] < to_time:
+                res += 1
+        return res
+
+    @classmethod
+    def cal_stats_from_list(cls, list, from_time, to_time):
+        data = []
+        for item in list:
+            resp = cls.fetch_log(from_time=from_time, to_time=to_time, query=list[item])
+            for log in resp.logs:
+                contents = log.get_contents()
+                try:
+                    res = contents['res']
+                except KeyError:
+                    res = 0
+                finally:
+                    data.append((item, str(res)))
+        return data
+
+    @classmethod
+    def diam_stat_report(cls, date):
+        yesterday = date + timedelta(days=-1)
+        time_today = time.mktime(date.timetuple())
+        time_yesterday = time.mktime(yesterday.timetuple())
+        from_time = AliLogService.datetime_to_alitime(yesterday)
+        to_time = AliLogService.datetime_to_alitime(date)
+        data = []
+
+        mem_num = cls.cal_mem_num(time_today, time_yesterday)
+        data.append(('member_num', mem_num))
+        data += cls.cal_stats_from_list(cls.STAT_QUERY_LIST, from_time, to_time)
+        AliLogService.put_logs(data, project='litatom-account', logstore='diamond-stat')
+
+    @classmethod
+    def diam_free_report(cls, date):
+        yesterday = date + timedelta(days=-1)
+        time_today = time.mktime(date.timetuple())
+        time_yesterday = time.mktime(yesterday.timetuple())
+        from_time = AliLogService.datetime_to_alitime(yesterday)
+        to_time = AliLogService.datetime_to_alitime(date)
+        data = []
+        data += cls.cal_stats_from_list(cls.FREE_QUERY_LIST, from_time, to_time)
+
+
+    @classmethod
+    def diam_report(cls, date=datetime.now()):
+        cls._load_user_account()
+        cls.diam_stat_report(date)
+        cls.diam_free_report(date)
