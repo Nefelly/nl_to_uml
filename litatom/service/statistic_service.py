@@ -332,8 +332,8 @@ class DiamStatService(object):
         :return: 如果size要求在400000一下，或者全部，则返回一个GetLogResponse对象；如果超过，则返回一个GetLogResponse迭代器
         注意，如果size==-1,则要求总条数不得超过1000000
         """
-        if size < 400000 or size==-1:
-            return AliLogService.get_log_atom(project=project, logstore=logstore, from_time=from_time, to_time=to_time)
+        if size < 400000:
+            return AliLogService.get_log_atom(project=project, logstore=logstore, from_time=from_time, to_time=to_time,query=query)
         else:
             return AliLogService.get_log_by_time_and_topic(project=project, logstore=logstore, from_time=from_time,
                                                            to_time=to_time, query=query)

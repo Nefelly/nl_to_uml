@@ -2,12 +2,7 @@ from litatom.service import AliLogService, DiamStatService
 
 
 def run():
-    resp = DiamStatService.fetch_log(from_time='2020-02-23 19:12:00+8:00', to_time='2020-02-24 19:12:00+8:00',
-                                     query='name:deposit and diamonds:100|SELECT COUNT(DISTINCT user_id) as res',
-                                     project='litatom-account',
-                                     logstore='account_flow')
-
-    resp.log_print()
+    DiamStatService.diam_report()
 
 
 if __name__ == '__main__':
