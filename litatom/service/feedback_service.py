@@ -45,7 +45,7 @@ class FeedbackService(object):
             feedbacks = feedbacks[:-1]
         feedbacks = [el.to_json() for el in feedbacks]
         return {
-                   'feedbackss': feedbacks,
+                   'feedbacks': feedbacks,
                    'has_next': has_next,
                    'next_start': next_start
                }, True
