@@ -76,7 +76,7 @@ methods: {
 	      })
       },
     deal: function(feedback_id){
-      var url = BASE_URL + 'admin/deal/' + feedback_id;
+      var url = BASE_URL + 'admin/deal_feedback/' + feedback_id;
       this.$http.get(url).then(function(result){
         console.log('!!!!!!', this.items1);
         if (result.data.result === 0){}
