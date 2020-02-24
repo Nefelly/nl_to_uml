@@ -38,6 +38,7 @@ class Feedback(Document):
         if not self:
             return {}
         return {
+            'id': str(self.id),
             'content': self.content,
             'user_id': self.uid,
             'pics': self.pics,
