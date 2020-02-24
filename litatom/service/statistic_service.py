@@ -386,10 +386,10 @@ class DiamStatService(object):
             contents = []
             match_num = cls.cal_match_num(from_time, to_time, from_timestamp, to_timestamp, cls.MATCH_QUERY_LIST[name])
             for key in match_num:
-                contents.append(('match_num ' + key, match_num[key][0]))
-                contents.append(('match_num ' + key + '/no_mem_no_diam', match_num[key][1]))
-                contents.append(('match_num ' + key + '/is_mem_no_diam', match_num[key][2]))
-                contents.append(('match_num' + key + '/is_mem_is_diam', match_num[key][3]))
+                contents.append(('match_num ' + key, str(match_num[key][0])))
+                contents.append(('match_num ' + key + '/no_mem_no_diam', str(match_num[key][1])))
+                contents.append(('match_num ' + key + '/is_mem_no_diam', str(match_num[key][2])))
+                contents.append(('match_num' + key + '/is_mem_is_diam', str(match_num[key][3])))
             AliLogService.put_logs(contents, topic=name, project='litatom-account', logstore='diamond-match')
 
     @classmethod
@@ -417,7 +417,7 @@ class DiamStatService(object):
         data = []
 
         mem_num = cls.cal_mem_num(time_today, time_yesterday)
-        data.append(('member_num', mem_num))
+        data.append(('member_num', str(mem_num)))
         data += cls.cal_stats_from_list(cls.STAT_QUERY_LIST, from_time, to_time)
         AliLogService.put_logs(data, project='litatom-account', logstore='diamond-stat')
 
