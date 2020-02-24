@@ -497,6 +497,6 @@ class DiamStatService(object):
             sheet = sheets[i]
             for row in range(13):
                 for col in range(4):
-                    sheet.write(row+2,col+1,sheet[row][col])
+                    sheet.write(row+2,col+1,sheet_data[row][col])
         f.save(addr)
 
