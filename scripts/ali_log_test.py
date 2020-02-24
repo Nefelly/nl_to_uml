@@ -8,7 +8,7 @@ def run():
                                          to_time='2020-02-23 20:30:00+8:00')
     print(res_set.get_count())
     for log in res_set.logs:
-        log.log_print()
+        log.get_time()
 
 
 if __name__ == '__main__':

@@ -344,6 +344,26 @@ class DiamStatService(object):
         return res
 
     @classmethod
+    def cal_match_num(cls, from_time, to_time):
+        resp = cls.fetch_log(from_time, to_time, query='action:match and remark:matchSuccess*|SELECT COUNT(1) as res, '
+                                                       'user_id GROUP BY user_id limit 1000000')
+        match_num = {}
+        for i in range(12):
+            match_num[str(i + 1)] = (0,0,0)
+        match_num['>12'] = (0,0,0)
+        for log in resp.logs:
+            contents = log.get_contents()
+            res = contents['res']
+            if res in match_num:
+                match_num[res][0] += 1
+            else:
+                match_num['>12'][0] += 1
+            user_id = contents['user_id']
+            match_time = log.get_time()
+            if user_id in cls.USER_MEM_TIME:
+                print(1)
+
+    @classmethod
     def cal_stats_from_list(cls, list, from_time, to_time):
         data = []
         for item in list:
@@ -381,7 +401,6 @@ class DiamStatService(object):
         to_time = AliLogService.datetime_to_alitime(date)
         data = []
         data += cls.cal_stats_from_list(cls.FREE_QUERY_LIST, from_time, to_time)
-
 
     @classmethod
     def diam_report(cls, date=datetime.now()):
