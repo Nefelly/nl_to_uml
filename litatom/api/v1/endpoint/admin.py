@@ -396,6 +396,15 @@ def feedbacks():
         return success(data)
     return fail(data)
 
+def feedback_page():
+    return current_app.send_static_file('feedback.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
+
+def deal_feedback(feedback_id):
+    data, status = FeedbackService.deal_feedback(feedback_id)
+    if status:
+        return success(data)
+    return fail(data)
+
 
 def region_words():
     data, status = GlobalizationService.region_words()

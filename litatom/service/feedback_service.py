@@ -23,6 +23,15 @@ class FeedbackService(object):
         return {'feedback_id': str(feedback.id)}, True
 
     @classmethod
+    def deal_feedback(cls, feedback_id):
+        obj = Feedback.get_by_id(feedback_id)
+        if obj:
+            obj.dealed = True
+            obj.save()
+            return None, True
+        return u'deal fail', False
+
+    @classmethod
     def info_by_id(cls, feedback_id):
         feedback = Feedback.get_by_id(feedback_id)
         if not feedback:
@@ -34,7 +43,7 @@ class FeedbackService(object):
         if start_ts < 0:
             return u'wrong start_ts', False
         next_start = -1
-        feedbacks = Feedback.objects(create_ts__lte=start_ts, region=GlobalizationService.get_region()).order_by(
+        feedbacks = Feedback.objects(create_ts__lte=start_ts, region=GlobalizationService.get_region(), dealed=False).order_by(
             '-create_ts').limit(num + 1)
         feedbacks = list(feedbacks)
         # feedbacks.reverse()   # 时间顺序错误

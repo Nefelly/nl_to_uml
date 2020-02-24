@@ -26,6 +26,7 @@ class Feedback(Document):
     deal_res = StringField()
     passed = BooleanField(required=True, default=False)
     create_ts = IntField(required=True)
+    dealed = BooleanField(required=True, default=False)
     deal_ts = IntField()
 
     @classmethod

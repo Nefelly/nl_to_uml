@@ -24,7 +24,7 @@
 no pictures
 </td>
 
-<td><button name='deal'  style="background:red" @click='deal(item.report_id)'>ban</button>
+<td><button name='deal'  style="background:red" @click='deal(item.id)'>deal</button>
 </tr>
 </table>
 <!-- <button v-if="previous_start >= 0" name="previous_page" @click="previous_page()">previous page</button> -->
@@ -67,32 +67,15 @@ created() {this.submitForm();},
 
 methods: {
       submitForm: function() {
-        this.$http.get(BASE_URL + 'admin/query_reports?sid=session.1239394106468792255&dealed=False' + '&loc=' + Loc).then(function(result){
+        this.$http.get(BASE_URL + 'admin/feedback_page?sid=session.1239394106468792255&dealed=False' + '&loc=' + Loc).then(function(result){
         var data = result.data.data;
 	this.items1 = data.objs;
     this.previous_start = this.next_start;
                     this.next_start = data.next_start;
 	      })
       },
-    reject: function(report_id){
-      var url = BASE_URL + 'admin/reject/' + report_id;
-      this.$http.get(url).then(function(result){
-        console.log('!!!!!!', result.data);
-        if (result.data.result === 0){
-            let newItem1 = [];
-            this.items1.forEach(item => {
-                if (item.report_id !== report_id) {
-                newItem1.push(item)
-            }
-        })
-            this.items1 = newItem1
-        }
-        else{alert('failed');}
-      })
-
-    },
-    ban: function(report_id){
-      var url = BASE_URL + 'admin/ban/' + report_id;
+    deal: function(feedback_id){
+      var url = BASE_URL + 'admin/deal/' + feedback_id;
       this.$http.get(url).then(function(result){
         console.log('!!!!!!', this.items1);
         if (result.data.result === 0){}
@@ -108,25 +91,8 @@ methods: {
 
       })
     },
-    ban_reporter: function(user_id){
-      var url = BASE_URL + 'admin/ban_reporter/' + user_id;
-      this.$http.get(url).then(function(result){
-        console.log('!!!!!!', this.items1);
-        if (result.data.result === 0){}
-        else{alert('failed');}
-        let newItem1 = [];
-        this.items1.forEach(item => {
-          if (item.user_id !== user_id) {
-            newItem1.push(item)
-          }
-        })
-
-        this.items1 = newItem1
-
-      })
-    },
     next_page: function() {
-        this.$http.get(BASE_URL + 'admin/query_reports', {params:{start_ts: this.next_start, loc:Loc, dealed:Dealed}}).then(function(result){
+        this.$http.get(BASE_URL + 'admin/feedback_page', {params:{start_ts: this.next_start, loc:Loc, dealed:Dealed}}).then(function(result){
             var data = result.data.data;
             this.objs = data.objs;
             this.items1 = this.objs;
@@ -138,7 +104,7 @@ methods: {
     },
 
     previous_page: function() {
-        this.$http.get(BASE_URL + 'admin/query_reports', {params:{start_pos: this.previous_start, loc:Loc}}).then(function(result){
+        this.$http.get(BASE_URL + 'admin/feedback_page', {params:{start_pos: this.previous_start, loc:Loc}}).then(function(result){
             var data = result.data.data;
             this.feeds = data.feeds;
             this.next_start = this.previous_start;
