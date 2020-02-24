@@ -399,7 +399,8 @@ class DiamStatService(object):
         data = []
         for item in list:
             print(item,list[item])
-            resp = cls.fetch_log(from_time=from_time, to_time=to_time, query=list[item])
+            resp = AliLogService.get_log_atom(from_time=from_time, to_time=to_time, query=list[item],project=cls.DEFAULT_PROJECT,
+                                              logstore=cls.DEFAULT_LOGSTORE)
             for log in resp.logs:
                 contents = log.get_contents()
                 try:
