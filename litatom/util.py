@@ -207,6 +207,7 @@ def read_data_from_xls(name):
 
 
 def write_data_to_xls(name, tb_heads, datas):
+    """表头在第一行"""
     import xlwt
     f = xlwt.Workbook()
     sheet1 = f.add_sheet(name.split('/')[-1], cell_overwrite_ok=True)
@@ -218,6 +219,20 @@ def write_data_to_xls(name, tb_heads, datas):
         for j in range(len(datas[i])):
 
             sheet1.write(i + 1, j, datas[i][j])
+    f.save(name)
+
+def write_data_to_xls_col(name, tb_heads, data):
+    """表头在第一列"""
+    import xlwt
+    f = xlwt.Workbook()
+    sheet1 = f.add_sheet(name.split('/')[-1], cell_overwrite_ok=True)
+    for i in range(len(tb_heads)):
+        sheet1.write(i, 0, tb_heads[i])
+    if not isinstance(data[0], list):
+        datas = [data]
+    for i in range(len(data)):
+        for j in range(len(data[i])):
+            sheet1.write(j, i+1, data[i][j])
     f.save(name)
 
 
