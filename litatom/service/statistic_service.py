@@ -309,7 +309,11 @@ class DiamStatService(object):
     }
     FREE_QUERY_LIST = {
         'diam_incr_num': 'diamonds>0|select sum(diamonds) as res',
-
+    }
+    MATCH_QUERY_LIST = {
+        'text_match_num': 'action:match and remark:matchSuccesstext|SELECT COUNT(1) as res,user_id GROUP BY user_id limit 1000000',
+        'video_match_num': 'action:match and remark:matchSuccessvideo|SELECT COUNT(1) as res, user_id GROUP BY user_id limit 1000000',
+        'voice_match_num': 'action:match and remark:matchSuccessvoice|SELECT COUNT(1) as res, user_id GROUP BY user_id limit 1000000'
     }
     DEFAULT_PROJECT = 'litatom-account'
     DEFAULT_LOGSTORE = 'account_flow'
@@ -317,7 +321,7 @@ class DiamStatService(object):
 
     @classmethod
     def _load_user_account(cls):
-        """预装载函数，从UserAccount表中抽取user_id, membership_time"""
+        """预装载函数，从UserAccount表中抽取会员的user_id, membership_time；之后可视情况只抽取一天的会员信息"""
         members = UserAccount.objects(membership_time__ne=0)
         for member in members:
             cls.USER_MEM_TIME[member.user_id] = member.membership_time
@@ -344,24 +348,49 @@ class DiamStatService(object):
         return res
 
     @classmethod
-    def cal_match_num(cls, from_time, to_time):
-        resp = cls.fetch_log(from_time, to_time, query='action:match and remark:matchSuccess*|SELECT COUNT(1) as res, '
-                                                       'user_id GROUP BY user_id limit 1000000')
+    def cal_match_num(cls, from_time, to_time, from_timestamp, to_timestamp, query):
+        """
+        计算匹配过程中钻石与会员等数量统计
+        :return: 一个字典，key为1-12,>12，value为一个元组，(匹配成功key次的人数，未使用钻石非会员人数，未使用钻石会员人数，使用钻石会员人数)
+        """
+        resp = cls.fetch_log(from_time, to_time, project='liatomaction', logstore='liatomactionstore', query=query)
         match_num = {}
         for i in range(12):
-            match_num[str(i + 1)] = (0,0,0)
-        match_num['>12'] = (0,0,0)
+            match_num[str(i + 1)] = (0, 0, 0, 0)
+        match_num['>12'] = (0, 0, 0, 0)
         for log in resp.logs:
             contents = log.get_contents()
+            # 匹配成功次数
             res = contents['res']
-            if res in match_num:
-                match_num[res][0] += 1
-            else:
-                match_num['>12'][0] += 1
+            if res not in match_num:
+                res = '>12'
+            match_num[res][0] += 1
+            # 该用户当日是否使用过钻石
             user_id = contents['user_id']
-            match_time = log.get_time()
+            resp = cls.fetch_log(from_time, to_time, query='user_id:' + user_id + ' and diamonds<0', size=2)
+            if resp.get_count() > 1:
+                match_num[res][3] += 1
+                continue
+            # 该用户未使用钻石，是会员
             if user_id in cls.USER_MEM_TIME:
-                print(1)
+                if from_timestamp <= cls.USER_MEM_TIME[user_id] <= to_timestamp:
+                    match_num[res][2] += 1
+                    continue
+            # 该用户未使用钻石，不是会员
+            match_num[res][1] += 1
+        return match_num
+
+    @classmethod
+    def cal_all_match_num(cls, from_time, to_time, from_timestamp, to_timestamp):
+        for name in cls.MATCH_QUERY_LIST:
+            contents = []
+            match_num = cls.cal_match_num(from_time, to_time, from_timestamp, to_timestamp, cls.MATCH_QUERY_LIST[name])
+            for key in match_num:
+                contents.append(('match_num ' + key, match_num[key][0]))
+                contents.append(('match_num ' + key + '/no_mem_no_diam', match_num[key][1]))
+                contents.append(('match_num ' + key + '/is_mem_no_diam', match_num[key][2]))
+                contents.append(('match_num' + key + '/is_mem_is_diam', match_num[key][3]))
+            AliLogService.put_logs(contents, topic=name, project='litatom-account', logstore='diamond-match')
 
     @classmethod
     def cal_stats_from_list(cls, list, from_time, to_time):
@@ -401,6 +430,9 @@ class DiamStatService(object):
         to_time = AliLogService.datetime_to_alitime(date)
         data = []
         data += cls.cal_stats_from_list(cls.FREE_QUERY_LIST, from_time, to_time)
+        AliLogService.put_logs(project='litatom-account', logstore='diamond-match', contents=data,
+                               topic='diamonds_incr')
+        cls.cal_all_match_num(from_time, to_time, time_yesterday, time_today)
 
     @classmethod
     def diam_report(cls, date=datetime.now()):
