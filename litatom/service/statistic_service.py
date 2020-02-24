@@ -458,7 +458,7 @@ class DiamStatService(object):
         AliLogService.put_logs(data, project='litatom-account', logstore='diamond_stat')
         write_data_to_xls_col(addr, [r'会员数', r'钻石消耗人数', r'钻石消耗数量', r'钻石购买人数', r'钻石购买数量', r'50钻石购买人数',
                                      r'100钻石购买人数', r'200钻石购买人数', r'500钻石购买人数', r'会员购买人数', r'会员-钻石消耗数量',
-                                     r'加速人数', r'加速-钻石消耗数量'], [excel_data])
+                                     r'加速人数', r'加速-钻石消耗数量'], [excel_data] ,'utf-8')
 
     @classmethod
     def diam_free_report(cls, addr, date=datetime.datetime.now()):
@@ -477,7 +477,7 @@ class DiamStatService(object):
     @classmethod
     def match_report_xls(cls,addr,data,data_plus):
         import xlwt
-        f = xlwt.Workbook()
+        f = xlwt.Workbook(encoding='utf-8')
         sheet_text = f.add_sheet('text_match', cell_overwrite_ok=True)
         sheet_video = f.add_sheet('video_match', cell_overwrite_ok=True)
         sheet_voice = f.add_sheet('voice_match', cell_overwrite_ok=True)

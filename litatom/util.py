@@ -221,10 +221,10 @@ def write_data_to_xls(name, tb_heads, datas):
             sheet1.write(i + 1, j, datas[i][j])
     f.save(name)
 
-def write_data_to_xls_col(name, tb_heads, data):
+def write_data_to_xls_col(name, tb_heads, data, encoding='ascii'):
     """表头在第一列"""
     import xlwt
-    f = xlwt.Workbook()
+    f = xlwt.Workbook(encoding=encoding)
     sheet1 = f.add_sheet(name.split('/')[-1], cell_overwrite_ok=True)
     for i in range(len(tb_heads)):
         sheet1.write(i, 0, tb_heads[i])
