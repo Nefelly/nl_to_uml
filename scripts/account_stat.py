@@ -5,9 +5,7 @@ from litatom.util import ensure_path
 
 
 def run(stat_date=datetime.datetime.now()):
-    # stat_date = datetime.datetime(2019, 11, 27)
     if stat_date:
-        JournalService.ZERO_TODAY = stat_date
         dst_addr = '/data/account_stat/%s.xlsx' % (stat_date - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
         match_addr = '/data/match_account_stat/%s/xlsx' % (stat_date - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
     else:

@@ -473,7 +473,7 @@ class DiamStatService(object):
         AliLogService.put_logs(project='litatom-account', logstore='diamond_match', contents=data,
                                topic='diamonds_incr')
         excel_data = cls.cal_all_match_num(from_time, to_time, time_yesterday, time_today)
-        write_data_to_xls_col(addr, excel_data,data[0])
+        cls.match_report_xls(addr, excel_data,data[0])
 
     @classmethod
     def match_report_xls(cls,addr,data,data_plus):
