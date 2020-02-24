@@ -48,7 +48,8 @@ from ....service import (
     JournalService,
     UserSettingService,
     AsyncCmdService,
-    AccountService
+    AccountService,
+    FeedbackService
 )
 from  ....const import (
     MAX_TIME,
@@ -383,6 +384,17 @@ def get_log(user_id):
     if status:
         return success()
     return fail(msg)
+
+
+def feedbacks():
+    start_ts = request.args.get('start_ts')
+    num = request.args.get('num')
+    start_ts = int(start_ts) if start_ts and start_ts.isdigit() else MAX_TIME
+    num = int(num) if num and num.isdigit() else 10
+    data, status = FeedbackService.feed_back_list(start_ts, num)
+    if status:
+        return success(data)
+    return fail(data)
 
 
 def region_words():
