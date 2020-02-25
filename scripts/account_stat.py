@@ -7,11 +7,11 @@ from litatom.util import ensure_path
 def run(stat_date=datetime.datetime.now()):
     if stat_date:
         dst_addr = '/data/account_stat/%s.xlsx' % (stat_date - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
-        match_addr = '/data/match_account_stat/%s/xlsx' % (stat_date - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
+        match_addr = '/data/match_account_stat/%s.xlsx' % (stat_date - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
     else:
         dst_addr = '/data/account_stat/%s.xlsx' % (datetime.datetime.now() - datetime.timedelta(days=1)).strftime(
             '%Y-%m-%d')
-        match_addr = '/data/match_account_stat/%s/xlsx' % (stat_date - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
+        match_addr = '/data/match_account_stat/%s.xlsx' % (stat_date - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
     ensure_path(dst_addr)
     ensure_path(match_addr)
     DiamStatService.diam_stat_report(dst_addr, stat_date)

@@ -393,7 +393,6 @@ class DiamStatService(object):
                 row = 1
             else:
                 row = 2
-            print(name,row)
             data[row] = [[] for i in range(13)]
             sheet = data[row]
             contents = []
@@ -405,10 +404,11 @@ class DiamStatService(object):
                 contents.append(('match_num' + key + '/yes_diam', str(match_num[key][3])))
                 try:
                     key_int = int(key)
-                    if key_int in range(1,13):
-                        sheet[key_int-1] = [match_num[key][0],match_num[key][1],match_num[key][2],match_num[key][3]]
+                    if key_int in range(1, 13):
+                        sheet[key_int - 1] = [match_num[key][0], match_num[key][1], match_num[key][2],
+                                              match_num[key][3]]
                 except ValueError:
-                    sheet[12] = [match_num[key][0],match_num[key][1],match_num[key][2],match_num[key][3]]
+                    sheet[12] = [match_num[key][0], match_num[key][1], match_num[key][2], match_num[key][3]]
 
             AliLogService.put_logs(contents, topic=name, project='litatom-account', logstore='diamond_match')
         return data
@@ -450,16 +450,20 @@ class DiamStatService(object):
         mem_num = cls.cal_mem_num(time_today, time_yesterday)
         data.append(('member_num', str(mem_num)))
         excel_data.append(mem_num)
-        data_next, excel_dic= cls.cal_stats_from_list(cls.STAT_QUERY_LIST, from_time, to_time)
+        data_next, excel_dic = cls.cal_stats_from_list(cls.STAT_QUERY_LIST, from_time, to_time)
         data += data_next
-        excel_data += [excel_dic['diam_cons_people_num'],excel_dic['diam_cons_num'],excel_dic['diam_deposit_people_num'],
-                       excel_dic['diam_deposit_num'],excel_dic['diam_deposit50_people_num'],excel_dic['diam_deposit100_people_num'],
-                       excel_dic['diam_deposit200_people_num'],excel_dic['diam_deposit500_people_num'],excel_dic['week_member_consumer_num'],
-                       excel_dic['week_member_diam_cons_num'],excel_dic['acce_consumer_num'],excel_dic['acce_diam_cons_num']]
+        excel_data += [excel_dic['diam_cons_people_num'], excel_dic['diam_cons_num'],
+                       excel_dic['diam_deposit_people_num'],
+                       excel_dic['diam_deposit_num'], excel_dic['diam_deposit50_people_num'],
+                       excel_dic['diam_deposit100_people_num'],
+                       excel_dic['diam_deposit200_people_num'], excel_dic['diam_deposit500_people_num'],
+                       excel_dic['week_member_consumer_num'],
+                       excel_dic['week_member_diam_cons_num'], excel_dic['acce_consumer_num'],
+                       excel_dic['acce_diam_cons_num']]
         AliLogService.put_logs(data, project='litatom-account', logstore='diamond_stat')
         write_data_to_xls_col(addr, [r'会员数', r'钻石消耗人数', r'钻石消耗数量', r'钻石购买人数', r'钻石购买数量', r'50钻石购买人数',
                                      r'100钻石购买人数', r'200钻石购买人数', r'500钻石购买人数', r'会员购买人数', r'会员-钻石消耗数量',
-                                     r'加速人数', r'加速-钻石消耗数量'], [excel_data] ,'utf-8')
+                                     r'加速人数', r'加速-钻石消耗数量'], [excel_data], 'utf-8')
 
     @classmethod
     def diam_free_report(cls, addr, date=datetime.datetime.now()):
@@ -474,33 +478,29 @@ class DiamStatService(object):
         AliLogService.put_logs(project='litatom-account', logstore='diamond_match', contents=data,
                                topic='diamonds_incr')
         excel_data = cls.cal_all_match_num(from_time, to_time, time_yesterday, time_today)
-        cls.match_report_xls(addr, excel_data,data[0])
+        cls.match_report_xls(addr, excel_data, data[0][1])
 
     @classmethod
-    def match_report_xls(cls,addr,data,data_plus):
+    def match_report_xls(cls, addr, data, data_plus):
         import xlwt
         f = xlwt.Workbook(encoding='utf-8')
         sheet_text = f.add_sheet('text_match', cell_overwrite_ok=True)
         sheet_video = f.add_sheet('video_match', cell_overwrite_ok=True)
         sheet_voice = f.add_sheet('voice_match', cell_overwrite_ok=True)
-        sheets = [sheet_text,sheet_video,sheet_voice]
-        col_head = ['匹配成功次数','未使用钻石无会员','未使用钻石有会员','使用钻石']
+        sheets = [sheet_text, sheet_video, sheet_voice]
+        col_head = ['匹配成功次数', '未使用钻石无会员', '未使用钻石有会员', '使用钻石']
         for sheet in sheets:
-            sheet.write(0,0,'增加钻石总量')
-            sheet.write(0,1,data_plus)
-            for row in range(1,13):
-                sheet.write(row+1, 0, '匹配成功'+str(row))
-            sheet.write(13,0,'匹配成功>12')
-            for col in range(1,4):
-                sheet.write(1,col,col_head[col-1])
+            sheet.write(0, 0, '增加钻石总量')
+            sheet.write(0, 1, data_plus)
+            for row in range(1, 13):
+                sheet.write(row + 1, 0, '匹配成功' + str(row))
+            sheet.write(14, 0, '匹配成功>12')
+            for col in range(1, 4):
+                sheet.write(1, col, col_head[col - 1])
         for i in range(3):
             sheet_data = data[i]
-            print(sheet_data)
             sheet = sheets[i]
             for row in range(13):
                 for col in range(4):
-                    print(row,col)
-                    print(sheet_data[row][col])
-                    sheet.write(row+2,col+1,sheet_data[row][col])
+                    sheet.write(row + 2, col + 1, sheet_data[row][col])
         f.save(addr)
-
