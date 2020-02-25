@@ -84,7 +84,22 @@ class GoogleService(object):
         response = req.post(real_url, verify=False).json()
         # response = requests.post(cls.SEND_URL, verify=False, headers=headers, json=data).json()
         print response
+        return response
 
+    @classmethod
+    def refresh_accesstoken(cls, code=None):
+        url = 'https://accounts.google.com/o/oauth2/token'
+        datas = {
+            "grant_type": "refresh_token",
+            "client_id": cls.CLIENT_ID,
+            "client_secret": cls.CLIENT_SECRET,
+            "refresh_token": '1//0egi5g_qCRpxzCgYIARAAGA4SNwF-L9IrJgqyzDZWOQ9QucaXGaoPiYv_Lr3gEcvCmK-J8X9PbD5nebLO0TiTqgxsM9CHfWy1YuE'
+        }
+        params = urllib.urlencode(datas)
+        real_url = url + "?%s" % params
+        response = req.post(real_url, verify=False).json()
+        # response = requests.post(cls.SEND_URL, verify=False, headers=headers, json=data).json()
+        print response
 
 
 class FacebookService(object):
