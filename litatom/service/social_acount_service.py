@@ -1,4 +1,5 @@
 # coding: utf-8
+import urllib
 import base64
 import hashlib
 import json
@@ -31,6 +32,8 @@ class GoogleService(object):
     https://developers.google.com/identity/sign-in/android/backend-auth
     '''
     CLIENT_ID = '272687572250-i5659eubkl38ck9n17mrijl0neh7rgkc.apps.googleusercontent.com'
+    CLIENT_SECRET = 'ZHDIw49zszjoNpVmzV3n6OYD'
+    CODE = '4/wwHY-EekKYF1DrHN3Pu_GrsxShOZdko5ipTe-e-yqT2RBWJyc-rs7dCHiNHDTXo6HyJiXWlA5XAj13ZyTmdfxXA'
     IOS_CLIENT_ID = '787479292864-bgpar2s95tbkmjphofq23ivu0b2tdu9t.apps.googleusercontent.com'
     @classmethod
     def login_info(cls, token, platform=PLATFORM_ANDROID):
@@ -63,6 +66,24 @@ class GoogleService(object):
             # print e
             logger.error('log false token:%s, %s', token, e)
             return None
+
+
+    @classmethod
+    def get_accesstoken(cls):
+        url = 'https://accounts.google.com/o/oauth2/token'
+        redirect_uri = 'http://www.litatom.com/hello'
+        datas = {
+            "grant_type": "authorization_code",
+            "code": "4/wwHY-EekKYF1DrHN3Pu_GrsxShOZdko5ipTe-e-yqT2RBWJyc-rs7dCHiNHDTXo6HyJiXWlA5XAj13ZyTmdfxXA",
+            "client_id": cls.CLIENT_ID,
+            "client_secret": cls.CLIENT_SECRET,
+            "redirect_uri": redirect_uri
+        }
+        params = urllib.urlencode(datas)
+        real_url = url + "?%s" % params
+        response = requests.post(real_url, verify=False).json()
+        # response = requests.post(cls.SEND_URL, verify=False, headers=headers, json=data).json()
+        print response
 
 
 
