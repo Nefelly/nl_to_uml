@@ -74,7 +74,7 @@ class GoogleService(object):
         redirect_uri = 'http://www.litatom.com/hello'
         datas = {
             "grant_type": "authorization_code",
-            "code": "4/1wwEsgMWxK23qRiY38hTZs8WlWke2O53WNHTV-kZz-Jg6fqs0guStkjzsjVe4MeX8y3tU8HPs1Yj60xlnvZVBwJU",
+            "code": "4%2FwwEsgMWxK23qRiY38hTZs8WlWke2O53WNHTV-kZz-Jg6fqs0guStkjzsjVe4MeX8y3tU8HPs1Yj60xlnvZVBwJU",
             "client_id": cls.CLIENT_ID,
             "client_secret": cls.CLIENT_SECRET,
             "redirect_uri": redirect_uri
