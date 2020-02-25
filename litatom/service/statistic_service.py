@@ -488,7 +488,7 @@ class DiamStatService(object):
         sheet_video = f.add_sheet('video_match', cell_overwrite_ok=True)
         sheet_voice = f.add_sheet('voice_match', cell_overwrite_ok=True)
         sheets = [sheet_text, sheet_video, sheet_voice]
-        col_head = ['匹配成功次数', '未使用钻石无会员', '未使用钻石有会员', '使用钻石']
+        col_head = ['匹配成功人数', '未使用钻石无会员', '未使用钻石有会员', '使用钻石']
         for sheet in sheets:
             sheet.write(0, 0, '增加钻石总量')
             sheet.write(0, 1, data_plus)
