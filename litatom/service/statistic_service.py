@@ -411,7 +411,7 @@ class DiamStatService(object):
                     sheet[12] = [match_num[key][0],match_num[key][1],match_num[key][2],match_num[key][3]]
 
             AliLogService.put_logs(contents, topic=name, project='litatom-account', logstore='diamond_match')
-            return data
+        return data
 
     @classmethod
     def cal_stats_from_list(cls, list, from_time, to_time):
