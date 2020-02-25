@@ -1,10 +1,10 @@
 import sys
 from litatom.service import AlertService, DiamStatService
 import datetime
-from litatom.util import ensure_path
+from litatom.util import ensure_path, get_zero_today
 
 
-def run(stat_date=datetime.datetime.now()):
+def run(stat_date=get_zero_today):
     if stat_date:
         dst_addr = '/data/account_stat/%s.xlsx' % (stat_date - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
         match_addr = '/data/match_account_stat/%s.xlsx' % (stat_date - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
