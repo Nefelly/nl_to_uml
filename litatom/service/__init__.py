@@ -30,6 +30,7 @@ from .ad_service import (
 )
 from .user_filter_service import UserFilterService
 from .user_service import UserService
+from .statistic_service import DiamStatService
 from .voice_chat_service import VoiceChatService
 from .message_service import UserMessageService
 from .conversation_service import ConversationService
