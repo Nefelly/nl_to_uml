@@ -92,6 +92,11 @@ def claim_rewards():
     return fail(data)
 
 
+def share_num():
+    data = ShareStatService.get_shown_num(request.user_id)
+    return success(data)
+
+
 def share_info():
     result_id = request.values.get('result_id')
     analys_results = PalmService.get_res_by_result_id(result_id)

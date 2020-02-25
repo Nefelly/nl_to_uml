@@ -11,7 +11,8 @@ from ..service import (
     AccountService
 )
 from ..const import (
-    ONE_WEEK
+    ONE_WEEK,
+    ONE_MONTH,
 )
 from ..redis import RedisClient
 
@@ -25,6 +26,7 @@ class ShareStatService(object):
     分享链接领钻石相关服务
     """
     CACHED_TIME = ONE_WEEK
+    CACHED_RECORD_TIME = ONE_MONTH
     ERR_SHARE_NOT_ENOUGH = 'not enough shared members'
 
     @classmethod
@@ -36,10 +38,14 @@ class ShareStatService(object):
         return REDIS_SHARE_KNOWN_NUM.format(user_id=user_id)
 
     @classmethod
-    def ensure_known_cache(cls, user_id):
-        key = cls._get_known_num_key(user_id)
-        if not redis_client.exists(key):
-            redis_client.set(key, 0)
+    def ensure_cache(cls, user_id):
+        known_key = cls._get_known_num_key(user_id)
+        if not redis_client.exists(known_key):
+            redis_client.set(known_key, 0)
+        redis_client.expire(known_key, cls.CACHED_RECORD_TIME)
+        key = cls._get_key(user_id)
+        if redis_client.exists(key):
+            redis_client.expire(key, cls.CACHED_TIME)
 
     @classmethod
     def add_stat_item(cls, user_id, item):
@@ -57,7 +63,7 @@ class ShareStatService(object):
     @classmethod
     def get_known_num(cls, user_id):
         """返回该用户已经领奖过的分享人数"""
-        cls.ensure_known_cache(user_id)
+        cls.ensure_cache(user_id)
         return int(redis_client.get(cls._get_known_num_key(user_id)))
 
     @classmethod
@@ -83,7 +89,6 @@ class ShareStatService(object):
             return cls.ERR_SHARE_NOT_ENOUGH, False
         key = cls._get_known_num_key(user_id)
         redis_client.set(key, cls.get_stat_item_num(user_id))
-        data,status = AccountService.deposit_by_activity(user_id,AccountService.SHARE_5)
-        return data,status
+        return AccountService.deposit_by_activity(user_id,AccountService.SHARE_5)
 
 
