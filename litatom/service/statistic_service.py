@@ -393,6 +393,7 @@ class DiamStatService(object):
                 row = 1
             else:
                 row = 2
+            print(name,row)
             data[row] = [[] for i in range(13)]
             sheet = data[row]
             contents = []
