@@ -495,7 +495,7 @@ class DiamStatService(object):
             for row in range(1, 13):
                 sheet.write(row + 1, 0, '匹配成功' + str(row))
             sheet.write(14, 0, '匹配成功>12')
-            for col in range(1, 4):
+            for col in range(1, 5):
                 sheet.write(1, col, col_head[col - 1])
         for i in range(3):
             sheet_data = data[i]
