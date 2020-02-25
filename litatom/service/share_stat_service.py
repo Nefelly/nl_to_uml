@@ -58,7 +58,7 @@ class ShareStatService(object):
     def get_known_num(cls, user_id):
         """返回该用户已经领奖过的分享人数"""
         cls.ensure_known_cache(user_id)
-        return redis_client.get(cls._get_known_num_key(user_id))
+        return int(redis_client.get(cls._get_known_num_key(user_id)))
 
     @classmethod
     def get_shown_num(cls, user_id):
