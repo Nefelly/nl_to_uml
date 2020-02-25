@@ -21,9 +21,12 @@ class Feedback(Document):
     content = StringField(required=True)
     uid = StringField(required=True)
     pics = ListField(required=False, default=[])
+    phone = StringField(required=False)
+    region = StringField(required=False, default='th')
     deal_res = StringField()
     passed = BooleanField(required=True, default=False)
     create_ts = IntField(required=True)
+    dealed = BooleanField(required=True, default=False)
     deal_ts = IntField()
 
     @classmethod
@@ -36,9 +39,11 @@ class Feedback(Document):
         if not self:
             return {}
         return {
+            'id': str(self.id),
             'content': self.content,
             'user_id': self.uid,
             'pics': self.pics,
+            'phone': self.phone if self.phone else '',
             'deal_result': self.deal_res if self.deal_res else '',
             'create_time': format_standard_time(date_from_unix_ts(self.create_ts))
         }

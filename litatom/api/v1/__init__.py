@@ -88,6 +88,9 @@ b.add_url_rule('/lit/admin/change_setting', 'admin-change_setting', endpoint.adm
 b.add_url_rule('/lit/admin/mod_setting', 'admin-mod_setting', endpoint.admin.mod_setting)
 b.add_url_rule('/lit/admin/mongo_gen_csv', 'admin-mongo_gen_csv', endpoint.admin.mongo_gen_csv)
 b.add_url_rule('/lit/admin/mongo_gen_csv_page', 'admin-mongo_gen_csv_page', endpoint.admin.mongo_gen_csv_page)
+b.add_url_rule('/lit/admin/feedbacks', 'admin-feedbacks', endpoint.admin.feedbacks)
+b.add_url_rule('/lit/admin/deal_feedback/<feedback_id>', 'admin-deal-feedback', endpoint.admin.deal_feedback)
+b.add_url_rule('/lit/admin/feedback_page', 'admin-feedback_page', endpoint.admin.feedback_page)
 
 
 # picture
