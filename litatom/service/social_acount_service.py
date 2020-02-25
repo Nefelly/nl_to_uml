@@ -69,14 +69,14 @@ class GoogleService(object):
 
 
     @classmethod
-    def get_accesstoken(cls):
+    def get_accesstoken(cls, code=None):
         url = 'https://accounts.google.com/o/oauth2/token'
         redirect_uri = 'http://www.litatom.com/hello'
         datas = {
             "grant_type": "authorization_code",
-            "code": "4/wwHGVxUL6wmwx75MC1bvRr1i_S0jQuj3ldhKxbO-CL1mzyPgECZS332EK9KfrEXzeO1kKIullQZC3K95Lpk4xhY",
-            "client_id": cls.CLIENT_ID,
-            "client_secret": cls.CLIENT_SECRET,
+            "code": "4/wwHGVxUL6wmwx75MC1bvRr1i_S0jQuj3ldhKxbO-CL1mzyPgECZS332EK9KfrEXzeO1kKIullQZC3K95Lpk4xhY" if not code else code,
+            "client_id": "272687572250-q38h6dlnru40d39fa0cbais936r93064.apps.googleusercontent.com",
+            "client_secret": "",
             "redirect_uri": redirect_uri
         }
         params = urllib.urlencode(datas)
