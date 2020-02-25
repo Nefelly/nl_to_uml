@@ -27,6 +27,7 @@ from ....service import (
     AccountService,
     TrackActionService
 )
+
 logger = logging.getLogger(__name__)
 
 
@@ -50,6 +51,7 @@ def pay_activities():
     if not status:
         return fail(data)
     return success(data)
+
 
 def diamond_products():
     data, status = AccountService.diamond_products(request.user_id)

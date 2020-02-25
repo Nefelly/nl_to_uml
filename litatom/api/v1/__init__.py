@@ -140,6 +140,8 @@ b.add_url_rule('/lit/activity/palm/share', 'activity-palm-share', endpoint.activ
 b.add_url_rule('/lit/activity/palm/times_left', 'activity-palm-times-left', endpoint.activity.times_left)
 b.add_url_rule('/lit/activity/user_share/<share_user_id>', 'activity-user-share', endpoint.activity.user_share)
 b.add_url_rule('/lit/activity/share_static', 'activity-share-static', endpoint.activity.share_static)
+b.add_url_rule('/lit/activity/claim_rewards', 'activity-claim-rewards', endpoint.activity.claim_rewards)
+b.add_url_rule('/lit/activity/share_num','activity-share-num',endpoint.activity.share_num)
 
 # anoy_match
 b.add_url_rule('/lit/anoy_match/get_fakeid', 'anoy-match-create-fakeid', endpoint.anoy_match.get_fakeid)
