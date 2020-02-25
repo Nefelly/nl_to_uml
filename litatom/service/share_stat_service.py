@@ -80,8 +80,10 @@ class ShareStatService(object):
         :return: 返回两项，第一项是错误信息，无则为None, 第二项是是否钻石变动成功
         """
         if cls.get_shown_num(user_id) < 5:
-            return cls.ERR_SHARE_NOT_ENOUGH
+            return cls.ERR_SHARE_NOT_ENOUGH, False
         key = cls._get_known_num_key(user_id)
         redis_client.set(key, cls.get_stat_item_num(user_id))
-        return AccountService.deposit_by_activity(user_id,AccountService.SHARE_5)
+        data,status = AccountService.deposit_by_activity(user_id,AccountService.SHARE_5)
+        return data,status
+
 
