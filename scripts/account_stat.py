@@ -1,5 +1,5 @@
 import sys
-from litatom.service import AlertService, JournalService, AliLogService, DiamStatService
+from litatom.service import AlertService, DiamStatService
 import datetime
 from litatom.util import ensure_path
 
@@ -15,9 +15,9 @@ def run(stat_date=datetime.datetime.now()):
     ensure_path(dst_addr)
     ensure_path(match_addr)
     DiamStatService.diam_stat_report(dst_addr, stat_date)
-    AlertService.send_file(['644513759@qq.com'], dst_addr)
+    AlertService.send_file(["litatomwang@gmail.com", "w326571@126.com", '382365209@qq.com','644513759@qq.com'], dst_addr)
     DiamStatService.diam_free_report(match_addr,stat_date)
-    AlertService.send_file(['644513759@qq.com'], match_addr)
+    AlertService.send_file(["litatomwang@gmail.com", "w326571@126.com", '382365209@qq.com','644513759@qq.com'], match_addr)
 
 
 if __name__ == "__main__":
