@@ -20,7 +20,7 @@ from ..const import (
 )
 
 logger = logging.getLogger(__name__)
-
+import requests as req
 from google.oauth2 import id_token
 from google.auth.transport import requests
 
@@ -81,7 +81,7 @@ class GoogleService(object):
         }
         params = urllib.urlencode(datas)
         real_url = url + "?%s" % params
-        response = requests.post(real_url, verify=False).json()
+        response = req.post(real_url, verify=False).json()
         # response = requests.post(cls.SEND_URL, verify=False, headers=headers, json=data).json()
         print response
 
