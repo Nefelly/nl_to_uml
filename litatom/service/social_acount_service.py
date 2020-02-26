@@ -111,7 +111,7 @@ class GoogleService(object):
     def get_access_token(cls, code=None):
         """
         页面访问获取code
-
+        介绍： https://www.cnblogs.com/android-blogs/p/6380725.html?utm_source=itdadao&utm_medium=referral
         https://accounts.google.com/o/oauth2/auth?scope=https://www.googleapis.com/auth/androidpublisher&response_type=code&access_type=offline&redirect_uri=http://www.litatom.com/hello&client_id=272687572250-i5659eubkl38ck9n17mrijl0neh7rgkc.apps.googleusercontent.com&prompt=consent
         :param code:
         :return:
