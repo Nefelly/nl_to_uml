@@ -24,6 +24,12 @@ from .user_relation import (
 from .ad_service import (
     AdService
 )
+from .account_service import AccountService
+from .social_acount_service import (
+    GoogleService,
+    FacebookService
+)
+from .user_service import UserService
 from .user_filter_service import UserFilterService
 from .statistic_service import DiamStatService
 from .voice_chat_service import VoiceChatService
@@ -31,13 +37,6 @@ from .message_service import UserMessageService
 from .conversation_service import ConversationService
 from .qiniu_service import QiniuService
 from .ali_oss import AliOssService
-
-from .account_service import AccountService
-from .social_acount_service import (
-    GoogleService,
-    FacebookService
-)
-from .user_service import UserService
 from .statistic_service import StatisticService
 from .match_service import MatchService
 from .anoy_match_service import AnoyMatchService
