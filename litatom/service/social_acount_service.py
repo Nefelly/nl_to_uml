@@ -6,6 +6,7 @@ import json
 import time
 import logging
 import requests as rq
+
 rq.adapters.DEFAULT_RETRIES = 5  # 增加重连次数
 
 import traceback
@@ -24,17 +25,20 @@ import requests as req
 from google.oauth2 import id_token
 from google.auth.transport import requests
 
+
 # (Receive token by HTTPS POST)
 # ...
 
 class GoogleService(object):
-    '''
+    """
     https://developers.google.com/identity/sign-in/android/backend-auth
-    '''
+    """
     CLIENT_ID = '272687572250-i5659eubkl38ck9n17mrijl0neh7rgkc.apps.googleusercontent.com'
     CLIENT_SECRET = 'ZHDIw49zszjoNpVmzV3n6OYD'
     CODE = '4/wwHY-EekKYF1DrHN3Pu_GrsxShOZdko5ipTe-e-yqT2RBWJyc-rs7dCHiNHDTXo6HyJiXWlA5XAj13ZyTmdfxXA'
     IOS_CLIENT_ID = '787479292864-bgpar2s95tbkmjphofq23ivu0b2tdu9t.apps.googleusercontent.com'
+    ACCESS_TOKEN = ''
+
     @classmethod
     def login_info(cls, token, platform=PLATFORM_ANDROID):
         try:
@@ -61,15 +65,14 @@ class GoogleService(object):
             # ID token is valid. Get the user's Google Account ID from the decoded token.
             # userid = idinfo['sub']
             return idinfo
-        except ValueError, e:
+        except ValueError as e:
             # Invalid token
             # print e
             logger.error('log false token:%s, %s', token, e)
             return None
 
-
     @classmethod
-    def get_accesstoken(cls, code=None):
+    def get_access_token(cls, code=None):
         '''
         页面访问获取code
 
@@ -90,11 +93,16 @@ class GoogleService(object):
         real_url = url + "?%s" % params
         response = req.post(real_url, verify=False).json()
         # response = requests.post(cls.SEND_URL, verify=False, headers=headers, json=data).json()
-        print response
+        print(response)
         return response
 
     @classmethod
-    def refresh_accesstoken(cls, code=None):
+    def refresh_access_token(cls, code=None):
+        """
+        刷新access_token
+        :param code:
+        :return: 返回一个新令牌，json格式  "access_token" : "","token_type" : "Bearer","expires_in" : 3600,
+        """
         url = 'https://accounts.google.com/o/oauth2/token'
         datas = {
             "grant_type": "refresh_token",
@@ -106,15 +114,22 @@ class GoogleService(object):
         real_url = url + "?%s" % params
         response = req.post(real_url, verify=False).json()
         # response = requests.post(cls.SEND_URL, verify=False, headers=headers, json=data).json()
-        print response
+        print(response)
+
+    @classmethod
+    def get_order_by_access_token(cls, access_token):
+        url = 'https://www.googleapis.com/androidpublisher/v3/applications/packageName/purchases/products/productId/tokens/purchaseToken'
+        data = {
+
+        }
 
 
 class FacebookService(object):
     '''
     https://blog.csdn.net/mycwq/article/details/71308186
     '''
-    #APP_ID = '372877603536187'
-    #APP_SECRET = '29e68240c95ceddbe0a6798400ce2f0a'
+    # APP_ID = '372877603536187'
+    # APP_SECRET = '29e68240c95ceddbe0a6798400ce2f0a'
     APP_ID = '2249012795165840'
     APP_SECRET = '5d59b1c43df07c9ef2441abf19d6bfe9'
     APP_TOKEN = '%s|%s' % (APP_ID, APP_SECRET)
@@ -129,7 +144,7 @@ class FacebookService(object):
             # print response
             assert response.get('data')['is_valid']
             return response.get('data', {}).get('user_id', None)
-        except Exception, e:
+        except Exception as e:
             logger.error(traceback.format_exc())
             # traceback.print_exc()
             logger.error('Error get , token: %r, err: %r', token, e)
@@ -142,10 +157,10 @@ class FacebookService(object):
             response = rq.get(url, verify=False).json()
             assert response.get('id')
             return response
-        except Exception, e:
+        except Exception as e:
             logger.error(traceback.format_exc())
             # traceback.print_exc()
-            logger.error('Error get , err: %r',  e)
+            logger.error('Error get , err: %r', e)
             return None
 
     @classmethod
@@ -164,7 +179,7 @@ class FacebookService(object):
                 user_id = cls._get_user_id(token)
                 assert user_id is not None
                 return cls._get_info(user_id)
-            except Exception, e:
+            except Exception as e:
                 # Invalid token
                 if i < try_times - 1:
                     time.sleep(0.3)
