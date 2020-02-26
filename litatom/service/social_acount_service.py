@@ -123,9 +123,9 @@ class GoogleService(object):
         print(response)
 
     @classmethod
-    def get_order_by_access_token(cls, access_token):
+    def get_order_by_access_token(cls, access_token=ACCESS_TOKEN):
         url = 'https://www.googleapis.com/androidpublisher/v3/applications/packageName/purchases/products/productId/tokens/purchaseToken?access_token='
-        real_url = url + cls.ACCESS_TOKEN
+        real_url = url + access_token
         resp = req.get(real_url)
         print(resp)
 
