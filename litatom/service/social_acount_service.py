@@ -13,13 +13,21 @@ import traceback
 from urllib2 import urlopen
 
 import oss2
-
+from ..key import (
+    REDIS_ACCESS_TOKEN,
+)
 from ..const import (
     ONE_HOUR,
     PLATFORM_ANDROID,
     PLATFORM_IOS
 )
+from ..service import (
+    AliLogService,
+    AccountService
+)
+from ..redis import RedisClient
 
+redis_client = RedisClient()['lit']
 logger = logging.getLogger(__name__)
 import requests as req
 from google.oauth2 import id_token
@@ -37,7 +45,27 @@ class GoogleService(object):
     CLIENT_SECRET = 'ZHDIw49zszjoNpVmzV3n6OYD'
     CODE = '4/wwHY-EekKYF1DrHN3Pu_GrsxShOZdko5ipTe-e-yqT2RBWJyc-rs7dCHiNHDTXo6HyJiXWlA5XAj13ZyTmdfxXA'
     IOS_CLIENT_ID = '787479292864-bgpar2s95tbkmjphofq23ivu0b2tdu9t.apps.googleusercontent.com'
-    ACCESS_TOKEN = ''
+    AC_TOKEN_EXPIRE_TIME = 3400
+    ERR_NO_ACCESS_TOKEN = 'no access token or access token expired'
+
+    @classmethod
+    def _get_redis_key(cls):
+        return REDIS_ACCESS_TOKEN
+
+    @classmethod
+    def ensure_cache(cls, access_token):
+        """把access_token缓存进redis"""
+        key = cls._get_redis_key()
+        redis_client.set(key, access_token)
+        redis_client.expire(key, cls.AC_TOKEN_EXPIRE_TIME)
+
+    @classmethod
+    def get_access_token_from_redis(cls):
+        """返回access_token，无则返回None"""
+        key = cls._get_redis_key()
+        if not redis_client.exists(key):
+            return None
+        return redis_client.get(key)
 
     @classmethod
     def login_info(cls, token, platform=PLATFORM_ANDROID):
@@ -76,7 +104,7 @@ class GoogleService(object):
         """把参数格式化写入url"""
         params = urllib.urlencode(data)
         real_url = url + '?%s' % params
-        print(url,data,real_url)
+        print(url, data, real_url)
         return real_url
 
     @classmethod
@@ -119,28 +147,88 @@ class GoogleService(object):
         }
         real_url = cls.url_append_param(url, datas)
         response = req.post(real_url, verify=False).json()
-        cls.ACCESS_TOKEN = response['access_token']
+        access_token = response['access_token']
+        cls.ensure_cache(access_token)
         # response = requests.post(cls.SEND_URL, verify=False, headers=headers, json=data).json()
-        print(response)
+        return access_token
 
     @classmethod
-    def get_order_by_access_token(cls, access_token=None):
-        # url = 'https://www.googleapis.com/androidpublisher/v3/applications/packageName/purchases/products/productId/tokens/purchaseToken?access_token='
-        # real_url = url + access_token
-        # resp = req.get(real_url)
-        # print(resp)
-        url = 'https://www.googleapis.com/androidpublisher/v3/applications/packageName/purchases/products/productId/tokens/purchaseToken'
-        data = {'access_token':cls.ACCESS_TOKEN if not access_token else access_token}
-        real_url = cls.url_append_param(url,data)
+    def get_order_info(cls, product_id, pay_token):
+        """根据product_id和用户订单的token，返回订单详情，若为虚假token，则返回error，没有任何正常订单返回的键"""
+        url = 'https://www.googleapis.com/androidpublisher/v3/applications/com.litatom.app/purchases/products/' \
+              + product_id + '/tokens/' + pay_token
+        access_token = cls.get_access_token_from_redis()
+        if not access_token:
+            access_token = cls.refresh_access_token()
+        data = {'access_token': access_token}
+        real_url = cls.url_append_param(url, data)
         print(real_url)
         resp = req.post(real_url)
         print(resp)
+        return resp.json()
+
+    @classmethod
+    def judge_order_by_token(cls, product_id, pay_token):
+        """
+        根据product_id和pay_token返回订单是否被购买；
+        :return: 若为False，则有可能token伪造，也有可能订单未被购买；True则订单已被购买
+        """
+        resp = cls.get_order_info(product_id, pay_token)
+        try:
+            state = resp['purchaseState']
+        except KeyError:
+            return False
+        if not state:
+            return True
+        return False
+
+    @classmethod
+    def judge_pay_inform_log(cls, log):
+        """
+        :param log: action为pay_inform的ali_log
+        :return:一个tuple:错误信息(有效则为None)，是否为有效订单
+        """
+        contents = log.get_contents()
+        remark = contents['remark']
+        diamonds = int(remark['diamonds'])
+        token = remark['payload']['token']
+        product_id = AccountService.get_product_name_by_diamonds(diamonds)
+        res = cls.judge_order_by_token(product_id, token)
+        if res:
+            return None
+        user_id = contents['user_id']
+        info = {'product_id': product_id, 'token': token, 'user_id': user_id}
+        return info
+
+    @classmethod
+    def judge_history_pay_inform_log(cls, from_time, to_time):
+        """
+        判断时间区间内日志服务上订单的有效性
+        :param from_time:
+        :param to_time:
+        :return:
+        """
+        resp = AliLogService.get_log_atom(project='litatomaction', logstore='litatomactionstore',
+                                          query='action:pay_inform',
+                                          from_time=from_time, to_time=to_time)
+        for log in resp.logs:
+            info = cls.judge_pay_inform_log(log)
+            if info:
+                contents = []
+                for item in info:
+                    contents.append((item, info[item]))
+                cls.put_invalid_log_to_ali_log(contents)
+
+    @classmethod
+    def put_invalid_log_to_ali_log(cls, contents):
+        AliLogService.put_logs(contents=contents, topic='invalid_order', project='litatomaction',
+                               logstore='litatomactionstore')
 
 
 class FacebookService(object):
-    '''
+    """
     https://blog.csdn.net/mycwq/article/details/71308186
-    '''
+    """
     # APP_ID = '372877603536187'
     # APP_SECRET = '29e68240c95ceddbe0a6798400ce2f0a'
     APP_ID = '2249012795165840'
