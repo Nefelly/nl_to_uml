@@ -21,10 +21,6 @@ from .user_relation import (
     FollowService,
     BlockService
 )
-from .social_acount_service import (
-    GoogleService,
-    FacebookService
-)
 from .ad_service import (
     AdService
 )
@@ -49,6 +45,10 @@ from .feedback_service import FeedbackService
 from .admin_service import AdminService
 from .palm_service import PalmService
 from .account_service import AccountService
+from .social_acount_service import (
+    GoogleService,
+    FacebookService
+)
 from .share_stat_service import ShareStatService
 from .maintain_service import MaintainService
 from .chat_record_service import ChatRecordService
