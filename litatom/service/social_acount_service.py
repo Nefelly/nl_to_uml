@@ -76,6 +76,7 @@ class GoogleService(object):
         """把参数格式化写入url"""
         params = urllib.urlencode(data)
         real_url = url + '?%s' % params
+        print(url,data,real_url)
         return real_url
 
     @classmethod
