@@ -37,7 +37,7 @@ class JournalService(object):
 
     USER_LOC = {}  # user_id:language
     NEW_USER_LOC = {}  # 最近一天创建的用户为新用户 user_id:language
-    LOC_STATED = ['TH', 'VN', 'PH']  # new_TH, count_TH
+    LOC_STATED = ['TH', 'VN', 'PH', 'ID']  # new_TH, count_TH
     CACHED_RES = {}
     ZERO_TODAY = None
     GENDERS = ['boy', 'girl']
