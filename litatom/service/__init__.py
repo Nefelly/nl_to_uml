@@ -31,6 +31,13 @@ from .message_service import UserMessageService
 from .conversation_service import ConversationService
 from .qiniu_service import QiniuService
 from .ali_oss import AliOssService
+
+from .account_service import AccountService
+from .social_acount_service import (
+    GoogleService,
+    FacebookService
+)
+from .user_service import UserService
 from .statistic_service import StatisticService
 from .match_service import MatchService
 from .anoy_match_service import AnoyMatchService
@@ -43,12 +50,6 @@ from .track_action_service import TrackActionService
 from .feedback_service import FeedbackService
 from .admin_service import AdminService
 from .palm_service import PalmService
-from .account_service import AccountService
-from .social_acount_service import (
-    GoogleService,
-    FacebookService
-)
-from .user_service import UserService
 from .share_stat_service import ShareStatService
 from .maintain_service import MaintainService
 from .chat_record_service import ChatRecordService
