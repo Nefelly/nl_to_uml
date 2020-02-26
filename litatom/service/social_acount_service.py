@@ -129,6 +129,7 @@ class GoogleService(object):
         # real_url = url + access_token
         # resp = req.get(real_url)
         # print(resp)
+        print('#',access_token)
         url = 'https://www.googleapis.com/androidpublisher/v3/applications/packageName/purchases/products/productId/tokens/purchaseToken'
         data = {'access_token':access_token}
         real_url = cls.url_append_param(url,data)
