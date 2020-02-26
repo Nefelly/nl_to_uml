@@ -24,7 +24,6 @@ from .user_relation import (
 from .ad_service import (
     AdService
 )
-from .account_service import AccountService
 from .social_acount_service import (
     GoogleService,
     FacebookService
@@ -39,6 +38,7 @@ from .qiniu_service import QiniuService
 from .ali_oss import AliOssService
 from .statistic_service import StatisticService
 from .match_service import MatchService
+from .account_service import AccountService
 from .anoy_match_service import AnoyMatchService
 from .voice_match_service import VoiceMatchService
 from .video_match_service import VideoMatchService
