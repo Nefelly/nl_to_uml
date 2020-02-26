@@ -25,7 +25,6 @@ from .ad_service import (
     AdService
 )
 from .user_filter_service import UserFilterService
-from .user_service import UserService
 from .statistic_service import DiamStatService
 from .voice_chat_service import VoiceChatService
 from .message_service import UserMessageService
@@ -49,6 +48,7 @@ from .social_acount_service import (
     GoogleService,
     FacebookService
 )
+from .user_service import UserService
 from .share_stat_service import ShareStatService
 from .maintain_service import MaintainService
 from .chat_record_service import ChatRecordService
