@@ -124,15 +124,13 @@ class GoogleService(object):
         print(response)
 
     @classmethod
-    def get_order_by_access_token(cls, access_token=ACCESS_TOKEN):
+    def get_order_by_access_token(cls, access_token=None):
         # url = 'https://www.googleapis.com/androidpublisher/v3/applications/packageName/purchases/products/productId/tokens/purchaseToken?access_token='
         # real_url = url + access_token
         # resp = req.get(real_url)
         # print(resp)
-        print('#',access_token)
-        print('##', cls.ACCESS_TOKEN)
         url = 'https://www.googleapis.com/androidpublisher/v3/applications/packageName/purchases/products/productId/tokens/purchaseToken'
-        data = {'access_token':access_token}
+        data = {'access_token':cls.ACCESS_TOKEN if not access_token else access_token}
         real_url = cls.url_append_param(url,data)
         print(real_url)
         resp = req.post(real_url)
