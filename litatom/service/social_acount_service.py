@@ -72,14 +72,21 @@ class GoogleService(object):
             return None
 
     @classmethod
+    def url_append_param(cls, url, data):
+        """把参数格式化写入url"""
+        params = urllib.urlencode(data)
+        real_url = url + '?%s' % params
+        return real_url
+
+    @classmethod
     def get_access_token(cls, code=None):
-        '''
+        """
         页面访问获取code
 
         https://accounts.google.com/o/oauth2/auth?scope=https://www.googleapis.com/auth/androidpublisher&response_type=code&access_type=offline&redirect_uri=http://www.litatom.com/hello&client_id=272687572250-i5659eubkl38ck9n17mrijl0neh7rgkc.apps.googleusercontent.com&prompt=consent
         :param code:
         :return:
-        '''
+        """
         url = 'https://accounts.google.com/o/oauth2/token'
         redirect_uri = 'http://www.litatom.com/hello'
         datas = {
@@ -89,8 +96,7 @@ class GoogleService(object):
             "client_secret": cls.CLIENT_SECRET,
             "redirect_uri": redirect_uri
         }
-        params = urllib.urlencode(datas)
-        real_url = url + "?%s" % params
+        real_url = cls.url_append_param(url, datas)
         response = req.post(real_url, verify=False).json()
         # response = requests.post(cls.SEND_URL, verify=False, headers=headers, json=data).json()
         print(response)
@@ -110,18 +116,18 @@ class GoogleService(object):
             "client_secret": cls.CLIENT_SECRET,
             "refresh_token": '1//0egi5g_qCRpxzCgYIARAAGA4SNwF-L9IrJgqyzDZWOQ9QucaXGaoPiYv_Lr3gEcvCmK-J8X9PbD5nebLO0TiTqgxsM9CHfWy1YuE'
         }
-        params = urllib.urlencode(datas)
-        real_url = url + "?%s" % params
+        real_url = cls.url_append_param(url, datas)
         response = req.post(real_url, verify=False).json()
+        cls.ACCESS_TOKEN = response['access_token']
         # response = requests.post(cls.SEND_URL, verify=False, headers=headers, json=data).json()
         print(response)
 
     @classmethod
     def get_order_by_access_token(cls, access_token):
-        url = 'https://www.googleapis.com/androidpublisher/v3/applications/packageName/purchases/products/productId/tokens/purchaseToken'
-        data = {
-
-        }
+        url = 'https://www.googleapis.com/androidpublisher/v3/applications/packageName/purchases/products/productId/tokens/purchaseToken?access_token='
+        real_url = url + cls.ACCESS_TOKEN
+        resp = req.get(real_url)
+        print(resp)
 
 
 class FacebookService(object):
