@@ -66,7 +66,9 @@ def pay_inform():
     payload = request.json
     user_id = request.user_id
     TrackActionService.create_action(request.user_id, 'pay_inform', None, None, json.dumps(payload))
-    GoogleService.judge_order_online(payload, user_id)
+    data, status = GoogleService.judge_order_online(payload, user_id)
+    if not status:
+        return fail(data)
     data, status = AccountService.deposit_diamonds(user_id, payload)
     if not status:
         return fail(data)

@@ -6,7 +6,6 @@ import json
 import time
 import logging
 import requests as rq
-import re
 import traceback
 from urllib2 import urlopen
 import oss2
@@ -45,7 +44,7 @@ class GoogleService(object):
     CODE = '4/wwHY-EekKYF1DrHN3Pu_GrsxShOZdko5ipTe-e-yqT2RBWJyc-rs7dCHiNHDTXo6HyJiXWlA5XAj13ZyTmdfxXA'
     IOS_CLIENT_ID = '787479292864-bgpar2s95tbkmjphofq23ivu0b2tdu9t.apps.googleusercontent.com'
     AC_TOKEN_EXPIRE_TIME = 3400
-    ERR_NO_ACCESS_TOKEN = 'no access token or access token expired'
+    ERR_INVALID_TOKEN = 'invalid token provided'
 
     @classmethod
     def _get_redis_key(cls):
@@ -176,9 +175,9 @@ class GoogleService(object):
         key_str = 'purchaseState'
         if key_str in resp:
             state = resp['purchaseState']
-            if not state:
-                return True
-        return False
+            if state == 1:
+                return False
+        return True
 
     @classmethod
     def judge_order_online(cls, payload, user_id):
@@ -188,6 +187,8 @@ class GoogleService(object):
         if not res:
             contents = [('token',token),('product_id',product_id),('user_id',user_id)]
             cls.put_invalid_log_to_ali_log(contents)
+            return cls.ERR_INVALID_TOKEN,False
+        return None,True
 
     @classmethod
     def judge_pay_inform_log(cls, log):
