@@ -21,15 +21,15 @@ from .user_relation import (
     FollowService,
     BlockService
 )
-from .ad_service import (
-    AdService
-)
 from .social_acount_service import (
     GoogleService,
     FacebookService
 )
-from .user_service import UserService
+from .ad_service import (
+    AdService
+)
 from .user_filter_service import UserFilterService
+from .user_service import UserService
 from .statistic_service import DiamStatService
 from .voice_chat_service import VoiceChatService
 from .message_service import UserMessageService
@@ -38,7 +38,6 @@ from .qiniu_service import QiniuService
 from .ali_oss import AliOssService
 from .statistic_service import StatisticService
 from .match_service import MatchService
-from .account_service import AccountService
 from .anoy_match_service import AnoyMatchService
 from .voice_match_service import VoiceMatchService
 from .video_match_service import VideoMatchService
@@ -49,6 +48,7 @@ from .track_action_service import TrackActionService
 from .feedback_service import FeedbackService
 from .admin_service import AdminService
 from .palm_service import PalmService
+from .account_service import AccountService
 from .share_stat_service import ShareStatService
 from .maintain_service import MaintainService
 from .chat_record_service import ChatRecordService
