@@ -37,6 +37,7 @@ rq.adapters.DEFAULT_RETRIES = 5  # 增加重连次数
 
 class GoogleService(object):
     """
+    TODO：1.无access_token申请失败保护
     https://developers.google.com/identity/sign-in/android/backend-auth
     """
     CLIENT_ID = '272687572250-i5659eubkl38ck9n17mrijl0neh7rgkc.apps.googleusercontent.com'
@@ -66,11 +67,11 @@ class GoogleService(object):
         redis_client.expire(key, cls.AC_TOKEN_EXPIRE_TIME)
 
     @classmethod
-    def get_access_token_from_redis(cls):
-        """返回access_token，无则返回None"""
+    def _get_access_token(cls):
+        """返回access_token，没有缓存则刷新"""
         key = cls._get_redis_key()
         if not redis_client.exists(key):
-            return None
+            cls._refresh_access_token()
         return redis_client.get(key)
 
     @classmethod
@@ -113,7 +114,7 @@ class GoogleService(object):
         return real_url
 
     @classmethod
-    def get_access_token(cls, code=None):
+    def _get_access_token_init(cls, code=None):
         """
         页面访问获取code
         介绍： https://www.cnblogs.com/android-blogs/p/6380725.html?utm_source=itdadao&utm_medium=referral
@@ -136,7 +137,7 @@ class GoogleService(object):
         return response
 
     @classmethod
-    def refresh_access_token(cls, code=None):
+    def _refresh_access_token(cls, code=None):
         """
         刷新access_token
         :param code:
@@ -153,17 +154,13 @@ class GoogleService(object):
         response = req.post(real_url, verify=False).json()
         access_token = response['access_token']
         cls.ensure_cache(access_token)
-        # response = requests.post(cls.SEND_URL, verify=False, headers=headers, json=data).json()
-        return access_token
 
     @classmethod
     def get_order_info(cls, product_id, pay_token):
         """根据product_id和用户订单的token，返回订单详情，若为虚假token，则返回error response，没有任何正常订单返回的键"""
         url = 'https://www.googleapis.com/androidpublisher/v3/applications/com.litatom.app/purchases/products/' \
               + product_id + '/tokens/' + pay_token
-        access_token = cls.get_access_token_from_redis()
-        if not access_token:
-            access_token = cls.refresh_access_token()
+        access_token = cls._get_access_token()
         data = {'access_token': access_token}
         real_url = cls.url_append_param(url, data)
         resp = req.get(real_url)
@@ -176,12 +173,11 @@ class GoogleService(object):
         :return: 若为False，则有可能token伪造，也有可能订单未被购买；True则订单已被购买
         """
         resp = cls.get_order_info(product_id, pay_token)
-        try:
+        key_str = 'purchaseState'
+        if key_str in resp:
             state = resp['purchaseState']
-        except KeyError:
-            return False
-        if not state:
-            return True
+            if not state:
+                return True
         return False
 
     @classmethod
@@ -230,8 +226,8 @@ class GoogleService(object):
 
     @classmethod
     def put_invalid_log_to_ali_log(cls, contents):
-        AliLogService.put_logs(contents=contents, topic='invalid_order', project='litatomaction',
-                               logstore='litatomactionstore')
+        contents.append(('action','invalid_order'))
+        AliLogService.put_logs(contents=contents, project='litatomaction',logstore='litatomactionstore')
 
 
 class FacebookService(object):

@@ -246,7 +246,7 @@ class HuanxinService(object):
         return True
         url = cls.APP_URL + 'users/%s/contacts/users/%s' % (source_user_name, dest_user_name)
 
-        access_token = cls.get_access_token()
+        access_token = cls.get_access_token_init()
         if not access_token:
             return False
         headers = {
@@ -266,7 +266,7 @@ class HuanxinService(object):
         return True
         url = cls.APP_URL + 'users/%s/contacts/users/%s' % (source_user_name, dest_user_name)
 
-        access_token = cls.get_access_token()
+        access_token = cls.get_access_token_init()
         if not access_token:
             return False
         headers = {
@@ -287,7 +287,7 @@ class HuanxinService(object):
         return True
         url = cls.APP_URL + 'users/%s' % user_name
 
-        access_token = cls.get_access_token()
+        access_token = cls.get_access_token_init()
         if not access_token:
             return False
         headers = {
