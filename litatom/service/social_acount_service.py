@@ -161,7 +161,7 @@ class GoogleService(object):
         data = {'access_token': access_token}
         real_url = cls.url_append_param(url, data)
         print(real_url)
-        resp = req.post(real_url)
+        resp = req.get(real_url)
         print(resp)
         return resp.json()
 
