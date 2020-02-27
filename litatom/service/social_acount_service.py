@@ -23,7 +23,6 @@ from ..const import (
 )
 from ..service import (
     AliLogService,
-    AccountService
 )
 from ..redis import RedisClient
 
@@ -188,6 +187,7 @@ class GoogleService(object):
         :param log: action为pay_inform的ali_log
         :return:一个tuple:错误信息(有效则为None)，是否为有效订单
         """
+        from ..service import AccountService
         contents = log.get_contents()
         remark = contents['remark']
         diamonds = int(remark['diamonds'])
