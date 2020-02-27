@@ -294,18 +294,31 @@ class StatisticService(object):
 
 
 class DiamStatService(object):
+    """
+    加入新的钻石统计量需要：
+    1.STAT_QUERY_LIST加入查询条件
+    2.diam_stat_report函数中，excel_dict位置补充，对应顺序补充excel内字段描述
+    """
     STAT_QUERY_LIST = {
         'diam_cons_num': 'diamonds<0 |SELECT -sum(diamonds) as res',
         'diam_cons_people_num': 'diamonds<0 |SELECT COUNT(DISTINCT user_id) as res',
+        'diam_cons_man_time_num': 'diamonds<0|SELECT COUNT(1) as res',
         'diam_deposit_num': 'name:deposit|SELECT sum(diamonds) as res',
         'diam_deposit_people_num': 'name:deposit|SELECT COUNT(DISTINCT user_id) as res',
+        'diam_deposit_man_time_num': 'name:deposit|SELECT COUNT(1) as res',
         'diam_deposit50_people_num': 'name:deposit and diamonds=50|SELECT COUNT(DISTINCT user_id) as res',
+        'diam_deposit50_man_time_num': 'name:deposit and diamonds=50|SELECT COUNT(1) as res',
         'diam_deposit100_people_num': 'name:deposit and diamonds=100|SELECT COUNT(DISTINCT user_id) as res',
+        'diam_deposit100_man_time_num': 'name:deposit and diamonds=100|SELECT COUNT(1) as res',
         'diam_deposit200_people_num': 'name:deposit and diamonds=200|SELECT COUNT(DISTINCT user_id) as res',
+        'diam_deposit200_man_time_num': 'name:deposit and diamonds=200|SELECT COUNT(1) as res',
         'diam_deposit500_people_num': 'name:deposit and diamonds=500|SELECT COUNT(DISTINCT user_id) as res',
+        'diam_deposit500_man_time_num': 'name:deposit and diamonds=500|SELECT COUNT(1) as res',
         'week_member_consumer_num': 'name:week_member |SELECT COUNT(DISTINCT user_id) as res',
+        'week_member_cons_man_time_num': 'name:week_member |SELECT COUNT(1) as res',
         'week_member_diam_cons_num': 'name:week_member |SELECT -sum(diamonds) as res',
         'acce_consumer_num': 'name:accelerate | SELECT count(DISTINCT user_id) as res',
+        'acce_con_man_time_num': 'name:accelerate | SELECT count(1) as res',
         'acce_diam_cons_num': 'name:accelerate | SELECT -sum(diamonds) as res',
     }
     FREE_QUERY_LIST = {
@@ -453,17 +466,25 @@ class DiamStatService(object):
         data_next, excel_dic = cls.cal_stats_from_list(cls.STAT_QUERY_LIST, from_time, to_time)
         data += data_next
         excel_data += [excel_dic['diam_cons_people_num'], excel_dic['diam_cons_num'],
+                       excel_dic['diam_cons_man_time_num'],
                        excel_dic['diam_deposit_people_num'],
-                       excel_dic['diam_deposit_num'], excel_dic['diam_deposit50_people_num'],
-                       excel_dic['diam_deposit100_people_num'],
-                       excel_dic['diam_deposit200_people_num'], excel_dic['diam_deposit500_people_num'],
-                       excel_dic['week_member_consumer_num'],
+                       excel_dic['diam_deposit_num'], excel_dic['diam_deposit_man_time_num'],
+                       excel_dic['diam_deposit50_people_num'],
+                       excel_dic['diam_deposit50_man_time_num'], excel_dic['diam_deposit100_people_num'],
+                       excel_dic['diam_deposit100_man_time_num'],
+                       excel_dic['diam_deposit200_people_num'], excel_dic['diam_deposit200_man_time_num'],
+                       excel_dic['diam_deposit500_people_num'],
+                       excel_dic['diam_deposit500_man_time_num'], excel_dic['week_member_consumer_num'],
+                       excel_dic['week_member_cons_man_time_num'],
                        excel_dic['week_member_diam_cons_num'], excel_dic['acce_consumer_num'],
+                       excel_dic['acce_con_man_time_num'],
                        excel_dic['acce_diam_cons_num']]
         AliLogService.put_logs(data, project='litatom-account', logstore='diamond_stat')
-        write_data_to_xls_col(addr, [r'会员数', r'钻石消耗人数', r'钻石消耗数量', r'钻石购买人数', r'钻石购买数量', r'50钻石购买人数',
-                                     r'100钻石购买人数', r'200钻石购买人数', r'500钻石购买人数', r'会员购买人数', r'会员-钻石消耗数量',
-                                     r'加速人数', r'加速-钻石消耗数量'], [excel_data], 'utf-8')
+        write_data_to_xls_col(addr,
+                              [r'会员数', r'钻石消耗人数', r'钻石消耗数量', r'钻石消耗人次', r'钻石购买人数', r'钻石购买数量', r'钻石购买人次', r'50钻石购买人数',
+                               r'50钻石购买人次', r'100钻石购买人数', r'100钻石购买人次', r'200钻石购买人数', r'200钻石购买人次', r'500钻石购买人数',
+                               r'500钻石购买人次', r'会员购买人数', r'会员购买人次', r'会员-钻石消耗数量',
+                               r'加速人数', r'加速购买人次', r'加速-钻石消耗数量'], [excel_data], 'utf-8')
 
     @classmethod
     def diam_free_report(cls, addr, date=datetime.datetime.now()):
