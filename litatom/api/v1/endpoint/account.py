@@ -65,14 +65,19 @@ def diamond_products():
 def pay_inform():
     payload = request.json
     user_id = request.user_id
-    TrackActionService.create_action(request.user_id, 'pay_inform', None, None, json.dumps(payload))
-    data, status = GoogleService.judge_order_online(payload, user_id)
-    if not status:
-        return fail(data)
-    data, status = AccountService.deposit_diamonds(user_id, payload)
-    if not status:
-        return fail(data)
-    return success(data)
+    try:
+        TrackActionService.create_action(request.user_id, 'pay_inform', None, None, json.dumps(payload))
+        data, status = GoogleService.judge_order_online(payload, user_id)
+    except Exception as e:
+        print(e)
+        status = True
+    finally:
+        if not status:
+            return fail(data)
+        data, status = AccountService.deposit_diamonds(user_id, payload)
+        if not status:
+            return fail(data)
+        return success(data)
 
 
 @session_required
