@@ -102,7 +102,6 @@ class GoogleService(object):
         """把参数格式化写入url"""
         params = urllib.urlencode(data)
         real_url = url + '?%s' % params
-        print(url, data, real_url)
         return real_url
 
     @classmethod
@@ -126,7 +125,6 @@ class GoogleService(object):
         real_url = cls.url_append_param(url, datas)
         response = req.post(real_url, verify=False).json()
         # response = requests.post(cls.SEND_URL, verify=False, headers=headers, json=data).json()
-        print(response)
         return response
 
     @classmethod
@@ -174,6 +172,7 @@ class GoogleService(object):
         try:
             state = resp['purchaseState']
         except KeyError:
+            print(resp['error'])
             return False
         if not state:
             return True
