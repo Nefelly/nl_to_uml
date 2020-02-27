@@ -188,6 +188,7 @@ class GoogleService(object):
         :return:一个tuple:错误信息(有效则为None)，是否为有效订单
         """
         from ..service import AccountService
+        log.log_print()
         contents = log.get_contents()
         remark = contents['remark']
         diamonds = int(remark['diamonds'])
