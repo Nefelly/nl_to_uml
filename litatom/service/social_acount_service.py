@@ -53,7 +53,6 @@ class GoogleService(object):
     @classmethod
     def _get_info_from_remark(cls, remark):
         from ..service import AccountService
-        print(remark)
         diamonds = int(remark['diamonds'])
         token = remark['payload']['token']
         product_id = AccountService.get_product_name_by_diamonds(diamonds)
@@ -168,7 +167,6 @@ class GoogleService(object):
         data = {'access_token': access_token}
         real_url = cls.url_append_param(url, data)
         resp = req.get(real_url)
-        print(resp.json())
         return resp.json()
 
     @classmethod
