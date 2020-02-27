@@ -294,6 +294,11 @@ class StatisticService(object):
 
 
 class DiamStatService(object):
+    """
+    加入新的钻石统计量需要：
+    1.STAT_QUERY_LIST加入查询条件
+    2.diam_stat_report函数中，excel_dict位置补充，对应顺序补充excel内字段描述
+    """
     STAT_QUERY_LIST = {
         'diam_cons_num': 'diamonds<0 |SELECT -sum(diamonds) as res',
         'diam_cons_people_num': 'diamonds<0 |SELECT COUNT(DISTINCT user_id) as res',
