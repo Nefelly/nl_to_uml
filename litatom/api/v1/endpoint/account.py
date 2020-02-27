@@ -69,7 +69,7 @@ def pay_inform():
         TrackActionService.create_action(request.user_id, 'pay_inform', None, None, json.dumps(payload))
         data, status = GoogleService.judge_order_online(payload, user_id)
     except Exception as e:
-        print(e)
+        logger.error('pay_inform error:%s', e)
         status = True
     finally:
         if not status:
