@@ -75,7 +75,7 @@ class AccountService(object):
 
     @classmethod
     def get_product_name_by_diamonds(cls, diamonds):
-        product_set = cls.diamond_products()
+        product_set, res = cls.diamond_products()
         for product in product_set:
             if product_set[product] == diamonds:
                 return product

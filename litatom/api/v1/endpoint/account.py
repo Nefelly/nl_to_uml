@@ -54,7 +54,7 @@ def pay_activities():
 
 
 def diamond_products():
-    data, status = AccountService.diamond_products(request.user_id)
+    data, status = AccountService.diamond_products()
     if not status:
         return fail(data)
     return success(data)
