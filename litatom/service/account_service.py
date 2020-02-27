@@ -63,7 +63,7 @@ class AccountService(object):
     ERR_DIAMONDS_NOT_ENOUGH = 'not enough diamonds, please deposit first.'
 
     @classmethod
-    def diamond_products(cls, user_id):
+    def diamond_products(cls):
         return {
             '500diamonds': 500,
             '200diamonds': 200,
@@ -72,6 +72,14 @@ class AccountService(object):
             # 'asfd324': 5,
             # '324asd': 15
         }, True
+
+    @classmethod
+    def get_product_name_by_diamonds(cls, diamonds):
+        product_set, res = cls.diamond_products()
+        for product in product_set:
+            if product_set[product] == diamonds:
+                return product
+        return None
 
     @classmethod
     def get_user_account_info(cls, user_id):
