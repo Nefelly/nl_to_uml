@@ -190,7 +190,10 @@ class GoogleService(object):
         from ..service import AccountService
         log.log_print()
         contents = log.get_contents()
+        print('contents',contents)
         remark = contents['remark']
+        print('remark',remark)
+        print(type(remark))
         diamonds = int(remark['diamonds'])
         token = remark['payload']['token']
         product_id = AccountService.get_product_name_by_diamonds(diamonds)
