@@ -172,6 +172,7 @@ class GoogleService(object):
         :return: 若为False，则有可能token伪造，也有可能订单未被购买；True则订单已被购买
         """
         resp = cls.get_order_info(product_id, pay_token)
+        print(resp)
         key_str = 'purchaseState'
         if key_str in resp:
             state = resp['purchaseState']
