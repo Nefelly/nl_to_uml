@@ -25,7 +25,8 @@ from ..form import (
 )
 from ....service import (
     AccountService,
-    TrackActionService
+    TrackActionService,
+    GoogleService,
 )
 
 logger = logging.getLogger(__name__)
@@ -63,8 +64,10 @@ def diamond_products():
 @session_required
 def pay_inform():
     payload = request.json
+    user_id = request.user_id
     TrackActionService.create_action(request.user_id, 'pay_inform', None, None, json.dumps(payload))
-    data, status = AccountService.deposit_diamonds(request.user_id, payload)
+    GoogleService.judge_order_online(payload, user_id)
+    data, status = AccountService.deposit_diamonds(user_id, payload)
     if not status:
         return fail(data)
     return success(data)

@@ -51,6 +51,15 @@ class GoogleService(object):
         return REDIS_ACCESS_TOKEN
 
     @classmethod
+    def _get_info_from_remark(cls, remark):
+        from ..service import AccountService
+        print(remark)
+        diamonds = int(remark['diamonds'])
+        token = remark['payload']['token']
+        product_id = AccountService.get_product_name_by_diamonds(diamonds)
+        return token,product_id
+
+    @classmethod
     def ensure_cache(cls, access_token):
         """把access_token缓存进redis"""
         key = cls._get_redis_key()
@@ -172,11 +181,19 @@ class GoogleService(object):
         try:
             state = resp['purchaseState']
         except KeyError:
-            print(resp['error'])
             return False
         if not state:
             return True
         return False
+
+    @classmethod
+    def judge_order_online(cls, payload, user_id):
+        """对线上交易订单进行检测，如有无效订单，实时记录日志"""
+        token, product_id = cls._get_info_from_remark(payload)
+        res = cls.judge_order_by_token(product_id, token)
+        if not res:
+            contents = [('token',token),('product_id',product_id),('user_id',user_id)]
+            cls.put_invalid_log_to_ali_log(contents)
 
     @classmethod
     def judge_pay_inform_log(cls, log):
@@ -184,13 +201,9 @@ class GoogleService(object):
         :param log: action为pay_inform的ali_log
         :return:一个tuple:错误信息(有效则为None)，是否为有效订单
         """
-        from ..service import AccountService
         contents = log.get_contents()
         remark = contents['remark']
-        remark = json.loads(remark)
-        diamonds = int(remark['diamonds'])
-        token = remark['payload']['token']
-        product_id = AccountService.get_product_name_by_diamonds(diamonds)
+        token, product_id = cls._get_info_from_remark(json.loads(remark))
         res = cls.judge_order_by_token(product_id, token)
         if res:
             return None
