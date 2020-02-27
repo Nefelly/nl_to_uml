@@ -6,13 +6,14 @@ import json
 import time
 import logging
 import requests as rq
-
-rq.adapters.DEFAULT_RETRIES = 5  # 增加重连次数
-
+import re
 import traceback
 from urllib2 import urlopen
-
 import oss2
+import requests as req
+from google.oauth2 import id_token
+from google.auth.transport import requests
+
 from ..key import (
     REDIS_ACCESS_TOKEN,
 )
@@ -28,10 +29,8 @@ from ..redis import RedisClient
 
 redis_client = RedisClient()['lit']
 logger = logging.getLogger(__name__)
-import requests as req
-from google.oauth2 import id_token
-from google.auth.transport import requests
 
+rq.adapters.DEFAULT_RETRIES = 5  # 增加重连次数
 
 # (Receive token by HTTPS POST)
 # ...
@@ -190,9 +189,9 @@ class GoogleService(object):
         from ..service import AccountService
         log.log_print()
         contents = log.get_contents()
-        print('contents',contents)
         remark = contents['remark']
         print('remark',remark)
+        remark = json.loads(remark)
         print(type(remark))
         diamonds = int(remark['diamonds'])
         token = remark['payload']['token']
