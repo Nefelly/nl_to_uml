@@ -152,7 +152,7 @@ class GoogleService(object):
 
     @classmethod
     def get_order_info(cls, product_id, pay_token):
-        """根据product_id和用户订单的token，返回订单详情，若为虚假token，则返回error，没有任何正常订单返回的键"""
+        """根据product_id和用户订单的token，返回订单详情，若为虚假token，则返回error response，没有任何正常订单返回的键"""
         url = 'https://www.googleapis.com/androidpublisher/v3/applications/com.litatom.app/purchases/products/' \
               + product_id + '/tokens/' + pay_token
         access_token = cls.get_access_token_from_redis()
@@ -160,9 +160,8 @@ class GoogleService(object):
             access_token = cls.refresh_access_token()
         data = {'access_token': access_token}
         real_url = cls.url_append_param(url, data)
-        print(real_url)
         resp = req.get(real_url)
-        print(resp)
+        print(resp.json())
         return resp.json()
 
     @classmethod
@@ -187,12 +186,9 @@ class GoogleService(object):
         :return:一个tuple:错误信息(有效则为None)，是否为有效订单
         """
         from ..service import AccountService
-        log.log_print()
         contents = log.get_contents()
         remark = contents['remark']
-        print('remark',remark)
         remark = json.loads(remark)
-        print(type(remark))
         diamonds = int(remark['diamonds'])
         token = remark['payload']['token']
         product_id = AccountService.get_product_name_by_diamonds(diamonds)
