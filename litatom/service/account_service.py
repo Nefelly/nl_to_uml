@@ -58,6 +58,7 @@ class AccountService(object):
         WATCH_AD: 1,
         SHARE_5: 100,
     }
+    UNBAN_DIAMONDS = 100
 
     MEMBER_SHIPS = [WEEK_MEMBER]
     ERR_DIAMONDS_NOT_ENOUGH = 'not enough diamonds, please deposit first.'
@@ -87,10 +88,9 @@ class AccountService(object):
 
     @classmethod
     def unban_by_diamonds(cls, user_id):
-        unban_pay = 100
         if not UserService.is_forbbiden(user_id):
             return u'you are not forbbiden', False
-        msg = cls.change_diamonds(user_id, -unban_pay, 'unban_by_diamonds')
+        msg = cls.change_diamonds(user_id, -cls.UNBAN_DIAMONDS, 'unban_by_diamonds')
         if not msg:
             if UserService.unban_user(user_id):
                  return None, True
