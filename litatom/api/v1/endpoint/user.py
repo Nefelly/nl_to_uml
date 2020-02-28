@@ -4,6 +4,7 @@ from flask import (
     jsonify,
     request
 )
+from copy import deepcopy
 
 from ...decorator import (
     session_required,
@@ -41,6 +42,24 @@ logger = logging.getLogger(__name__)
 # handler = logging.FileHandler("/data/log/litatom.log")
 # logger.addHandler(handler)
 
+def dela_login_fail(data, status):
+    if not status:
+        if not getattr(request, 'is_banned', False):
+            return jsonify({
+                'success': False,
+                'result': -1,
+                'message': data
+            })
+        error_info = deepcopy(FailedUserBanned)
+        error_info['message'] = data
+        return jsonify(error_info)
+    return jsonify({
+        'success': True,
+        'result': 0,
+        'data': data
+    })
+
+
 def phone_login():
     form = PhoneLoginForm(data=request.json)
     if not form.validate():
@@ -49,58 +68,19 @@ def phone_login():
     phone = form.phone.data
     code = form.code.data
     data, status = UserService.phone_login(zone, phone, code)
-    if not status:
-        if not getattr(request, 'is_banned', False):
-            return jsonify({
-                'success': False,
-                'result': -1,
-                'message': data
-            })
-        error_info = FailedUserBanned.update(message=data)
-        return jsonify(error_info)
-    return jsonify({
-        'success': True,
-        'result': 0,
-        'data': data
-    })
+    return dela_login_fail(data, status)
 
 
 def google_login():
     token = request.json.get('token')
     data, status = UserService.google_login(token)
-    if not status:
-        if not getattr(request, 'is_banned', False):
-            return jsonify({
-                'success': False,
-                'result': -1,
-                'message': data
-            })
-        error_info = FailedUserBanned.update(message=data)
-        return jsonify(error_info)
-    return jsonify({
-        'success': True,
-        'result': 0,
-        'data': data
-    })
+    return dela_login_fail(data, status)
 
 
 def facebook_login():
     token = request.json.get('token')
     data, status = UserService.facebook_login(token)
-    if not status:
-        if not getattr(request, 'is_banned', False):
-            return jsonify({
-                'success': False,
-                'result': -1,
-                'message': data
-            })
-        error_info = FailedUserBanned.update(message=data)
-        return jsonify(error_info)
-    return jsonify({
-        'success': True,
-        'result': 0,
-        'data': data
-    })
+    return dela_login_fail(data, status)
 
 
 @session_required
