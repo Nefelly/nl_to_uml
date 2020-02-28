@@ -12,7 +12,8 @@ from ...decorator import (
 
 from ...error import (
     Success,
-    FailedLackOfField
+    FailedLackOfField,
+    FailedUserBanned
 )
 from ....response import (
     failure,
@@ -49,11 +50,14 @@ def phone_login():
     code = form.code.data
     data, status = UserService.phone_login(zone, phone, code)
     if not status:
-        return jsonify({
-            'success': False,
-            'result': -1,
-            'message': data
-        })
+        if not getattr(request, 'is_banned'):
+            return jsonify({
+                'success': False,
+                'result': -1,
+                'message': data
+            })
+        error_info = FailedUserBanned.update(message=data)
+        return jsonify(error_info)
     return jsonify({
         'success': True,
         'result': 0,
@@ -65,11 +69,14 @@ def google_login():
     token = request.json.get('token')
     data, status = UserService.google_login(token)
     if not status:
-        return jsonify({
-            'success': False,
-            'result': -1,
-            'message': data
-        })
+        if not getattr(request, 'is_banned'):
+            return jsonify({
+                'success': False,
+                'result': -1,
+                'message': data
+            })
+        error_info = FailedUserBanned.update(message=data)
+        return jsonify(error_info)
     return jsonify({
         'success': True,
         'result': 0,
@@ -81,11 +88,14 @@ def facebook_login():
     token = request.json.get('token')
     data, status = UserService.facebook_login(token)
     if not status:
-        return jsonify({
-            'success': False,
-            'result': -1,
-            'message': data
-        })
+        if not getattr(request, 'is_banned'):
+            return jsonify({
+                'success': False,
+                'result': -1,
+                'message': data
+            })
+        error_info = FailedUserBanned.update(message=data)
+        return jsonify(error_info)
     return jsonify({
         'success': True,
         'result': 0,

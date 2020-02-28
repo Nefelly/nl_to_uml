@@ -98,6 +98,7 @@ class UserService(object):
             else:
                 unforbid_time = time_str_by_ts(user.forbidden_ts)
                 forbid_info = GlobalizationService.get_region_word('banned_warn')
+                request.is_banned = True
                 return forbid_info % unforbid_time, False
         user.generate_new_session()
         user._set_session_cache()
