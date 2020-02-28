@@ -58,7 +58,7 @@ class AccountService(object):
         WATCH_AD: 1,
         SHARE_5: 100,
     }
-    UNBAN_DIAMONDS = 100
+    UNBAN_DIAMONDS = 50
 
     MEMBER_SHIPS = [WEEK_MEMBER]
     ERR_DIAMONDS_NOT_ENOUGH = 'not enough diamonds, please deposit first.'
