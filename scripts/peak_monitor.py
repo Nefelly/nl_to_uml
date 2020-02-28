@@ -5,7 +5,7 @@ from litatom.util import ensure_path
 
 
 def monitor_redis():
-    cmd = 'redis-cli -h 127.0.0.1 -p 6379 -a 4567abc info'
+    cmd = 'redis-cli -h r-j6c33y9er7kpcznriq.redis.rds.aliyuncs.com -p 6379 -a 4567abc# info'
     redis_info = os.popen(cmd).read()
     mongo_info = os.popen('mongostat  -u ll -p sgfhgfjty123 --authenticationDatabase admin -n 1 1').read()
     return '\n'.join([redis_info, mongo_info])
