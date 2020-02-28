@@ -50,7 +50,7 @@ def phone_login():
     code = form.code.data
     data, status = UserService.phone_login(zone, phone, code)
     if not status:
-        if not getattr(request, 'is_banned'):
+        if not getattr(request, 'is_banned', False):
             return jsonify({
                 'success': False,
                 'result': -1,
@@ -69,7 +69,7 @@ def google_login():
     token = request.json.get('token')
     data, status = UserService.google_login(token)
     if not status:
-        if not getattr(request, 'is_banned'):
+        if not getattr(request, 'is_banned', False):
             return jsonify({
                 'success': False,
                 'result': -1,
@@ -88,7 +88,7 @@ def facebook_login():
     token = request.json.get('token')
     data, status = UserService.facebook_login(token)
     if not status:
-        if not getattr(request, 'is_banned'):
+        if not getattr(request, 'is_banned', False):
             return jsonify({
                 'success': False,
                 'result': -1,
