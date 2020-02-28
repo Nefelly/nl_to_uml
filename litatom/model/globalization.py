@@ -148,9 +148,9 @@ class RegionWord(Document):
         },
         'alert_word': {
             'en': u'Our system has noticed inappropriate behavior on your account. please keep positive. If you believe you’ve been incorrectly flagged, you can contact us by litatomwang@gmail.com',
-            'vi': u'Hệ thống chúng tôi thông báo tài khoản của bạn có hành vi không phù hợp. Hãy cư xử văn minh trong cuộc trò chuyện của bạn. Nếu bạn cho rằng báo cáo này là sai hãy liên lạc với chúng tôi qua email litatomwang@gmail.com',
+            'vi': u'Cảnh báo, hệ thống chúng tôi nhận được báo cáo về tài khoản của bạn. Chú ý không sử dụng các từ ngữ thô tục , quấy rối tình dục trong các cuộc nói chuyện. Nếu bị báo cáo 3 lần ,tài khoản sẽ bị khoá. Nếu báo cáo là sai hãy gửi email tên nick Litmatch của bạn đến địa chỉ : litatomwang@gmail.com',
             # 'th': u'"ระบบของเราสังเกตเห็นพฤติกรรมที่ไม่เหมาะสมในบัญชีของคุณโปรดประพฤติตามความเหมาะสมหากคุณคิดว่าคุณถูกตั้งค่าสถานะไม่ถูกต้อง คุณสามารถติดต่อเราอยู่ที่litatomwang@gmail.com"',
-            'th': u'สวัสดี ระบบตรวจสอบท่านใช้คำไม่สุภาพ หากระบบตรวจพบ3ครั้ง ท่านจะไม่สามารถล็อกอินได้ กรุณาใช้คำที่สุภาพด้วยค่ะ ขอบคุณค่ะ',
+            'th': u'คำเตือน:ระบบเราได้สังเกตว่าบัญชีของคุณมีพฤติกรรมที่ไม่เหมาะสม ขอให้ระมัดระวังและถ้าได้เตือนถึงสามครั้งแล้ว เราจะแบนบัญชีของคุณถ้าคุณยืนยันว่าคุณไม่ได้ทำอะไรผิดแต่โดนแบน ขอส่งบัญชีlitmatchของคุณถึงอีเมล์litatomwang@gmail.com',
             'ja': u'"あなたのアカウントに不適切な行為を発見したので、ご注意ください。攻撃的な報告と思う場合、litatomwang@gmail.comまでご連絡ください。"',
         },
         'sms_could_not_register': {
