@@ -354,11 +354,11 @@ class DiamStatService(object):
                                                            to_time=to_time, query=query)
 
     @classmethod
-    def cal_mem_num(cls, to_time, from_time):
+    def cal_mem_num(cls, from_time):
         """计算会员总数"""
         res = 0
         for id in cls.USER_MEM_TIME:
-            if from_time <= cls.USER_MEM_TIME[id] < to_time:
+            if cls.USER_MEM_TIME[id] >= from_time:
                 res += 1
         return res
 
@@ -460,7 +460,7 @@ class DiamStatService(object):
         data = []
         excel_data = []
 
-        mem_num = cls.cal_mem_num(time_today, time_yesterday)
+        mem_num = cls.cal_mem_num(time_yesterday)
         data.append(('member_num', str(mem_num)))
         excel_data.append(mem_num)
         data_next, excel_dic = cls.cal_stats_from_list(cls.STAT_QUERY_LIST, from_time, to_time)
