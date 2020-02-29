@@ -4,6 +4,7 @@ import json
 import pika
 import time
 from pika_pool import QueuedPool
+from litatom.service import AliLogService
 logger = logging.getLogger(__name__)
 
 pool = None
@@ -161,7 +162,21 @@ class MQConsumer(object):
 
         :param message: the json format message received.
         """
-        pass
+        payload = message['payload']
+        if 'tag' in payload:
+            tag = payload['tag']
+            # tag == 0 ，表明是阿里云日志服务上传失败，此时重传
+            if tag == 0:
+                info = payload['info']
+                contents = info['contents']
+                topic = info['topic']
+                project = info['project']
+                logstore = info['logstore']
+                source = info['source']
+                client = info['client']
+                AliLogService.put_logs(contents,topic,source,project,logstore,client)
+
+
 
     def start(self):
         """start the consummer"""

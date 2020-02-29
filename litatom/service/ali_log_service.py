@@ -6,6 +6,9 @@ import traceback
 from aliyun.log import *
 import logging
 from ..redis import RedisClient
+from ..service import (
+    MqService
+)
 from ..util import (
     read_data_from_xls
 )
@@ -70,8 +73,16 @@ class AliLogService(object):
         logItem.set_contents(contents)
         logitemList.append(logItem)
         request = PutLogsRequest(project, logstore, topic, source, logitemList)
-        response = client.put_logs(request)
-        return response.get_all_headers()
+        try:
+            response = client.put_logs(request)
+            return response.get_all_headers()
+        except Exception as e:
+            logger.error('put ali logs error: %s', e)
+            payload = {'tag':0,'info':{'contents':contents,'topic':topic,'source':source,'project':project,
+                                       'logstore':logstore,'client':client}}
+            MqService.push(exchange='litatom_message',payload=payload)
+            return None
+
 
     @classmethod
     def put_daily_stat(cls, contents, topic='undefined'):
