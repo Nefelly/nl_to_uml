@@ -64,14 +64,17 @@ class AliLogService(object):
     @classmethod
     def put_logs(cls, contents, topic=DEFAULT_TOPIC, source=DEFAULT_SOURCE, project=DEFAULT_PROJECT,
                  logstore=DEFAULT_LOGSTORE, client=DEFAULT_CLIENT):
-        logitemList = []  # LogItem list
-        logItem = LogItem()
-        logItem.set_time(int(time()))
-        logItem.set_contents(contents)
-        logitemList.append(logItem)
-        request = PutLogsRequest(project, logstore, topic, source, logitemList)
-        response = client.put_logs(request)
-        return response.get_all_headers()
+        try:
+            logitemList = []  # LogItem list
+            logItem = LogItem()
+            logItem.set_time(int(time()))
+            logItem.set_contents(contents)
+            logitemList.append(logItem)
+            request = PutLogsRequest(project, logstore, topic, source, logitemList)
+            response = client.put_logs(request)
+            return response.get_all_headers()
+        except:
+            return {}
 
     @classmethod
     def put_daily_stat(cls, contents, topic='undefined'):
