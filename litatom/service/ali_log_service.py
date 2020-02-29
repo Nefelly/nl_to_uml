@@ -6,9 +6,7 @@ import traceback
 from aliyun.log import *
 import logging
 from ..redis import RedisClient
-from ..service import (
-    MqService
-)
+
 from ..util import (
     read_data_from_xls
 )
@@ -59,14 +57,14 @@ class AliLogService(object):
         date = re.sub(pattern2, '', res)
         return date
 
-    '''
-    上传一条日志，contents格式为[('key','value'),('key2','value2')...]，
-    返回一个LogSponse对象，为http相应包头部封装后的对象
-    '''
-
     @classmethod
     def put_logs(cls, contents, topic=DEFAULT_TOPIC, source=DEFAULT_SOURCE, project=DEFAULT_PROJECT,
                  logstore=DEFAULT_LOGSTORE, client=DEFAULT_CLIENT):
+        """
+        上传一条日志，contents格式为[('key','value'),('key2','value2')...]，
+        :return: 一个LogSponse对象，为http相应包头部封装后的对象
+        """
+        from ..service import MqService
         logitemList = []  # LogItem list
         logItem = LogItem()
         logItem.set_time(int(time()))
