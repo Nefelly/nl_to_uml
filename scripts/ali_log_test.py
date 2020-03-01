@@ -8,7 +8,6 @@ def run():
         num+=1
         print(num)
         print(resp.get_count())
-        print(resp.logs.count())
 
 
 if __name__ == '__main__':
