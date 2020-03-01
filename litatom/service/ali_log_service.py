@@ -65,12 +65,12 @@ class AliLogService(object):
         :return: 一个LogSponse对象，为http相应包头部封装后的对象
         """
         from ..service import MqService
-        logitemList = []  # LogItem list
-        logItem = LogItem()
-        logItem.set_time(int(time()))
-        logItem.set_contents(contents)
-        logitemList.append(logItem)
         try:
+            logitemList = []  # LogItem list
+            logItem = LogItem()
+            logItem.set_time(int(time()))
+            logItem.set_contents(contents)
+            logitemList.append(logItem)
             request = PutLogsRequest(project, logstore, topic, source, logitemList)
             response = client.put_logs(request)
             return response.get_all_headers()
@@ -168,7 +168,7 @@ class AliLogService(object):
                     start_time = cls.datetime_to_alitime(from_time_date + i * time_delta)
                     end_time = cls.datetime_to_alitime(from_time_date + (i + 1) * time_delta)
                     resp = cls.get_log_atom(project=project, logstore=logstore, from_time=start_time, to_time=end_time,
-                                            size=1000000, query=query, client=client)
+                                            size=200000, query=query, client=client)
                     yield resp
         else:
             yield cls.get_log_atom(project=project, logstore=logstore, from_time=from_time, to_time=to_time,
