@@ -4,7 +4,6 @@ import json
 import pika
 import time
 from pika_pool import QueuedPool
-from litatom.service import AliLogService
 logger = logging.getLogger(__name__)
 
 pool = None
