@@ -68,8 +68,8 @@ class AliLogService(object):
             response = client.put_logs(request)
             return response.get_all_headers()
         except Exception as e:
-            print(e)
             logger.error('put ali logs error: %s', e)
+            # LogItem对象无法json序列化，此处需要转化为一般格式进消息队列
             normal_logitem_list = []
             for logitem in logitemList:
                 item_time = logitem.get_time()
@@ -84,7 +84,7 @@ class AliLogService(object):
                 exchange=ALI_LOG_EXCHANGE,
                 vhost=setting.DEFAULT_MQ_VHOST
             ).publish({'logitemslist': normal_logitem_list, 'topic': topic, 'source': source, 'project': project,
-                       'logstore': logstore, 'client': client})
+                       'logstore': logstore})
             return None
 
     @classmethod

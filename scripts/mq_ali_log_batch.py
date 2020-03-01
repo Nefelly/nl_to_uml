@@ -29,6 +29,7 @@ class ConsumeAliLog(MQConsumer):
         try:
             if ConsumeAliLog.num >= self.judge_num:
                 for payload in ConsumeAliLog.insert_pack:
+                    # payload中是通用形式的log表示，需转化为logItemList类型，再进行上传
                     logitemList = []
                     normal_logitem_list = payload['logitemslist']
                     for normal_logitem in normal_logitem_list:
@@ -82,33 +83,5 @@ def run():
         t.join()
 
 
-def test_push():
-    logitemList = []  # LogItem list
-    for i in range(30):
-        logItem = LogItem()
-        logItem.set_time(int(time()))
-        logItem.set_contents([(str(i + 1), 'test_log' + str(i + 1))])
-        logitemList.append(logItem)
-    normal_logitem_list = []
-    for logitem in logitemList:
-        item_time = logitem.get_time()
-        item_content = logitem.get_contents()
-        normal_logitem_list.append((item_time,item_content))
-
-    MQProducer(
-        'tasks',
-        setting.DEFAULT_MQ_HOST,
-        setting.DEFAULT_MQ_PORT,
-        setting.DEFAULT_MQ_PRODUCER,
-        setting.DEFAULT_MQ_PRODUCER_PASSWORD,
-        exchange=ALI_LOG_EXCHANGE,
-        vhost=setting.DEFAULT_MQ_VHOST
-    ).publish({'logitemslist':normal_logitem_list, 'topic': 'test', 'source': 'default_source', 'project': 'litatommonitor',
-               'logstore': 'daily-stat-monitor'})
-
-
 if __name__ == "__main__":
-    if sys.argv[1] == 'push':
-        test_push()
-    else:
-        run()
+    run()
