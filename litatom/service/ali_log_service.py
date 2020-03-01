@@ -69,6 +69,11 @@ class AliLogService(object):
             return response.get_all_headers()
         except Exception as e:
             logger.error('put ali logs error: %s', e)
+            normal_logitem_list = []
+            for logitem in logitemList:
+                item_time = logitem.get_time()
+                item_content = logitem.get_contents()
+                normal_logitem_list.append((item_time,item_content))
             MQProducer(
                 'tasks',
                 setting.DEFAULT_MQ_HOST,
@@ -77,7 +82,7 @@ class AliLogService(object):
                 setting.DEFAULT_MQ_PRODUCER_PASSWORD,
                 exchange=ALI_LOG_EXCHANGE,
                 vhost=setting.DEFAULT_MQ_VHOST
-            ).publish({'logitemslist': logitemList, 'topic': topic, 'source': source, 'project': project,
+            ).publish({'logitemslist': normal_logitem_list, 'topic': topic, 'source': source, 'project': project,
                        'logstore': logstore, 'client': client})
             return None
 

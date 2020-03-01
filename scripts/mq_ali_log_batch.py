@@ -1,5 +1,6 @@
 import sys
 import fcntl
+import json
 from aliyun.log import *
 from time import time
 import threading
@@ -40,7 +41,6 @@ class ConsumeAliLog(MQConsumer):
 
 
 def ali_log_consume():
-    # print "inininin"
     queue_name = 'put_ali_log_consume'
     routing_key = 'tasks'
     ConsumeAliLog(queue_name,
@@ -85,6 +85,11 @@ def test_push():
         logItem.set_time(int(time()))
         logItem.set_contents([(str(i + 1), 'test_log' + str(i + 1))])
         logitemList.append(logItem)
+    normal_logitem_list = []
+    for logitem in logitemList:
+        item_time = logitem.get_time()
+        item_content = logitem.get_contents()
+        normal_logitem_list.append((item_time,item_content))
 
     MQProducer(
         'tasks',
@@ -94,7 +99,7 @@ def test_push():
         setting.DEFAULT_MQ_PRODUCER_PASSWORD,
         exchange=ALI_LOG_EXCHANGE,
         vhost=setting.DEFAULT_MQ_VHOST
-    ).publish({'logitemslist': logitemList, 'topic': 'test', 'source': 'default_source', 'project': 'litatommonitor',
+    ).publish({'logitemslist':normal_logitem_list, 'topic': 'test', 'source': 'default_source', 'project': 'litatommonitor',
                'logstore': 'daily-stat-monitor', 'client': LogClient(ENDPOINT, ACCESS_KEY_ID, ACCESS_KEY)})
 
 
