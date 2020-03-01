@@ -30,7 +30,7 @@ class ConsumeAliLog(MQConsumer):
             if ConsumeAliLog.num >= self.judge_num:
                 for payload in ConsumeAliLog.insert_pack:
                     AliLogService.put_logs_atom(payload['logitemslist'], payload['project'], payload['logstore'],
-                                                payload['topic'], payload['source'], payload['client'])
+                                                payload['topic'], payload['source'])
 
                 ConsumeAliLog.insert_pack = []
                 ConsumeAliLog.num = 0
@@ -100,7 +100,7 @@ def test_push():
         exchange=ALI_LOG_EXCHANGE,
         vhost=setting.DEFAULT_MQ_VHOST
     ).publish({'logitemslist':normal_logitem_list, 'topic': 'test', 'source': 'default_source', 'project': 'litatommonitor',
-               'logstore': 'daily-stat-monitor', 'client': LogClient(ENDPOINT, ACCESS_KEY_ID, ACCESS_KEY)})
+               'logstore': 'daily-stat-monitor'})
 
 
 if __name__ == "__main__":
