@@ -29,7 +29,14 @@ class ConsumeAliLog(MQConsumer):
         try:
             if ConsumeAliLog.num >= self.judge_num:
                 for payload in ConsumeAliLog.insert_pack:
-                    AliLogService.put_logs_atom(payload['logitemslist'], payload['project'], payload['logstore'],
+                    logitemList = []
+                    normal_logitem_list = payload['logitemslist']
+                    for normal_logitem in normal_logitem_list:
+                        logItem = LogItem()
+                        logItem.set_time(normal_logitem[0])
+                        logItem.set_contents(normal_logitem[1])
+                        logitemList.append(logItem)
+                    AliLogService.put_logs_atom(logitemList, payload['project'], payload['logstore'],
                                                 payload['topic'], payload['source'])
 
                 ConsumeAliLog.insert_pack = []
@@ -76,9 +83,6 @@ def run():
 
 
 def test_push():
-    ENDPOINT = 'cn-hongkong.log.aliyuncs.com'  # 选择与上面步骤创建Project所属区域匹配的Endpoint
-    ACCESS_KEY_ID = 'LTAI4FmgXZDqyFsLxf6Rez3e'  # 使用您的阿里云访问密钥AccessKeyId
-    ACCESS_KEY = 'n6ZOCqP28vfOJi3YbNETJynEG87sRo'  # 使用您的阿里云访问密钥AccessKeySecret
     logitemList = []  # LogItem list
     for i in range(30):
         logItem = LogItem()

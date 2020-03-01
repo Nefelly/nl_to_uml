@@ -68,6 +68,7 @@ class AliLogService(object):
             response = client.put_logs(request)
             return response.get_all_headers()
         except Exception as e:
+            print(e)
             logger.error('put ali logs error: %s', e)
             normal_logitem_list = []
             for logitem in logitemList:
