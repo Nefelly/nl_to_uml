@@ -162,7 +162,7 @@ class AliLogService(object):
                     start_time = cls.datetime_to_alitime(from_time_date + i * time_delta)
                     end_time = cls.datetime_to_alitime(from_time_date + (i + 1) * time_delta)
                     resp = cls.get_log_atom(project=project, logstore=logstore, from_time=start_time, to_time=end_time,
-                                            size=1000000, query=query, client=client)
+                                            size=200000, query=query, client=client)
                     yield resp
         else:
             yield cls.get_log_atom(project=project, logstore=logstore, from_time=from_time, to_time=to_time,
