@@ -12,6 +12,7 @@ ADD_EXCHANGE = 'add_feed'
 USER_ACTION_EXCHANGE = 'user_action_exchange'
 COMMANDS_EXCHANGE = 'commands_exchange'
 USER_MODEL_EXCHANGE = 'user_model_exchange'
+ALI_LOG_EXCHANGE = 'ali_log_exchange'
 #
 # PIC_UPLOAD_EXCHANGE = 'feed_check'
 
