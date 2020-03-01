@@ -117,7 +117,7 @@ class JournalService(object):
         for gender in cls.GENDERS:
             gender_cnts[gender] = 0.0
         resp_set = AliLogService.get_log_by_time_and_topic(from_time=from_time, to_time=to_time,
-                                                           query='*|select distinct user_id,location', size=-1)
+                                                           query='*|select distinct user_id,location limit 300000', size=-1)
         cnt = 0.0
         for resp in resp_set:
             cnt += resp.get_count()
