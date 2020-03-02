@@ -85,6 +85,7 @@ def share_static():
     return r
 
 
+@session_required
 def claim_rewards():
     data, status = ShareStatService.claim_rewards(request.user_id)
     if status:
@@ -92,6 +93,7 @@ def claim_rewards():
     return fail(data)
 
 
+@session_required
 def share_num():
     data = ShareStatService.get_shown_num(request.user_id)
     return success(data)
