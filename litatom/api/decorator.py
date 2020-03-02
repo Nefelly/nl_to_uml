@@ -63,6 +63,7 @@ def forbidden_session_required(view):
             forbidden_user_id = request.forbidden_user_id
             if not forbidden_user_id:
                 return jsonify(error.FailedSession)
+            return view(*args, **kwargs)
     return wrapper
 
 def session_finished_required(view):
