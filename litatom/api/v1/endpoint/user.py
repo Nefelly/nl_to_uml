@@ -48,11 +48,11 @@ def dela_login_fail(data, status):
             return jsonify({
                 'success': False,
                 'result': -1,
-                'message': data,
-                'forbidden_session': request.forbidden_session
+                'message': data
             })
         error_info = deepcopy(FailedUserBanned)
         error_info['message'] = data
+        error_info['forbidden_session'] = request.forbidden_session
         error_info['unban_diamonds'] = AccountService.UNBAN_DIAMONDS
         return jsonify(error_info)
     return jsonify({
