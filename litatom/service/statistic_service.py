@@ -363,7 +363,7 @@ class DiamStatService(object):
         return res
 
     @classmethod
-    def cal_match_num(cls, from_time, to_time, from_timestamp, to_timestamp, query):
+    def cal_match_num(cls, from_time, to_time, from_timestamp, query):
         """
         计算匹配过程中钻石与会员等数量统计
         :return: 一个字典，key为1-12,>12，value为一个元组，(匹配成功key次的人数，未使用钻石非会员人数，未使用钻石会员人数，使用钻石会员人数)
@@ -376,7 +376,7 @@ class DiamStatService(object):
         match_num['>12'] = [0, 0, 0, 0]
         for log in resp.logs:
             contents = log.get_contents()
-            # 匹配成功次数
+            # 匹配成功人数
             res = contents['res']
             if res not in match_num:
                 res = '>12'
@@ -389,7 +389,7 @@ class DiamStatService(object):
                 continue
             # 该用户未使用钻石，是会员
             if user_id in cls.USER_MEM_TIME:
-                if from_timestamp <= cls.USER_MEM_TIME[user_id] <= to_timestamp:
+                if from_timestamp <= cls.USER_MEM_TIME[user_id]:
                     match_num[res][2] += 1
                     continue
             # 该用户未使用钻石，不是会员
@@ -409,7 +409,7 @@ class DiamStatService(object):
             data[row] = [[] for i in range(13)]
             sheet = data[row]
             contents = []
-            match_num = cls.cal_match_num(from_time, to_time, from_timestamp, to_timestamp, cls.MATCH_QUERY_LIST[name])
+            match_num = cls.cal_match_num(from_time, to_time, from_timestamp, cls.MATCH_QUERY_LIST[name])
             for key in match_num:
                 contents.append(('match_num ' + key, str(match_num[key][0])))
                 contents.append(('match_num ' + key + '/no_mem_no_diam', str(match_num[key][1])))
