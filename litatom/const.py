@@ -76,3 +76,5 @@ REAL_ACTIVE = 3 * ONE_MIN
 
 CAN_MATCH_ONLINE = False
 # USER_ACTIVE = 3 * ONE_MIN
+
+#diamonds

@@ -1,5 +1,6 @@
 # coding: utf-8
 import random
+from copy import deepcopy
 import time
 import datetime
 import logging
@@ -83,6 +84,27 @@ class UserService(object):
         return [el.user_id for el in UserSetting.objects()]
 
     @classmethod
+    def _trans_session_2_forbidden(cls, user):
+        user._set_forbidden_session_cache(user.session_id)
+        request.session_id = user.session_id
+
+    @classmethod
+    def _trans_forbidden_2_session(cls, user):
+        if request.session_id:
+            user.generate_new_session(request.session_id.replace("session.", ""))
+
+    @classmethod
+    def get_forbidden_error(cls, default_json={}):
+        from ..service import AccountService
+        error_info = deepcopy(default_json)
+        error_info.update( {
+            'message': GlobalizationService.get_region_word('banned_warn'),
+            'forbidden_session': request.session_id,
+            'unban_diamonds': AccountService.UNBAN_DIAMONDS
+        })
+        return error_info
+
+    @classmethod
     def login_job(cls, user):
         """
         登录的动作
@@ -90,6 +112,7 @@ class UserService(object):
         :return:
         """
         if user.forbidden:
+            request.user_id = str(user.id)
             if int(time.time()) > user.forbidden_ts:
                 user.forbidden = False
                 user.save()
@@ -99,7 +122,7 @@ class UserService(object):
                 unforbid_time = time_str_by_ts(user.forbidden_ts)
                 forbid_info = GlobalizationService.get_region_word('banned_warn')
                 request.is_banned = True
-                request.forbidden_session = user._set_forbidden_session_cache()
+                request.session_id = user._set_forbidden_session_cache()
                 return forbid_info % unforbid_time, False
         user.generate_new_session()
         user._set_session_cache()
@@ -170,6 +193,7 @@ class UserService(object):
             user.save()
             if user.huanxin and user.huanxin.user_id:
                 HuanxinService.active_user(user.huanxin.user_id)
+            cls._trans_forbidden_2_session(user)
             return True
         return False
 
@@ -440,6 +464,7 @@ class UserService(object):
         forbid_times = UserRecord.get_forbidden_times_user_id(user_id)
         user.forbidden = True
         user.forbidden_ts = int(time.time()) + forbid_ts * (1 + 2 * forbid_times)
+        cls._trans_session_2_forbidden(user)
         user.clear_session()
         for gender in GENDERS:
             # key = REDIS_ONLINE_GENDER.format(gender=gender)

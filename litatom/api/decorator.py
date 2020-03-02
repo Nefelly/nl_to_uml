@@ -44,6 +44,8 @@ def session_required(view):
             return view(*args, **kwargs)
         if has_user_id is None:  # 检查时发生了Exception, 报错而不登出.
             # logger.error("nnnnn-10")
+            if request.forbidden_user_id:
+                return jsonify(UserService.get_forbidden_error(error.FailedUserBanned))
             return jsonify(error.FailedSession)
     return wrapper
 
@@ -84,6 +86,8 @@ def session_finished_required(view):
             return view(*args, **kwargs)
         if has_user_id is None:  # 检查时发生了Exception, 报错而不登出.
             # logger.error("nnnnn-10")
+            if request.forbidden_user_id:
+                return jsonify(UserService.get_forbidden_error(error.FailedUserBanned))
             return jsonify(error.FailedSession)
     return wrapper
 

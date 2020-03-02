@@ -4,7 +4,6 @@ from flask import (
     jsonify,
     request
 )
-from copy import deepcopy
 
 from ...decorator import (
     session_required,
@@ -50,11 +49,7 @@ def dela_login_fail(data, status):
                 'result': -1,
                 'message': data
             })
-        error_info = deepcopy(FailedUserBanned)
-        error_info['message'] = data
-        error_info['forbidden_session'] = request.forbidden_session
-        error_info['unban_diamonds'] = AccountService.UNBAN_DIAMONDS
-        return jsonify(error_info)
+        return jsonify(UserService.get_forbidden_error(FailedUserBanned))
     return jsonify({
         'success': True,
         'result': 0,

@@ -95,10 +95,10 @@ class UserSessionMixin(object):
         expire_time = 60 * ONE_DAY if self.phone else TWO_WEEKS
         redis_client.set(key, str(self.id), ex=expire_time)
 
-    def _set_forbidden_session_cache(self):
-        forbidden_session = self._build_session_string()
+    def _set_forbidden_session_cache(self, session=None):
+        forbidden_session = self._build_session_string() if not session else session
         key = REDIS_KEY_FORBIDDEN_SESSION_USER.format(session=forbidden_session)
-        redis_client.set(key, str(self.id), ex=ONE_DAY)
+        redis_client.set(key, str(self.id), ex=TWO_WEEKS)
         return forbidden_session
 
     def clear_session(self):
@@ -108,9 +108,9 @@ class UserSessionMixin(object):
         self.session = None
         self.save()
 
-    def generate_new_session(self):
+    def generate_new_session(self, session=None):
         self.clear_session()
-        self.session = self._build_session_string()
+        self.session = self._build_session_string() if not session else session
         self.sessionCreateTime = datetime.datetime.now()
         self.save()
         return self.session
