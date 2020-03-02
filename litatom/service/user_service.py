@@ -85,13 +85,14 @@ class UserService(object):
 
     @classmethod
     def _trans_session_2_forbidden(cls, user):
-        user._set_forbidden_session_cache(user.session_id)
+        user._set_forbidden_session_cache(user.session_id.replace("session.", ""))
         request.session_id = user.session_id
 
     @classmethod
     def _trans_forbidden_2_session(cls, user):
         if request.session_id:
             user.generate_new_session(request.session_id.replace("session.", ""))
+
 
     @classmethod
     def get_forbidden_error(cls, default_json={}):
