@@ -163,6 +163,7 @@ class MQConsumer(object):
         """
         pass
 
+
     def start(self):
         """start the consummer"""
         def on_message(channel, method, properties, body):

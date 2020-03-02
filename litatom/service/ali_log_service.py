@@ -6,6 +6,9 @@ import traceback
 from aliyun.log import *
 import logging
 from ..redis import RedisClient
+from hendrix.conf import setting
+from ..const import ALI_LOG_EXCHANGE
+
 from ..util import (
     read_data_from_xls
 )
@@ -56,25 +59,62 @@ class AliLogService(object):
         date = re.sub(pattern2, '', res)
         return date
 
-    '''
-    上传一条日志，contents格式为[('key','value'),('key2','value2')...]，
-    返回一个LogSponse对象，为http相应包头部封装后的对象
-    '''
+    @classmethod
+    def put_logs_atom(cls, logitemList, project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE, topic=DEFAULT_TOPIC,
+                      source=DEFAULT_SOURCE, client=DEFAULT_CLIENT):
+        from ..mq import MQProducer
+        try:
+            request = PutLogsRequest(project, logstore, topic, source, logitemList)
+            response = client.put_logs(request)
+            return response.get_all_headers()
+        except Exception as e:
+            logger.error('put ali logs error: %s', e)
+            # LogItem对象无法json序列化，此处需要转化为一般格式进消息队列
+            normal_logitem_list = []
+            for logitem in logitemList:
+                item_time = logitem.get_time()
+                item_content = logitem.get_contents()
+                normal_logitem_list.append((item_time,item_content))
+            MQProducer(
+                'tasks',
+                setting.DEFAULT_MQ_HOST,
+                setting.DEFAULT_MQ_PORT,
+                setting.DEFAULT_MQ_PRODUCER,
+                setting.DEFAULT_MQ_PRODUCER_PASSWORD,
+                exchange=ALI_LOG_EXCHANGE,
+                vhost=setting.DEFAULT_MQ_VHOST
+            ).publish({'logitemslist': normal_logitem_list, 'topic': topic, 'source': source, 'project': project,
+                       'logstore': logstore})
+            return None
 
     @classmethod
     def put_logs(cls, contents, topic=DEFAULT_TOPIC, source=DEFAULT_SOURCE, project=DEFAULT_PROJECT,
                  logstore=DEFAULT_LOGSTORE, client=DEFAULT_CLIENT):
-        try:
-            logitemList = []  # LogItem list
+        """
+        上传一条日志，contents格式为[('key','value'),('key2','value2')...]，
+        :return: 一个LogSponse对象，为http相应包头部封装后的对象
+        """
+        logitemList = []  # LogItem list
+        logItem = LogItem()
+        logItem.set_time(int(time()))
+        logItem.set_contents(contents)
+        logitemList.append(logItem)
+        cls.put_logs_atom(logitemList,project,logstore,topic,source,client)
+
+    @classmethod
+    def put_logs_batch(cls, contents_list, topic=DEFAULT_TOPIC, source=DEFAULT_SOURCE, project=DEFAULT_PROJECT,
+                       logstore=DEFAULT_LOGSTORE, client=DEFAULT_CLIENT):
+        """
+        批量上传日志
+        :param contents_list: list[contents1,contents2,....]
+        """
+        logitemList = []  # LogItem list
+        for contents in contents_list:
             logItem = LogItem()
             logItem.set_time(int(time()))
             logItem.set_contents(contents)
             logitemList.append(logItem)
-            request = PutLogsRequest(project, logstore, topic, source, logitemList)
-            response = client.put_logs(request)
-            return response.get_all_headers()
-        except:
-            return {}
+        cls.put_logs_atom(logitemList,project,logstore,topic,source,client)
 
     @classmethod
     def put_daily_stat(cls, contents, topic='undefined'):
