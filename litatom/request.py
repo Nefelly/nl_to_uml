@@ -230,6 +230,7 @@ class LitatomRequest(flask.Request):
         # get_user_id_by_session这个方法不会抛exception，如果该方法返回None，说明在取Cache或数据库的时候出现了exception，
         # 如果返回空字符串，则说明真的session失效了
         user_id = User.get_forbidden_user_id_by_session(sid)
+        self.user_id = user_id
         return user_id
 
     @cached_property
