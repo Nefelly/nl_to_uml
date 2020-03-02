@@ -101,7 +101,7 @@ class JournalService(object):
         resp = AliLogService.get_log_atom(from_time=from_time,to_time=to_time,query=query)
         for log in resp.logs:
             res = log.get_contents()['res']
-        return res
+        return int(res)
 
     @classmethod
     def daily_active(cls, item, date=None):
@@ -482,7 +482,7 @@ class JournalService(object):
         cnt = 0
         # daily_m是一个字典,id,name为抽样日活，num为最近一日日活用户数量，以及各种loc中的各种日活用户数量
         daily_m = cls.daily_active(StatItems.objects(name=u'抽样日活').first(), date)
-        print('load daily_m')
+        print('load daily_m',daily_m)
         # 遍历StatItems中所有类型为BUSINESS_TYPE的统计量item
         for item in StatItems.get_items_by_type(StatItems.BUSINESS_TYPE):
             try:
