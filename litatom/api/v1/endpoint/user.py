@@ -48,7 +48,8 @@ def dela_login_fail(data, status):
             return jsonify({
                 'success': False,
                 'result': -1,
-                'message': data
+                'message': data,
+                'forbidden_session': request.forbidden_session
             })
         error_info = deepcopy(FailedUserBanned)
         error_info['message'] = data

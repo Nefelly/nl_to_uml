@@ -216,6 +216,23 @@ class LitatomRequest(flask.Request):
         return user_id
 
     @cached_property
+    def forbidden_user_id(self):
+        """
+        这个方法有3种可能的返回值，
+        1. 如果返回None，说明Session校验的时候抛exception了，这个时候不要踢出用户，简单报个错就可以
+        2. 如果返回一个空字符串，说明的确是Session失效了，需要踢出用户
+        3. 返回正常的UserID，校验成功
+        """
+        sid = self.session_id
+        if not sid:
+            return
+
+        # get_user_id_by_session这个方法不会抛exception，如果该方法返回None，说明在取Cache或数据库的时候出现了exception，
+        # 如果返回空字符串，则说明真的session失效了
+        user_id = User.get_forbidden_user_id_by_session(sid)
+        return user_id
+
+    @cached_property
     def is_homo(self):
         return UserFilterService.is_homo(self.user_id, self.gender)
 

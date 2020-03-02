@@ -7,7 +7,8 @@ from flask import (
 
 from ...decorator import (
     session_required,
-    session_finished_required
+    session_finished_required,
+    forbidden_session_required
 )
 
 from ...error import (
@@ -61,7 +62,7 @@ def diamond_products():
     return success(data)
 
 
-@session_required
+@forbidden_session_required
 def pay_inform():
     payload = request.json
     user_id = request.user_id
@@ -93,6 +94,7 @@ def deposit_by_activity():
     return success(data)
 
 
+@forbidden_session_required
 def unban_by_diamonds(user_id):
     data, status = AccountService.unban_by_diamonds(user_id)
     if not status:
