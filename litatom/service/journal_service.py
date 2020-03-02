@@ -97,6 +97,13 @@ class JournalService(object):
         return 'new_count_' + loc
 
     @classmethod
+    def _get_res_from_query(cls, from_time, to_time, query):
+        resp = AliLogService.get_log_atom(from_time=from_time,to_time=to_time,query=query)
+        for log in resp.logs:
+            res = log.get_contents()['res']
+        return res
+
+    @classmethod
     def daily_active(cls, item, date=None):
         """
         专门计算抽样日活统计量的函数
@@ -111,30 +118,22 @@ class JournalService(object):
         }
         from_time, to_time = cls._get_alilog_time_str(date)
         loc_cnts = {}
-        for loc in cls.LOC_STATED:
-            loc_cnts[loc] = 0.0
         gender_cnts = {}
         for gender in cls.GENDERS:
             gender_cnts[gender] = 0.0
-        resp_set = AliLogService.get_log_by_time_and_topic(from_time=from_time, to_time=to_time,
-                                                           query='*|select distinct user_id,location limit 300000', size=-1)
-        cnt = 0.0
-        for resp in resp_set:
-            cnt += resp.get_count()
-            for log in resp.logs:
-                contents = log.get_contents()
-                user_id = contents['user_id']
-                location = contents['location']
-                gender = cls.USER_GEN.get(user_id)
-                if gender in gender_cnts:
-                    gender_cnts[gender] += 1
-                if location in cls.LOC_STATED:
-                    loc_cnts[location] += 1
-                new_loc = cls.NEW_USER_LOC.get(user_id)
-                if new_loc in cls.LOC_STATED:
-                    loc_cnts[cls._get_count_loc(new_loc)] += 1
-                    loc_cnts[cls._get_new_loc(new_loc)] += 1
-        res['num'] = cnt
+        res['num'] = cls._get_res_from_query(from_time,to_time,'*|select count(distinct user_id) as res')
+        for loc in cls.LOC_STATED:
+            loc_cnts[loc] = cls._get_res_from_query(from_time,to_time,'location:'+str(loc)+'|select count(distinct user_id) as res')
+        resp = AliLogService.get_log_atom(from_time=from_time,to_time=to_time)
+        for log in resp.logs:
+            user_id = log.get_contents()['user_id']
+            gender = cls.USER_GEN.get(user_id)
+            if gender in gender_cnts:
+                gender_cnts[gender] += 1
+            new_loc = cls.NEW_USER_LOC.get(user_id)
+            if new_loc in cls.LOC_STATED:
+                loc_cnts[cls._get_count_loc(new_loc)] += 1
+                loc_cnts[cls._get_new_loc(new_loc)] += 1
         res.update(gender_cnts)
         res.update(loc_cnts)
         return res
