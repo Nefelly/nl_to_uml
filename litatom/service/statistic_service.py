@@ -381,19 +381,18 @@ class DiamStatService(object):
             if res not in match_num:
                 res = '>12'
             match_num[res][0] += 1
-            # 该用户当日是否使用过钻石
             user_id = contents['user_id']
-            resp = cls.fetch_log(from_time, to_time, query='user_id:' + user_id + ' and diamonds<0', size=2)
+            # 该用户是会员
+            if user_id in cls.USER_MEM_TIME and from_timestamp <= cls.USER_MEM_TIME[user_id]:
+                match_num[res][2] += 1
+                continue
+            # 该用户不是会员，但花钻石购买额外匹配次数了
+            resp = cls.fetch_log(from_time, to_time, query='user_id:' + user_id + ' and name:one_more_time', size=2)
             if resp.get_count() > 1:
                 match_num[res][3] += 1
-                continue
-            # 该用户未使用钻石，是会员
-            if user_id in cls.USER_MEM_TIME:
-                if from_timestamp <= cls.USER_MEM_TIME[user_id]:
-                    match_num[res][2] += 1
-                    continue
             # 该用户未使用钻石，不是会员
-            match_num[res][1] += 1
+            else:
+                match_num[res][1] += 1
         return match_num
 
     @classmethod
