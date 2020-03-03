@@ -95,8 +95,8 @@ def deposit_by_activity():
 
 
 @forbidden_session_required
-def unban_by_diamonds(user_id):
-    data, status = AccountService.unban_by_diamonds(user_id)
+def unban_by_diamonds():
+    data, status = AccountService.unban_by_diamonds(request.forbidden_user_id)
     if not status:
         return fail(data)
     return success(data)
