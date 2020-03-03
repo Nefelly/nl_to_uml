@@ -33,7 +33,7 @@ from ....service import (
 logger = logging.getLogger(__name__)
 
 
-@session_required
+@forbidden_session_required
 def account_info():
     data = AccountService.get_user_account_info(request.user_id)
     if not data:
