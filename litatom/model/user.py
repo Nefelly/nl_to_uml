@@ -96,11 +96,13 @@ class UserSessionMixin(object):
         redis_client.set(key, str(self.id), ex=expire_time)
 
     def _set_forbidden_session_cache(self, session=None):
+        if session:
+            session = session.replace("session.", "")
         forbidden_session = self._build_session_string() if not session else session
         key = REDIS_KEY_FORBIDDEN_SESSION_USER.format(session=forbidden_session)
         redis_client.delete(key)
         redis_client.set(key, str(self.id), ex=TWO_WEEKS)
-        return forbidden_session
+        return self.SESSION_ID_PATTERN.format(id=forbidden_session)
 
     def clear_session(self):
         if not self.session:
