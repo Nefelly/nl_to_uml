@@ -32,7 +32,7 @@ class UserModel(Document):
     }
 
     DEFAULT_SCORE = -1
-    ALERT_TIMES = 4 if not setting.IS_DEV else 1000
+    ALERT_TIMES = 5 if not setting.IS_DEV else 1000
     user_id = StringField(required=True)
     alert_num = IntField(required=True, default=0)
     match_times = IntField(default=0)
@@ -134,6 +134,7 @@ class UserModel(Document):
             obj.alert_num += 1
         obj.save()
         if obj.alert_num != 0 and obj.alert_num % cls.ALERT_TIMES == 0:
+            obj.alert_num
             return True
         return False
 
