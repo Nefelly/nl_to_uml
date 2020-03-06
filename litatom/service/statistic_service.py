@@ -451,7 +451,7 @@ class DiamStatService(object):
                     res = 0
                 finally:
                     data.append((item, str(res)))
-                    data_dic[item] = res
+                    data_dic[item] = int(res)
         return data, data_dic
 
     @classmethod
