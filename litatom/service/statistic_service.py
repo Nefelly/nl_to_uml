@@ -470,11 +470,6 @@ class DiamStatService(object):
         excel_data.append(mem_num)
         data_next, excel_dic = cls.cal_stats_from_list(cls.STAT_QUERY_LIST, from_time, to_time)
         data += data_next
-        print(type(excel_dic['diam_deposit50_man_time_num']),excel_dic['diam_deposit50_man_time_num'])
-        print(type(excel_dic['diam_deposit100_man_time_num']),excel_dic['diam_deposit100_man_time_num'])
-        print(type(excel_dic['diam_deposit200_man_time_num']),excel_dic['diam_deposit200_man_time_num'])
-        print(type(excel_dic['diam_deposit500_man_time_num']),excel_dic['diam_deposit500_man_time_num'])
-        print(type(cls.DIAMOND_INCOMING[50]),cls.DIAMOND_INCOMING[50])
         incoming = excel_dic['diam_deposit50_man_time_num'] * cls.DIAMOND_INCOMING[50] + \
                    excel_dic['diam_deposit100_man_time_num'] * cls.DIAMOND_INCOMING[100] + \
                    excel_dic['diam_deposit200_man_time_num'] * cls.DIAMOND_INCOMING[200] + \
