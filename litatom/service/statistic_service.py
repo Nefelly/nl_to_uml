@@ -470,9 +470,10 @@ class DiamStatService(object):
         excel_data.append(mem_num)
         data_next, excel_dic = cls.cal_stats_from_list(cls.STAT_QUERY_LIST, from_time, to_time)
         data += data_next
-        incoming = excel_dic['diam_deposit50_man_time_num'] * cls.DIAMOND_INCOMING[50] + excel_dic[
-            'diam_deposit100_man_time_num'] * cls.DIAMOND_INCOMING[100] + excel_dic['diam_deposit200_man_time_num'] * \
-                   cls.DIAMOND_INCOMING[200] + excel_dic['diam_deposit500_man_time_num'] * cls.DIAMOND_INCOMING[500]
+        incoming = excel_dic['diam_deposit50_man_time_num'] * cls.DIAMOND_INCOMING[50] + \
+                   excel_dic['diam_deposit100_man_time_num'] * cls.DIAMOND_INCOMING[100] + \
+                   excel_dic['diam_deposit200_man_time_num'] * cls.DIAMOND_INCOMING[200] + \
+                   excel_dic['diam_deposit500_man_time_num'] * cls.DIAMOND_INCOMING[500]
         data.append(('incoming',str(incoming)))
         excel_data.append(incoming)
         excel_data += [excel_dic['diam_cons_people_num'], excel_dic['diam_cons_num'],
