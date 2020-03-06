@@ -329,6 +329,12 @@ class DiamStatService(object):
         'video_match_num': 'action:match and remark:matchSuccessvideo|SELECT COUNT(1) as res, user_id GROUP BY user_id limit 1000000',
         'voice_match_num': 'action:match and remark:matchSuccessvoice|SELECT COUNT(1) as res, user_id GROUP BY user_id limit 1000000'
     }
+    DIAMOND_INCOMING = {
+        50: 0.99,
+        100: 1.95,
+        200: 3.5,
+        500: 6.99,
+    }
     DEFAULT_PROJECT = 'litatom-account'
     DEFAULT_LOGSTORE = 'account_flow'
     USER_MEM_TIME = {}  # user_id:membership_time
@@ -464,6 +470,11 @@ class DiamStatService(object):
         excel_data.append(mem_num)
         data_next, excel_dic = cls.cal_stats_from_list(cls.STAT_QUERY_LIST, from_time, to_time)
         data += data_next
+        incoming = excel_dic['diam_deposit50_man_time_num'] * cls.DIAMOND_INCOMING[50] + excel_dic[
+            'diam_deposit100_man_time_num'] * cls.DIAMOND_INCOMING[100] + excel_dic['diam_deposit200_man_time_num'] * \
+                   cls.DIAMOND_INCOMING[200] + excel_dic['diam_deposit500_man_time_num'] * cls.DIAMOND_INCOMING[500]
+        data.append(('incoming',str(incoming)))
+        excel_data.append(incoming)
         excel_data += [excel_dic['diam_cons_people_num'], excel_dic['diam_cons_num'],
                        excel_dic['diam_cons_man_time_num'],
                        excel_dic['diam_deposit_people_num'],
@@ -480,7 +491,7 @@ class DiamStatService(object):
                        excel_dic['acce_diam_cons_num']]
         AliLogService.put_logs(data, project='litatom-account', logstore='diamond_stat')
         write_data_to_xls_col(addr,
-                              [r'会员数', r'钻石消耗人数', r'钻石消耗数量', r'钻石消耗人次', r'钻石购买人数', r'钻石购买数量', r'钻石购买人次', r'50钻石购买人数',
+                              [r'会员数', r'收入', r'钻石消耗人数', r'钻石消耗数量', r'钻石消耗人次', r'钻石购买人数', r'钻石购买数量', r'钻石购买人次', r'50钻石购买人数',
                                r'50钻石购买人次', r'100钻石购买人数', r'100钻石购买人次', r'200钻石购买人数', r'200钻石购买人次', r'500钻石购买人数',
                                r'500钻石购买人次', r'会员购买人数', r'会员购买人次', r'会员-钻石消耗数量',
                                r'加速人数', r'加速购买人次', r'加速-钻石消耗数量'], [excel_data], 'utf-8')
