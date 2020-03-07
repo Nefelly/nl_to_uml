@@ -44,9 +44,29 @@ def session_required(view):
             return view(*args, **kwargs)
         if has_user_id is None:  # 检查时发生了Exception, 报错而不登出.
             # logger.error("nnnnn-10")
+            if request.forbidden_user_id:
+                return jsonify(UserService.get_forbidden_error(error.FailedUserBanned))
             return jsonify(error.FailedSession)
     return wrapper
 
+def forbidden_session_required(view):
+    @functools.wraps(view)
+    def wrapper(*args, **kwargs):
+        if current_app.debug:
+            return view(*args, **kwargs)
+        has_user_id = _has_user_id()
+        if has_user_id:
+            if request.is_guest:
+                # 游客用户返回460
+                return guest_forbidden()
+            UserService.refresh_status(request.user_id)
+            return view(*args, **kwargs)
+        if has_user_id is None:  # 检查时发生了Exception, 报错而不登出.
+            forbidden_user_id = request.forbidden_user_id
+            if not forbidden_user_id:
+                return jsonify(error.FailedSession)
+            return view(*args, **kwargs)
+    return wrapper
 
 def session_finished_required(view):
     @functools.wraps(view)
@@ -66,6 +86,8 @@ def session_finished_required(view):
             return view(*args, **kwargs)
         if has_user_id is None:  # 检查时发生了Exception, 报错而不登出.
             # logger.error("nnnnn-10")
+            if request.forbidden_user_id:
+                return jsonify(UserService.get_forbidden_error(error.FailedUserBanned))
             return jsonify(error.FailedSession)
     return wrapper
 

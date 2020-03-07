@@ -41,7 +41,7 @@ b.add_url_rule('/lit/account/pay_inform', 'account-pay_inform', endpoint.account
 b.add_url_rule('/lit/account/deposit_by_activity', 'account-deposit_by_activity', endpoint.account.deposit_by_activity, methods=['POST'])
 b.add_url_rule('/lit/account/buy_product', 'account-buy_product', endpoint.account.buy_product, methods=['POST'])
 b.add_url_rule('/lit/account/diamond_products', 'account-diamond_products', endpoint.account.diamond_products)
-b.add_url_rule('/lit/account/unban_by_diamonds/<user_id>', 'account-unban-by-diamonds', endpoint.account.unban_by_diamonds)
+b.add_url_rule('/lit/account/unban_by_diamonds', 'account-unban-by-diamonds', endpoint.account.unban_by_diamonds)
 
 
 # admin
@@ -139,7 +139,7 @@ b.add_url_rule('/lit/activity/palm/query', 'activity-palm-query', endpoint.activ
 b.add_url_rule('/lit/activity/palm/share', 'activity-palm-share', endpoint.activity.share_info)
 b.add_url_rule('/lit/activity/palm/times_left', 'activity-palm-times-left', endpoint.activity.times_left)
 b.add_url_rule('/lit/activity/user_share/<share_user_id>', 'activity-user-share', endpoint.activity.user_share)
-b.add_url_rule('/lit/activity/share_static', 'activity-share-static', endpoint.activity.share_static)
+b.add_url_rule('/lit/activity/share_static1', 'activity-share-static', endpoint.activity.share_static)
 b.add_url_rule('/lit/activity/claim_rewards', 'activity-claim-rewards', endpoint.activity.claim_rewards)
 b.add_url_rule('/lit/activity/share_num','activity-share-num',endpoint.activity.share_num)
 

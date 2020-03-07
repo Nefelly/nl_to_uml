@@ -38,7 +38,8 @@ from ..key import (
     REDIS_KEY_USER_AGE,
     REDIS_USER_CACHE,
     REDIS_USER_SETTING_CACHE,
-    REDIS_USER_MODEL_CACHE
+    REDIS_USER_MODEL_CACHE,
+    REDIS_KEY_FORBIDDEN_SESSION_USER
 )
 from ..const import (
     TWO_WEEKS,
@@ -94,6 +95,15 @@ class UserSessionMixin(object):
         expire_time = 60 * ONE_DAY if self.phone else TWO_WEEKS
         redis_client.set(key, str(self.id), ex=expire_time)
 
+    def _set_forbidden_session_cache(self, session=None):
+        if session:
+            session = session.replace("session.", "")
+        forbidden_session = self._build_session_string() if not session else session
+        key = REDIS_KEY_FORBIDDEN_SESSION_USER.format(session=forbidden_session)
+        redis_client.delete(key)
+        redis_client.set(key, str(self.id), ex=TWO_WEEKS)
+        return self.SESSION_ID_PATTERN.format(id=forbidden_session)
+
     def clear_session(self):
         if not self.session:
             return
@@ -101,9 +111,9 @@ class UserSessionMixin(object):
         self.session = None
         self.save()
 
-    def generate_new_session(self):
+    def generate_new_session(self, session=None):
         self.clear_session()
-        self.session = self._build_session_string()
+        self.session = self._build_session_string() if not session else session
         self.sessionCreateTime = datetime.datetime.now()
         self.save()
         return self.session
@@ -245,6 +255,15 @@ class User(Document, UserSessionMixin):
                 return None
             obj._set_session_cache()
             return str(obj.id)
+        return None
+
+    @classmethod
+    def get_forbidden_user_id_by_session(cls, sid):
+        pure_session = sid.replace('session.', '')
+        key = REDIS_KEY_FORBIDDEN_SESSION_USER.format(session=pure_session)
+        user_id = redis_client.get(key)
+        if user_id:
+            return user_id
         return None
 
     @classmethod
