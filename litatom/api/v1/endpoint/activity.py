@@ -51,7 +51,7 @@ def times_left():
 
 def user_share(share_user_id):
     loc = GlobalizationService.loc_by_uid(share_user_id)
-    url = '/api/sns/v1/lit/activity/share_static?loc=' + loc
+    url = '/api/sns/v1/lit/activity/share_static1?loc=' + loc
     ShareStatService.add_stat_item(share_user_id, request.ip)
     return redirect(url)
 
@@ -78,7 +78,7 @@ def getDesMeta(loc='EN'):
 def share_static():
     loc = request.args.get('loc')
     r = make_response(
-        render_template("litShare.html", ogUrl='http://test.litatom.com/api/sns/v1/lit/activity/share_static',
+        render_template("litShare.html", ogUrl='http://test.litatom.com/api/sns/v1/lit/activity/share_static1',
                         ogImage=getImageMeta(loc), ogDescription=getDesMeta(loc)))
     r.headers.set('Content-Type', 'text/html; charset=utf-8')
     # return current_app.send_static_file('share_index.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
