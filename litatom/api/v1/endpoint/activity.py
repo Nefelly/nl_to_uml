@@ -30,6 +30,7 @@ from ....service import (
     ShareStatService,
     UserService
 )
+from hendrix.conf import setting
 
 logger = logging.getLogger(__name__)
 
@@ -77,8 +78,9 @@ def getDesMeta(loc='EN'):
 
 def share_static():
     loc = request.args.get('loc')
+    host = 'http://test.litatom.com' if setting.IS_DEV else 'http://www.litatom.com'
     r = make_response(
-        render_template("litShare.html", ogUrl='http://test.litatom.com/api/sns/v1/lit/activity/share_static1',
+        render_template("litShare.html", ogUrl=host + '/api/sns/v1/lit/activity/share_static1',
                         ogImage=getImageMeta(loc), ogDescription=getDesMeta(loc)))
     r.headers.set('Content-Type', 'text/html; charset=utf-8')
     # return current_app.send_static_file('share_index.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
