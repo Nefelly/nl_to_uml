@@ -166,6 +166,7 @@ class DFAFilter(object):
 
 
 DFAFilter.load()
+print 'hhhhh'
 
 
 if __name__ == "__main__":
