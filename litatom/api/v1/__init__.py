@@ -91,6 +91,7 @@ b.add_url_rule('/lit/admin/mongo_gen_csv_page', 'admin-mongo_gen_csv_page', endp
 b.add_url_rule('/lit/admin/feedbacks', 'admin-feedbacks', endpoint.admin.feedbacks)
 b.add_url_rule('/lit/admin/deal_feedback/<feedback_id>', 'admin-deal-feedback', endpoint.admin.deal_feedback)
 b.add_url_rule('/lit/admin/feedback_page', 'admin-feedback_page', endpoint.admin.feedback_page)
+b.add_url_rule('/lit/admin/unban_by_nickname', 'admin-unban_by_nickname', endpoint.admin.unban_by_nickname)
 
 
 # picture

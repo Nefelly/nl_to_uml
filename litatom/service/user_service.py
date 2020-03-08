@@ -512,6 +512,15 @@ class UserService(object):
             FirebaseService.send_to_user(_, u'your report succeed', to_user_info)
 
     @classmethod
+    def unban_by_nickname(cls, nickname):
+        objs = User.objects(nickname=nickname, forbidden=True)
+        if not objs:
+            return u'not such forbidden user of: ' + nickname, False
+        for el in objs:
+            cls.unban_user(str(el.id))
+        return None, True
+
+    @classmethod
     def update_info(cls, user_id, data):
         els = ['nickname', 'birthdate', 'avatar', 'bio', 'country', 'referral_code']
         once = ['gender']

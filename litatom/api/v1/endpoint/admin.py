@@ -202,6 +202,14 @@ def reject(report_id):
     return success(data)
 
 
+def unban_by_nickname():
+    nickname = request.args.get('nickname')
+    data, status = UserService.unban_by_nickname(nickname)
+    if not status:
+        return fail(data)
+    return success(data)
+
+
 def get_user_id():
     phone = request.args.get('phone')
     target_loc = request.loc
