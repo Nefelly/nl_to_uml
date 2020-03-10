@@ -3,6 +3,7 @@ import json
 import logging
 import time
 from datetime import timedelta
+from hendrix.conf import setting
 
 from flask import (
     jsonify,
@@ -209,6 +210,12 @@ def unban_by_nickname():
         return fail(data)
     return success(data)
 
+
+def restart_test():
+    if not setting.IS_DEV:
+        return fail(u'you are not on test')
+    import os
+    os.popen('git pull;sv stop devlitatom;lsof -i:8001|awk \'{print $2}\'|xargs kill -9;sv restart devlitatom &')
 
 def get_user_id():
     phone = request.args.get('phone')
