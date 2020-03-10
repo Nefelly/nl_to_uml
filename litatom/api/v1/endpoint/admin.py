@@ -215,7 +215,7 @@ def restart_test():
     if not setting.IS_DEV:
         return fail(u'you are not on test')
     import subprocess
-    subprocess.Popen('git pull;sv stop devlitatom;lsof -i:8001|awk \'{print $2}\'|xargs kill -9;sv restart devlitatom &', shell=False)
+    subprocess.Popen('git pull;sv stop devlitatom;lsof -i:8001|awk \'{print $2}\'|xargs kill -9;sv restart devlitatom &', shell=True)
     return success()
 
 def get_user_id():
