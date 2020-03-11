@@ -59,6 +59,7 @@ from ..service import (
     GlobalizationService,
     MqService,
 )
+
 logger = logging.getLogger(__name__)
 sys_rnd = random.SystemRandom()
 redis_client = RedisClient()['lit']
@@ -84,13 +85,12 @@ class UserService(object):
         if request.session_id:
             user.generate_new_session(request.session_id.replace("session.", ""))
 
-
     @classmethod
-    def get_forbidden_error(cls, default_json={}):
+    def get_forbidden_error(cls, msg, default_json={}):
         from ..service import AccountService
         error_info = deepcopy(default_json)
-        error_info.update( {
-            'message': GlobalizationService.get_region_word('banned_warn'),
+        error_info.update({
+            'message': msg,
             'forbidden_session': request.session_id,
             'unban_diamonds': AccountService.UNBAN_DIAMONDS
         })

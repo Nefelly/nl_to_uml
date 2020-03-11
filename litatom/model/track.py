@@ -15,6 +15,7 @@ from ..util import (
     format_standard_time
 )
 
+
 class TrackChat(Document):
     '''
     报告的问题
@@ -57,13 +58,13 @@ class TrackSpamRecord(Document):
     create_time = IntField(required=True)
 
     @classmethod
-    def create(cls, user_id, word=None, pic=None):
+    def create(cls, user_id, word=None, pic=None, dealed_tag=False):
         if (not word and not pic) or (word and pic):
             return False
         if word:
-            obj = cls(user_id=user_id, word=word)
+            obj = cls(user_id=user_id, word=word, dealed=dealed_tag)
         else:
-            obj = cls(user_id=user_id, pic=pic)
+            obj = cls(user_id=user_id, pic=pic, dealed=dealed_tag)
         obj.create_time = int(time.time())
         obj.save()
         return True
