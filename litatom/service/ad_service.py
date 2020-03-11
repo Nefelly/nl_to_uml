@@ -21,7 +21,7 @@ class AdService(object):
     """
     广告服务
     """
-    MAX_TIMES = 5 if not setting.IS_DEV else 10
+    MAX_TIMES = 0 if not setting.IS_DEV else 10
 
     @classmethod
     def times_left(cls, user_id):
@@ -33,7 +33,7 @@ class AdService(object):
         redis_client.setnx(match_left_key, cls.MAX_TIMES)
         redis_client.expire(match_left_key, ONE_DAY)
         times_left = int(redis_client.get(match_left_key))
-        if times_left <= 0:
+        if times_left <= 0 or True:
             return u'You have reached the maximum number of times you can watch video today', False
         return {
                    'times_left': times_left,
