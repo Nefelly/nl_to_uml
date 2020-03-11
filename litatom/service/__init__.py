@@ -7,6 +7,7 @@ from .monitor_service import MonitorService
 from .alert_service import AlertService
 from .globalization_service import GlobalizationService
 from .mq_service import MqService
+from .track_action_service import TrackActionService
 from .user_model_service import UserModelService
 from .async_service import AsyncCmdService
 from .sms_code_service import SmsCodeService
@@ -45,7 +46,6 @@ from .video_match_service import VideoMatchService
 from .feed_service import FeedService
 from .debug_helper_service import DebugHelperService
 from .forbidden_service import ReportService
-from .track_action_service import TrackActionService
 from .feedback_service import FeedbackService
 from .admin_service import AdminService
 from .palm_service import PalmService

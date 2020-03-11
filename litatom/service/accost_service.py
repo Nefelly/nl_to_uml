@@ -1,8 +1,5 @@
 # coding: utf-8
 import logging
-from ..model import (
-    UserAction
-)
 from ..redis import RedisClient
 from ..key import (
     REDIS_ACCOST_RATE,
@@ -12,6 +9,9 @@ from ..const import (
     ONE_MIN,
     ACTION_ACCOST_STOP,
     ACTION_ACCOST_NEED_VIDEO
+)
+from ..service import (
+    TrackActionService
 )
 
 logger = logging.getLogger(__name__)
@@ -41,7 +41,7 @@ class AccostService(object):
             else:
                 stop_num = int(stop_num)
                 if stop_num <= 0:
-                    UserAction.create(user_id, ACTION_ACCOST_STOP, None, None, ACTION_ACCOST_STOP)
+                    TrackActionService.create_action(user_id, ACTION_ACCOST_STOP)
                     return True
                 redis_client.decr(stop_key)
                 return False
@@ -56,7 +56,7 @@ class AccostService(object):
         else:
             res = int(res)
             if res <= 0:
-                UserAction.create(user_id, ACTION_ACCOST_NEED_VIDEO, None, None, ACTION_ACCOST_NEED_VIDEO)
+                TrackActionService.create_action(user_id, ACTION_ACCOST_NEED_VIDEO)
                 return cls.ACCOST_NEED_VIDEO
             else:
                 if should_stop():
