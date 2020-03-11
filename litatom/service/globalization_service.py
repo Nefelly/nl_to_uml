@@ -296,6 +296,7 @@ class GlobalizationService(object):
             region_key = REDIS_USER_REGION.format(user_id=user_id)
             region = redis_client.get(region_key)
             if region:
+                request.region = region
                 return region
             loc_key = REDIS_USER_LOC.format(user_id=user_id)
             tmp_loc = redis_client.get(loc_key)
