@@ -57,7 +57,8 @@ class TrackActionService(object):
                            # }
                            )
             return True
-        return cls._create_action(user_id, action, other_user_id, amount, remark, version)
+        return True
+        # return cls._create_action(user_id, action, other_user_id, amount, remark, version)
 
     @classmethod
     def pymongo_batch_insert(cls, collection, payload_list):
