@@ -48,8 +48,8 @@ class ForbiddenService(object):
         cls.alert_to_user(user_id)
         res = cls.check_forbid(user_id)
         if not res:
-            return u"spam words", True
-        return u"spam words and forbidden", True
+            return GlobalizationService.get_region_word('alert_msg'), True
+        return GlobalizationService.get_region_word('alert_msg'), True
 
     @classmethod
     def report_illegal_pic(cls, user_id, pic, reason):

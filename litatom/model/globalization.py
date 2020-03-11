@@ -147,11 +147,15 @@ class RegionWord(Document):
             'ja': {'newcomer': [u'彼は新規ユーザー', u'彼女は新規ユーザー'], 'mystierious': [u'ミステリアスな男子', u'ミステリアスな女子']},
         },
         'alert_word': {
-            'en': u'Our system has noticed inappropriate behavior on your account. please keep positive. If you believe you’ve been incorrectly flagged, you can contact us by litatomwang@gmail.com',
-            'vi': u'Cảnh báo, hệ thống chúng tôi nhận được báo cáo về tài khoản của bạn. Chú ý không sử dụng các từ ngữ thô tục , quấy rối tình dục trong các cuộc nói chuyện. Nếu bị báo cáo 3 lần ,tài khoản sẽ bị khoá. Nếu báo cáo là sai hãy gửi email tên nick Litmatch của bạn đến địa chỉ : litatomwang@gmail.com',
-            # 'th': u'"ระบบของเราสังเกตเห็นพฤติกรรมที่ไม่เหมาะสมในบัญชีของคุณโปรดประพฤติตามความเหมาะสมหากคุณคิดว่าคุณถูกตั้งค่าสถานะไม่ถูกต้อง คุณสามารถติดต่อเราอยู่ที่litatomwang@gmail.com"',
-            'th': u'คำเตือน:ระบบเราได้สังเกตว่าบัญชีของคุณมีพฤติกรรมที่ไม่เหมาะสม ขอให้ระมัดระวังและถ้าได้เตือนถึงสามครั้งแล้ว เราจะแบนบัญชีของคุณถ้าคุณยืนยันว่าคุณไม่ได้ทำอะไรผิดแต่โดนแบน ขอส่งบัญชีlitmatchของคุณถึงอีเมล์litatomwang@gmail.com',
-            'ja': u'"あなたのアカウントに不適切な行為を発見したので、ご注意ください。攻撃的な報告と思う場合、litatomwang@gmail.comまでご連絡ください。"',
+            'en': u'Warning,Our system has noticed inappropriate behavior on your account. Please keep positive. If you are warned three times,you will be banned. If you believe you’ve been incorrectly flagged, please send your litmatch name in your email to litatomwang@gmail.com',
+            'vi': u'Hệ thống chúng tôi thông báo tài khoản của bạn có hành vi không phù hợp. Hãy cư xử văn minh trong cuộc trò chuyện của bạn. Nếu báo cáo này sai bạn có thể liên lạc với chúng tôi qua email litatomwang@gmail.com',
+            'th': u'ระบบของเราสังเกตเห็นพฤติกรรมที่ไม่เหมาะสมในบัญชีของคุณโปรดประพฤติตามความเหมาะสมหากคุณคิดว่าคุณถูกตั้งค่าสถานะไม่ถูกต้อง คุณสามารถติดต่อเราอยู่ที่litatomwang@gmail.com',
+        },
+        'alert_msg':{
+            'en': u'Contains inappropriate information, please modify，If you continue to behave badly, you may be banned',
+            'id': u'Memuat informasi yang kurang pantas, mohon perbaiki, jika Anda terus berperilaku demikian, Anda mungkin akan di blokir',
+            'vi': u'Nội dung không phù hợp, hãy sữa đổi. Nếu vẫn tiếp tục , tài khoản của bạn có thể bị khoá.',
+            'th': u'รวมข้อความที่ไม่เหมาะสม กรุณาแก้ไข ถ้าคุณทำแบบนี้อีก เราจะแบนบัญชีของคุณ',
         },
         'sms_could_not_register': {
             'en': u'Registration of mobile phone is temporarily unavailable. Please register in other ways.',
@@ -218,10 +222,10 @@ class RegionWord(Document):
             res = tag_words.get('en', '')
         return res
         # return cls.TAG_REGION_WORD.get(tag,  {}).get(region,  '')
-        obj = cls.objects(region=region,  tag=tag).first()
-        if obj:
-            return obj.word
-        return ''
+        # obj = cls.objects(region=region,  tag=tag).first()
+        # if obj:
+        #     return obj.word
+        # return ''
 
     @classmethod
     def get_content(cls, word):
@@ -243,7 +247,7 @@ class RegionWord(Document):
         tag_region_word = {}
         tags = ['time_left', 'anoy_match_msg', 'voice_match_msg', 'voice_top_wording', 'like_feed', 'banned_warn',
                 'reply_comment', 'reply_feed', 'start_follow', 'other_ban_inform', 'app_introduce', 'video_list',
-                'bio', 'alert_word', 'sms_could_not_register']
+                'bio', 'alert_word', 'alert_msg', 'sms_could_not_register']
         for obj in cls.objects():
             region = obj.region
             tag = obj.tag
