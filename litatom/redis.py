@@ -22,9 +22,6 @@ class RedisClient(BaseDBManager):
         else:
             self[name] = StrictRedis(**self.settings[name])
 
-    def get(self, *args, **kwargs):
-        print '111get', args
-        super(RedisClient, self).get(*args, **kwargs)
 
 
 class RedisCacheUtils(object):
