@@ -43,7 +43,8 @@ class ForbiddenService(object):
     def check_spam_word(cls, word, user_id):
         if not SpamWordService.is_spam_word(word):
             return None, False
-        TrackSpamRecord.create(user_id, word)
+        dealed_tag = cls.check_spam_word_in_one_minute(user_id, int(time.time()))
+        TrackSpamRecord.create(user_id, word=word, dealed_tag=dealed_tag)
         cls.alert_to_user(user_id)
         res = cls.check_forbid(user_id)
         if not res:
@@ -138,6 +139,13 @@ class ForbiddenService(object):
         UserService.forbid_action(user_id, forbid_ts)
         UserRecord.add_sys_forbidden(user_id)
         return True
+
+    @classmethod
+    def check_spam_word_in_one_minute(cls, user_id, ts):
+        """检查两条spam_word之间的间隔是不是在1min之内，是的话不计入封号积分制度"""
+        if TrackSpamRecord.count_by_time_and_uid(user_id, ts-60, ts) > 0:
+            return True
+        return False
 
     @classmethod
     def is_high_value_user(cls, user_id):
