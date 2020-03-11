@@ -15,6 +15,7 @@ from ..util import (
     format_standard_time
 )
 
+
 class Report(Document):
     '''
     报告的问题
@@ -30,7 +31,7 @@ class Report(Document):
     deal_user = StringField()
     related_feed = StringField()
     region = StringField()
-    #passed = StringField()
+    # passed = StringField()
     create_ts = IntField(required=True)
     deal_ts = IntField()
 
@@ -59,7 +60,7 @@ class Report(Document):
         #     'target_user_id': self.target_uid if self.target_uid else '',
         #     'create_time': format_standard_time(date_from_unix_ts(self.create_ts))
         # }
-    
+
     def ban(self, ban_time):
         self.dealed = True
         self.deal_ts = int(time.time())
@@ -73,3 +74,18 @@ class Report(Document):
         self.deal_res = 'reject'
         self.save()
         return True
+
+    @classmethod
+    def count_by_time_and_uid(cls, user_id, from_time, to_time):
+        """返回用户一段时间内被不同人举报次数"""
+        return len(cls.objects(target_uid=user_id, create_ts__gte=from_time, create_ts__lte=to_time,dealed=False).distinct("uid"))
+
+    @classmethod
+    def count_match_by_time_and_uid(cls, user_id, from_time, to_time):
+        """返回用户一段时间内因match被不同人举报次数"""
+        return len(cls.objects(target_uid=user_id, create_ts__gte=from_time, create_ts__lte=to_time, reason="match",dealed=False).distinct("uid"))
+
+    @classmethod
+    def count_report_by_uid(cls, user_id, from_time, to_time):
+        """返回用户一段时间内主动举报别人的次数"""
+        return cls.objects(uid=user_id, create_ts__gte=from_time, create_ts__lte=to_time).count()

@@ -28,7 +28,7 @@ from ....service import (
     UserMessageService,
     FirebaseService,
     AccountService,
-    AntiSpamService,
+    AccostService,
     ConversationService
 )
 from ....const import (
@@ -155,7 +155,7 @@ def search_user():
 
 @session_required
 def accost():
-    status = AntiSpamService.can_accost(request.user_id)
+    status = AccostService.can_accost(request.user_id)
     if not status:
         return fail()
     res = {

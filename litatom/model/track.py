@@ -51,13 +51,24 @@ class TrackSpamRecord(Document):
     }
 
     user_id = StringField(required=True)
-    word = StringField(required=True)
+    word = StringField()
+    pic = StringField()
+    dealed = BooleanField(required=True, default=False)
     create_time = IntField(required=True)
 
     @classmethod
-    def create(cls, word, user_id):
-        obj = cls(user_id=user_id, word=word)
+    def create(cls, user_id, word=None, pic=None):
+        if (not word and not pic) or (word and pic):
+            return False
+        if word:
+            obj = cls(user_id=user_id, word=word)
+        else:
+            obj = cls(user_id=user_id, pic=pic)
         obj.create_time = int(time.time())
         obj.save()
         return True
 
+    @classmethod
+    def count_by_time_and_uid(cls, user_id, from_time, to_time):
+        """统计user在一段时间范围内被警告次数"""
+        return cls.objects(create_time__gte=from_time, create_time__lte=to_time, user_id=user_id, dealed=False).count()

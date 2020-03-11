@@ -35,7 +35,7 @@ from ..service import (
     UserMessageService,
     MqService,
     QiniuService,
-    AntiSpamService
+    ForbiddenService,
 )
 from ..model import (
     Feed,
@@ -74,20 +74,19 @@ class FeedService(object):
     @classmethod
     def consume_feed_added(cls, feed_id, pics, region_key):
         reason = None
+        illegal_pic = None
         if pics:
             for pic in pics:
                 reason = QiniuService.should_pic_block_from_file_id(pic)
                 if reason:
+                    illegal_pic = pic
                     break
         feed = Feed.get_by_id(feed_id)
         if feed:
             if reason:
                 reason_m = {"pulp": "sexual"}
                 reason = reason_m.get(reason, reason)
-                UserService.msg_to_user(
-                    u'Your post have been deleted due to reason: %s. Please keep your feed positive.' % reason,
-                    feed.user_id)
-                UserService.add_alert_num(feed.user_id)
+                ForbiddenService.report_illegal_pic(feed.user_id,illegal_pic,reason)
                 FeedLike.del_by_feedid(feed_id)
                 FeedComment.objects(feed_id=feed_id).delete()
                 feed.delete()
@@ -190,10 +189,10 @@ class FeedService(object):
 
     @classmethod
     def create_feed(cls, user_id, content, pics=None, audios=None):
-        if content and AntiSpamService.is_spam_word(content, user_id):
-            should_block = UserService.alert_to_user(user_id)
-            if should_block:
-                return u'spam words', False
+        if content:
+            data, status = ForbiddenService.check_spam_word(content,user_id)
+            if status:
+                return data, False
         feed = Feed.create_feed(user_id, content, pics, audios)
         cls._on_add_feed(feed)
         UserModelService.add_comments_by_uid(user_id)
@@ -345,6 +344,7 @@ class FeedService(object):
         if msg:
             return msg, False
         comment = FeedComment()
+        tag = False
         if comment_id:
             father_comment = FeedComment.get_by_id(comment_id)
             if not father_comment:
@@ -359,13 +359,16 @@ class FeedService(object):
                 UserModelService.add_comments_replies_by_uid(father_comment.user_id)
             comment.comment_id = comment_id
             comment.content_user_id = father_comment.user_id
+            tag =True
+        # spam word comment will be stopped
+        data, status = ForbiddenService.check_spam_word(content,user_id)
+        if status:
+            return data, False
+        if tag:
             UserMessageService.add_message(father_comment.user_id, user_id, UserMessageService.MSG_COMMENT, feed_id,
                                            content)
         else:
             UserMessageService.add_message(feed.user_id, user_id, UserMessageService.MSG_REPLY, feed_id, content)
-        is_spam = AntiSpamService.is_spam_word(content, user_id)
-        if is_spam:
-            UserService.alert_to_user(user_id)
         feed.chg_comment_num(1)
         if user_id != feed.user_id:
             cls.judge_add_to_feed_hq(feed)

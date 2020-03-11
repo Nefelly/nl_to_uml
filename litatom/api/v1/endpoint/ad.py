@@ -23,7 +23,7 @@ from flask import (
 from ....service import (
     AdService,
     GlobalizationService,
-    AntiSpamService
+    AccostService
 )
 
 
@@ -41,7 +41,7 @@ def times_left():
 @session_required
 def reset_accost():
     data = request.json
-    data, status = AntiSpamService.reset_accost(request.user_id, data)
+    data, status = AccostService.reset_accost(request.user_id, data)
     if status:
         return success(data)
     return fail(data)

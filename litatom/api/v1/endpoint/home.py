@@ -39,19 +39,20 @@ from ....service import (
     UserFilterService,
     FeedService,
     UserSettingService,
-    AntiSpamService,
+    SpamWordService,
     UserService,
-    QiniuService
+    QiniuService,
+    ForbiddenService,
 )
 
 logger = logging.getLogger(__name__)
-
 
 
 def online_user_count():
     gender = request.values.get('gender')
     count = StatisticService.get_online_cnt(gender)
     return success({'count': count})
+
 
 def online_users():
     gender = request.args.get('gender', None)
@@ -65,9 +66,11 @@ def online_users():
     data = StatisticService.get_online_users(gender, star_p, num)
     return success(data)
 
+
 def first_start():
     data = request.values
     return success(data)
+
 
 @session_required
 def upload_address_list():
@@ -78,10 +81,12 @@ def upload_address_list():
     UserAddressList.upsert(request.user_id, phones, user_phone)
     return success()
 
+
 @session_required
 def get_address_list():
     data = UserAddressList.get_by_user_id(request.user_id).to_json()
     return success(data)
+
 
 @session_required
 def online_filter():
@@ -97,12 +102,14 @@ def online_filter():
         return success(data)
     return fail(data)
 
+
 @session_required
 def get_online_filter():
     data, status = UserFilterService.get_filter_by_user_id(request.user_id)
     if status:
         return success(data)
     return fail(data)
+
 
 def download_app():
     from flask import send_from_directory
@@ -114,6 +121,7 @@ def download_app():
         f_name = '%s.apk' % version
     return send_from_directory(APP_PATH, f_name, as_attachment=True)
 
+
 def get_wording():
     word_type = request.args.get('word_type')
     if request.ip_thailand and word_type == u'match_info':
@@ -121,8 +129,9 @@ def get_wording():
     wording = Wording.get_word_type(word_type)
     return success(wording)
 
+
 def get_spam_word():
-    res, status = AntiSpamService.get_spam_words(GlobalizationService.get_region())
+    res, status = SpamWordService.get_spam_words(GlobalizationService.get_region())
     if not status:
         return fail(res)
     return success(res)
@@ -132,7 +141,7 @@ def get_spam_word():
 def report_spam():
     data = request.json
     word = data.get('word')
-    data, status = UserService.report_spam(request.user_id, word)
+    data, status = ForbiddenService.report_spam(request.user_id, word)
     if not status:
         return fail(data)
     return success(data)
@@ -146,7 +155,9 @@ def check_pic():
         return success()
     reason = QiniuService.should_pic_block_from_url(url)
     if reason:
-        data, status = UserService.report_spam(request.user_id, url)
+        reason_m = {"pulp": "sexual"}
+        reason = reason_m.get(reason, reason)
+        data, status = ForbiddenService.report_illegal_pic(request.user_id, url, reason)
         if not status:
             return fail(data)
         return success(data)
@@ -186,7 +197,7 @@ def report():
     pics = form.pics.data
     feed_id = form.feed_id.data
     target_user_id = form.target_user_id.data
-    #if not reason or not pics:
+    # if not reason or not pics:
     # if not reason or not pics:
     #     return fail('lack of reason or picture')
     if not reason:
@@ -198,11 +209,12 @@ def report():
         if not status_feed:
             return fail(feed_info)
         pics = feed_info['pics']
-        data, status = ReportService.report(user_id, reason, pics, target_user_id, feed_id)
+        data, status = ForbiddenService.resolve_report(user_id, reason, pics, target_user_id, feed_id)
     elif chat_record:
-        data, status = ReportService.report(user_id, reason, pics, target_user_id, None, json.dumps(chat_record))
+        data, status = ForbiddenService.resolve_report(user_id, reason, pics, target_user_id, None,
+                                                       json.dumps(chat_record))
     else:
-        data, status = ReportService.report(user_id, reason, pics, target_user_id)
+        data, status = ForbiddenService.resolve_report(user_id, reason, pics, target_user_id)
     if status:
         return success(data)
     return fail(data)

@@ -74,14 +74,17 @@ def trunc(v, length):
 
 
 def format_standard_date(time_data):
+    """datetime -> string"""
     return time_data.strftime('%Y-%m-%d')
 
 
 def format_standard_time(time_data):
+    """datetime -> string"""
     return time_data.strftime('%Y-%m-%d %H:%M:%S')
 
 
 def trans_secs_to_time(secs):
+    """秒数 -> string %H:%M:%S"""
     m, s = divmod(secs, 60)
     h, m = divmod(m, 60)
     if h > 0:
@@ -90,14 +93,17 @@ def trans_secs_to_time(secs):
 
 
 def parse_standard_time(time_data_str):
+    """str -> datetime"""
     return datetime.datetime.strptime(time_data_str, '%Y-%m-%d %H:%M:%S')
 
 
 def next_date(d_time, d=1):
+    """datetime -> datetime"""
     return d_time + datetime.timedelta(days=d)
 
 
 def get_times_from_str(time_data_str):
+    """str -> datetime"""
     if len(time_data_str) == 8:
         d_time = datetime.datetime.strptime(time_data_str, '%Y%m%d')
     else:
@@ -106,14 +112,17 @@ def get_times_from_str(time_data_str):
 
 
 def parse_standard_date(time_data_str):
+    """str -> datetime"""
     return datetime.datetime.strptime(time_data_str, '%Y-%m-%d')
 
 
 def time_str_by_ts(ts):
+    """timestamp(int) -> str"""
     return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(ts))
 
 
 def date_to_int_time(d):
+    """datetime -> timestamp(int)"""
     return int(time.mktime(d.timetuple()))
 
 
@@ -141,20 +150,21 @@ def get_time_info(int_time, user_mode=False):
 
 
 def now_date_key():
-    # return (datetime.datetime.now() + datetime.timedelta(seconds=-2)).strftime('%Y-%m-%d') # for time latency reason
+    """今日日期"""
     return datetime.datetime.now().strftime('%Y-%m-%d') # for time latency reason
 
 
 def low_high_pair(id1, id2):
     return id1 + id2 if id1 < id2 else id2 + id1
 
-
 def unix_ts_string(ts):
+    """timestamp(int) -> str"""
     time_array = time.localtime(ts)
     return time.strftime("%Y-%m-%d %H:%M", time_array)
 
 
 def unix_ts_local(time_data):
+    """datetime -> local timestamp(int)"""
     try:
         ts = int(time.mktime(time_data.timetuple()))
         return ts
@@ -163,6 +173,7 @@ def unix_ts_local(time_data):
 
 
 def unix_ts_utc(dt):
+    """datetime -> utc timestamp(int)"""
     try:
         ts = int(time.mktime(dt.utctimetuple()))
         return ts
@@ -171,6 +182,7 @@ def unix_ts_utc(dt):
 
 
 def date_from_unix_ts(ts):
+    """timestamp(int) -> datetime"""
     try:
         return datetime.datetime.fromtimestamp(ts)
     except Exception:

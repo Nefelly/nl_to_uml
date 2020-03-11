@@ -17,7 +17,7 @@ from ..service import (
     AnoyMatchService,
     VoiceMatchService,
     VideoMatchService,
-    AntiSpamService,
+    AccostService,
     PalmService,
     UserService,
     AdService,
@@ -176,7 +176,7 @@ class AccountService(object):
             if not status:
                 return data, False
         elif product == cls.ACCOST_RESET:
-            data, status = AntiSpamService.reset_accost(user_id)
+            data, status = AccostService.reset_accost(user_id)
             if not status:
                 return data, False
         elif product == cls.PALM_RESULT:

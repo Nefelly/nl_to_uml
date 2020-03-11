@@ -12,7 +12,7 @@ from .async_service import AsyncCmdService
 from .sms_code_service import SmsCodeService
 from .firebase_service import FirebaseService
 from .huanxin_service import HuanxinService
-from .anti_spam_service import AntiSpamService
+from .accost_service import AccostService
 from .user_setting_service import UserSettingService
 from .journal_service import JournalService
 from .retain_ana_service import RetainAnaService
@@ -30,6 +30,7 @@ from .ad_service import (
 )
 from .user_filter_service import UserFilterService
 from .user_service import UserService
+from .forbidden_service import ForbiddenService, SpamWordService
 from .statistic_service import DiamStatService
 from .voice_chat_service import VoiceChatService
 from .message_service import UserMessageService
@@ -43,7 +44,7 @@ from .voice_match_service import VoiceMatchService
 from .video_match_service import VideoMatchService
 from .feed_service import FeedService
 from .debug_helper_service import DebugHelperService
-from .report_service import ReportService
+from .forbidden_service import ReportService
 from .track_action_service import TrackActionService
 from .feedback_service import FeedbackService
 from .admin_service import AdminService

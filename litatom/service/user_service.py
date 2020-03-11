@@ -6,9 +6,6 @@ import datetime
 import logging
 import langid
 from flask import request
-
-logger = logging.getLogger(__name__)
-
 from ..redis import RedisClient
 from ..util import (
     validate_phone_number,
@@ -26,10 +23,8 @@ from ..const import (
     GENDERS,
     ONLINE_LIVE,
     USER_ACTIVE,
-    FORBID_INFO,
     OPERATE_TOO_OFTEN,
     REMOVE_EXCHANGE
-
 )
 
 from ..key import (
@@ -52,9 +47,7 @@ from ..model import (
     RedisLock,
     ReferralCode,
     UserModel,
-    Report,
     UserAccount,
-    TrackSpamRecord
 )
 from ..service import (
     SmsCodeService,
@@ -64,11 +57,9 @@ from ..service import (
     BlockService,
     FollowService,
     GlobalizationService,
-    FirebaseService,
     MqService,
-    AntiSpamService
 )
-
+logger = logging.getLogger(__name__)
 sys_rnd = random.SystemRandom()
 redis_client = RedisClient()['lit']
 
@@ -167,13 +158,6 @@ class UserService(object):
         return res, True
 
     @classmethod
-    def is_high_value_user(cls, user_id):
-        user = User.get_by_id(user_id)
-        if user and user.follower >= 20:
-            return True
-        return False
-
-    @classmethod
     def _get_words_loc(cls, words):
         for word in words:
             lang, score = langid.classify(word)
@@ -213,28 +197,8 @@ class UserService(object):
         return True
 
     @classmethod
-    def add_alert_num(cls, user_id):
-        should_block = UserModel.add_alert_num(user_id)
-        if should_block:
-            cls._forbid_action(user_id, 3 * ONE_DAY)
-            UserRecord.add_spam_forbidden(user_id)
-        return should_block
-
-    @classmethod
-    def alert_to_user(cls, user_id, alert_type=None):
-        msg = GlobalizationService.get_region_word('alert_word')
-        cls.msg_to_user(msg, user_id)
-        should_block = cls.add_alert_num(user_id)
-        return should_block
-
-    @classmethod
-    def report_spam(cls, user_id, word):
-        TrackSpamRecord.create(word, user_id)
-        cls.alert_to_user(user_id)
-        return None, True
-
-    @classmethod
     def _on_update_info(cls, user, data):
+        from ..service import ForbiddenService
         cls.update_info_finished_cache(user)
         gender = data.get('gender', '')
         if gender:
@@ -249,8 +213,13 @@ class UserService(object):
             uid = str(user.id)
             nickname = data.get('nickname', '')
             bio = data.get('bio', '')
-            if AntiSpamService.is_spam_word(nickname, uid) or AntiSpamService.is_spam_word(bio, uid):
-                cls.alert_to_user(uid)
+            # nickname,bio spam word风险拦截
+            data, status = ForbiddenService.check_spam_word(nickname, uid)
+            if status:
+                return data, False
+            data, status = ForbiddenService.check_spam_word(bio, uid)
+            if status:
+                return data, False
             # if (bio or nickname) and GlobalizationService.get_region() == GlobalizationService.DEFAULT_REGION:
             if (bio or nickname) and GlobalizationService.get_region() not in GlobalizationService.BIG_REGIONS:
                 loc = cls._get_words_loc([nickname, bio])
@@ -262,6 +231,7 @@ class UserService(object):
                         if userSetting:
                             userSetting.loc_change_times += 1
                             userSetting.save()
+        return None, True
 
     @classmethod
     def uids_age(cls, user_ids):
@@ -449,16 +419,17 @@ class UserService(object):
             res[_] = cls.get_basic_info(u)
         return res, True
 
-    @classmethod
-    def _forbid(cls, user_id):
-        forbid_time = cls.FORBID_TIME
-        if UserRecord.get_forbidden_times_user_id(user_id) > 0:
-            forbid_time *= 10
-        cls.forbid_user(user_id, forbid_time)
-        return True
+    # THIS METHOD WITH NO USAGE
+    # @classmethod
+    # def _forbid(cls, user_id):
+    #     forbid_time = cls.FORBID_TIME
+    #     if UserRecord.get_forbidden_times_user_id(user_id) > 0:
+    #         forbid_time *= 10
+    #     cls.forbid_user(user_id, forbid_time)
+    #     return True
 
     @classmethod
-    def _forbid_action(cls, user_id, forbid_ts):
+    def forbid_action(cls, user_id, forbid_ts):
         user = User.get_by_id(user_id)
         if not user:
             return False
@@ -479,37 +450,6 @@ class UserService(object):
         for _ in feeds:
             _.delete()
             MqService.push(REMOVE_EXCHANGE, {"feed_id": str(_.id)})
-        for _ in Report.objects(target_uid=user_id, dealed=False):
-            _.dealed = True
-            _.save()
-
-    @classmethod
-    def forbid_user(cls, user_id, forbid_ts):
-        cls._forbid_action(user_id, forbid_ts)
-        UserRecord.add_forbidden(user_id)
-        return True
-
-    @classmethod
-    def auto_forbid(cls, user_id, forbid_ts):
-        cls._forbid_action(user_id, forbid_ts)
-        UserRecord.add_auto_forbidden(user_id)
-        return True
-
-    @classmethod
-    def is_official_account(cls, user_id):
-        u = User.get_by_id(user_id)
-        if u and u.avatar == '5a6989ec-74a2-11e9-977f-00163e02deb4':
-            return True
-        return False
-
-    @classmethod
-    def block_actions(cls, reported_uid, report_user_ids):
-        target_user_nickname = cls.nickname_by_uid(reported_uid)
-        to_user_info = u"Your report on the user %s  has been settled. %s's account is disabled. Thank you for your support of the Lit community." \
-                       % (target_user_nickname, target_user_nickname)
-        for _ in report_user_ids:
-            cls.msg_to_user(to_user_info, _)
-            FirebaseService.send_to_user(_, u'your report succeed', to_user_info)
 
     @classmethod
     def unban_by_nickname(cls, nickname):
@@ -519,6 +459,13 @@ class UserService(object):
         for el in objs:
             cls.unban_user(str(el.id))
         return None, True
+
+    @classmethod
+    def is_official_account(cls, user_id):
+        u = User.get_by_id(user_id)
+        if u and u.avatar == '5a6989ec-74a2-11e9-977f-00163e02deb4':
+            return True
+        return False
 
     @classmethod
     def update_info(cls, user_id, data):
@@ -566,7 +513,7 @@ class UserService(object):
             if not Avatar.valid_avatar(data.get('avatar', '')) and not user.avatar:  # user's avatar not set random one
                 random_avatars = Avatar.get_avatars()
                 if not random_avatars.get(gender):
-                    logger.error("radom Avatars", random_avatars)
+                    logger.error("random Avatars", random_avatars)
                 user.avatar = random.choice(random_avatars.get(gender))
         if data.get('birthdate', ''):
             User.change_age(user_id)
@@ -588,18 +535,17 @@ class UserService(object):
 
         for el in data:
             setattr(user, el, data.get(el))
-        status = True
-        if has_nickname:
-            huanxin_id = user.huanxin.user_id
-            status = True
-            if len(data.get('nickname')) < cls.NICKNAME_LEN_LIMIT:
-                status = HuanxinService.update_nickname(huanxin_id, data.get('nickname'))
-        if status or True:
-            cls._on_update_info(user, data)
-            user.save()
-            return None, True
-        else:
-            return u'update huanxin nickname failed', False
+        info, res = cls._on_update_info(user, data)
+        if not res:
+            return info, False
+        # 有关huanxin_service, update_nickname逻辑暂时弃用
+        # if has_nickname:
+        #     huanxin_id = user.huanxin.user_id
+        #     status = True
+        #     if len(data.get('nickname')) < cls.NICKNAME_LEN_LIMIT:
+        #         status = HuanxinService.update_nickname(huanxin_id, data.get('nickname'))
+        user.save()
+        return None, True
 
     @classmethod
     def update_info_finished_cache(cls, user):

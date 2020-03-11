@@ -32,7 +32,6 @@ class UserModel(Document):
     }
 
     DEFAULT_SCORE = -1
-    ALERT_TIMES = 5 if not setting.IS_DEV else 1000
     user_id = StringField(required=True)
     alert_num = IntField(required=True, default=0)
     match_times = IntField(default=0)
@@ -126,17 +125,12 @@ class UserModel(Document):
 
     @classmethod
     def add_alert_num(cls, user_id):
-        ''' add alert num, return should block now'''
         obj = cls.get_by_user_id(user_id)
         if not obj:
             obj = cls(user_id=user_id, alert_num=1)
         else:
             obj.alert_num += 1
         obj.save()
-        if obj.alert_num != 0 and obj.alert_num % cls.ALERT_TIMES == 0:
-            obj.alert_num
-            return True
-        return False
 
     @classmethod
     def inc_block_num(cls, user_id):
@@ -160,13 +154,6 @@ class UserModel(Document):
             else:
                 obj.block_num -= 1
         obj.save()
-        return True
-
-    @classmethod
-    def alerted(cls, user_id):
-        obj = cls.get_by_user_id(user_id)
-        if not obj or obj.alert_num % cls.ALERT_TIMES < 2:
-            return False
         return True
 
     @classmethod

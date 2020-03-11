@@ -20,6 +20,7 @@ from ..util import (
 )
 from ..service import (
     UserService,
+    ForbiddenService,
     FirebaseService,
     FeedService,
     ReportService,
@@ -158,10 +159,10 @@ class AdminService(object):
             feed = Feed.get_by_id(report.target_uid)
             if feed:
                 report.target_uid = feed.user_id
-        res = UserService.forbid_user(report.target_uid, ban_time)
+        res = ForbiddenService.forbid_user(report.target_uid, ban_time)
         if res:
             report.ban(ban_time)
-            UserService.block_actions(report.target_uid, [report.uid])
+            ForbiddenService.feedback_to_reporters(report.target_uid, [report.uid])
             return None, True
         return u'forbid error', False
 
@@ -170,13 +171,13 @@ class AdminService(object):
         num = Report.objects(uid=user_id).count()
         if not setting.IS_DEV and num >= 2:
             return u'user not reported too much', False
-        res = UserService.forbid_user(user_id, 20 * ONE_DAY)
+        ForbiddenService.forbid_user(user_id, 20 * ONE_DAY)
         return None, True
 
     @classmethod
     def ban_reporter(cls, user_id):
         num = Report.objects(uid=user_id).delete()
-        res = UserService.forbid_user(user_id, 20 * ONE_DAY)
+        res = ForbiddenService.forbid_user(user_id, 20 * ONE_DAY)
         return None, True
 
     @classmethod
@@ -185,7 +186,7 @@ class AdminService(object):
         if not feed:
             return u'wrong feed id', False
         feed_user_id = feed.user_id
-        res = UserService.forbid_user(feed_user_id, ban_time)
+        res = ForbiddenService.forbid_user(feed_user_id, ban_time)
         FeedService.delete_feed('', str(feed.id))
         if res:
             for feed in Feed.get_by_user_id(feed_user_id):

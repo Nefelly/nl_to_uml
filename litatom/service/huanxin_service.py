@@ -178,7 +178,7 @@ class HuanxinService(object):
                         else:
                             logger.error('lst:%r, k:%r', lst, k)
                     break
-                except Exception, e:
+                except Exception as e:
                     logger.error(traceback.format_exc())
                     logger.error('Error query is user online, usernames: %r, err: %r', lst, e)
                     continue

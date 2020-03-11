@@ -2,6 +2,8 @@
 
 WHOSYOURDADDY = 'IAMYOURDADDY'
 
+SYS_FORBID = 'sysForbid'
+MANUAL_FORBID = 'manualForbid'
 
 LOGGING_PRDLINE = 'sns'
 LOGGING_APP_NAME = 'sns-litatom'
