@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 class ChildRedis(StrictRedis):
     def get(self, *args, **kwargs):
         print '!!!', args
-        return (ChildRedis, self).get(*args, **kwargs)
+        return super(ChildRedis, self).get(*args, **kwargs)
 
 
 
