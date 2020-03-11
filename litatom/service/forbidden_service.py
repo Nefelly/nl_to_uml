@@ -2,6 +2,7 @@
 import datetime
 import time
 import json
+from flask import request
 from ..redis import (
     RedisClient,
 )
@@ -41,7 +42,7 @@ class ForbiddenService(object):
 
     @classmethod
     def check_spam_word(cls, word, user_id):
-        if not SpamWordService.is_spam_word(word):
+        if not SpamWordService.is_spam_word(word, request.region):
             return None, False
         TrackSpamRecord.create(user_id, word)
         cls.alert_to_user(user_id)
