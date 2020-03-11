@@ -10,6 +10,12 @@ from .util import BaseDBManager
 
 logger = logging.getLogger(__name__)
 
+class ChildRedis(StrictRedis):
+    def get(self, *args, **kwargs):
+        print '!!!', args
+        return (ChildRedis, self).get(*args, **kwargs)
+
+
 
 class RedisClient(BaseDBManager):
     @property
@@ -18,9 +24,9 @@ class RedisClient(BaseDBManager):
 
     def _initdb(self, name):
         if 'url' in self.settings[name]:
-            self[name] = StrictRedis.from_url(self.settings[name]['url'])
+            self[name] = ChildRedis.from_url(self.settings[name]['url'])
         else:
-            self[name] = StrictRedis(**self.settings[name])
+            self[name] = ChildRedis(**self.settings[name])
 
 
 
