@@ -23,7 +23,7 @@ class RedisClient(BaseDBManager):
             self[name] = StrictRedis(**self.settings[name])
 
     def get(self, *args, **kwargs):
-        print '111get', getattr(self, 'name', 'afds')
+        print '111get', args
         super(RedisClient, self).get(*args, **kwargs)
 
 
