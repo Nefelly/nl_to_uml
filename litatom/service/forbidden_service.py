@@ -58,7 +58,9 @@ class ForbiddenService(object):
         cls.alert_to_user(user_id,
                           msg=u'Your post have been deleted due to reason: %s. Please keep your feed positive.' % reason)
         res = cls.check_forbid(user_id)
-        return res
+        if not res:
+            return u"spam words", True
+        return u"spam words and forbidden", True
 
     @classmethod
     def resolve_report(cls, user_id, reason, pics=[], target_user_id=None, related_feed_id=None, match_type=None,
