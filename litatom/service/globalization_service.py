@@ -47,6 +47,7 @@ class GlobalizationService(object):
     # REGION_KR = 'ko'
     # REGION_JP = 'ja'
     REGION_PH = 'ph'
+    REGION_US = 'us'
     REGION_TESTO = 'testo'
 
 
@@ -59,6 +60,7 @@ class GlobalizationService(object):
     LOC_TH2 = 'th'
     LOC_INN = 'INN'
     LOC_EN = 'EN'
+    LOC_US = 'US'
     # LOC_KR = 'KR'
     # LOC_JP = 'JP'
     LOC_PH = 'PH'
@@ -70,7 +72,8 @@ class GlobalizationService(object):
         'id': LOC_ID,
         # 'ko': LOC_KR,
         # 'ja': LOC_JP,
-        'ph': LOC_PH
+        'ph': LOC_PH,
+        'en': LOC_US
     }
 
     LOCS = {
@@ -84,7 +87,8 @@ class GlobalizationService(object):
         # LOC_KR,
         # LOC_JP,
         LOC_PH,
-        LOC_TESTO
+        LOC_TESTO,
+        LOC_US
     }
 
     KNOWN_REGION_LOC = {
@@ -105,7 +109,8 @@ class GlobalizationService(object):
         'India': LOC_IN,
         # 'South Korea': LOC_KR,
         # 'Japan': LOC_JP,
-        'Filipino': LOC_PH
+        'Filipino': LOC_PH,
+        'United States': LOC_US
     }
 
 
@@ -137,6 +142,7 @@ class GlobalizationService(object):
         # LOC_JP: REGION_JP,
         LOC_PH: REGION_PH,
         LOC_TESTO: REGION_TESTO,
+        LOC_US: REGION_US
     }
     REGIONS = list(set(LOC_REGION.values()))
     REGIONS.append(REGION_EN)
