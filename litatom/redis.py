@@ -24,9 +24,9 @@ class RedisClient(BaseDBManager):
 
     def _initdb(self, name):
         if 'url' in self.settings[name]:
-            self[name] = ChildRedis.from_url(self.settings[name]['url'])
+            self[name] = StrictRedis.from_url(self.settings[name]['url'])
         else:
-            self[name] = ChildRedis(**self.settings[name])
+            self[name] = StrictRedis(**self.settings[name])
 
 
 
