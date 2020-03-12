@@ -75,8 +75,8 @@ class MonitorService(object):
                         condition += condition_tail_get
                     res_tuple = (condition, name, uri, post_tag)
                     res.append(res_tuple)
-                    if len(res) > 2:
-                        break
+                    # if len(res) > 2:
+                    #     break
         return res
 
     @classmethod
