@@ -86,6 +86,13 @@ class UserService(object):
             user.generate_new_session(request.session_id.replace("session.", ""))
 
     @classmethod
+    def get_forbidden_time_by_uid(cls, user_id):
+        user = User.get_by_id(user_id)
+        if user:
+            return time_str_by_ts(user.forbidden_ts)
+        return None
+
+    @classmethod
     def get_forbidden_error(cls, msg, default_json={}):
         from ..service import AccountService
         error_info = deepcopy(default_json)
