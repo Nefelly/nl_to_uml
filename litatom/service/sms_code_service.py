@@ -73,7 +73,7 @@ class SmsCodeService(object):
         # template_code = cls.REGION_TEMPLATE.get(GlobalizationService.get_region(), 'SMS_164510648')
         template_code = 'SMS_169112439'
         _request.add_query_param('TemplateCode', template_code)
-        _request.add_query_param('TemplateParam', {"code":code})
+        _request.add_query_param('TemplateParam', {"code": code})
         response = ali_client.do_action(_request)
         response = json.loads(response)
         if response.get('Message', '') != 'OK':

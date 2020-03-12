@@ -201,7 +201,7 @@ class MonitorService(object):
             avg_response_time, called_num, avg_status = cls.read_stat(logs)
             if avg_response_time == 'null':
                 continue
-            now_res[uri] = float(avg_response_time)
+            now_res[uri] = [float(avg_response_time), int(called_num)]
         before_res = {}
         cls.END_TIME = parse_standard_time(compared_time)
         for query, name, uri, is_post in query_list:
@@ -209,12 +209,12 @@ class MonitorService(object):
             avg_response_time, called_num, avg_status = cls.read_stat(logs)
             if avg_response_time == 'null':
                 continue
-            before_res[uri] = float(avg_response_time)
+            before_res[uri] = [float(avg_response_time), int(called_num)]
         for k in now_res:
             if k not in before_res:
                 continue
-            avg_response_time = now_res[k]
-            before_rsp_time = before_res[k]
-            print '{:30s}, {:30f}, {:30f}, {:10f}'.format(k, avg_response_time, before_rsp_time, (avg_response_time - before_rsp_time)/ before_rsp_time * 100)
+            avg_response_time, now_num = now_res[k]
+            before_rsp_time, before_num = before_res[k]
+            print '{:40s} {:10f} {:10f} {:10f}'.format(k, avg_response_time, before_rsp_time, (avg_response_time - before_rsp_time) / before_rsp_time * 100, (avg_response_time - before_rsp_time) * now_num)
 
 
