@@ -101,7 +101,6 @@ class Blocked(Document):
         if not obj:
             return False
         obj.delete()
-        obj.save()
         # 确认缓存删除
         key = cls.get_redis_key(uid)
         if redis_client.exists(key):
