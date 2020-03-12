@@ -215,6 +215,7 @@ class MonitorService(object):
                 continue
             avg_response_time, now_num = now_res[k]
             before_rsp_time, before_num = before_res[k]
-            print '{:40s} {:10f} {:10f} {:10f}'.format(k, avg_response_time, before_rsp_time, (avg_response_time - before_rsp_time) / before_rsp_time * 100, (avg_response_time - before_rsp_time) * now_num)
+            print '{:40s} {:10f} {:10f} {:10f}, {:10f}'.format(k, avg_response_time, before_rsp_time, (avg_response_time - before_rsp_time) / before_rsp_time * 100,
+                                                               (avg_response_time - before_rsp_time) * now_num), now_num
 
 
