@@ -1,7 +1,10 @@
 # coding: utf-8
 import re
 import os
-from litatom.util import str2float
+from ..util import (
+    str2float,
+    parse_standard_time
+)
 from datetime import *
 from ..service import AliLogService
 
@@ -11,6 +14,7 @@ class MonitorService(object):
     STATUS_SET = {200, 400, 404, 405, 408, 499, 500, 502, 503, 504}
     QUERY_ANALYSIS = '|SELECT avg(upstream_response_time) as avg_response_time,' \
                      'count(1) as called_num,avg(status) as avg_status'
+    END_TIME = None
 
     @classmethod
     def get_query_is(cls, file_path):
@@ -93,7 +97,7 @@ class MonitorService(object):
         :param query:
         :return:一个GetLogsResponse对象
         """
-        end_time = datetime.now()
+        end_time = datetime.now() if not cls.END_TIME else cls.END_TIME
         start_time = end_time + timedelta(minutes=-1)
         return AliLogService.get_log_atom(project='litatom', logstore='litatomstore', query=query,
                                           from_time=AliLogService.datetime_to_alitime(start_time),
@@ -181,3 +185,31 @@ class MonitorService(object):
             avg_response_time, called_num, avg_status = cls.read_stat(logs)
             cls.put_stat_2_alilog(name, time, avg_response_time, called_num, avg_status, uri, is_post)
             # cls.put_stat_to_alilog(name, time, avg_resp_time, called_num, error_rate, status_num, uri, is_post)
+
+    @classmethod
+    def find_diff(cls, compared_time='2020-02-13 11:11:00'):
+        '''
+        寻找两个时间段之间的接口的调用的时间差 结果集 【接口 第一平均时间 第二平均时间 %time_added  】
+        :return:
+        '''
+        now_res = {}
+        query_list = cls.get_query_from_files(cls.FILE_SET)
+        for query, name, uri, is_post in query_list:
+            logs, time = cls.fetch_log(query + cls.QUERY_ANALYSIS)
+            # avg_resp_time, called_num, error_rate, status_num = cls.accum_stat(resp_set)
+            avg_response_time, called_num, avg_status = cls.read_stat(logs)
+            now_res[uri] = avg_response_time
+        before_res = {}
+        cls.END_TIME = parse_standard_time(compared_time)
+        for query, name, uri, is_post in query_list:
+            logs, time = cls.fetch_log(query + cls.QUERY_ANALYSIS)
+            avg_response_time, called_num, avg_status = cls.read_stat(logs)
+            before_res[uri] = avg_response_time
+        for k in now_res:
+            if k not in before_res:
+                continue
+            avg_response_time = now_res[k]
+            before_rsp_time = before_res[k]
+            print '{:30s}, {:30s}, {:30s}, {:10s}'.format(k, avg_response_time, before_rsp_time, (before_rsp_time - avg_response_time)/ avg_response_time)
+
+
