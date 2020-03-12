@@ -207,6 +207,8 @@ class MonitorService(object):
         for query, name, uri, is_post in query_list:
             logs, time = cls.fetch_log(query + cls.QUERY_ANALYSIS)
             avg_response_time, called_num, avg_status = cls.read_stat(logs)
+            if avg_response_time == 'null':
+                continue
             before_res[uri] = float(avg_response_time)
         for k in now_res:
             if k not in before_res:
