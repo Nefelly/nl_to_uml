@@ -75,7 +75,8 @@ class MonitorService(object):
                         condition += condition_tail_get
                     res_tuple = (condition, name, uri, post_tag)
                     res.append(res_tuple)
-                    break
+                    if len(res) > 2:
+                        break
         return res
 
     @classmethod
@@ -198,7 +199,8 @@ class MonitorService(object):
             logs, time = cls.fetch_log(query + cls.QUERY_ANALYSIS)
             # avg_resp_time, called_num, error_rate, status_num = cls.accum_stat(resp_set)
             avg_response_time, called_num, avg_status = cls.read_stat(logs)
-            print uri, avg_response_time
+            if avg_response_time == 'null':
+                continue
             now_res[uri] = float(avg_response_time)
         before_res = {}
         cls.END_TIME = parse_standard_time(compared_time)
