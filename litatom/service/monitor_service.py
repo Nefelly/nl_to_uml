@@ -198,6 +198,7 @@ class MonitorService(object):
             logs, time = cls.fetch_log(query + cls.QUERY_ANALYSIS)
             # avg_resp_time, called_num, error_rate, status_num = cls.accum_stat(resp_set)
             avg_response_time, called_num, avg_status = cls.read_stat(logs)
+            print uri, avg_response_time
             now_res[uri] = float(avg_response_time)
         before_res = {}
         cls.END_TIME = parse_standard_time(compared_time)
