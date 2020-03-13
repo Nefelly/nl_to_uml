@@ -32,7 +32,7 @@ from .ad_service import (
 from .user_filter_service import UserFilterService
 from .user_service import UserService
 from .forbidden_service import ForbiddenService, SpamWordService
-from .statistic_service import
+
 from .voice_chat_service import VoiceChatService
 from .message_service import UserMessageService
 from .conversation_service import ConversationService
