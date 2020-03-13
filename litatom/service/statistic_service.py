@@ -39,6 +39,7 @@ from ..model import (
     UserRecord,
     TrackSpamRecord,
     Report,
+    Feed,
 )
 
 redis_client = RedisClient()['lit']
@@ -569,7 +570,6 @@ class ForbidStatService(object):
 
     @classmethod
     def _load_report(cls, temp_res, from_ts, to_ts):
-        from ..service import FeedService
         reports = Report.get_report_by_time(from_ts, to_ts)
         for report in reports:
             if report.target_uid in temp_res.keys():
@@ -584,17 +584,17 @@ class ForbidStatService(object):
                 if report.pics:
                     temp_res[report.target_uid][u'举报' + str(temp_num + 1)][u'举报图片'] = report.pics
                 elif report.related_feed:
-                    feed, status = FeedService.get_feed_info(None, report.related_feed)
+                    feed = Feed.objects(id=report.related_feed)
                     temp_res[report.target_uid][u'举报' + str(temp_num + 1)][u'举报feed'] = {}
-                    if not status:
-                        temp_res[report.target_uid][u'举报' + str(temp_num + 1)][u'举报feed']['ERROR'] = feed
+                    if not feed:
+                        temp_res[report.target_uid][u'举报' + str(temp_num + 1)][u'举报feed']['ERROR'] = 'FEED CAN NOT BE FOUND'
                     else:
                         if feed['content']:
-                            temp_res[report.target_uid][u'举报' + str(temp_num + 1)][u'举报feed']['content'] = feed['content']
+                            temp_res[report.target_uid][u'举报' + str(temp_num + 1)][u'举报feed']['content'] = feed.content
                         if feed['pics']:
-                            temp_res[report.target_uid][u'举报' + str(temp_num + 1)][u'举报feed']['pictures'] = feed['pics']
+                            temp_res[report.target_uid][u'举报' + str(temp_num + 1)][u'举报feed']['pictures'] = feed.pics
                         if feed['audios']:
-                            temp_res[report.target_uid][u'举报' + str(temp_num + 1)][u'举报feed']['audios'] = feed['audios']
+                            temp_res[report.target_uid][u'举报' + str(temp_num + 1)][u'举报feed']['audios'] = feed.audios
 
     @classmethod
     def get_forbid_history(cls, file, from_ts=int(time.time() - ONE_DAY), to_ts=int(time.time())):
