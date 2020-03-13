@@ -9,6 +9,10 @@ from ...decorator import (
     session_finished_required
 )
 
+from ....const import (
+    BACKUP_HOST
+)
+
 from ....response import (
     fail,
     success
@@ -78,7 +82,7 @@ def getDesMeta(loc='EN'):
 
 def share_static():
     loc = request.args.get('loc')
-    host = 'http://test.litatom.com' if setting.IS_DEV else 'http://www.litatom.com'
+    host = 'http://test.litatom.com' if setting.IS_DEV else BACKUP_HOST
     r = make_response(
         render_template("litShare.html", ogUrl=host + '/api/sns/v1/lit/activity/share_static1',
                         ogImage=getImageMeta(loc), ogDescription=getDesMeta(loc)))
