@@ -557,6 +557,8 @@ class ForbidStatService(object):
             if record.user_id in temp_res.keys():
                 # temp_num表示目前已录入的警告次数
                 temp_num = temp_res[record.user_id][1]
+                if temp_num + 1 == temp_res[record.user_id][u'警告次数']:
+                    continue
                 temp_res[record.user_id][1] += 1
                 if record.word:
                     temp_res[record.user_id][u'警告' + str(temp_num + 1)] = {u'敏感词': record.word,
@@ -564,16 +566,15 @@ class ForbidStatService(object):
                 elif record.pic:
                     temp_res[record.user_id][u'警告' + str(temp_num + 1)] = {u'色情图片': record.pic,
                                                                            u'警告时间': time_str_by_ts(record.create_time)}
-                if temp_num + 1 == temp_res[record.user_id][u'警告次数']:
-                    temp_res[record.user_id].pop(1)
 
     @classmethod
     def _load_report(cls, temp_res, from_ts, to_ts):
         reports = Report.get_report_by_time(from_ts, to_ts)
         for report in reports:
             if report.target_uid in temp_res.keys():
-                print(temp_res[report.target_uid])
                 temp_num = temp_res[report.target_uid][2]
+                if temp_num + 1 == temp_res[report.target_uid][u'举报次数']:
+                    continue
                 if not temp_num:
                     temp_res[report.target_uid][u'地区'] = report.region
                 temp_res[report.target_uid][2] += 1
@@ -582,8 +583,6 @@ class ForbidStatService(object):
                     temp_res[report.target_uid][u'举报'+str(temp_num + 1)][u'举报图片'] = report.pics
                 elif report.related_feed:
                     temp_res[report.target_uid][u'举报'+str(temp_num + 1)][u'举报feed'] = report.related_feed
-                if temp_num + 1 == temp_res[report.target_uid][u'举报次数']:
-                    temp_res[report.target_uid].pop(2)
 
     @classmethod
     def get_forbid_history(cls, file, from_ts=int(time.time() - ONE_DAY), to_ts=int(time.time())):
@@ -607,4 +606,4 @@ class ForbidStatService(object):
         cls._load_spam_record(temp_res, earlist_illegal_action_ts, to_ts)
         cls._load_report(temp_res, earlist_illegal_action_ts, to_ts)
 
-        write_to_json(file, [item for item in temp_res.values()])
+        write_to_json(file, [item for item in temp_res.values() if (item.pop(1) or 1) and (item.pop(2) or 1)])
