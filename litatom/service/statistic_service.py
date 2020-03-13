@@ -28,7 +28,8 @@ from ..service import (
     UserService,
     GlobalizationService,
     UserFilterService,
-    AliLogService
+    AliLogService,
+    FeedService,
 )
 from ..model import (
     User,
@@ -578,11 +579,22 @@ class ForbidStatService(object):
                 if not temp_num:
                     temp_res[report.target_uid][u'地区'] = report.region
                 temp_res[report.target_uid][2] += 1
-                temp_res[report.target_uid][u'举报'+str(temp_num + 1)] = {u'举报者': report.uid, u'举报原因': report.reason, u'举报时间':time_str_by_ts(report.create_ts)}
+                temp_res[report.target_uid][u'举报' + str(temp_num + 1)] = {u'举报者': report.uid, u'举报原因': report.reason,
+                                                                          u'举报时间': time_str_by_ts(report.create_ts)}
                 if report.pics:
-                    temp_res[report.target_uid][u'举报'+str(temp_num + 1)][u'举报图片'] = report.pics
+                    temp_res[report.target_uid][u'举报' + str(temp_num + 1)][u'举报图片'] = report.pics
                 elif report.related_feed:
-                    temp_res[report.target_uid][u'举报'+str(temp_num + 1)][u'举报feed'] = report.related_feed
+                    feed, status = FeedService.get_feed_info(None, report.related_feed)
+                    temp_res[report.target_uid][u'举报' + str(temp_num + 1)][u'举报feed'] = {}
+                    if not status:
+                        temp_res[report.target_uid][u'举报' + str(temp_num + 1)][u'举报feed']['ERROR'] = feed
+                    else:
+                        if feed['content']:
+                            temp_res[report.target_uid][u'举报' + str(temp_num + 1)][u'举报feed']['content'] = feed['content']
+                        if feed['pics']:
+                            temp_res[report.target_uid][u'举报' + str(temp_num + 1)][u'举报feed']['pictures'] = feed['pics']
+                        if feed['audios']:
+                            temp_res[report.target_uid][u'举报' + str(temp_num + 1)][u'举报feed']['audios'] = feed['audios']
 
     @classmethod
     def get_forbid_history(cls, file, from_ts=int(time.time() - ONE_DAY), to_ts=int(time.time())):
@@ -590,7 +602,7 @@ class ForbidStatService(object):
         users = UserRecord.get_forbid_users_by_time(from_ts, to_ts)
         temp_res = {}
         for user in users:
-            temp_res[user.user_id] = {u'user_id':user.user_id, u'封号时间': time_str_by_ts(user.create_time)}
+            temp_res[user.user_id] = {u'user_id': user.user_id, u'封号时间': time_str_by_ts(user.create_time)}
 
         # 从TrackSpamRecord中导入次数和命中历史,从Report中导入次数和命中历史
         earlist_illegal_action_ts = int(time.time())
