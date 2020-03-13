@@ -584,7 +584,7 @@ class ForbidStatService(object):
                 if report.pics:
                     temp_res[report.target_uid][u'举报' + str(temp_num + 1)][u'举报图片'] = report.pics
                 elif report.related_feed:
-                    feed = Feed.objects(id=report.related_feed)
+                    feed = Feed.objects(id=report.related_feed).first()
                     temp_res[report.target_uid][u'举报' + str(temp_num + 1)][u'举报feed'] = {}
                     if not feed:
                         temp_res[report.target_uid][u'举报' + str(temp_num + 1)][u'举报feed']['ERROR'] = 'FEED CAN NOT BE FOUND'
