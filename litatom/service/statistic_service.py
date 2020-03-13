@@ -557,7 +557,7 @@ class ForbidStatService(object):
             if record.user_id in temp_res.keys():
                 # temp_num表示目前已录入的警告次数
                 temp_num = temp_res[record.user_id][1]
-                if temp_num + 1 == temp_res[record.user_id][u'警告次数']:
+                if temp_num == temp_res[record.user_id][u'警告次数']:
                     continue
                 temp_res[record.user_id][1] += 1
                 if record.word:
@@ -573,7 +573,7 @@ class ForbidStatService(object):
         for report in reports:
             if report.target_uid in temp_res.keys():
                 temp_num = temp_res[report.target_uid][2]
-                if temp_num + 1 == temp_res[report.target_uid][u'举报次数']:
+                if temp_num == temp_res[report.target_uid][u'举报次数']:
                     continue
                 if not temp_num:
                     temp_res[report.target_uid][u'地区'] = report.region
