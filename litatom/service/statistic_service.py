@@ -29,7 +29,6 @@ from ..service import (
     GlobalizationService,
     UserFilterService,
     AliLogService,
-    FeedService,
 )
 from ..model import (
     User,
@@ -570,6 +569,7 @@ class ForbidStatService(object):
 
     @classmethod
     def _load_report(cls, temp_res, from_ts, to_ts):
+        from ..service import FeedService
         reports = Report.get_report_by_time(from_ts, to_ts)
         for report in reports:
             if report.target_uid in temp_res.keys():
