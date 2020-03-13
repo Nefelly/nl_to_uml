@@ -55,6 +55,10 @@ def ensure_path(path):
     if not os.path.exists(dir_name):
         os.makedirs(dir_name)
 
+def exists_path(path):
+    dir_name = path[:path.rfind('/')]
+    return os.path.exists(dir_name)
+
 def ensure_unicode(v):
     if isinstance(v, str):
         v = v.decode('utf8')
@@ -305,7 +309,8 @@ def write_to_json(file, dic):
     写入一个json类型的文件
     :param dic: 一个字典的list，要求其中的字典都是可以json序列化的
     """
-    rm_file(file)
+    if exists_path(file):
+        rm_file(file)
     with open(file,'a',encoding='utf-8') as f:
         for item in dic:
             f.write(json.dumps(item, indent=4, ensure_ascii=False))
