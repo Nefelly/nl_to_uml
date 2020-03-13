@@ -572,6 +572,7 @@ class ForbidStatService(object):
         reports = Report.get_report_by_time(from_ts, to_ts)
         for report in reports:
             if report.target_uid in temp_res.keys():
+                print(temp_res[report.target_uid])
                 temp_num = temp_res[report.target_uid][2]
                 if not temp_num:
                     temp_res[report.target_uid][u'地区'] = report.region
