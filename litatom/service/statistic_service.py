@@ -3,7 +3,11 @@ import time
 import random
 import datetime
 from ..redis import RedisClient
-from ..util import write_data_to_xls_col
+from ..util import (
+    write_data_to_xls_col,
+    unix_ts_string,
+    write_to_json,
+)
 from ..key import (
     REDIS_ONLINE_CNT_CACHE
 )
@@ -32,6 +36,8 @@ from ..model import (
     OnlineLimit,
     UserAccount,
     UserRecord,
+    TrackSpamRecord,
+    Report,
 )
 
 redis_client = RedisClient()['lit']
@@ -544,10 +550,57 @@ class DiamStatService(object):
 class ForbidStatService(object):
 
     @classmethod
-    def get_forbid_history(cls, from_ts=int(time.time() - ONE_DAY), to_ts=int(time.time())):
+    def _load_spam_record(cls, temp_res, from_ts, to_ts):
+        records = TrackSpamRecord.get_record_by_time(from_ts, to_ts)
+        for record in records:
+            # temp_num表示目前已录入的警告次数
+            temp_num = temp_res[record.user_id][1]
+            temp_res[record.user_id][1] += 1
+            if record.word:
+                temp_res[record.user_id][u'警告' + str(temp_num + 1)] = {u'敏感词': record.word,
+                                                                       u'警告时间': unix_ts_string(record.create_time)}
+            elif record.pic:
+                temp_res[record.user_id][u'警告' + str(temp_num + 1)] = {u'色情图片': record.pic,
+                                                                       u'警告时间': unix_ts_string(record.create_time)}
+            if temp_num + 1 == temp_res[record.user_id][u'警告次数']:
+                temp_res[record.user_id].pop(1)
+
+    @classmethod
+    def _load_report(cls, temp_res, from_ts, to_ts):
+        reports = Report.get_report_by_time(from_ts, to_ts)
+        for report in reports:
+            temp_num = temp_res[report.target_uid][2]
+            if not temp_num:
+                temp_res[report.target_uid][u'地区'] = report.region
+            temp_res[report.target_uid][2] += 1
+            temp_res[report.target_uid][u'举报'+str(temp_num + 1)] = {u'举报者': report.uid, u'举报原因': report.reason, u'举报时间':unix_ts_string(report.create_ts)}
+            if report.pics:
+                temp_res[report.target_uid][u'举报'+str(temp_num + 1)][u'举报图片'] = report.pics
+            elif report.related_feed:
+                temp_res[report.target_uid][u'举报'+str(temp_num + 1)][u'举报feed'] = report.related_feed
+            if temp_num + 1 == temp_res[report.target_uid][u'举报次数']:
+                temp_res[report.target_uid].pop(2)
+
+    @classmethod
+    def get_forbid_history(cls, file, from_ts=int(time.time() - ONE_DAY), to_ts=int(time.time())):
         # 从UserRecord中加载封号用户和封号时间
         users = UserRecord.get_forbid_users_by_time(from_ts, to_ts)
-        uid_time = {}
+        temp_res = {}
         for user in users:
-            uid_time[user.user_id] = user.create_time
+            temp_res[user.user_id] = {u'user_id':user.user_id, u'封号时间': unix_ts_string(user.create_time)}
 
+        # 从TrackSpamRecord中导入次数和命中历史,从Report中导入次数和命中历史
+        earlist_illegal_action_ts = int(time.time())
+        for uid in temp_res.keys():
+            temp_ts = temp_res[uid][u'封号时间'] - 3 * ONE_DAY
+            if temp_ts < earlist_illegal_action_ts:
+                earlist_illegal_action_ts = temp_ts
+            temp_res[uid][u'警告次数'] = TrackSpamRecord.count_by_time_and_uid(uid, temp_ts, temp_ts + 3 * ONE_DAY, True)
+            temp_res[uid][u'举报次数'] = Report.count_by_time_and_uid(uid, temp_ts, temp_ts + 3 * ONE_DAY, True)
+            temp_res[uid][1] = 0
+            temp_res[uid][2] = 0
+
+        cls._load_spam_record(temp_res, earlist_illegal_action_ts, to_ts)
+        cls._load_report(temp_res, earlist_illegal_action_ts, to_ts)
+
+        write_to_json(file, [item for item in temp_res.values()])

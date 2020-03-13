@@ -304,7 +304,7 @@ def write_to_json(file, dic):
     rm_file(file)
     with open(file,'a',encoding='utf-8') as f:
         for item in dic:
-            f.write(json.dumps(item, indent=4))
+            f.write(json.dumps(item, indent=4, ensure_ascii=False))
             f.write('\n')
 
 

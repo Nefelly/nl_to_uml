@@ -76,7 +76,7 @@ class Report(Document):
         return True
 
     @classmethod
-    def count_by_time_and_uid(cls, user_id, from_time, to_time):
+    def count_by_time_and_uid_distinct(cls, user_id, from_time, to_time):
         """返回用户一段时间内被不同人举报次数"""
         return len(cls.objects(target_uid=user_id, create_ts__gte=from_time, create_ts__lte=to_time,dealed=False).distinct("uid"))
 
@@ -84,6 +84,16 @@ class Report(Document):
     def count_match_by_time_and_uid(cls, user_id, from_time, to_time):
         """返回用户一段时间内因match被不同人举报次数"""
         return len(cls.objects(target_uid=user_id, create_ts__gte=from_time, create_ts__lte=to_time, reason="match",dealed=False).distinct("uid"))
+
+    @classmethod
+    def count_by_time_and_uid(cls, user_id, from_ts, to_ts, dealed=False):
+        """返回用户一段时间内被其他人举报次数，不去重"""
+        return cls.objects(target_uid=user_id, create_ts__gte=from_ts, create_ts__lte=to_ts, dealed=dealed).count()
+
+    @classmethod
+    def get_report_by_time(cls, from_ts, to_ts, dealed=True):
+        """返回一段时间内的举报情况"""
+        return cls.objects(create_ts__gte=from_ts, create_ts__lte=to_ts, dealed=dealed)
 
     @classmethod
     def count_report_by_uid(cls, user_id, from_time, to_time):
