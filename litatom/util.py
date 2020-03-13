@@ -96,6 +96,10 @@ def parse_standard_time(time_data_str):
     """str -> datetime"""
     return datetime.datetime.strptime(time_data_str, '%Y-%m-%d %H:%M:%S')
 
+def get_ts_from_str(time_str):
+    """str -> timestamp(int)"""
+    return time.mktime(time.strptime(time_str, "%Y-%m-%d %H:%M:%S"))
+
 
 def next_date(d_time, d=1):
     """datetime -> datetime"""

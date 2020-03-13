@@ -5,8 +5,9 @@ import datetime
 from ..redis import RedisClient
 from ..util import (
     write_data_to_xls_col,
-    unix_ts_string,
+    time_str_by_ts,
     write_to_json,
+    get_ts_from_str,
 )
 from ..key import (
     REDIS_ONLINE_CNT_CACHE
@@ -558,10 +559,10 @@ class ForbidStatService(object):
             temp_res[record.user_id][1] += 1
             if record.word:
                 temp_res[record.user_id][u'警告' + str(temp_num + 1)] = {u'敏感词': record.word,
-                                                                       u'警告时间': unix_ts_string(record.create_time)}
+                                                                       u'警告时间': time_str_by_ts(record.create_time)}
             elif record.pic:
                 temp_res[record.user_id][u'警告' + str(temp_num + 1)] = {u'色情图片': record.pic,
-                                                                       u'警告时间': unix_ts_string(record.create_time)}
+                                                                       u'警告时间': time_str_by_ts(record.create_time)}
             if temp_num + 1 == temp_res[record.user_id][u'警告次数']:
                 temp_res[record.user_id].pop(1)
 
@@ -573,7 +574,7 @@ class ForbidStatService(object):
             if not temp_num:
                 temp_res[report.target_uid][u'地区'] = report.region
             temp_res[report.target_uid][2] += 1
-            temp_res[report.target_uid][u'举报'+str(temp_num + 1)] = {u'举报者': report.uid, u'举报原因': report.reason, u'举报时间':unix_ts_string(report.create_ts)}
+            temp_res[report.target_uid][u'举报'+str(temp_num + 1)] = {u'举报者': report.uid, u'举报原因': report.reason, u'举报时间':time_str_by_ts(report.create_ts)}
             if report.pics:
                 temp_res[report.target_uid][u'举报'+str(temp_num + 1)][u'举报图片'] = report.pics
             elif report.related_feed:
@@ -587,12 +588,12 @@ class ForbidStatService(object):
         users = UserRecord.get_forbid_users_by_time(from_ts, to_ts)
         temp_res = {}
         for user in users:
-            temp_res[user.user_id] = {u'user_id':user.user_id, u'封号时间': unix_ts_string(user.create_time)}
+            temp_res[user.user_id] = {u'user_id':user.user_id, u'封号时间': time_str_by_ts(user.create_time)}
 
         # 从TrackSpamRecord中导入次数和命中历史,从Report中导入次数和命中历史
         earlist_illegal_action_ts = int(time.time())
         for uid in temp_res.keys():
-            temp_ts = temp_res[uid][u'封号时间'] - 3 * ONE_DAY
+            temp_ts = get_ts_from_str(temp_res[uid][u'封号时间']) - 3 * ONE_DAY
             if temp_ts < earlist_illegal_action_ts:
                 earlist_illegal_action_ts = temp_ts
             temp_res[uid][u'警告次数'] = TrackSpamRecord.count_by_time_and_uid(uid, temp_ts, temp_ts + 3 * ONE_DAY, True)
