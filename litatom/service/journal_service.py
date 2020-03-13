@@ -395,7 +395,7 @@ class JournalService(object):
         else:
             time_str = cls._get_time_str(table_name, judge_field)
             expression = '' if not expression else expression
-            if not cls.IS_TESTING
+            if not cls.IS_TESTING:
                 if item.name in [u'警告数']:
                     exc_str = 'len(%s.objects(%s,%s).distinct(\'user_id\'))' % (table_name, time_str, expression)
                 else:
