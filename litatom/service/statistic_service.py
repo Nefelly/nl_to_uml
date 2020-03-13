@@ -589,11 +589,11 @@ class ForbidStatService(object):
                     if not feed:
                         temp_res[report.target_uid][u'举报' + str(temp_num + 1)][u'举报feed']['ERROR'] = 'FEED CAN NOT BE FOUND'
                     else:
-                        if feed['content']:
+                        if feed.content:
                             temp_res[report.target_uid][u'举报' + str(temp_num + 1)][u'举报feed']['content'] = feed.content
-                        if feed['pics']:
+                        if feed.pics:
                             temp_res[report.target_uid][u'举报' + str(temp_num + 1)][u'举报feed']['pictures'] = feed.pics
-                        if feed['audios']:
+                        if feed.audios:
                             temp_res[report.target_uid][u'举报' + str(temp_num + 1)][u'举报feed']['audios'] = feed.audios
 
     @classmethod
