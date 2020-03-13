@@ -293,6 +293,20 @@ def dsn2srv(dsn):
     parsed = urlparse.urlparse(dsn)
     return parsed.hostname, parsed.port
 
+def rm_file(file):
+    os.remove(file)
+
+def write_to_json(file, dic):
+    """
+    写入一个json类型的文件
+    :param dic: 一个字典的list，要求其中的字典都是可以json序列化的
+    """
+    rm_file(file)
+    with open(file,'a',encoding='utf-8') as f:
+        for item in dic:
+            f.write(json.dumps(item, indent=4))
+            f.write('\n')
+
 
 class CachedProperty(object):
     """Decorator like python built-in ``property``, but it results only

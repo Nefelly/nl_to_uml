@@ -16,7 +16,8 @@ from ..const import (
     USER_ACTIVE,
     REAL_ACTIVE,
     FIVE_MINS,
-    ONE_MIN
+    ONE_MIN,
+    ONE_DAY,
 )
 from ..service import (
     UserService,
@@ -29,7 +30,8 @@ from ..model import (
     TrackChat,
     UserSetting,
     OnlineLimit,
-    UserAccount
+    UserAccount,
+    UserRecord,
 )
 
 redis_client = RedisClient()['lit']
@@ -474,7 +476,7 @@ class DiamStatService(object):
                    excel_dic['diam_deposit100_man_time_num'] * cls.DIAMOND_INCOMING[100] + \
                    excel_dic['diam_deposit200_man_time_num'] * cls.DIAMOND_INCOMING[200] + \
                    excel_dic['diam_deposit500_man_time_num'] * cls.DIAMOND_INCOMING[500]
-        data.append(('incoming',str(incoming)))
+        data.append(('incoming', str(incoming)))
         excel_data.append(incoming)
         excel_data += [excel_dic['diam_cons_people_num'], excel_dic['diam_cons_num'],
                        excel_dic['diam_cons_man_time_num'],
@@ -492,7 +494,8 @@ class DiamStatService(object):
                        excel_dic['acce_diam_cons_num']]
         AliLogService.put_logs(data, project='litatom-account', logstore='diamond_stat')
         write_data_to_xls_col(addr,
-                              [r'会员数', r'收入', r'钻石消耗人数', r'钻石消耗数量', r'钻石消耗人次', r'钻石购买人数', r'钻石购买数量', r'钻石购买人次', r'50钻石购买人数',
+                              [r'会员数', r'收入', r'钻石消耗人数', r'钻石消耗数量', r'钻石消耗人次', r'钻石购买人数', r'钻石购买数量', r'钻石购买人次',
+                               r'50钻石购买人数',
                                r'50钻石购买人次', r'100钻石购买人数', r'100钻石购买人次', r'200钻石购买人数', r'200钻石购买人次', r'500钻石购买人数',
                                r'500钻石购买人次', r'会员购买人数', r'会员购买人次', r'会员-钻石消耗数量',
                                r'加速人数', r'加速购买人次', r'加速-钻石消耗数量'], [excel_data], 'utf-8')
@@ -536,3 +539,15 @@ class DiamStatService(object):
                 for col in range(4):
                     sheet.write(row + 2, col + 1, sheet_data[row][col])
         f.save(addr)
+
+
+class ForbidStatService(object):
+
+    @classmethod
+    def get_forbid_history(cls, from_ts=int(time.time() - ONE_DAY), to_ts=int(time.time())):
+        # 从UserRecord中加载封号用户和封号时间
+        users = UserRecord.get_forbid_users_by_time(from_ts, to_ts)
+        uid_time = {}
+        for user in users:
+            uid_time[user.user_id] = user.create_time
+
