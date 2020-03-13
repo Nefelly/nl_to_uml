@@ -12,6 +12,7 @@ import time
 import urllib
 import urlparse
 import math
+import codecs
 
 from flask import request
 from hendrix.conf import setting
@@ -311,7 +312,7 @@ def write_to_json(file, dic):
     """
     if exists_path(file):
         rm_file(file)
-    with open(file,'a',encoding='utf-8') as f:
+    with codecs.open(file,'a',encoding='utf-8') as f:
         for item in dic:
             f.write(json.dumps(item, indent=4, ensure_ascii=False))
             f.write('\n')
