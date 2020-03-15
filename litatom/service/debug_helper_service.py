@@ -152,7 +152,6 @@ class DebugHelperService(object):
             try:
                 res[k] = redis_client.get(k)
             except:
-                continue
                 try:
                     res[k] = redis_client.zscan(k)[1]
                 except:
@@ -169,5 +168,6 @@ class DebugHelperService(object):
             for _ in Feed.objects().order_by('-create_time'):
                 feeds.append(FeedService.get_feed_info(None, str(_.id)))
             res['zzfeeds'] = feeds
-        print res
+        import json
+        print json.dumps(res)
         return res
