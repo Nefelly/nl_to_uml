@@ -506,7 +506,7 @@ class DiamStatService(object):
     @classmethod
     def diam_stat_report_7_days(cls, addr, date=datetime.datetime.now(), days_delta=7):
         yesterday_res = cls.diam_stat_report(date)
-        AliLogService.put_logs(yesterday_res, project='litatom-account', logstore='diamond_stat')
+        # AliLogService.put_logs(yesterday_res, project='litatom-account', logstore='diamond_stat')
         res = [yesterday_res]
         for delta in range(1,days_delta):
             res.append(cls.diam_stat_report(date-datetime.timedelta(days=delta)))
