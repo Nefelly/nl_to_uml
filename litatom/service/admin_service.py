@@ -245,10 +245,10 @@ class AdminService(object):
         return None, True
 
     @classmethod
-    def change_avatar_to_small(cls):
+    def change_avatar_to_small(cls, width=300):
         j = Avatar.get_avatars()
         res = []
         for gender in j:
             res += j[gender]
         for _ in res:
-            AliOssService.replace_to_small()
+            AliOssService.replace_to_small(_, width)
