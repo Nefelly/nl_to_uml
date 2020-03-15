@@ -8,6 +8,8 @@ from ..util import (
     time_str_by_ts,
     write_to_json,
     get_ts_from_str,
+    format_standard_date,
+    date_to_int_time,
 )
 from ..key import (
     REDIS_ONLINE_CNT_CACHE
@@ -465,15 +467,14 @@ class DiamStatService(object):
         return data, data_dic
 
     @classmethod
-    def diam_stat_report(cls, addr, date=datetime.datetime.now()):
+    def diam_stat_report(cls, date=datetime.datetime.now()):
         cls._load_user_account()
         yesterday = date + datetime.timedelta(days=-1)
-        time_today = time.mktime(date.timetuple())
-        time_yesterday = time.mktime(yesterday.timetuple())
+        time_yesterday = date_to_int_time(yesterday)
         from_time = AliLogService.datetime_to_alitime(yesterday)
         to_time = AliLogService.datetime_to_alitime(date)
         data = []
-        excel_data = []
+        excel_data = [format_standard_date(yesterday)]
 
         mem_num = cls.cal_mem_num(time_yesterday)
         data.append(('member_num', str(mem_num)))
@@ -500,13 +501,21 @@ class DiamStatService(object):
                        excel_dic['week_member_diam_cons_num'], excel_dic['acce_consumer_num'],
                        excel_dic['acce_con_man_time_num'],
                        excel_dic['acce_diam_cons_num']]
-        AliLogService.put_logs(data, project='litatom-account', logstore='diamond_stat')
+        return data
+
+    @classmethod
+    def diam_stat_report_7_days(cls, addr, date=datetime.datetime.now(), days_delta=7):
+        yesterday_res = cls.diam_stat_report(date)
+        AliLogService.put_logs(yesterday_res, project='litatom-account', logstore='diamond_stat')
+        res = [yesterday_res]
+        for delta in range(1,days_delta):
+            res.append(cls.diam_stat_report(date-datetime.timedelta(days=delta)))
         write_data_to_xls_col(addr,
-                              [r'会员数', r'收入', r'钻石消耗人数', r'钻石消耗数量', r'钻石消耗人次', r'钻石购买人数', r'钻石购买数量', r'钻石购买人次',
+                              [r'日期',r'会员数', r'收入', r'钻石消耗人数', r'钻石消耗数量', r'钻石消耗人次', r'钻石购买人数', r'钻石购买数量', r'钻石购买人次',
                                r'50钻石购买人数',
                                r'50钻石购买人次', r'100钻石购买人数', r'100钻石购买人次', r'200钻石购买人数', r'200钻石购买人次', r'500钻石购买人数',
                                r'500钻石购买人次', r'会员购买人数', r'会员购买人次', r'会员-钻石消耗数量',
-                               r'加速人数', r'加速购买人次', r'加速-钻石消耗数量'], [excel_data], 'utf-8')
+                               r'加速人数', r'加速购买人次', r'加速-钻石消耗数量'], res, 'utf-8')
 
     @classmethod
     def diam_free_report(cls, addr, date=datetime.datetime.now()):
