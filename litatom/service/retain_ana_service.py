@@ -138,3 +138,7 @@ class RetainAnaService(object):
             res.append(lst)
         # print res
         write_data_to_xls(dst_addr, tb_head, res)
+
+    @classmethod
+    def get_res_from_certain_days(cls, days=1):
+        """返回相关日期的用户留存"""
