@@ -40,11 +40,15 @@ class RetainAnaService(object):
     LOC_STATED = ['TH', 'VN']
     CACHED_RES = {}
 
-    BASE_DAY_USER_INFO = {}
-    LATER_USER_INFO = {}
 
     @classmethod
-    def _load_user_info(cls, from_date, to_date, user_info):
+    def _load_user_info(cls, date, user_info):
+        """
+        将指定日期的用户数据load到user_info字典中
+        :param date:
+        :param user_info:{user_id1:(loc,gender,age),user_id2:()}
+        :return:
+        """
         def get_user_setting_by_time(from_time,to_time):
             return UserSetting.objects(create_time__gte=from_time, create_time__lte=to_time)
 
