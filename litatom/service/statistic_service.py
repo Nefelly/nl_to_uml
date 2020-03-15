@@ -585,7 +585,8 @@ class ForbidStatService(object):
                 temp_res[report.target_uid][u'举报' + str(temp_num + 1)] = {u'举报者': report.uid, u'举报原因': report.reason,
                                                                           u'举报时间': time_str_by_ts(report.create_ts)}
                 if report.pics:
-                    temp_res[report.target_uid][u'举报' + str(temp_num + 1)][u'举报图片'] = report.pics
+                    pics = [cls.PIC_URL+pic for pic in report.pics]
+                    temp_res[report.target_uid][u'举报' + str(temp_num + 1)][u'举报图片'] = pics
                 elif report.related_feed:
                     feed = Feed.objects(id=report.related_feed).first()
                     temp_res[report.target_uid][u'举报' + str(temp_num + 1)][u'举报feed'] = {}
