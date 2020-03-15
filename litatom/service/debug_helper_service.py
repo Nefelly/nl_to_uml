@@ -152,6 +152,7 @@ class DebugHelperService(object):
             try:
                 res[k] = redis_client.get(k)
             except:
+                continue
                 try:
                     res[k] = redis_client.zscan(k)[1]
                 except:
