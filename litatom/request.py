@@ -291,16 +291,17 @@ class LitatomRequest(flask.Request):
 
     @cached_property
     def ip_thailand_china(self):
-        return  self.ip_country in [u'Thailand', u'China']
+        return self.ip_country in [u'Thailand', u'China']
 
     @cached_property
     def ip_should_filter(self):
-        if setting.IS_DEV:
-            return False
+        # if setting.IS_DEV:
+        #     return False
         country, city = Ip2AddressService.ip_country_city(self.ip)
         if country in [u'United States'] or \
                 (False and country == u'China' and city and city not in [u'Beijing', u'Shanghai', u'Nanjing']):
             #print country, city
+            print 'gggggg'
             return True
         return False
 
