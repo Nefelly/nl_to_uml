@@ -1,5 +1,6 @@
 # coding: utf-8
 import time
+import json
 from ..model import (
     User,
     Feed,
@@ -156,6 +157,10 @@ class DebugHelperService(object):
                     res[k] = redis_client.zscan(k)[1]
                 except:
                     res[k] = str(redis_client.smembers(k))
+            try:
+                json.dumps(res)
+            except:
+                print key, '!' * 100
         if not key:
             users = []
             for _ in User.objects().order_by('-create_time'):
@@ -168,6 +173,5 @@ class DebugHelperService(object):
             for _ in Feed.objects().order_by('-create_time'):
                 feeds.append(FeedService.get_feed_info(None, str(_.id)))
             res['zzfeeds'] = feeds
-        import json
         print json.dumps(res, encoding='utf8')
         return res
