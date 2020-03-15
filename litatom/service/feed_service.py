@@ -245,9 +245,7 @@ class FeedService(object):
 
     @classmethod
     def _feeds_by_pool(cls, redis_key, user_id, start_p, num, pool_type=None):
-        print redis_key
         if request.ip_should_filter:
-            print 'get in...'
             return {
                        'feeds': [],
                        'has_next': False,
