@@ -33,7 +33,7 @@ class AdService(object):
         redis_client.setnx(match_left_key, cls.MAX_TIMES)
         redis_client.expire(match_left_key, ONE_DAY)
         times_left = int(redis_client.get(match_left_key))
-        if times_left <= 0 or True:
+        if times_left <= 0:
             return u'You have reached the maximum number of times you can watch video today', False
         return {
                    'times_left': times_left,
