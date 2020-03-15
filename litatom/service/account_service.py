@@ -64,7 +64,7 @@ class AccountService(object):
         SHARE_5: 100,
     }
     UNBAN_DIAMONDS = 50
-    DAY_ACTIVITY_LIMIT = 500
+    DAY_ACTIVITY_LIMIT = 500 if not setting.IS_DEV else 200
     MEMBER_SHIPS = [WEEK_MEMBER]
     ERR_DIAMONDS_NOT_ENOUGH = 'not enough diamonds, please deposit first.'
 
