@@ -142,7 +142,12 @@ class DebugHelperService(object):
         for k in redis_client.keys():
             if key and key not in k:
                 continue
-            if 'cache' in k:
+            not_include = False
+            for el in ['cache', 'share_stat']:
+                if el in k:
+                    not_include =True
+                    break
+            if not_include:
                 continue
             try:
                 res[k] = redis_client.get(k)
