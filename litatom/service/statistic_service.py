@@ -551,6 +551,9 @@ class DiamStatService(object):
 
 class ForbidStatService(object):
 
+    PIC_URL='http://www.litatom.com/api/sns/v1/lit/simage/'
+    AUDIO_URL='http://www.litatom.com/api/sns/v1/lit/audio/'
+
     @classmethod
     def _load_spam_record(cls, temp_res, from_ts, to_ts):
         records = TrackSpamRecord.get_record_by_time(from_ts, to_ts)
@@ -592,9 +595,11 @@ class ForbidStatService(object):
                         if feed.content:
                             temp_res[report.target_uid][u'举报' + str(temp_num + 1)][u'举报feed']['content'] = feed.content
                         if feed.pics:
-                            temp_res[report.target_uid][u'举报' + str(temp_num + 1)][u'举报feed']['pictures'] = feed.pics
+                            pics = [cls.PIC_URL+pic for pic in feed.pics]
+                            temp_res[report.target_uid][u'举报' + str(temp_num + 1)][u'举报feed']['pictures'] = pics
                         if feed.audios:
-                            temp_res[report.target_uid][u'举报' + str(temp_num + 1)][u'举报feed']['audios'] = feed.audios
+                            audios = [cls.AUDIO_URL+audio for audio in feed.audios]
+                            temp_res[report.target_uid][u'举报' + str(temp_num + 1)][u'举报feed']['audios'] = audios
 
     @classmethod
     def get_forbid_history(cls, file, from_ts=int(time.time() - ONE_DAY), to_ts=int(time.time())):
