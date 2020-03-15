@@ -161,6 +161,7 @@ class DebugHelperService(object):
                 json.dumps(res)
             except:
                 print k, '!' * 100
+                res[k] = u'你妹的 错误词'
         if not key:
             users = []
             for _ in User.objects().order_by('-create_time'):
