@@ -160,7 +160,7 @@ class DebugHelperService(object):
             try:
                 json.dumps(res)
             except:
-                print key, '!' * 100
+                print k, '!' * 100
         if not key:
             users = []
             for _ in User.objects().order_by('-create_time'):
