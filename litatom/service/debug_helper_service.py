@@ -169,5 +169,5 @@ class DebugHelperService(object):
                 feeds.append(FeedService.get_feed_info(None, str(_.id)))
             res['zzfeeds'] = feeds
         import json
-        print json.dumps(res)
+        print json.dumps(res, encoding='utf8')
         return res
