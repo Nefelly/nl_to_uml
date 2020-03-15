@@ -163,4 +163,5 @@ class DebugHelperService(object):
             for _ in Feed.objects().order_by('-create_time'):
                 feeds.append(FeedService.get_feed_info(None, str(_.id)))
             res['zzfeeds'] = feeds
+        print res
         return res
