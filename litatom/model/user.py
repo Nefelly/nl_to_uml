@@ -247,7 +247,7 @@ class User(Document, UserSessionMixin):
         key = REDIS_KEY_SESSION_USER.format(session=pure_session)
         user_id = redis_client.get(key)
         if user_id:
-            redis_client.set(key, user_id, ex=TWO_WEEKS)
+            # redis_client.set(key, user_id, ex=TWO_WEEKS)
             return user_id
         else:
             if not cls._is_valid_session(pure_session):

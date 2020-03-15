@@ -89,6 +89,7 @@ class UserService(object):
     def get_forbidden_time_by_uid(cls, user_id):
         user = User.get_by_id(user_id)
         if user:
+            cls.should_unforbid(user)
             return time_str_by_ts(user.forbidden_ts)
         return None
 
@@ -104,6 +105,17 @@ class UserService(object):
         return error_info
 
     @classmethod
+    def should_unforbid(cls, user):
+        if int(time.time()) > user.forbidden_ts:
+            user.forbidden = False
+            user.save()
+            if user.huanxin and user.huanxin.user_id:
+                HuanxinService.active_user(user.huanxin.user_id)
+            cls._trans_forbidden_2_session(user)
+            return True
+        return False
+
+    @classmethod
     def login_job(cls, user):
         """
         登录的动作
@@ -112,12 +124,7 @@ class UserService(object):
         """
         if user.forbidden:
             request.user_id = str(user.id)
-            if int(time.time()) > user.forbidden_ts:
-                user.forbidden = False
-                user.save()
-                if user.huanxin and user.huanxin.user_id:
-                    HuanxinService.active_user(user.huanxin.user_id)
-            else:
+            if not cls.should_unforbid(user):
                 unforbid_time = time_str_by_ts(user.forbidden_ts)
                 forbid_info = GlobalizationService.get_region_word('banned_warn')
                 request.is_banned = True
