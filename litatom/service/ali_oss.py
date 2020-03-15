@@ -99,7 +99,8 @@ class AliOssService(object):
             if x < x_s:
                 return obj
             y_s = y * x_s / x  # calc height based on standard width
-            out = img.resize((x_s, y_s), Image.ANTIALIAS)
+            # out = img.resize((x_s, y_s), Image.ANTIALIAS)
+            out = img.resize((x_s, y_s), "F")
             image_byte = BytesIO()
             out.convert('RGB').save(image_byte, format='JPEG')
             res = image_byte.getvalue()
