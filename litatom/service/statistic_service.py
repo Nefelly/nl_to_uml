@@ -501,7 +501,7 @@ class DiamStatService(object):
                        excel_dic['week_member_diam_cons_num'], excel_dic['acce_consumer_num'],
                        excel_dic['acce_con_man_time_num'],
                        excel_dic['acce_diam_cons_num']]
-        return data
+        return excel_data
 
     @classmethod
     def diam_stat_report_7_days(cls, addr, date=datetime.datetime.now(), days_delta=7):
