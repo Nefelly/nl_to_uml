@@ -81,6 +81,8 @@ class AliOssService(object):
     @classmethod
     def get_binary_from_bucket(cls, fileid):
         try:
+            if fileid == '99ce37b0-59d9-11e9-8672-00163e02deb4':
+                return cls.get_simage(fileid)
             return img_bucket.get_object(fileid).read()
         except Exception, e:
             logger.error('get image_from_url failed, fileid: %s, %s', fileid, e)
@@ -99,8 +101,8 @@ class AliOssService(object):
             if x < x_s:
                 return obj
             y_s = y * x_s / x  # calc height based on standard width
-            out = img.resize((x_s, y_s), Image.ANTIALIAS)
-            # out = img.resize((x_s, y_s), Image.NEAREST)
+            # out = img.resize((x_s, y_s), Image.ANTIALIAS)
+            out = img.resize((x_s, y_s), Image.NEAREST)
             image_byte = BytesIO()
             out.convert('RGB').save(image_byte, format='JPEG')
             res = image_byte.getvalue()
