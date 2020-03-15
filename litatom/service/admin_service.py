@@ -13,7 +13,8 @@ from ..model import (
     AdminUser,
     Report,
     Feed,
-    User
+    User,
+    Avatar
 )
 from ..util import (
     get_args_from_db
@@ -24,7 +25,8 @@ from ..service import (
     FirebaseService,
     FeedService,
     ReportService,
-    GlobalizationService
+    GlobalizationService,
+    AliOssService
 )
 from ..const import (
     MAX_TIME,
@@ -241,3 +243,12 @@ class AdminService(object):
             if not get:
                 eval('%s(%s).save()' % (table_name, conn))
         return None, True
+
+    @classmethod
+    def change_avatar_to_small(cls):
+        j = Avatar.get_avatars()
+        res = []
+        for gender in j:
+            res += j[gender]
+        for _ in res:
+            AliOssService.replace_to_small()

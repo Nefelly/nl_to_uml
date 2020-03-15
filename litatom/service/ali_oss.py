@@ -106,3 +106,20 @@ class AliOssService(object):
         except:
             return obj
         return res
+
+    @classmethod
+    def replace_to_small(cls, fileid, x_s=300):
+        obj = cls.get_binary_from_bucket(fileid)
+        if not obj:
+            return None
+        img = Image.open(BytesIO(obj))
+        (x, y) = img.size
+        if x < x_s:
+            return obj
+        y_s = y * x_s / x  # calc height based on standard width
+        out = img.resize((x_s, y_s), Image.ANTIALIAS)
+        image_byte = BytesIO()
+        out.convert('RGB').save(image_byte, format='JPEG')
+        res = image_byte.getvalue()
+        cls.upload_from_binary(res, fileid)
+        return True
