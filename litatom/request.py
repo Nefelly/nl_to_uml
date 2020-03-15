@@ -301,7 +301,6 @@ class LitatomRequest(flask.Request):
         if country in [u'United States'] or \
                 (False and country == u'China' and city and city not in [u'Beijing', u'Shanghai', u'Nanjing']):
             #print country, city
-            print 'gggggg'
             return True
         return False
 
