@@ -28,6 +28,7 @@ redis_client = RedisClient()['lit']
 
 class RetainAnaService(object):
     '''
+    用户留存数据信息服务
     '''
     IS_TESTING = False
 
@@ -38,6 +39,18 @@ class RetainAnaService(object):
     USER_LOC = {}
     LOC_STATED = ['TH', 'VN']
     CACHED_RES = {}
+
+    BASE_DAY_USER_INFO = {}
+    LATER_USER_INFO = {}
+
+    @classmethod
+    def _load_user_info(cls, from_date, to_date, user_info):
+        def get_user_setting_by_time(from_time,to_time):
+            return UserSetting.objects(create_time__gte=from_time, create_time__lte=to_time)
+
+        users = get_user_setting_by_time(from_date, to_date)
+
+
 
     @classmethod
     def _get_time_str(cls, table_name, judge_field, days=-1):
