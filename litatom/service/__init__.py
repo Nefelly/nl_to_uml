@@ -53,4 +53,5 @@ from .account_service import AccountService
 from .share_stat_service import ShareStatService
 from .maintain_service import MaintainService
 from .chat_record_service import ChatRecordService
+from .statistic_service import ForbidStatService
 # from .mysql_sync_service import MysqlSyncService

@@ -121,7 +121,7 @@ class ForbiddenService(object):
             time_3days_ago = timestamp_now - 3 * ONE_DAY
 
         alert_num = TrackSpamRecord.count_by_time_and_uid(user_id, time_3days_ago, timestamp_now)
-        report_total_num = Report.count_by_time_and_uid(user_id, time_3days_ago, timestamp_now)
+        report_total_num = Report.count_by_time_and_uid_distinct(user_id, time_3days_ago, timestamp_now)
         report_match_num = Report.count_match_by_time_and_uid(user_id, time_3days_ago, timestamp_now)
         illegal_credit = alert_num * cls.ALERT_WEIGHTING + (
                 report_total_num - report_match_num) * cls.REPORT_WEIGHTING + report_match_num * cls.MATCH_REPORT_WEIGHTING

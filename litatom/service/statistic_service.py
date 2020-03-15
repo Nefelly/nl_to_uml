@@ -3,7 +3,12 @@ import time
 import random
 import datetime
 from ..redis import RedisClient
-from ..util import write_data_to_xls_col
+from ..util import (
+    write_data_to_xls_col,
+    time_str_by_ts,
+    write_to_json,
+    get_ts_from_str,
+)
 from ..key import (
     REDIS_ONLINE_CNT_CACHE
 )
@@ -16,20 +21,25 @@ from ..const import (
     USER_ACTIVE,
     REAL_ACTIVE,
     FIVE_MINS,
-    ONE_MIN
+    ONE_MIN,
+    ONE_DAY,
 )
 from ..service import (
     UserService,
     GlobalizationService,
     UserFilterService,
-    AliLogService
+    AliLogService,
 )
 from ..model import (
     User,
     TrackChat,
     UserSetting,
     OnlineLimit,
-    UserAccount
+    UserAccount,
+    UserRecord,
+    TrackSpamRecord,
+    Report,
+    Feed,
 )
 
 redis_client = RedisClient()['lit']
@@ -474,7 +484,7 @@ class DiamStatService(object):
                    excel_dic['diam_deposit100_man_time_num'] * cls.DIAMOND_INCOMING[100] + \
                    excel_dic['diam_deposit200_man_time_num'] * cls.DIAMOND_INCOMING[200] + \
                    excel_dic['diam_deposit500_man_time_num'] * cls.DIAMOND_INCOMING[500]
-        data.append(('incoming',str(incoming)))
+        data.append(('incoming', str(incoming)))
         excel_data.append(incoming)
         excel_data += [excel_dic['diam_cons_people_num'], excel_dic['diam_cons_num'],
                        excel_dic['diam_cons_man_time_num'],
@@ -492,7 +502,8 @@ class DiamStatService(object):
                        excel_dic['acce_diam_cons_num']]
         AliLogService.put_logs(data, project='litatom-account', logstore='diamond_stat')
         write_data_to_xls_col(addr,
-                              [r'会员数', r'收入', r'钻石消耗人数', r'钻石消耗数量', r'钻石消耗人次', r'钻石购买人数', r'钻石购买数量', r'钻石购买人次', r'50钻石购买人数',
+                              [r'会员数', r'收入', r'钻石消耗人数', r'钻石消耗数量', r'钻石消耗人次', r'钻石购买人数', r'钻石购买数量', r'钻石购买人次',
+                               r'50钻石购买人数',
                                r'50钻石购买人次', r'100钻石购买人数', r'100钻石购买人次', r'200钻石购买人数', r'200钻石购买人次', r'500钻石购买人数',
                                r'500钻石购买人次', r'会员购买人数', r'会员购买人次', r'会员-钻石消耗数量',
                                r'加速人数', r'加速购买人次', r'加速-钻石消耗数量'], [excel_data], 'utf-8')
@@ -536,3 +547,81 @@ class DiamStatService(object):
                 for col in range(4):
                     sheet.write(row + 2, col + 1, sheet_data[row][col])
         f.save(addr)
+
+
+class ForbidStatService(object):
+
+    PIC_URL='http://www.litatom.com/api/sns/v1/lit/simage/'
+    AUDIO_URL='http://www.litatom.com/api/sns/v1/lit/audio/'
+
+    @classmethod
+    def _load_spam_record(cls, temp_res, from_ts, to_ts):
+        records = TrackSpamRecord.get_record_by_time(from_ts, to_ts)
+        for record in records:
+            if record.user_id in temp_res.keys():
+                # temp_num表示目前已录入的警告次数
+                temp_num = temp_res[record.user_id][1]
+                if temp_num == temp_res[record.user_id][u'警告次数']:
+                    continue
+                temp_res[record.user_id][1] += 1
+                if record.word:
+                    temp_res[record.user_id][u'警告' + str(temp_num + 1)] = {u'敏感词': record.word,
+                                                                           u'警告时间': time_str_by_ts(record.create_time)}
+                elif record.pic:
+                    temp_res[record.user_id][u'警告' + str(temp_num + 1)] = {u'色情图片': record.pic,
+                                                                           u'警告时间': time_str_by_ts(record.create_time)}
+
+    @classmethod
+    def _load_report(cls, temp_res, from_ts, to_ts):
+        reports = Report.get_report_by_time(from_ts, to_ts)
+        for report in reports:
+            if report.target_uid in temp_res.keys():
+                temp_num = temp_res[report.target_uid][2]
+                if temp_num == temp_res[report.target_uid][u'举报次数']:
+                    continue
+                if not temp_num:
+                    temp_res[report.target_uid][u'地区'] = report.region
+                temp_res[report.target_uid][2] += 1
+                temp_res[report.target_uid][u'举报' + str(temp_num + 1)] = {u'举报者': report.uid, u'举报原因': report.reason,
+                                                                          u'举报时间': time_str_by_ts(report.create_ts)}
+                if report.pics:
+                    pics = [cls.PIC_URL+pic for pic in report.pics]
+                    temp_res[report.target_uid][u'举报' + str(temp_num + 1)][u'举报图片'] = pics
+                elif report.related_feed:
+                    feed = Feed.objects(id=report.related_feed).first()
+                    temp_res[report.target_uid][u'举报' + str(temp_num + 1)][u'举报feed'] = {}
+                    if not feed:
+                        temp_res[report.target_uid][u'举报' + str(temp_num + 1)][u'举报feed']['ERROR'] = 'FEED CAN NOT BE FOUND'
+                    else:
+                        if feed.content:
+                            temp_res[report.target_uid][u'举报' + str(temp_num + 1)][u'举报feed']['content'] = feed.content
+                        if feed.pics:
+                            pics = [cls.PIC_URL+pic for pic in feed.pics]
+                            temp_res[report.target_uid][u'举报' + str(temp_num + 1)][u'举报feed']['pictures'] = pics
+                        if feed.audios:
+                            audios = [cls.AUDIO_URL+audio for audio in feed.audios]
+                            temp_res[report.target_uid][u'举报' + str(temp_num + 1)][u'举报feed']['audios'] = audios
+
+    @classmethod
+    def get_forbid_history(cls, file, from_ts=int(time.time() - ONE_DAY), to_ts=int(time.time())):
+        # 从UserRecord中加载封号用户和封号时间
+        users = UserRecord.get_forbid_users_by_time(from_ts, to_ts)
+        temp_res = {}
+        for user in users:
+            temp_res[user.user_id] = {u'user_id': user.user_id, u'封号时间': time_str_by_ts(user.create_time)}
+
+        # 从TrackSpamRecord中导入次数和命中历史,从Report中导入次数和命中历史
+        earlist_illegal_action_ts = int(time.time())
+        for uid in temp_res.keys():
+            temp_ts = get_ts_from_str(temp_res[uid][u'封号时间']) - 3 * ONE_DAY
+            if temp_ts < earlist_illegal_action_ts:
+                earlist_illegal_action_ts = temp_ts
+            temp_res[uid][u'警告次数'] = TrackSpamRecord.count_by_time_and_uid(uid, temp_ts, temp_ts + 3 * ONE_DAY, True)
+            temp_res[uid][u'举报次数'] = Report.count_by_time_and_uid(uid, temp_ts, temp_ts + 3 * ONE_DAY, True)
+            temp_res[uid][1] = 0
+            temp_res[uid][2] = 0
+
+        cls._load_spam_record(temp_res, earlist_illegal_action_ts, to_ts)
+        cls._load_report(temp_res, earlist_illegal_action_ts, to_ts)
+
+        write_to_json(file, [item for item in temp_res.values() if (item.pop(1) or 1) and (item.pop(2) or 1)])

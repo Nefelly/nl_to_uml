@@ -12,6 +12,7 @@ import time
 import urllib
 import urlparse
 import math
+import codecs
 
 from flask import request
 from hendrix.conf import setting
@@ -55,6 +56,10 @@ def ensure_path(path):
     if not os.path.exists(dir_name):
         os.makedirs(dir_name)
 
+def exists_path(path):
+    dir_name = path[:path.rfind('/')]
+    return os.path.exists(dir_name)
+
 def ensure_unicode(v):
     if isinstance(v, str):
         v = v.decode('utf8')
@@ -95,6 +100,10 @@ def trans_secs_to_time(secs):
 def parse_standard_time(time_data_str):
     """str -> datetime"""
     return datetime.datetime.strptime(time_data_str, '%Y-%m-%d %H:%M:%S')
+
+def get_ts_from_str(time_str):
+    """str -> timestamp(int)"""
+    return time.mktime(time.strptime(time_str, "%Y-%m-%d %H:%M:%S"))
 
 
 def next_date(d_time, d=1):
@@ -292,6 +301,21 @@ def str2float(str):
 def dsn2srv(dsn):
     parsed = urlparse.urlparse(dsn)
     return parsed.hostname, parsed.port
+
+def rm_file(file):
+    os.remove(file)
+
+def write_to_json(file, dic):
+    """
+    写入一个json类型的文件
+    :param dic: 一个字典的list，要求其中的字典都是可以json序列化的
+    """
+    if exists_path(file):
+        rm_file(file)
+    with codecs.open(file,'a',encoding='utf-8') as f:
+        for item in dic:
+            f.write(json.dumps(item, indent=4, ensure_ascii=False))
+            f.write('\n')
 
 
 class CachedProperty(object):
