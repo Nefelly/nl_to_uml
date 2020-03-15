@@ -177,7 +177,7 @@ class SpamWordService(object):
     KEYWORD_CHAINS = {}
     DEFAULT_KEYWORD_CHAIN = {}
     DELIMIT = '\x00'
-    NOT_REGION = True
+    NOT_REGION = False
 
     @classmethod
     def add(cls, keyword, region=None):
