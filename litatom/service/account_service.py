@@ -10,7 +10,11 @@ from ..model import (
 )
 from ..const import (
     ONE_WEEK,
-    ONE_MIN
+    ONE_MIN,
+    ONE_DAY
+)
+from ..util import (
+    now_date_key
 )
 from ..service import (
     MatchService,
@@ -24,7 +28,8 @@ from ..service import (
     AliLogService
 )
 from ..key import (
-    REDIS_ACCOUNT_ACTION
+    REDIS_ACCOUNT_ACTION,
+    REDIS_DEPOSIT_BY_ACTIVITY
 )
 from ..redis import RedisClient
 from flask import (
@@ -59,7 +64,7 @@ class AccountService(object):
         SHARE_5: 100,
     }
     UNBAN_DIAMONDS = 50
-
+    DAY_ACTIVITY_LIMIT = 500
     MEMBER_SHIPS = [WEEK_MEMBER]
     ERR_DIAMONDS_NOT_ENOUGH = 'not enough diamonds, please deposit first.'
 
@@ -216,6 +221,13 @@ class AccountService(object):
         if activity not in cls.PAY_ACTIVITIES:
             return u'not recognized activity', False
         diamonds = cls.PAY_ACTIVITIES.get(activity)
+        key = REDIS_DEPOSIT_BY_ACTIVITY.format(user_date=now_date_key() + user_id)
+        day_deposit_str = redis_client.get(key)
+        day_deposit = int(day_deposit_str) if day_deposit_str else 0
+        new_day_deposit = day_deposit + diamonds
+        if new_day_deposit > cls.DAY_ACTIVITY_LIMIT:
+            return u'you have deposit by activity too much today, please try again tomorrow', False
+        redis_client.set(key, new_day_deposit, ONE_DAY)
         if activity == cls.WATCH_AD:
             data, status = AdService.verify_ad_viewed(user_id, other_info)
             if not status:

@@ -40,6 +40,7 @@ REDIS_BLOCK_CACHE = 'user_block_cache:{user_id}'
 REDIS_USER_NOT_MESSAGE_CACHE = 'user_nomsg_cache:{user_id}'
 REDIS_ACCELERATE_CACHE = 'acclerate_cache:{user_id}'
 REDIS_ONLINE_CNT_CACHE = 'online_cnt_cache:{region}:{gender}'
+REDIS_DEPOSIT_BY_ACTIVITY = 'activity_diamonds:{user_date}'
 
 REDIS_HUANXIN_ONLINE = 'huanxin_online'
 REDIS_ONLINE_GENDER_REGION = 'online:{gender}:{region}'
