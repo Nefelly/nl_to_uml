@@ -33,6 +33,8 @@ TYPE_VOICE_AGORA = 'agora'
 TYPE_VOICE_TENCENT = 'tencent'
 CODE_PRIOR_VOICE = TYPE_VOICE_TENCENT
 
+BACKUP_HOST = 'http://www.litmatchapp.com'
+
 ALL_FILTER = True
 
 # 后端action

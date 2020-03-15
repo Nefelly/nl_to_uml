@@ -396,7 +396,10 @@ class JournalService(object):
             time_str = cls._get_time_str(table_name, judge_field)
             expression = '' if not expression else expression
             if not cls.IS_TESTING:
-                exc_str = '%s.objects(%s,%s).count()' % (table_name, time_str, expression)
+                if item.name in [u'警告数']:
+                    exc_str = 'len(%s.objects(%s,%s).distinct(\'user_id\'))' % (table_name, time_str, expression)
+                else:
+                    exc_str = '%s.objects(%s,%s).count()' % (table_name, time_str, expression)
             else:
                 exc_str = '%s.objects(%s,%s).limit(1000).count()' % (table_name, time_str, expression)
             # cnt表示一天时间内，满足该统计量限制的记录个数
