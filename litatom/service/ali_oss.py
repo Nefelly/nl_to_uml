@@ -82,7 +82,7 @@ class AliOssService(object):
     def get_binary_from_bucket(cls, fileid):
         try:
             if fileid == '99ce37b0-59d9-11e9-8672-00163e02deb4':
-                return cls.get_simage("493e8a46-82fd-11e9-9fe5-00163e02deb4")
+                return cls.get_binary_from_bucket("493e8a46-82fd-11e9-9fe5-00163e02deb4")
             return img_bucket.get_object(fileid).read()
         except Exception, e:
             logger.error('get image_from_url failed, fileid: %s, %s', fileid, e)
