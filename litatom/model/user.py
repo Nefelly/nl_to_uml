@@ -153,7 +153,7 @@ class HuanxinAccount(EmbeddedDocument):
         }
 
 
-class BlockedDevices(EmbeddedDocument):
+class BlockedDevices(Document):
     meta = {
         'strict': False,
     }
