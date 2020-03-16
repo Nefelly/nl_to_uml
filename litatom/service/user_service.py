@@ -94,6 +94,13 @@ class UserService(object):
         return None
 
     @classmethod
+    def get_followers_by_uid(cls, user_id):
+        user = User.get_by_id(user_id)
+        if not user:
+            return -1
+        return user.follower
+
+    @classmethod
     def get_forbidden_error(cls, msg, default_json={}):
         from ..service import AccountService
         error_info = deepcopy(default_json)
