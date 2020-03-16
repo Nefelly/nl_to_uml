@@ -317,6 +317,9 @@ def write_to_json(file, dic):
             f.write(json.dumps(item, indent=4, ensure_ascii=False))
             f.write('\n')
 
+def find_key_by_value(dic, value):
+    """从字典的值反查键，值必须唯一"""
+    return list(dic.keys())[list(dic.values()).index(value)]
 
 class CachedProperty(object):
     """Decorator like python built-in ``property``, but it results only

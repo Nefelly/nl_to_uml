@@ -154,6 +154,10 @@ class Feed(Document):
         redis_client.set(cache_key, cPickle.dumps(obj), ONE_HOUR)
         return obj
 
+    @classmethod
+    def get_by_create_time(cls, from_time, to_time):
+        return cls.objects(create_time__gte=from_time, create_time__lte=to_time)
+
 
 class FollowingFeed(Document):
     meta = {
