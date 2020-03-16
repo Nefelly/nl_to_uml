@@ -472,6 +472,10 @@ class User(Document, UserSessionMixin):
     def get_by_nickname(cls, nickname):
         return cls.objects(nickname=nickname).first()
 
+    @classmethod
+    def get_by_crate_time(cls, from_time, to_time):
+        return cls.objects(crate_time__gte=from_time, create_time__lte=to_time)
+
     @property
     def finished_info(self):
         return self.nickname != None and self.gender != None and self.birthdate != None and self.avatar != None

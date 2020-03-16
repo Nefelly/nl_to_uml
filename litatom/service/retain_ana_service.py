@@ -13,7 +13,10 @@ from ..util import (
     date_to_int_time,
     write_data_to_xls,
     ensure_path,
-    now_date_key
+    now_date_key,
+)
+from ..service import (
+    AliLogService,
 )
 from mongoengine import (
     DateTimeField,
@@ -40,22 +43,56 @@ class RetainAnaService(object):
     LOC_STATED = ['TH', 'VN']
     CACHED_RES = {}
 
-    COUNTRY_
+    COUNTRY_ENCODE = {'VN':1, 'TH':2, 'ID':3}
+    GENDER_ENCODE = {'boy':1, 'girl':2}
+    ACTION_QUERY=('action:match and remark:startMatch',)
+
+    @classmethod
+    def _load_user_action_info(cls, date, user_info, query):
+        resp_set = AliLogService.get_log_by_time_and_topic(from_time=AliLogService.datetime_to_alitime(date),
+                                                           to_time=AliLogService.datetime_to_alitime(next_date(date,1)),
+                                                           project='litatomaction',logstore='litatomactionstore', query=query)
+        for resp in resp_set:
+            for log in resp.logs:
+                contents = log.get_contents()
+                user_id = contents['user_id']
+                if user_id in user_info.keys():
+
 
 
     @classmethod
     def _load_user_info(cls, date, user_info):
         """
         将指定日期的用户数据load到user_info字典中
-        :param date:
+        :param date: datetime类型  表示0点
         :param user_info:{user_id1:(loc,gender,age),user_id2:()}
         :return:
         """
-        def get_user_setting_by_time(from_time,to_time):
-            return UserSetting.objects(create_time__gte=from_time, create_time__lte=to_time)
+        users = User.get_by_crate_time(date_to_int_time(date), date_to_int_time(next_date(date,1)))
+        for user in users:
+            user_id = user.id
+            user_info[user_id] = ()
 
-        users = get_user_setting_by_time(from_date, to_date)
+            loc = user.country
+            if loc and loc in cls.COUNTRY_ENCODE:
+                user_info[user_id].append(cls.COUNTRY_ENCODE[loc])
+            else:
+                user_info[user_id].append(0)
 
+            gender = user.gender
+            if gender and gender in cls.GENDER_ENCODE:
+                user_info[user_id].append(cls.GENDER_ENCODE[gender])
+            else:
+                user_info[user_id].append(0)
+
+            age = User.age_by_user_id(user_id)
+            if age and 13<=age<=25:
+                user_info[user_id].append(age)
+            else:
+                user_info[user_id].append(0)
+
+        for query in cls.ACTION_QUERY:
+            cls._load_user_action_info(date, user_info, query)
 
 
     @classmethod
