@@ -153,6 +153,27 @@ class HuanxinAccount(EmbeddedDocument):
         }
 
 
+class BlockedDevices(EmbeddedDocument):
+    meta = {
+        'strict': False,
+    }
+    uuid = StringField(required=True)
+    create_time = DateTimeField(required=True, default=datetime.datetime.now)
+
+    @classmethod
+    def add_device(cls, uuid):
+        if cls.get_by_device(uuid):
+            return True
+        obj = cls()
+        obj.uuid = uuid
+        obj.save()
+
+    @classmethod
+    def get_by_device(cls, uuid):
+        obj = cls.objects(uuid=uuid).first()
+        return obj
+
+
 class SocialAccountInfo(EmbeddedDocument):
     meta = {
         'strict': False,

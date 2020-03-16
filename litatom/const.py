@@ -69,6 +69,7 @@ ONE_DAY = 60 * 60 * 24
 ONE_WEEK = 60 * 60 * 24 * 7
 TWO_WEEKS = 60 * 60 * 24 * 14
 ONE_MONTH = 60 * 60 * 24 * 30
+FOREVER = 1200 * ONE_MONTH
 
 # redis中空集的占位符
 NAN = 'NAN'

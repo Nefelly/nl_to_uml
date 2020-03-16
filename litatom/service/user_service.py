@@ -48,6 +48,7 @@ from ..model import (
     ReferralCode,
     UserModel,
     UserAccount,
+    BlockedDevices
 )
 from ..service import (
     SmsCodeService,
@@ -92,6 +93,13 @@ class UserService(object):
             cls.should_unforbid(user)
             return time_str_by_ts(user.forbidden_ts)
         return None
+
+    @classmethod
+    def device_blocked(cls):
+        uuid = request.uuid
+        if BlockedDevices.get_by_device(uuid):
+            return True
+        return False
 
     @classmethod
     def get_followers_by_uid(cls, user_id):
@@ -215,7 +223,9 @@ class UserService(object):
         loc = request.loc
         if loc:
             UserSetting.create_setting(str(user.id), loc, request.uuid)
-        return True
+        if cls.device_blocked():
+            return u'Your device has been blocked', False
+        return None, True
 
     @classmethod
     def _on_update_info(cls, user, data):
@@ -676,8 +686,10 @@ class UserService(object):
             user = User()
             user.huanxin = cls.create_huanxin()
             user.phone = zone_phone
+            msg, status = cls._on_create_new_user(user)
+            if not status:
+                return msg, status
             user.save()
-            cls._on_create_new_user(user)
             cls.update_info_finished_cache(user)
             RedisLock.release_mutex(key)
         request.user_id = str(user.id)  # 为了region
@@ -707,8 +719,10 @@ class UserService(object):
             user.huanxin = cls.create_huanxin()
             user.google = SocialAccountInfo.make(google_id, idinfo)
             user.create_time = datetime.datetime.now()
+            msg, status = cls._on_create_new_user(user)
+            if not status:
+                return msg, status
             user.save()
-            cls._on_create_new_user(user)
             cls.update_info_finished_cache(user)
             RedisLock.release_mutex(key)
         msg, status = cls.login_job(user)
@@ -745,8 +759,10 @@ class UserService(object):
                 user.huanxin = cls.create_huanxin()
                 user.facebook = SocialAccountInfo.make(facebook_id, idinfo)
                 user.create_time = datetime.datetime.now()
+            msg, status = cls._on_create_new_user(user)
+            if not status:
+                return msg, status
             user.save()
-            cls._on_create_new_user(user)
             cls.update_info_finished_cache(user)
             RedisLock.release_mutex(key)
         msg, status = cls.login_job(user)

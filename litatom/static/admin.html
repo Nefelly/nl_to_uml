@@ -9,7 +9,7 @@
  <th>reason/feed content/chat record</th>
  <th>pictures</th>
  <th>audio</th>
- <th>ban/reject</th>
+ <th>ban/reject/ban_device</th>
  </tr>
 <tr v-for="item in items1">
 <td>{{item.user_id}}<hr /> {{item.create_time}}</td>
@@ -27,7 +27,8 @@ no pictures
     <td><audio v-if="item.audio_url" audio id="audio1" controls="controls" :src="item.audio_url" type="audio/x-mpeg">
 </audio> </td>
 <td><button name='ban'  style="background:red" @click='ban(item.report_id)'>ban</button><br /> <br /><br /> <button name='reject' @click='reject(item.report_id)'>reject</button>
-    <br /> <button name='ban_reporter' style="background:green" @click='ban_reporter(item.user_id)'>ban_reporter</button></td>
+    <br /> <button name='ban_reporter' style="background:green" @click='ban_reporter(item.user_id)'>ban_reporter</button><br />
+    <button name='ban_device'  style="background:powderblue" @click='ban_device(item.report_id)'>ban</button></td>
 </tr>
 </table>
 <!-- <button v-if="previous_start >= 0" name="previous_page" @click="previous_page()">previous page</button> -->
@@ -96,6 +97,23 @@ methods: {
     },
     ban: function(report_id){
       var url = BASE_URL + 'admin/ban/' + report_id;
+      this.$http.get(url).then(function(result){
+        console.log('!!!!!!', this.items1);
+        if (result.data.result === 0){}
+        else{alert('failed');}
+        let newItem1 = [];
+        this.items1.forEach(item => {
+          if (item.report_id !== report_id) {
+            newItem1.push(item)
+          }
+        })
+
+        this.items1 = newItem1
+
+      })
+    },
+    ban_device: function(report_id){
+      var url = BASE_URL + 'admin/ban_device/' + report_id;
       this.$http.get(url).then(function(result){
         console.log('!!!!!!', this.items1);
         if (result.data.result === 0){}

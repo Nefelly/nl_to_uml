@@ -30,7 +30,8 @@ from ..service import (
 )
 from ..const import (
     MAX_TIME,
-    ONE_DAY
+    ONE_DAY,
+    FOREVER
 )
 from hendrix.conf import setting
 from ..redis import RedisClient
@@ -167,6 +168,34 @@ class AdminService(object):
             ForbiddenService.feedback_to_reporters(report.target_uid, [report.uid])
             return None, True
         return u'forbid error', False
+
+    @classmethod
+    def ban_device_by_report(cls, report_id):
+        report = Report.get_by_id(report_id)
+        if not report:
+            return u'wrong report id', False
+        user = User.get_by_id(report.target_uid)
+        if not user:
+            feed = Feed.get_by_id(report.target_uid)
+            if feed:
+                report.target_uid = feed.user_id
+        data, status = cls.ban_device_by_uid(report.target_uid)
+        if status:
+            report.ban(FOREVER)
+            ForbiddenService.feedback_to_reporters(report.target_uid, [report.uid])
+            return None, True
+        return data, status
+
+    @classmethod
+    def ban_device_by_uid(cls, uid):
+        res = ForbiddenService.forbid_user(report.target_uid, FOREVER)
+        user_setting = UserSetting.get_by_user_id(uid)
+        if not user_setting or not user_setting.uuid:
+            return u'has not device_id', False
+        BlockedDevices.add_device(user_setting.uuid)
+        if not res:
+            return 'forbid error', False
+        return None, True
 
     @classmethod
     def ban_by_uid(cls, user_id):
