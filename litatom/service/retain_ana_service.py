@@ -40,6 +40,8 @@ class RetainAnaService(object):
     LOC_STATED = ['TH', 'VN']
     CACHED_RES = {}
 
+    COUNTRY_
+
 
     @classmethod
     def _load_user_info(cls, date, user_info):
