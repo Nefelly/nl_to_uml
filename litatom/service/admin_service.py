@@ -188,7 +188,7 @@ class AdminService(object):
 
     @classmethod
     def ban_device_by_uid(cls, uid):
-        res = ForbiddenService.forbid_user(report.target_uid, FOREVER)
+        res = ForbiddenService.forbid_user(uid, FOREVER)
         user_setting = UserSetting.get_by_user_id(uid)
         if not user_setting or not user_setting.uuid:
             return u'has not device_id', False
