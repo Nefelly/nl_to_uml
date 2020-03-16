@@ -93,6 +93,8 @@ class AccountService(object):
 
     @classmethod
     def unban_by_diamonds(cls, user_id):
+        if UserService.device_blocked():
+            return UserService.ERROR_DEVICE_FORBIDDEN, False
         if not UserService.is_forbbiden(user_id):
             return u'you are not forbbiden', False
         msg = cls.change_diamonds(user_id, -cls.UNBAN_DIAMONDS, 'unban_by_diamonds')

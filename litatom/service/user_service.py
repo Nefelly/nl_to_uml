@@ -71,6 +71,7 @@ class UserService(object):
     CREATE_LOCK = 'user_create'
     NICKNAME_LEN_LIMIT = 60
     BIO_ELN_LIMIT = 150
+    ERROR_DEVICE_FORBIDDEN = u'Your device has been blocked'
 
     @classmethod
     def get_all_ids(cls):
@@ -224,7 +225,7 @@ class UserService(object):
         if loc:
             UserSetting.create_setting(str(user.id), loc, request.uuid)
         if cls.device_blocked():
-            return u'Your device has been blocked', False
+            return cls.ERROR_DEVICE_FORBIDDEN, False
         return None, True
 
     @classmethod
