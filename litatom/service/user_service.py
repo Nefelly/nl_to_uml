@@ -31,7 +31,8 @@ from ..key import (
     REDIS_USER_INFO_FINISHED,
     REDIS_ONLINE_GENDER_REGION,
     REDIS_UID_GENDER,
-    REDIS_HUANXIN_ONLINE
+    REDIS_HUANXIN_ONLINE,
+    REDIS_KEY_FORBIDDEN_SESSION_USER
 )
 from ..model import (
     User,
@@ -199,6 +200,11 @@ class UserService(object):
     def is_forbbiden(cls, user_id):
         user = User.get_by_id(user_id)
         return user and user.forbidden
+
+    @classmethod
+    def clear_forbidden_session(cls, forbidden_session):
+        key = REDIS_KEY_FORBIDDEN_SESSION_USER.format(session=forbidden_session)
+        redis_client.delete(key)
 
     @classmethod
     def unban_user(cls, user_id):
