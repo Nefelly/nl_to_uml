@@ -613,6 +613,7 @@ class UserService(object):
         pp.zadd(REDIS_HUANXIN_ONLINE, {user_id: int_time})
         pp.get(REDIS_UID_GENDER.format(user_id=user_id))
         _, gender = pp.execute()
+        print gender
         if not gender:
             gender = cls.get_gender()
         # redis_client.zadd(REDIS_HUANXIN_ONLINE, {user_id: int_time})
@@ -623,7 +624,6 @@ class UserService(object):
             pp.zadd(key, {user_id: int_time})
             pp.zadd(GlobalizationService._online_key_by_region_gender(), {user_id: int_time})
             pp.execute()
-            print user_id, int_time
             # redis_client.zadd(key, {user_id: int_time})
             # redis_client.zadd(GlobalizationService._online_key_by_region_gender(), {user_id: int_time})
 
