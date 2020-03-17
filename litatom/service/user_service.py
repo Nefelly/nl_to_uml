@@ -623,6 +623,7 @@ class UserService(object):
             pp.zadd(key, {user_id: int_time})
             pp.zadd(GlobalizationService._online_key_by_region_gender(), {user_id: int_time})
             pp.execute()
+            print user_id, int_time
             # redis_client.zadd(key, {user_id: int_time})
             # redis_client.zadd(GlobalizationService._online_key_by_region_gender(), {user_id: int_time})
 
