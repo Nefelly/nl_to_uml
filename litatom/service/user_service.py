@@ -99,7 +99,7 @@ class UserService(object):
     @classmethod
     def device_blocked(cls):
         uuid = request.uuid
-        if BlockedDevices.get_by_device(uuid):
+        if not uuid or BlockedDevices.get_by_device(uuid):
             return True
         return False
 
