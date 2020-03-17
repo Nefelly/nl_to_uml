@@ -609,7 +609,7 @@ class UserService(object):
         if user_id in [u'5cbc571e3fff2235defd5a65']:  # system account
             cls.set_not_online(user_id)
             return
-        # pp = redis_client.pipeline()
+        pp = redis_client.pipeline()
         # pp.zadd(REDIS_HUANXIN_ONLINE, {user_id: int_time})
         # pp.get(REDIS_UID_GENDER.format(user_id=user_id))
         # _, gender = pp.execute()
