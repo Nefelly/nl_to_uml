@@ -96,6 +96,11 @@ class AccountService(object):
         if UserService.device_blocked():
             return UserService.ERROR_DEVICE_FORBIDDEN, False
         if not UserService.is_forbbiden(user_id):
+            ''' 不用重新登陆'''
+            # from ..model import User
+            # user = User.get_by_id(user_id)
+            # UserService._trans_forbidden_2_session(user)
+
             UserService.clear_forbidden_session(request.sid.replace('session.', ''))
             return u'you are not forbbiden', False
         msg = cls.change_diamonds(user_id, -cls.UNBAN_DIAMONDS, 'unban_by_diamonds')
