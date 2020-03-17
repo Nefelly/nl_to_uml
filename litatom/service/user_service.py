@@ -614,7 +614,7 @@ class UserService(object):
         pp.get(REDIS_UID_GENDER.format(user_id=user_id))
         _, gender = pp.execute()
         if not gender:
-            gender = cls.get_gender()
+            gender = cls.get_gender(user_id)
         # redis_client.zadd(REDIS_HUANXIN_ONLINE, {user_id: int_time})
         # gender = cls.get_gender(user_id)
         if gender:
