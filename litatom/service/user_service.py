@@ -99,7 +99,7 @@ class UserService(object):
     @classmethod
     def device_blocked(cls):
         uuid = request.uuid
-        if not uuid or BlockedDevices.get_by_device(uuid):
+        if BlockedDevices.get_by_device(uuid):
             return True
         return False
 
@@ -230,6 +230,8 @@ class UserService(object):
         loc = request.loc
         if loc:
             UserSetting.create_setting(str(user.id), loc, request.uuid)
+        if not request.uuid:
+            return u'your version is too low!' , False
         if cls.device_blocked():
             return cls.ERROR_DEVICE_FORBIDDEN, False
         return None, True
