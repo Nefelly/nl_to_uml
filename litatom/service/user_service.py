@@ -609,15 +609,22 @@ class UserService(object):
         if user_id in [u'5cbc571e3fff2235defd5a65']:  # system account
             cls.set_not_online(user_id)
             return
-        redis_client.zadd(REDIS_HUANXIN_ONLINE, {user_id: int_time})
-        gender = cls.get_gender(user_id)
+        pp = redis_client.pipeline()
+        pp.zadd(REDIS_HUANXIN_ONLINE, {user_id: int_time})
+        pp.get(REDIS_UID_GENDER.format(user_id=user_id))
+        _, gender = pp.execute()
+        if not gender:
+            gender = cls.get_gender()
+        # redis_client.zadd(REDIS_HUANXIN_ONLINE, {user_id: int_time})
+        # gender = cls.get_gender(user_id)
         if gender:
             # key = REDIS_ONLINE_GENDER.format(gender=gender)
             key = GlobalizationService._online_key_by_region_gender(gender)
-            redis_client.zadd(key, {user_id: int_time})
-            redis_client.zadd(GlobalizationService._online_key_by_region_gender(), {user_id: int_time})
-            # if int_time % 100 == 0:
-            #     redis_client.zremrangebyscore(key, -1, int_time - ONLINE_LIVE)
+            pp.zadd(key, {user_id: int_time})
+            pp.zadd(GlobalizationService._online_key_by_region_gender(), {user_id: int_time})
+            pp.execute()
+            # redis_client.zadd(key, {user_id: int_time})
+            # redis_client.zadd(GlobalizationService._online_key_by_region_gender(), {user_id: int_time})
 
     @classmethod
     def set_not_online(cls, user_id):
