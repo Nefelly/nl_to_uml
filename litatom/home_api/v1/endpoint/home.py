@@ -41,8 +41,6 @@ from ....service import (
     FeedService,
     UserSettingService
 )
-app = Flask(__name__, static_folder='static')
-logger = logging.getLogger(__name__)
 
 def index():
     return current_app.send_static_file('index2.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
