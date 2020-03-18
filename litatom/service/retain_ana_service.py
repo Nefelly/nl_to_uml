@@ -1,29 +1,22 @@
 # coding: utf-8
-import json
 import datetime
-import time
-import string
 import logging
+import xlwt
 from ..model import (
     Feed,
     User,
 )
 from ..util import (
-    get_zero_today,
     next_date,
     date_to_int_time,
-    write_data_to_xls,
     find_key_by_value,
     now_date_key,
     parse_standard_date,
     format_standard_date,
+    write_sheet_certain_pos,
 )
 from ..service import (
     AliLogService,
-)
-from mongoengine import (
-    DateTimeField,
-    IntField,
 )
 
 from ..redis import RedisClient
@@ -119,7 +112,6 @@ class RetainAnaService(object):
             res_basic_list.append(cls.get_res_from_user_info(date_info))
             temp_date += datetime.timedelta(days=1)
 
-        now = datetime.datetime.now()
         # 计算留存
         for i in range(len(info_basic_list)):
             current_date = next_date(from_date, i)
@@ -128,7 +120,43 @@ class RetainAnaService(object):
                 cls.get_certain_day_retain_res(current_date, info_basic_list[i], 7),
                 cls.get_certain_day_retain_res(current_date, info_basic_list[i], 30)]
 
-        # TODO: HOW TO WRITE DATA TO EXCEL?
+        cls.write_retain_res_to_excel(addr, res_list, res_basic_list)
+
+    @classmethod
+    def write_retain_res_to_excel(cls, addr, res, basic_date_res):
+        wb = xlwt.Workbook(encoding='utf-8')
+        worksheet = [wb.add_sheet('boy'), wb.add_sheet('girl'), wb.add_sheet('未知性别'),
+                     wb.add_sheet('VN'), wb.add_sheet('TH'), wb.add_sheet('ID'), wb.add_sheet('其它地区')]
+        for age in range(13, 26):
+            worksheet.append(wb.add_sheet('age' + str(age)))
+        worksheet.append('其它年龄')
+
+        # 在每一行前面写入日期表头
+        i = 1
+        for date in res:
+            for sheet in worksheet:
+                write_sheet_certain_pos(sheet, i, 0, date)
+            i += 1
+
+        # 在每一列前面写入项目表头
+        for sheet in worksheet:
+            write_sheet_certain_pos(sheet, 0, 0, u'留存率/留存人数')
+            write_sheet_certain_pos(sheet, 0, 1, u'次日留存')
+            write_sheet_certain_pos(sheet, 0, 2, u'7日留存')
+            write_sheet_certain_pos(sheet, 0, 3, u'30日留存')
+
+        # 分日期写入具体数据
+        i = 0
+        for date in res:
+            for j in range(0, 3):
+                if not res[date][j]:
+                    continue
+                base_res = basic_date_res[i]
+                for sheet in worksheet:
+                    print(sheet.name)
+                    write_sheet_certain_pos(sheet, i+1, j+1, str(res[date][j][sheet.name]/base_res[sheet.name]))
+            i += 1
+        wb.save(addr)
 
     @classmethod
     def get_certain_day_retain_res(cls, basic_date, basic_info, days=1):

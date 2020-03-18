@@ -256,6 +256,9 @@ def write_data_to_xls_col(name, tb_heads, data, encoding='ascii'):
             sheet1.write(j, i+1, data[i][j])
     f.save(name)
 
+def write_sheet_certain_pos(sheet_name, row_pos, col_pos, data):
+    """向excel sheet具体位置中写入数据"""
+    sheet_name.write(row_pos, col_pos, data)
 
 def remove_emoji_ending(raw_string):
     formated_string = '\n'.join([x.strip() for x in raw_string.replace('\r', '\n').split('\n') if x])
