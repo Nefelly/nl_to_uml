@@ -103,11 +103,14 @@ class RetainAnaService(object):
             if feed.user_id in user_info:
                 user_info[feed.user_id][3].add(feed_create_code)
 
+        print('feed load succ')
+
         for action in cls.ACTION_QUERY:
             cls._load_user_action_info(date, user_info, action)
 
-        print('leave _load_user_info')
-        print(user_info)
+        print('action load succ')
+
+        print('leave _load_user_info, user_info is listed below')
         return user_info
 
     @classmethod
@@ -252,6 +255,7 @@ class RetainAnaService(object):
 
             # action
             for action_code in user[3]:
+                print(action_code)
                 res[find_key_by_value(cls.ACTION_ENCODE, action_code)] += 1
 
         return res
