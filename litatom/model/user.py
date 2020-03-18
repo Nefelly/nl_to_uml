@@ -495,7 +495,7 @@ class User(Document, UserSessionMixin):
 
     @classmethod
     def get_by_crate_time(cls, from_time, to_time):
-        return cls.objects(crate_time__gte=from_time, create_time__lte=to_time)
+        return cls.objects(create_time__gte=from_time, create_time__lte=to_time)
 
     @property
     def finished_info(self):
