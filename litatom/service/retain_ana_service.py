@@ -255,7 +255,6 @@ class RetainAnaService(object):
 
             # action
             for action_code in user_info[user][3]:
-                print(user)
                 res[find_key_by_value(cls.ACTION_ENCODE, action_code)] += 1
 
         return res
