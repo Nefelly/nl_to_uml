@@ -63,13 +63,13 @@ class RetainAnaService(object):
         :param date: datetime类型  表示0点
         :return:
         """
-        print('in _load_user_info',date)
+        print('in _load_user_info', date)
         user_info = {}
         from_ts = date_to_int_time(date)
         to_ts = date_to_int_time(next_date(date, 1))
         users = User.get_by_create_time(next_date(date, -1), date)
 
-        i=1
+        i = 1
         for user in users:
             user_id = str(user.id)
             user_info[user_id] = []
@@ -93,9 +93,9 @@ class RetainAnaService(object):
                 user_info[user_id].append(0)
 
             user_info[user_id].append(set())
-            if i%1000 == 0:
+            if i % 1000 == 0:
                 print(i)
-            i+=1
+            i += 1
 
         feeds = Feed.get_by_create_time(from_ts, to_ts)
         feed_create_code = cls.ACTION_ENCODE['feed_create']
@@ -114,8 +114,8 @@ class RetainAnaService(object):
         return user_info
 
     @classmethod
-    def get_retain_res(cls, addr, from_date=next_date(get_zero_today(), -31),to_date=next_date(get_zero_today(), -1)):
-        print(from_date,to_date)
+    def get_retain_res(cls, addr, from_date=next_date(get_zero_today(), -31), to_date=next_date(get_zero_today(), -1)):
+        print(from_date, to_date)
         info_basic_list = []  # 存储了每日的新用户info
         res_basic_list = []  # 存储了每日新用户数据统计
         res_list = {}  # 存储了每日之后的次日留存、7日留存、30日留存
@@ -147,7 +147,7 @@ class RetainAnaService(object):
     @classmethod
     def write_retain_res_to_excel(cls, addr, res, basic_date_res):
         wb = xlwt.Workbook(encoding='utf-8')
-        worksheet = [wb.add_sheet('boy'), wb.add_sheet('girl'), wb.add_sheet('未知性别'),
+        worksheet = [wb.add_sheet('总数'), wb.add_sheet('boy'), wb.add_sheet('girl'), wb.add_sheet('未知性别'),
                      wb.add_sheet('VN'), wb.add_sheet('TH'), wb.add_sheet('ID'), wb.add_sheet('其它地区')]
         for action in cls.ACTION_ENCODE:
             worksheet.append(wb.add_sheet(action))
@@ -179,9 +179,11 @@ class RetainAnaService(object):
                 for sheet in worksheet:
                     print(sheet.name)
                     if not base_res[sheet.name]:
-                        write_sheet_certain_pos(sheet, i+1, j+1, 0)
+                        write_sheet_certain_pos(sheet, i + 1, j + 1, 0)
                     else:
-                        write_sheet_certain_pos(sheet, i+1, j+1, str(res[date][j][sheet.name]/float(base_res[sheet.name]))+'/'+str(res[date][j][sheet.name]))
+                        write_sheet_certain_pos(sheet, i + 1, j + 1,
+                                                str(res[date][j][sheet.name] / float(base_res[sheet.name])) + '/' + str(
+                                                    res[date][j][sheet.name]))
             i += 1
         wb.save(addr)
 
@@ -220,7 +222,7 @@ class RetainAnaService(object):
     @classmethod
     def get_res_from_user_info(cls, user_info):
         """从用户信息中获得统计信息"""
-        res = {}
+        res = {u'总数': len(user_info)}
         for item in cls.GENDER_ENCODE:
             res[item] = 0
         for item in cls.COUNTRY_ENCODE:
@@ -228,7 +230,7 @@ class RetainAnaService(object):
         for item in cls.ACTION_ENCODE:
             res[item] = 0
         for age in range(13, 26):
-            res['age'+str(age)] = 0
+            res['age' + str(age)] = 0
         res[u'其它年龄'] = 0
         res[u'其它地区'] = 0
         res[u'未知性别'] = 0
@@ -247,8 +249,8 @@ class RetainAnaService(object):
                 res[u'未知性别'] += 1
 
             # age
-            if 'age'+str(user_info[user][2]) in res:
-                res['age'+str(user_info[user][2])] += 1
+            if 'age' + str(user_info[user][2]) in res:
+                res['age' + str(user_info[user][2])] += 1
             else:
                 res[u'其它年龄'] += 1
 
