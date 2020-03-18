@@ -102,6 +102,7 @@ class RetainAnaService(object):
 
     @classmethod
     def get_retain_res(cls, addr, from_date=next_date(get_zero_today(), -31),to_date=next_date(get_zero_today(), -1)):
+        print(from_date,to_date)
         info_basic_list = []  # 存储了每日的新用户info
         res_basic_list = []  # 存储了每日新用户数据统计
         res_list = {}  # 存储了每日之后的次日留存、7日留存、30日留存
@@ -109,8 +110,14 @@ class RetainAnaService(object):
         while temp_date <= to_date:
             date_info = cls.get_new_user_info(temp_date)
             info_basic_list.append(date_info)
-            res_basic_list.append(cls.get_res_from_user_info(date_info))
+            date_res = cls.get_res_from_user_info(date_info)
+            res_basic_list.append(date_res)
+            print(temp_date)
+            print(date_info)
+            print(date_res)
             temp_date += datetime.timedelta(days=1)
+
+        print('----------------------------------------------------------')
 
         # 计算留存
         for i in range(len(info_basic_list)):
@@ -119,7 +126,10 @@ class RetainAnaService(object):
                 cls.get_certain_day_retain_res(current_date, info_basic_list[i], 1),
                 cls.get_certain_day_retain_res(current_date, info_basic_list[i], 7),
                 cls.get_certain_day_retain_res(current_date, info_basic_list[i], 30)]
+            print(current_date)
+            print(res_list[format_standard_date(current_date)])
 
+        print('`````````````````````````````````````````````````````````````````````')
         cls.write_retain_res_to_excel(addr, res_list, res_basic_list)
 
     @classmethod
