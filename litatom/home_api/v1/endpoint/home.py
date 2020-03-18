@@ -6,7 +6,8 @@ from flask import (
     jsonify,
     request,
     render_template,
-    current_app
+    current_app,
+    Flask
 )
 from ....model import (
     Wording,
@@ -40,7 +41,7 @@ from ....service import (
     FeedService,
     UserSettingService
 )
-
+app = Flask(__name__, static_folder='static')
 logger = logging.getLogger(__name__)
 
 def index():
