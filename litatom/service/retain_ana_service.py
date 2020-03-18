@@ -182,7 +182,7 @@ class RetainAnaService(object):
                     if not base_res[sheet.name]:
                         write_sheet_certain_pos(sheet, i+1, j+1, 0)
                     else:
-                        write_sheet_certain_pos(sheet, i+1, j+1, str(res[date][j][sheet.name]/base_res[sheet.name]))
+                        write_sheet_certain_pos(sheet, i+1, j+1, str(res[date][j][sheet.name]/base_res[i]))
             i += 1
         wb.save(addr)
 
@@ -229,7 +229,7 @@ class RetainAnaService(object):
         for item in cls.ACTION_ENCODE:
             res[item] = 0
         for age in range(13, 26):
-            res[age] = 0
+            res['age'+str(age)] = 0
         res[u'其它年龄'] = 0
         res[u'其它地区'] = 0
         res[u'未知性别'] = 0
@@ -248,8 +248,8 @@ class RetainAnaService(object):
                 res[u'未知性别'] += 1
 
             # age
-            if user_info[user][2] in res:
-                res[user_info[user][2]] += 1
+            if 'age'+str(user_info[user][2]) in res:
+                res['age'+str(user_info[user][2])] += 1
             else:
                 res[u'其它年龄'] += 1
 
