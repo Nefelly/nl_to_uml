@@ -126,7 +126,6 @@ class RetainAnaService(object):
             date_res = cls.get_res_from_user_info(date_info)
             res_basic_list.append(date_res)
             print(temp_date)
-            print(date_info)
             print(date_res)
             temp_date += datetime.timedelta(days=1)
 
