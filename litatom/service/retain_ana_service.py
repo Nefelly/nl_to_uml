@@ -57,19 +57,19 @@ class RetainAnaService(object):
                     user_info[user_id][3].add(action_code)
 
     @classmethod
-    def _load_user_info(cls, date, user_info):
+    def _load_user_info(cls, date):
         """
         将指定日期的用户数据load到user_info字典中
         :param date: datetime类型  表示0点
-        :param user_info:{user_id1:(loc,gender,age,{}),user_id2:()}
         :return:
         """
+        user_info = {}
         from_ts = date_to_int_time(date)
         to_ts = date_to_int_time(next_date(date, 1))
         users = User.get_by_crate_time(from_ts, to_ts)
         for user in users:
             user_id = user.id
-            user_info[user_id] = ()
+            user_info[user_id] = []
 
             loc = user.country
             if loc and loc in cls.COUNTRY_ENCODE:
@@ -99,6 +99,8 @@ class RetainAnaService(object):
 
         for action in cls.ACTION_QUERY:
             cls._load_user_action_info(date, user_info, action)
+
+        return user_info
 
     @classmethod
     def get_retain_res(cls, addr, from_date=next_date(get_zero_today(), -31),to_date=next_date(get_zero_today(), -1)):
@@ -141,7 +143,7 @@ class RetainAnaService(object):
             worksheet.append(wb.add_sheet(action))
         for age in range(13, 26):
             worksheet.append(wb.add_sheet('age' + str(age)))
-        worksheet.append('其它年龄')
+        worksheet.append(wb.add_sheet(u'其它年龄'))
 
         # 在每一行前面写入日期表头
         i = 1
@@ -183,8 +185,7 @@ class RetainAnaService(object):
     @classmethod
     def get_new_user_info(cls, date):
         """返回特定日期的新用户信息"""
-        user_info = {}
-        cls._load_user_info(date, user_info)
+        user_info = cls._load_user_info(date)
         return user_info
 
     @classmethod
