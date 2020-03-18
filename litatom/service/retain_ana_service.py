@@ -127,6 +127,8 @@ class RetainAnaService(object):
         wb = xlwt.Workbook(encoding='utf-8')
         worksheet = [wb.add_sheet('boy'), wb.add_sheet('girl'), wb.add_sheet('未知性别'),
                      wb.add_sheet('VN'), wb.add_sheet('TH'), wb.add_sheet('ID'), wb.add_sheet('其它地区')]
+        for action in cls.ACTION_ENCODE:
+            worksheet.append(wb.add_sheet(action))
         for age in range(13, 26):
             worksheet.append(wb.add_sheet('age' + str(age)))
         worksheet.append('其它年龄')
