@@ -63,12 +63,14 @@ class RetainAnaService(object):
         :param date: datetime类型  表示0点
         :return:
         """
+        print('in _load_user_info',date)
         user_info = {}
         from_ts = date_to_int_time(date)
         to_ts = date_to_int_time(next_date(date, 1))
         users = User.get_by_crate_time(from_ts, to_ts)
         for user in users:
             user_id = user.id
+            print(user_id)
             user_info[user_id] = []
 
             loc = user.country
@@ -100,6 +102,8 @@ class RetainAnaService(object):
         for action in cls.ACTION_QUERY:
             cls._load_user_action_info(date, user_info, action)
 
+        print('leave _load_user_info')
+        print(user_info)
         return user_info
 
     @classmethod
