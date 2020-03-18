@@ -24,7 +24,7 @@ def run(*date):
     else:
         from_date = parse_standard_date(date[0])
         to_date = parse_standard_date(date[1])
-    dst_addr = '/data/retain_ana/%s.xlsx' % format_standard_date(from_date) + '-' + format_standard_date(to_date)
+    dst_addr = '/data/retain_ana/%s.xlsx' % (format_standard_date(from_date) + '-' + format_standard_date(to_date))
     ensure_path(dst_addr)
     RetainAnaService.get_retain_res(dst_addr, from_date, to_date)
     AlertService.send_file(["644513759@qq.com"], dst_addr)

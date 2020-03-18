@@ -181,7 +181,7 @@ class RetainAnaService(object):
                     if not base_res[sheet.name]:
                         write_sheet_certain_pos(sheet, i+1, j+1, 0)
                     else:
-                        write_sheet_certain_pos(sheet, i+1, j+1, str(res[date][j][sheet.name]/base_res[sheet.name])+'/'+str(res[date][j][sheet.name]))
+                        write_sheet_certain_pos(sheet, i+1, j+1, str(res[date][j][sheet.name]/float(base_res[sheet.name]))+'/'+str(res[date][j][sheet.name]))
             i += 1
         wb.save(addr)
 
