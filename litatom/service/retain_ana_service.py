@@ -236,25 +236,25 @@ class RetainAnaService(object):
 
         for user in user_info:
             # location
-            if user[0] in cls.COUNTRY_ENCODE.values():
-                res[find_key_by_value(cls.COUNTRY_ENCODE, user[0])] += 1
+            if user_info[user][0] in cls.COUNTRY_ENCODE.values():
+                res[find_key_by_value(cls.COUNTRY_ENCODE, user_info[user][0])] += 1
             else:
                 res[u'其它地区'] += 1
 
             # gender
-            if user[1] in cls.GENDER_ENCODE.values():
-                res[find_key_by_value(cls.GENDER_ENCODE, user[1])] += 1
+            if user_info[user][1] in cls.GENDER_ENCODE.values():
+                res[find_key_by_value(cls.GENDER_ENCODE, user_info[user][1])] += 1
             else:
                 res[u'未知性别'] += 1
 
             # age
-            if user[2] in res:
-                res[user[2]] += 1
+            if user_info[user][2] in res:
+                res[user_info[user][2]] += 1
             else:
                 res[u'其它年龄'] += 1
 
             # action
-            for action_code in user[3]:
+            for action_code in user_info[user][3]:
                 print(user)
                 res[find_key_by_value(cls.ACTION_ENCODE, action_code)] += 1
 
