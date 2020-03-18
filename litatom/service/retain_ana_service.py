@@ -90,7 +90,7 @@ class RetainAnaService(object):
             else:
                 user_info[user_id].append(0)
 
-            user_info[user_id].append({})
+            user_info[user_id].append(set())
 
         feeds = Feed.get_by_create_time(from_ts, to_ts)
         feed_create_code = cls.ACTION_ENCODE['feed_create']
