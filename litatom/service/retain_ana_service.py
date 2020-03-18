@@ -1,6 +1,7 @@
 # coding: utf-8
 import datetime
 import logging
+import collections
 import xlwt
 from ..model import (
     Feed,
@@ -118,7 +119,7 @@ class RetainAnaService(object):
         print(from_date, to_date)
         info_basic_list = []  # 存储了每日的新用户info
         res_basic_list = []  # 存储了每日新用户数据统计
-        res_list = {}  # 存储了每日之后的次日留存、7日留存、30日留存
+        res_list = collections.OrderedDict()  # 存储了每日之后的次日留存、7日留存、30日留存
         temp_date = from_date
         while temp_date <= to_date:
             date_info = cls.get_new_user_info(temp_date)
