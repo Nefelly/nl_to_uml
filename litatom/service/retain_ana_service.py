@@ -70,7 +70,6 @@ class RetainAnaService(object):
         users = User.get_by_create_time(next_date(date, -1), date)
         for user in users:
             user_id = str(user.id)
-            print(user_id)
             user_info[user_id] = []
 
             loc = user.country
