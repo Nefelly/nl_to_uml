@@ -276,7 +276,7 @@ def track_action():
 
 
 def index():
-    return current_app.send_static_file('index2.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
+    return current_app.send_static_file('index.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
 
 
 def privacy():
