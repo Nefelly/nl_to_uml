@@ -68,6 +68,8 @@ class RetainAnaService(object):
         from_ts = date_to_int_time(date)
         to_ts = date_to_int_time(next_date(date, 1))
         users = User.get_by_create_time(next_date(date, -1), date)
+
+        i=1
         for user in users:
             user_id = str(user.id)
             user_info[user_id] = []
@@ -91,6 +93,9 @@ class RetainAnaService(object):
                 user_info[user_id].append(0)
 
             user_info[user_id].append(set())
+            if i%1000 == 0:
+                print(i)
+            i+=1
 
         feeds = Feed.get_by_create_time(from_ts, to_ts)
         feed_create_code = cls.ACTION_ENCODE['feed_create']
