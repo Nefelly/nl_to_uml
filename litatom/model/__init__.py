@@ -31,7 +31,8 @@ from .user import (
     SocialAccountInfo,
     UserRecord,
     OnlineLimit,
-    UserAddressList
+    UserAddressList,
+    BlockedDevices
 )
 from .user_message import (
     UserMessage,

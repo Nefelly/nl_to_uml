@@ -34,7 +34,6 @@ class UserSettingService(object):
             'pop_good_rate': True,
             'prior_voice': TYPE_VOICE_TENCENT,   # agora 声网，
             'phone_login_without_code': True,
-            'disableGooglePlayCheck': True,
             'modules_open': {
                 "soul_match": 1,
                 "video_match": 1,
@@ -45,6 +44,7 @@ class UserSettingService(object):
                 'adSupport23': False,
                 'using_hamburger': True,
                 'using_banner_hamburger': True,
+                'disableGooglePlayCheck': True,
                 'prior_platform': 'facebook', # facebook
                 'need_ad': True,
                 'banner_ad_type': 1,   # 1：nactive_ad, 2: banner_ad, 3: banner_native_ad

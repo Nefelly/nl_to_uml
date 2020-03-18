@@ -81,6 +81,8 @@ class AliOssService(object):
     @classmethod
     def get_binary_from_bucket(cls, fileid):
         try:
+            # if fileid == '99ce37b0-59d9-11e9-8672-00163e02deb4':
+            #     return cls.get_simage("493e8a46-82fd-11e9-9fe5-00163e02deb4")
             return img_bucket.get_object(fileid).read()
         except Exception, e:
             logger.error('get image_from_url failed, fileid: %s, %s', fileid, e)
@@ -99,6 +101,7 @@ class AliOssService(object):
             if x < x_s:
                 return obj
             y_s = y * x_s / x  # calc height based on standard width
+            # out = img.resize((x_s, y_s), Image.ANTIALIAS)
             out = img.resize((x_s, y_s), Image.ANTIALIAS)
             image_byte = BytesIO()
             out.convert('RGB').save(image_byte, format='JPEG')
@@ -106,3 +109,20 @@ class AliOssService(object):
         except:
             return obj
         return res
+
+    @classmethod
+    def replace_to_small(cls, fileid, x_s=300):
+        obj = cls.get_binary_from_bucket(fileid)
+        if not obj:
+            return None
+        img = Image.open(BytesIO(obj))
+        (x, y) = img.size
+        if x < x_s:
+            return obj
+        y_s = y * x_s / x  # calc height based on standard width
+        out = img.resize((x_s, y_s), Image.ANTIALIAS)
+        image_byte = BytesIO()
+        out.convert('RGB').save(image_byte, format='JPEG')
+        res = image_byte.getvalue()
+        cls.upload_from_binary(res, fileid)
+        return True

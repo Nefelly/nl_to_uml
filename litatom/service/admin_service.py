@@ -13,7 +13,8 @@ from ..model import (
     AdminUser,
     Report,
     Feed,
-    User
+    User,
+    Avatar
 )
 from ..util import (
     get_args_from_db
@@ -24,11 +25,13 @@ from ..service import (
     FirebaseService,
     FeedService,
     ReportService,
-    GlobalizationService
+    GlobalizationService,
+    AliOssService
 )
 from ..const import (
     MAX_TIME,
-    ONE_DAY
+    ONE_DAY,
+    FOREVER
 )
 from hendrix.conf import setting
 from ..redis import RedisClient
@@ -167,6 +170,34 @@ class AdminService(object):
         return u'forbid error', False
 
     @classmethod
+    def ban_device_by_report(cls, report_id):
+        report = Report.get_by_id(report_id)
+        if not report:
+            return u'wrong report id', False
+        user = User.get_by_id(report.target_uid)
+        if not user:
+            feed = Feed.get_by_id(report.target_uid)
+            if feed:
+                report.target_uid = feed.user_id
+        data, status = cls.ban_device_by_uid(report.target_uid)
+        if status:
+            report.ban(FOREVER)
+            ForbiddenService.feedback_to_reporters(report.target_uid, [report.uid])
+            return None, True
+        return data, status
+
+    @classmethod
+    def ban_device_by_uid(cls, uid):
+        res = ForbiddenService.forbid_user(uid, FOREVER)
+        user_setting = UserSetting.get_by_user_id(uid)
+        if not user_setting or not user_setting.uuid:
+            return u'has not device_id', False
+        BlockedDevices.add_device(user_setting.uuid)
+        if not res:
+            return 'forbid error', False
+        return None, True
+
+    @classmethod
     def ban_by_uid(cls, user_id):
         num = Report.objects(uid=user_id).count()
         if not setting.IS_DEV and num >= 2:
@@ -241,3 +272,12 @@ class AdminService(object):
             if not get:
                 eval('%s(%s).save()' % (table_name, conn))
         return None, True
+
+    @classmethod
+    def change_avatar_to_small(cls, width=300):
+        j = Avatar.get_avatars()
+        res = []
+        for gender in j:
+            res += j[gender]
+        for _ in res:
+            AliOssService.replace_to_small(_, width)

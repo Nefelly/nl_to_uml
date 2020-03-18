@@ -123,6 +123,12 @@ def ban_user(report_id):
         return fail(data)
     return success(data)
 
+def ban_device(report_id):
+    data, status = AdminService.ban_device_by_report(report_id)
+    if not status:
+        return fail(data)
+    return success(data)
+
 def ban_user_by_feed(feed_id):
     ban_time = request.values.get('ban_time', '')
     ban_time = int(ban_time) if ban_time else ONE_DAY

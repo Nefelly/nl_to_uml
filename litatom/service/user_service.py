@@ -31,7 +31,8 @@ from ..key import (
     REDIS_USER_INFO_FINISHED,
     REDIS_ONLINE_GENDER_REGION,
     REDIS_UID_GENDER,
-    REDIS_HUANXIN_ONLINE
+    REDIS_HUANXIN_ONLINE,
+    REDIS_KEY_FORBIDDEN_SESSION_USER
 )
 from ..model import (
     User,
@@ -48,6 +49,7 @@ from ..model import (
     ReferralCode,
     UserModel,
     UserAccount,
+    BlockedDevices
 )
 from ..service import (
     SmsCodeService,
@@ -70,6 +72,7 @@ class UserService(object):
     CREATE_LOCK = 'user_create'
     NICKNAME_LEN_LIMIT = 60
     BIO_ELN_LIMIT = 150
+    ERROR_DEVICE_FORBIDDEN = u'Your device has been blocked'
 
     @classmethod
     def get_all_ids(cls):
@@ -89,8 +92,23 @@ class UserService(object):
     def get_forbidden_time_by_uid(cls, user_id):
         user = User.get_by_id(user_id)
         if user:
+            cls.should_unforbid(user)
             return time_str_by_ts(user.forbidden_ts)
         return None
+
+    @classmethod
+    def device_blocked(cls):
+        uuid = request.uuid
+        if BlockedDevices.get_by_device(uuid):
+            return True
+        return False
+
+    @classmethod
+    def get_followers_by_uid(cls, user_id):
+        user = User.get_by_id(user_id)
+        if not user:
+            return -1
+        return user.follower
 
     @classmethod
     def get_forbidden_error(cls, msg, default_json={}):
@@ -104,6 +122,17 @@ class UserService(object):
         return error_info
 
     @classmethod
+    def should_unforbid(cls, user):
+        if int(time.time()) > user.forbidden_ts:
+            user.forbidden = False
+            user.save()
+            if user.huanxin and user.huanxin.user_id:
+                HuanxinService.active_user(user.huanxin.user_id)
+            cls._trans_forbidden_2_session(user)
+            return True
+        return False
+
+    @classmethod
     def login_job(cls, user):
         """
         登录的动作
@@ -112,12 +141,7 @@ class UserService(object):
         """
         if user.forbidden:
             request.user_id = str(user.id)
-            if int(time.time()) > user.forbidden_ts:
-                user.forbidden = False
-                user.save()
-                if user.huanxin and user.huanxin.user_id:
-                    HuanxinService.active_user(user.huanxin.user_id)
-            else:
+            if not cls.should_unforbid(user):
                 unforbid_time = time_str_by_ts(user.forbidden_ts)
                 forbid_info = GlobalizationService.get_region_word('banned_warn')
                 request.is_banned = True
@@ -178,6 +202,11 @@ class UserService(object):
         return user and user.forbidden
 
     @classmethod
+    def clear_forbidden_session(cls, forbidden_session):
+        key = REDIS_KEY_FORBIDDEN_SESSION_USER.format(session=forbidden_session)
+        redis_client.delete(key)
+
+    @classmethod
     def unban_user(cls, user_id):
         user = User.get_by_id(user_id)
         if user:
@@ -201,7 +230,11 @@ class UserService(object):
         loc = request.loc
         if loc:
             UserSetting.create_setting(str(user.id), loc, request.uuid)
-        return True
+        if not request.uuid:
+            return u'your version is too low!' , False
+        if cls.device_blocked():
+            return cls.ERROR_DEVICE_FORBIDDEN, False
+        return None, True
 
     @classmethod
     def _on_update_info(cls, user, data):
@@ -578,15 +611,22 @@ class UserService(object):
         if user_id in [u'5cbc571e3fff2235defd5a65']:  # system account
             cls.set_not_online(user_id)
             return
-        redis_client.zadd(REDIS_HUANXIN_ONLINE, {user_id: int_time})
-        gender = cls.get_gender(user_id)
+        pp = redis_client.pipeline()
+        pp.zadd(REDIS_HUANXIN_ONLINE, {user_id: int_time})
+        pp.get(REDIS_UID_GENDER.format(user_id=user_id))
+        _, gender = pp.execute()
+        if not gender:
+            gender = cls.get_gender(user_id)
+        # redis_client.zadd(REDIS_HUANXIN_ONLINE, {user_id: int_time})
+        # gender = cls.get_gender(user_id)
         if gender:
             # key = REDIS_ONLINE_GENDER.format(gender=gender)
             key = GlobalizationService._online_key_by_region_gender(gender)
-            redis_client.zadd(key, {user_id: int_time})
-            redis_client.zadd(GlobalizationService._online_key_by_region_gender(), {user_id: int_time})
-            # if int_time % 100 == 0:
-            #     redis_client.zremrangebyscore(key, -1, int_time - ONLINE_LIVE)
+            pp.zadd(key, {user_id: int_time})
+            pp.zadd(GlobalizationService._online_key_by_region_gender(), {user_id: int_time})
+            pp.execute()
+            # redis_client.zadd(key, {user_id: int_time})
+            # redis_client.zadd(GlobalizationService._online_key_by_region_gender(), {user_id: int_time})
 
     @classmethod
     def set_not_online(cls, user_id):
@@ -662,8 +702,10 @@ class UserService(object):
             user = User()
             user.huanxin = cls.create_huanxin()
             user.phone = zone_phone
+            msg, status = cls._on_create_new_user(user)
+            if not status:
+                return msg, status
             user.save()
-            cls._on_create_new_user(user)
             cls.update_info_finished_cache(user)
             RedisLock.release_mutex(key)
         request.user_id = str(user.id)  # 为了region
@@ -693,8 +735,10 @@ class UserService(object):
             user.huanxin = cls.create_huanxin()
             user.google = SocialAccountInfo.make(google_id, idinfo)
             user.create_time = datetime.datetime.now()
+            msg, status = cls._on_create_new_user(user)
+            if not status:
+                return msg, status
             user.save()
-            cls._on_create_new_user(user)
             cls.update_info_finished_cache(user)
             RedisLock.release_mutex(key)
         msg, status = cls.login_job(user)
@@ -731,8 +775,10 @@ class UserService(object):
                 user.huanxin = cls.create_huanxin()
                 user.facebook = SocialAccountInfo.make(facebook_id, idinfo)
                 user.create_time = datetime.datetime.now()
+            msg, status = cls._on_create_new_user(user)
+            if not status:
+                return msg, status
             user.save()
-            cls._on_create_new_user(user)
             cls.update_info_finished_cache(user)
             RedisLock.release_mutex(key)
         msg, status = cls.login_job(user)

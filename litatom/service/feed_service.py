@@ -251,6 +251,7 @@ class FeedService(object):
                        'has_next': False,
                        'next_start': -1
                    }
+
         feeds = []
         max_loop_tms = 5
         has_next = False

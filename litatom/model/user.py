@@ -153,6 +153,27 @@ class HuanxinAccount(EmbeddedDocument):
         }
 
 
+class BlockedDevices(Document):
+    meta = {
+        'strict': False,
+    }
+    uuid = StringField(required=True)
+    create_time = DateTimeField(required=True, default=datetime.datetime.now)
+
+    @classmethod
+    def add_device(cls, uuid):
+        if cls.get_by_device(uuid):
+            return True
+        obj = cls()
+        obj.uuid = uuid
+        obj.save()
+
+    @classmethod
+    def get_by_device(cls, uuid):
+        obj = cls.objects(uuid=uuid).first()
+        return obj
+
+
 class SocialAccountInfo(EmbeddedDocument):
     meta = {
         'strict': False,
@@ -247,7 +268,7 @@ class User(Document, UserSessionMixin):
         key = REDIS_KEY_SESSION_USER.format(session=pure_session)
         user_id = redis_client.get(key)
         if user_id:
-            redis_client.set(key, user_id, ex=TWO_WEEKS)
+            # redis_client.set(key, user_id, ex=TWO_WEEKS)
             return user_id
         else:
             if not cls._is_valid_session(pure_session):

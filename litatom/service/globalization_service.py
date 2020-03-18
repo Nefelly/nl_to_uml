@@ -125,7 +125,8 @@ class GlobalizationService(object):
     DEFAULT_LOC = LOC_EN
     BIG_REGIONS = {
         REGION_VN: LOC_VN,
-        REGION_TH: LOC_TH
+        REGION_TH: LOC_TH,
+        REGION_ID: LOC_ID
     }
 
     LOC_REGION = {
