@@ -159,7 +159,7 @@ def get_time_info(int_time, user_mode=False):
 
 
 def now_date_key():
-    """今日日期"""
+    """今日日期str"""
     return datetime.datetime.now().strftime('%Y-%m-%d') # for time latency reason
 
 

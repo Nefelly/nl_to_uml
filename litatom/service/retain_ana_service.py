@@ -14,6 +14,7 @@ from ..util import (
     parse_standard_date,
     format_standard_date,
     write_sheet_certain_pos,
+    get_zero_today,
 )
 from ..service import (
     AliLogService,
@@ -100,8 +101,8 @@ class RetainAnaService(object):
             cls._load_user_action_info(date, user_info, action)
 
     @classmethod
-    def get_retain_res(cls, addr, from_date=parse_standard_date(next_date(now_date_key(), -31)),
-                       to_date=parse_standard_date(next_date(now_date_key(), -1))):
+    def get_retain_res(cls, addr, from_date=parse_standard_date(next_date(get_zero_today(), -31)),
+                       to_date=parse_standard_date(next_date(get_zero_today(), -1))):
         info_basic_list = []  # 存储了每日的新用户info
         res_basic_list = []  # 存储了每日新用户数据统计
         res_list = {}  # 存储了每日之后的次日留存、7日留存、30日留存
