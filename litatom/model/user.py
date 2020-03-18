@@ -494,7 +494,7 @@ class User(Document, UserSessionMixin):
         return cls.objects(nickname=nickname).first()
 
     @classmethod
-    def get_by_crate_time(cls, from_time, to_time):
+    def get_by_create_time(cls, from_time, to_time):
         return cls.objects(create_time__gte=from_time, create_time__lte=to_time)
 
     @property

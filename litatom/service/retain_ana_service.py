@@ -67,7 +67,8 @@ class RetainAnaService(object):
         user_info = {}
         from_ts = date_to_int_time(date)
         to_ts = date_to_int_time(next_date(date, 1))
-        users = User.get_by_crate_time(from_ts, to_ts)
+        print(from_ts, to_ts)
+        users = User.get_by_create_time(from_ts, to_ts)
         for user in users:
             user_id = user.id
             print(user_id)
