@@ -155,7 +155,7 @@ def search_user():
 
 @session_required
 def accost():
-    status = AccostService.can_accost(request.user_id)
+    status = AccostService.can_accost(request.user_id, request.session_id, request.loc, request.version)
     if not status:
         return fail()
     res = {
