@@ -318,6 +318,9 @@ class DiamStatService(object):
         'diam_deposit_num': 'name:deposit|SELECT sum(diamonds) as res',
         'diam_deposit_people_num': 'name:deposit|SELECT COUNT(DISTINCT user_id) as res',
         'diam_deposit_man_time_num': 'name:deposit|SELECT COUNT(1) as res',
+        'free_diam_gain_people_num':'name:watch_video or name:share_5 or name:share | SELECT COUNT(DISTINCT user_id) as res',
+        'free_diam_gain_man_time':'name:watch_video or name:share_5 or name:share | SELECT COUNT(1) as res',
+        'free_diam_gain_num':'name:watch_video or name:share_5 or name:share | SELECT sum(diamonds) as res',
         'diam_deposit50_people_num': 'name:deposit and diamonds=50|SELECT COUNT(DISTINCT user_id) as res',
         'diam_deposit50_man_time_num': 'name:deposit and diamonds=50|SELECT COUNT(1) as res',
         'diam_deposit100_people_num': 'name:deposit and diamonds=100|SELECT COUNT(DISTINCT user_id) as res',
@@ -326,12 +329,20 @@ class DiamStatService(object):
         'diam_deposit200_man_time_num': 'name:deposit and diamonds=200|SELECT COUNT(1) as res',
         'diam_deposit500_people_num': 'name:deposit and diamonds=500|SELECT COUNT(DISTINCT user_id) as res',
         'diam_deposit500_man_time_num': 'name:deposit and diamonds=500|SELECT COUNT(1) as res',
+        'watch_video_people_num':'name:watch_video| SELECT count(DISTINCT user_id) as res',
+        'watch_video_man_time':'name:watch_video| SELECT count(1) as res',
+        'watch_video_diam_num':'name:watch_video| SELECT sum(diamonds) as res',
+        'get_100_diam_by_share_link':'name:share_5| SELECT count(diamonds) as res',
+        'get_10_diam_by_share_link':'name:share| SELECT count(diamonds) as res',
         'week_member_consumer_num': 'name:week_member |SELECT COUNT(DISTINCT user_id) as res',
         'week_member_cons_man_time_num': 'name:week_member |SELECT COUNT(1) as res',
         'week_member_diam_cons_num': 'name:week_member |SELECT -sum(diamonds) as res',
         'acce_consumer_num': 'name:accelerate | SELECT count(DISTINCT user_id) as res',
         'acce_con_man_time_num': 'name:accelerate | SELECT count(1) as res',
         'acce_diam_cons_num': 'name:accelerate | SELECT -sum(diamonds) as res',
+        'diam_unban_people_num':'name:unban_by_diamonds | SELECT COUNT(DISTINCT user_id) as res',
+        'diam_unban_man_time':'name:unban_by_diamonds | SELECT COUNT(1) as res',
+        'diam_unban_cons_num':'name:unban_by_diamonds | SELECT -sum(diamonds) as res',
     }
     FREE_QUERY_LIST = {
         'diam_incr_num': 'diamonds>0|select sum(diamonds) as res',
@@ -491,16 +502,19 @@ class DiamStatService(object):
                        excel_dic['diam_cons_man_time_num'],
                        excel_dic['diam_deposit_people_num'],
                        excel_dic['diam_deposit_num'], excel_dic['diam_deposit_man_time_num'],
+                       excel_dic['free_diam_gain_people_num'],excel_dic['free_diam_gain_man_time'],excel_dic['free_diam_gain_num'],
                        excel_dic['diam_deposit50_people_num'],
                        excel_dic['diam_deposit50_man_time_num'], excel_dic['diam_deposit100_people_num'],
                        excel_dic['diam_deposit100_man_time_num'],
                        excel_dic['diam_deposit200_people_num'], excel_dic['diam_deposit200_man_time_num'],
-                       excel_dic['diam_deposit500_people_num'],
-                       excel_dic['diam_deposit500_man_time_num'], excel_dic['week_member_consumer_num'],
+                       excel_dic['diam_deposit500_people_num'],excel_dic['diam_deposit500_man_time_num'],
+                       excel_dic['watch_video_people_num'],excel_dic['watch_video_man_time'],excel_dic['watch_video_diam_num'],
+                       excel_dic['get_100_diam_by_share_link'],excel_dic['get_10_diam_by_share_link'],
+                       excel_dic['week_member_consumer_num'],
                        excel_dic['week_member_cons_man_time_num'],
                        excel_dic['week_member_diam_cons_num'], excel_dic['acce_consumer_num'],
-                       excel_dic['acce_con_man_time_num'],
-                       excel_dic['acce_diam_cons_num']]
+                       excel_dic['acce_con_man_time_num'],excel_dic['acce_diam_cons_num'],
+                       excel_dic['diam_unban_people_num'],excel_dic['diam_unban_man_time'],excel_dic['diam_unban_cons_num']]
         return excel_data
 
     @classmethod
@@ -512,10 +526,12 @@ class DiamStatService(object):
             res.append(cls.diam_stat_report(date-datetime.timedelta(days=delta)))
         write_data_to_xls_col(addr,
                               [r'日期',r'会员数', r'收入', r'钻石消耗人数', r'钻石消耗数量', r'钻石消耗人次', r'钻石购买人数', r'钻石购买数量', r'钻石购买人次',
-                               r'50钻石购买人数',
+                               r'免费钻石获取人数',r'免费钻石获取人次',r'免费钻石获取数量',r'50钻石购买人数',
                                r'50钻石购买人次', r'100钻石购买人数', r'100钻石购买人次', r'200钻石购买人数', r'200钻石购买人次', r'500钻石购买人数',
-                               r'500钻石购买人次', r'会员购买人数', r'会员购买人次', r'会员-钻石消耗数量',
-                               r'加速人数', r'加速购买人次', r'加速-钻石消耗数量'], res, 'utf-8')
+                               r'500钻石购买人次', r'观看激励视频人数',r'观看激励视频人次',r'激励视频钻石数量',
+                               r'分享链接100钻石获取数量',r'分享链接10钻石获取数量',r'会员购买人数', r'会员购买人次', r'会员-钻石消耗数量',
+                               r'加速人数', r'加速购买人次', r'加速-钻石消耗数量',
+                               r'钻石解封人数',r'钻石解封人次',r'解封-钻石消耗数量'], res, 'utf-8')
 
     @classmethod
     def diam_free_report(cls, addr, date=datetime.datetime.now()):
