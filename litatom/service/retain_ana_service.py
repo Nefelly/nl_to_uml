@@ -210,7 +210,7 @@ class RetainAnaService(object):
         resp_set = AliLogService.get_log_by_time_and_topic(from_time=AliLogService.datetime_to_alitime(date),
                                                            to_time=AliLogService.datetime_to_alitime(
                                                                next_date(date, 1)),
-                                                           query='*| select distinct user_id limit 1000000')
+                                                           query='*| select distinct user_id limit 5000000')
         res_user_info = {}
         for resp in resp_set:
             for log in resp.logs:
