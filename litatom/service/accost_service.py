@@ -46,7 +46,7 @@ class AccostService(object):
                     return True
                 redis_client.decr(stop_key)
                 return False
-
+        print(0)
         key = REDIS_ACCOST_RATE.format(user_id=user_id)
         rate = cls.ACCOST_RATE - 1  # the first time is used
         res = redis_client.get(key)
@@ -54,6 +54,7 @@ class AccostService(object):
             if should_stop():
                 return cls.ACCOST_BAN
             redis_client.set(key, rate, cls.ACCOST_INTER)
+            print(1)
             cls.record_accost(user_id, session_id, loc, version)
             return cls.ACCOST_PASS
         else:
@@ -65,6 +66,7 @@ class AccostService(object):
                 if should_stop():
                     return cls.ACCOST_BAN
                 redis_client.decr(key)
+                print(2)
                 cls.record_accost(user_id, session_id, loc, version)
                 return cls.ACCOST_PASS
 
@@ -78,4 +80,5 @@ class AccostService(object):
     def record_accost(cls, user_id, session_id, loc, version):
         contents = [('action', 'accost'),('location',loc),('remark', 'accost_pass'),('session_id', str(session_id)),
                     ('user_id', str(user_id)),('version',version)]
+        print(contents)
         AliLogService.put_logs(contents)
