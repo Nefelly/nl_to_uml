@@ -78,6 +78,7 @@ class MonitorService(object):
                     # if len(res) > 2:
                     #     break
         res.append(('*', 'ALL', 'all_uri', False))
+        res = res[-1:]
         return res
 
     @classmethod
@@ -205,7 +206,7 @@ class MonitorService(object):
             print query, avg_response_time, called_num, avg_status
             now_res[uri] = [float(avg_response_time), int(called_num)]
         before_res = {}
-        cls.END_TIME = parse_standard_time(compared_time) if compared_time else datetime.now() - timedelta(days=30)
+        cls.END_TIME = parse_standard_time(compared_time) if compared_time else datetime.now() - timedelta(days=29)
         for query, name, uri, is_post in query_list:
             logs, time = cls.fetch_log(query + cls.QUERY_ANALYSIS)
             avg_response_time, called_num, avg_status = cls.read_stat(logs)
