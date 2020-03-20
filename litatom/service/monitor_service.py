@@ -77,7 +77,7 @@ class MonitorService(object):
                     res.append(res_tuple)
                     # if len(res) > 2:
                     #     break
-        res.append(('*', 'ALL', 'all_uri'))
+        res.append(('*', 'ALL', 'all_uri', False))
         return res
 
     @classmethod
@@ -161,7 +161,7 @@ class MonitorService(object):
         for log in logs:
             contents = log.get_contents()
             called_num = contents['called_num']
-            if not called_num :
+            if not called_num:
                 return 0, 0, 0
             avg_response_time = contents['avg_response_time']
             avg_status = contents['avg_status']
