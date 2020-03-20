@@ -11,7 +11,8 @@ from ..const import (
     ACTION_ACCOST_NEED_VIDEO
 )
 from ..service import (
-    TrackActionService
+    TrackActionService,
+    AliLogService,
 )
 
 logger = logging.getLogger(__name__)
@@ -31,7 +32,7 @@ class AccostService(object):
     ACCOST_STOP_RATE = 19
 
     @classmethod
-    def can_accost(cls, user_id):
+    def can_accost(cls, user_id, session_id, loc, version):
         def should_stop():
             stop_key = REDIS_ACCOST_STOP_RATE.format(user_id=user_id)
             stop_num = redis_client.get(stop_key)
@@ -45,13 +46,15 @@ class AccostService(object):
                     return True
                 redis_client.decr(stop_key)
                 return False
+
         key = REDIS_ACCOST_RATE.format(user_id=user_id)
-        rate = cls.ACCOST_RATE - 1   # the first time is used
+        rate = cls.ACCOST_RATE - 1  # the first time is used
         res = redis_client.get(key)
         if not res:
             if should_stop():
                 return cls.ACCOST_BAN
             redis_client.set(key, rate, cls.ACCOST_INTER)
+            cls.record_accost(user_id, session_id, loc, version)
             return cls.ACCOST_PASS
         else:
             res = int(res)
@@ -62,6 +65,7 @@ class AccostService(object):
                 if should_stop():
                     return cls.ACCOST_BAN
                 redis_client.decr(key)
+                cls.record_accost(user_id, session_id, loc, version)
                 return cls.ACCOST_PASS
 
     @classmethod
@@ -69,3 +73,9 @@ class AccostService(object):
         key = REDIS_ACCOST_RATE.format(user_id=user_id)
         redis_client.set(key, cls.ACCOST_RATE, cls.ACCOST_INTER)
         return None, True
+
+    @classmethod
+    def record_accost(cls, user_id, session_id, loc, version):
+        contents = [('action', 'accost'),('location',loc),('remark', 'accost_pass'),('session_id', str(session_id)),
+                    ('user_id', str(user_id)),('version',version)]
+        AliLogService.put_logs(contents)
