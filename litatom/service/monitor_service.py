@@ -77,6 +77,7 @@ class MonitorService(object):
                     res.append(res_tuple)
                     # if len(res) > 2:
                     #     break
+        res.append(('*', 'ALL', 'all_uri'))
         return res
 
     @classmethod
