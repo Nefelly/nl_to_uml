@@ -78,7 +78,7 @@ class MonitorService(object):
                     # if len(res) > 2:
                     #     break
         res.append(('*', 'ALL', 'all_uri', False))
-        res = res[-1:]
+        # res = res[-1:]
         return res
 
     @classmethod
