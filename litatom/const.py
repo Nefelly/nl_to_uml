@@ -19,7 +19,7 @@ ALI_LOG_EXCHANGE = 'ali_log_exchange'
 # PIC_UPLOAD_EXCHANGE = 'feed_check'
 
 # cookie 中的存 session 的 key
-SESSION_SESSION_ID_KEY = 'sessionid.1'
+SESSION_SESSION_ID_KEY = 'sessionid.'
 PLATFORM_IOS = 'ios'
 PLATFORM_ANDROID = 'android'
 DEFAULT_QUERY_LIMIT = 100
