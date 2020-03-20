@@ -77,6 +77,8 @@ class MonitorService(object):
                     res.append(res_tuple)
                     # if len(res) > 2:
                     #     break
+        res.append(('*', 'ALL', 'all_uri', False))
+        # res = res[-1:]
         return res
 
     @classmethod
@@ -160,7 +162,7 @@ class MonitorService(object):
         for log in logs:
             contents = log.get_contents()
             called_num = contents['called_num']
-            if not called_num :
+            if not called_num:
                 return 0, 0, 0
             avg_response_time = contents['avg_response_time']
             avg_status = contents['avg_status']
@@ -188,7 +190,7 @@ class MonitorService(object):
             # cls.put_stat_to_alilog(name, time, avg_resp_time, called_num, error_rate, status_num, uri, is_post)
 
     @classmethod
-    def find_diff(cls, compared_time='2020-02-13 11:11:00'):
+    def find_diff(cls, compared_time=None):
         '''
         寻找两个时间段之间的接口的调用的时间差 结果集 【接口 第一平均时间 第二平均时间 %time_added  】
         :return:
@@ -201,9 +203,10 @@ class MonitorService(object):
             avg_response_time, called_num, avg_status = cls.read_stat(logs)
             if avg_response_time == 'null':
                 continue
+            print query, avg_response_time, called_num, avg_status
             now_res[uri] = [float(avg_response_time), int(called_num)]
         before_res = {}
-        cls.END_TIME = parse_standard_time(compared_time)
+        cls.END_TIME = parse_standard_time(compared_time) if compared_time else datetime.now() - timedelta(days=29)
         for query, name, uri, is_post in query_list:
             logs, time = cls.fetch_log(query + cls.QUERY_ANALYSIS)
             avg_response_time, called_num, avg_status = cls.read_stat(logs)
