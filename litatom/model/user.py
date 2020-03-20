@@ -339,7 +339,10 @@ class User(Document, UserSessionMixin):
 
     @classmethod
     def _age_by_cache(cls, res):
-        return int(res) if res != NO_SET and res else cls.DEFUALT_AGE
+        if res != NO_SET and res:
+            if int(res) > 0:
+                return int(res)
+        return cls.DEFUALT_AGE
 
     @classmethod
     def age_by_user_id(cls, user_id):

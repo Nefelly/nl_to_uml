@@ -34,6 +34,7 @@ TYPE_VOICE_TENCENT = 'tencent'
 CODE_PRIOR_VOICE = TYPE_VOICE_TENCENT
 
 BACKUP_HOST = 'http://www.litmatchapp.com'
+BACKUP_DNS = 'litmatchapp'
 
 ALL_FILTER = True
 
