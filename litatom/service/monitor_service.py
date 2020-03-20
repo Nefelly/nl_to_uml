@@ -202,6 +202,7 @@ class MonitorService(object):
             avg_response_time, called_num, avg_status = cls.read_stat(logs)
             if avg_response_time == 'null':
                 continue
+            print query, avg_response_time, called_num, avg_status
             now_res[uri] = [float(avg_response_time), int(called_num)]
         before_res = {}
         cls.END_TIME = parse_standard_time(compared_time)
