@@ -189,7 +189,7 @@ class MonitorService(object):
             # cls.put_stat_to_alilog(name, time, avg_resp_time, called_num, error_rate, status_num, uri, is_post)
 
     @classmethod
-    def find_diff(cls, compared_time='2020-02-13 11:11:00'):
+    def find_diff(cls, compared_time=None):
         '''
         寻找两个时间段之间的接口的调用的时间差 结果集 【接口 第一平均时间 第二平均时间 %time_added  】
         :return:
@@ -205,7 +205,7 @@ class MonitorService(object):
             print query, avg_response_time, called_num, avg_status
             now_res[uri] = [float(avg_response_time), int(called_num)]
         before_res = {}
-        cls.END_TIME = parse_standard_time(compared_time)
+        cls.END_TIME = parse_standard_time(compared_time) if not compared_time else datetime.now() - timedelta(days=30)
         for query, name, uri, is_post in query_list:
             logs, time = cls.fetch_log(query + cls.QUERY_ANALYSIS)
             avg_response_time, called_num, avg_status = cls.read_stat(logs)
