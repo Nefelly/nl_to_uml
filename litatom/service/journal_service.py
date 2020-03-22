@@ -408,7 +408,7 @@ class JournalService(object):
             try:
                 # res为根据该统计量的id计算得到的结果
                 res = cls.cal_by_id(str(item.id))
-                for sheet in res:
+                # for sheet in res:
 
             except Exception as e:
                 print(e)
