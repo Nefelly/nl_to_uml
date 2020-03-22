@@ -124,15 +124,7 @@ class JournalService(object):
         resp = AliLogService.get_log_by_time_and_topic(from_time=from_time, to_time=to_time)
         for log in resp.logs:
             user_id = log.get_contents()['user_id']
-            gender = cls.USER_GEN.get(user_id)
-            if gender in gender_cnts:
-                gender_cnts[gender] += 1
-            new_loc = cls.NEW_USER_LOC.get(user_id)
-            if new_loc in cls.LOC_STATED:
-                loc_cnts[cls._get_count_loc(new_loc)] += 1
-                loc_cnts[cls._get_new_loc(new_loc)] += 1
-        res.update(gender_cnts)
-        res.update(loc_cnts)
+
         return res
 
     @classmethod
@@ -403,27 +395,27 @@ class JournalService(object):
         daily_m = cls.daily_active(StatItems.objects(name=u'抽样日活').first(), date)
         print('load daily_m', daily_m)
         # 遍历StatItems中所有类型为BUSINESS_TYPE的统计量item
-        for item in StatItems.get_items_by_type(StatItems.BUSINESS_TYPE):
-            try:
-                # m为根据该统计量的id计算得到的结果
-                m = cls.cal_by_id(str(item.id))
-                name, num = m['name'], m['num']
-                gender_cnt = [m[gender] for gender in cls.GENDERS]
-                # region_cnt = [m[loc] for loc in cls.LOC_STATED]
-                avr_cnt = []
-                for loc in cls.LOC_STATED:
-                    if daily_m[loc]:
-                        data = round(m.get(loc, 0) / daily_m[loc], 4)
-                        avr_cnt.append(data)
-                    else:
-                        avr_cnt.append(0)
-                res_lst.append([name, num] + gender_cnt + [num / daily_m['num']] + avr_cnt)
-                print(name, num)
-                cnt += 1
-            except Exception as e:
-                print(e)
-                continue
-        write_data_to_multisheets(dst_addr, ['总计']+cls.LOC_STATED, ['名称','计数','新用户人次','新用户人数'],res_lst)
+        # for item in StatItems.get_items_by_type(StatItems.BUSINESS_TYPE):
+        #     try:
+        #         # m为根据该统计量的id计算得到的结果
+        #         m = cls.cal_by_id(str(item.id))
+        #         name, num = m['name'], m['num']
+        #         gender_cnt = [m[gender] for gender in cls.GENDERS]
+        #         # region_cnt = [m[loc] for loc in cls.LOC_STATED]
+        #         avr_cnt = []
+        #         for loc in cls.LOC_STATED:
+        #             if daily_m[loc]:
+        #                 data = round(m.get(loc, 0) / daily_m[loc], 4)
+        #                 avr_cnt.append(data)
+        #             else:
+        #                 avr_cnt.append(0)
+        #         res_lst.append([name, num] + gender_cnt + [num / daily_m['num']] + avr_cnt)
+        #         print(name, num)
+        #         cnt += 1
+        #     except Exception as e:
+        #         print(e)
+        #         continue
+        # write_data_to_multisheets(dst_addr, ['总计']+cls.LOC_STATED, ['名称','计数','新用户人次','新用户人数'],res_lst)
 
     @classmethod
     def ad_res(cls, dst_addr, date):
@@ -432,25 +424,25 @@ class JournalService(object):
         cnt = 0
         daily_m = cls.daily_active(StatItems.objects(name=u'抽样日活').first())
         cls.DATE_DIS = datetime.timedelta(hours=-16)
-        stat_date = cls._get_stat_date(date)
-            for item in StatItems.get_items_by_type(StatItems.AD_TYPE):
-                try:
-                    m = cls.cal_by_id(str(item.id))
-                    name, num = m['name'], m['num']
-                    region_cnt = [m[loc] for loc in cls.LOC_STATED]
-                    avr_cnt = []
-                    for loc in cls.LOC_STATED:
-                        if daily_m[loc]:
-                            data = round(m.get(loc, 0) / daily_m[loc], 4)
-                            avr_cnt.append(data)
-                        else:
-                            avr_cnt.append(0)
-                    res_lst.append([name, num] + region_cnt + [num / daily_m['num']] + avr_cnt)
-                    cnt += 1
-                except Exception as e:
-                    print(e)
-                    continue
-        # write_data_to_xls(dst_addr,
-        #                   [u'名字', u'数量'] + cls.LOC_STATED + ['total avr'] + [el + 'avr' for el in cls.LOC_STATED],
-        #                   res_lst)
-        write_data_to_xls(dst_addr, [u'名字', u'数量'] + cls.GENDERS + [u'新用户'], res_lst)
+        # stat_date = cls._get_stat_date(date)
+        #     for item in StatItems.get_items_by_type(StatItems.AD_TYPE):
+        #         try:
+        #             m = cls.cal_by_id(str(item.id))
+        #             name, num = m['name'], m['num']
+        #             region_cnt = [m[loc] for loc in cls.LOC_STATED]
+        #             avr_cnt = []
+        #             for loc in cls.LOC_STATED:
+        #                 if daily_m[loc]:
+        #                     data = round(m.get(loc, 0) / daily_m[loc], 4)
+        #                     avr_cnt.append(data)
+        #                 else:
+        #                     avr_cnt.append(0)
+        #             res_lst.append([name, num] + region_cnt + [num / daily_m['num']] + avr_cnt)
+        #             cnt += 1
+        #         except Exception as e:
+        #             print(e)
+        #             continue
+        # # write_data_to_xls(dst_addr,
+        # #                   [u'名字', u'数量'] + cls.LOC_STATED + ['total avr'] + [el + 'avr' for el in cls.LOC_STATED],
+        # #                   res_lst)
+        # write_data_to_xls(dst_addr, [u'名字', u'数量'] + cls.GENDERS + [u'新用户'], res_lst)
