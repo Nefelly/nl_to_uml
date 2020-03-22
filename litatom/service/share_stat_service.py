@@ -53,6 +53,7 @@ class ShareStatService(object):
         key = cls._get_key(user_id)
         redis_client.sadd(key, item)
         redis_client.expire(key, cls.CACHED_TIME)
+        cls.record_share_action(item, user_id)
         return True
 
     @classmethod
@@ -96,6 +97,12 @@ class ShareStatService(object):
     def record_share_action(cls, user_id, session_id, loc, version):
         contents = [('action', 'share'),('location',loc),('remark', 'copy_share_link'),('session_id', str(session_id)),
                     ('user_id', str(user_id)),('version',version)]
+        AliLogService.put_logs(contents)
+
+    @classmethod
+    def record_click_share_link(cls, user_ip, target_uid):
+        contents = [('action','share'),('remark','click_share_link'),('user_ip',str(user_ip)),
+                    ('share_user_id',target_uid)]
         AliLogService.put_logs(contents)
 
 
