@@ -119,16 +119,17 @@ class JournalService(object):
         logs = resp.logs
         for log in logs:
             res[0]['计数'] = log.get_contents()['res']
-        resp = AliLogService.get_log_by_time_and_topic(from_time=from_time, to_time=to_time,
-                                                       query='*|select distinct user_id limit 1000000')
+        resp_set = AliLogService.get_log_by_time_and_topic(from_time=from_time, to_time=to_time,
+                                                           query='*|select distinct user_id limit 1000000')
         uids = set()
         new_user_acted = set()
-        for log in resp.logs:
-            user_id = log.get_contents()['user_id']
-            if user_id in uids:
-                continue
-            uids.add(user_id)
-            cls.cal_res_by_uid(user_id, res, new_user_acted)
+        for resp in resp_set:
+            for log in resp.logs:
+                user_id = log.get_contents()['user_id']
+                if user_id in uids:
+                    continue
+                uids.add(user_id)
+                cls.cal_res_by_uid(user_id, res, new_user_acted)
         return res
 
     @classmethod
