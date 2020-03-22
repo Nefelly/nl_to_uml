@@ -8,7 +8,8 @@ from ..key import (
     REDIS_SHARE_KNOWN_NUM,
 )
 from ..service import (
-    AccountService
+    AccountService,
+    AliLogService
 )
 from ..const import (
     ONE_WEEK,
@@ -90,5 +91,11 @@ class ShareStatService(object):
         key = cls._get_known_num_key(user_id)
         redis_client.set(key, cls.get_stat_item_num(user_id))
         return AccountService.deposit_by_activity(user_id,AccountService.SHARE_5)
+
+    @classmethod
+    def record_share_action(cls, user_id, session_id, loc, version):
+        contents = [('action', 'share'),('location',loc),('remark', 'copy_share_link'),('session_id', str(session_id)),
+                    ('user_id', str(user_id)),('version',version)]
+        AliLogService.put_logs(contents)
 
 

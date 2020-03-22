@@ -343,6 +343,7 @@ class DiamStatService(object):
         'diam_unban_people_num':'name:unban_by_diamonds | SELECT COUNT(DISTINCT user_id) as res',
         'diam_unban_man_time':'name:unban_by_diamonds | SELECT COUNT(1) as res',
         'diam_unban_cons_num':'name:unban_by_diamonds | SELECT -sum(diamonds) as res',
+        'diam_accost_cons_num':'name:accost_reset | SELECT -sum(diamonds) as res'
     }
     FREE_QUERY_LIST = {
         'diam_incr_num': 'diamonds>0|select sum(diamonds) as res',
@@ -514,7 +515,8 @@ class DiamStatService(object):
                        excel_dic['week_member_cons_man_time_num'],
                        excel_dic['week_member_diam_cons_num'], excel_dic['acce_consumer_num'],
                        excel_dic['acce_con_man_time_num'],excel_dic['acce_diam_cons_num'],
-                       excel_dic['diam_unban_people_num'],excel_dic['diam_unban_man_time'],excel_dic['diam_unban_cons_num']]
+                       excel_dic['diam_unban_people_num'],excel_dic['diam_unban_man_time'],excel_dic['diam_unban_cons_num'],
+                       excel_dic['diam_accost_cons_num']]
         return excel_data
 
     @classmethod
@@ -531,7 +533,7 @@ class DiamStatService(object):
                                r'500钻石购买人次', r'观看激励视频人数',r'观看激励视频人次',r'激励视频钻石数量',
                                r'分享链接100钻石获取数量',r'分享链接10钻石获取数量',r'会员购买人数', r'会员购买人次', r'会员-钻石消耗数量',
                                r'加速人数', r'加速购买人次', r'加速-钻石消耗数量',
-                               r'钻石解封人数',r'钻石解封人次',r'解封-钻石消耗数量'], res, 'utf-8')
+                               r'钻石解封人数',r'钻石解封人次',r'解封-钻石消耗数量',r'搭讪钻石消耗数量'], res, 'utf-8')
 
     @classmethod
     def diam_free_report(cls, addr, date=datetime.datetime.now()):
