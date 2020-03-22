@@ -248,7 +248,7 @@ class JournalService(object):
     @classmethod
     def cal_res_by_uid(cls, user_id, res, new_user_acted):
         """根据user_id，记录入res"""
-        gender = cls.USER_GEN[user_id]
+        gender = cls.USER_GEN.get(str(user_id))
         if gender and gender in cls.GENDERS:
             res[0][gender] += 1
 
