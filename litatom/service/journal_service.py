@@ -1,8 +1,5 @@
 # coding: utf-8
-import json
 import datetime
-import time
-import string
 import logging
 import bson
 from ..model import *
@@ -10,18 +7,14 @@ from ..util import (
     get_zero_today,
     next_date,
     date_to_int_time,
-    write_data_to_xls,
     write_data_to_multisheets,
 )
 from mongoengine import (
     IntField,
-
 )
-
 from ..service import (
     AliLogService
 )
-
 from ..redis import RedisClient
 
 logger = logging.getLogger(__name__)
@@ -126,7 +119,8 @@ class JournalService(object):
         logs = resp.logs
         for log in logs:
             res[0]['计数'] = log.get_contents()['res']
-        resp = AliLogService.get_log_by_time_and_topic(from_time=from_time, to_time=to_time)
+        resp = AliLogService.get_log_by_time_and_topic(from_time=from_time, to_time=to_time,
+                                                       query='*|select distinct user_id limit 1000000')
         uids = set()
         new_user_acted = set()
         for log in resp.logs:
@@ -398,7 +392,7 @@ class JournalService(object):
         print('load user location succ', cls.LOC_STATED)
         cls.load_user_gen()
         print('load user gender succ', cls.LOC_STATED)
-        res_lst = [[] for i in range(len(cls.LOC_STATED)+1)]
+        res_lst = [[] for i in range(len(cls.LOC_STATED) + 1)]
         cls.DATE_DIS = datetime.timedelta(hours=0)
         # daily_m是一个字典,id,name为抽样日活，num为最近一日日活用户数量，以及各种loc中的各种日活用户数量
         daily_m = cls.daily_active(StatItems.objects(name=u'抽样日活').first(), date)
@@ -408,9 +402,12 @@ class JournalService(object):
             try:
                 # res为根据该统计量的id计算得到的结果
                 res = cls.cal_by_id(str(item.id))
-                # for sheet in res:
-
+                for sheet_index in range(len(res)):
+                    sheet = res[sheet_index]
+                    temp_res = [sheet['name'], sheet['计数'], sheet['boy'], sheet['girl'], sheet['新用户人次'], sheet['新用户人数']]
+                    res_lst[sheet_index].append(temp_res)
             except Exception as e:
                 print(e)
                 continue
-        write_data_to_multisheets(dst_addr, ['总计']+cls.LOC_STATED, ['名称','计数','新用户人次','新用户人数'],res_lst)
+        write_data_to_multisheets(dst_addr, ['总计'] + cls.LOC_STATED, ['名称', '计数', 'boy', 'girl', '新用户人次', '新用户人数'],
+                                  res_lst)
