@@ -111,20 +111,30 @@ class JournalService(object):
         各种location,new_loc,count_loc最近一天的用户数量
         """
         # 统计准备工作
-        res = [{}] * (len(cls.LOC_STATED) +1)
+        res = [{}] * (len(cls.LOC_STATED) + 1)
         for i in res:
-            i["id"]=str(item.id)
-            i['name']= item.name
+            i["id"] = str(item.id)
+            i['name'] = item.name
             i['计数'] = 0.0
             i['boy'] = 0.0
             i['girl'] = 0.0
             i['新用户人次'] = 0.0
             i['新用户人数'] = 0.0
         from_time, to_time = cls._get_alilog_time_str(date)
+        resp = AliLogService.get_log_atom(from_time=from_time, to_time=to_time,
+                                          query='*|select count(distinct user_id) as res')
+        logs = resp.logs
+        for log in logs:
+            res[0]['计数'] = log.get_contents()['res']
         resp = AliLogService.get_log_by_time_and_topic(from_time=from_time, to_time=to_time)
+        uids = set()
+        new_user_acted = set()
         for log in resp.logs:
             user_id = log.get_contents()['user_id']
-
+            if user_id in uids:
+                continue
+            uids.add(user_id)
+            cls.cal_res_by_uid(user_id, res, new_user_acted)
         return res
 
     @classmethod
@@ -259,12 +269,12 @@ class JournalService(object):
             return
         res[0]['新用户人次'] += 1
         sheet_index = cls.LOC_STATED.index(loc) + 1
-        res[sheet_index]['新用户人次']+=1
+        res[sheet_index]['新用户人次'] += 1
 
         if user_id in new_user_acted:
             return
         res[0]['新用户人数'] += 1
-        res[sheet_index]['新用户人次'] +=1
+        res[sheet_index]['新用户人次'] += 1
         new_user_acted.add(user_id)
 
     @classmethod
@@ -273,7 +283,7 @@ class JournalService(object):
         对满足item条件限制的对象不做去重
         :param item_id: 一个统计量对应的id
         :param need_loc:
-        :return: 返回一个dict，有id,name,num,loc,new_loc,count_loc各个字段
+        :return: 返回一个list，包含总计res和各个地区的res
         """
         if cls.CACHED_RES.get(item_id):
             return cls.CACHED_RES[item_id]
@@ -293,10 +303,10 @@ class JournalService(object):
         expression = item.expression
 
         # 统计准备工作
-        res = [{}] * (len(cls.LOC_STATED) +1)
+        res = [{}] * (len(cls.LOC_STATED) + 1)
         for i in res:
-            i["id"]=item_id
-            i['name']= item.name
+            i["id"] = item_id
+            i['name'] = item.name
             i['计数'] = 0.0
             i['boy'] = 0.0
             i['girl'] = 0.0
@@ -383,66 +393,24 @@ class JournalService(object):
         return None, True
 
     @classmethod
-    def out_port_result(cls, dst_addr, date):
+    def out_port_result(cls, dst_addr, date, stat_type=StatItems.BUSINESS_TYPE):
         cls.load_user_loc()
         print('load user location succ', cls.LOC_STATED)
         cls.load_user_gen()
         print('load user gender succ', cls.LOC_STATED)
-        res_lst = []
+        res_lst = [[] for i in range(len(cls.LOC_STATED)+1)]
         cls.DATE_DIS = datetime.timedelta(hours=0)
-        cnt = 0
         # daily_m是一个字典,id,name为抽样日活，num为最近一日日活用户数量，以及各种loc中的各种日活用户数量
         daily_m = cls.daily_active(StatItems.objects(name=u'抽样日活').first(), date)
         print('load daily_m', daily_m)
         # 遍历StatItems中所有类型为BUSINESS_TYPE的统计量item
-        # for item in StatItems.get_items_by_type(StatItems.BUSINESS_TYPE):
-        #     try:
-        #         # m为根据该统计量的id计算得到的结果
-        #         m = cls.cal_by_id(str(item.id))
-        #         name, num = m['name'], m['num']
-        #         gender_cnt = [m[gender] for gender in cls.GENDERS]
-        #         # region_cnt = [m[loc] for loc in cls.LOC_STATED]
-        #         avr_cnt = []
-        #         for loc in cls.LOC_STATED:
-        #             if daily_m[loc]:
-        #                 data = round(m.get(loc, 0) / daily_m[loc], 4)
-        #                 avr_cnt.append(data)
-        #             else:
-        #                 avr_cnt.append(0)
-        #         res_lst.append([name, num] + gender_cnt + [num / daily_m['num']] + avr_cnt)
-        #         print(name, num)
-        #         cnt += 1
-        #     except Exception as e:
-        #         print(e)
-        #         continue
-        # write_data_to_multisheets(dst_addr, ['总计']+cls.LOC_STATED, ['名称','计数','新用户人次','新用户人数'],res_lst)
+        for item in StatItems.get_items_by_type(stat_type):
+            try:
+                # res为根据该统计量的id计算得到的结果
+                res = cls.cal_by_id(str(item.id))
+                for sheet in res:
 
-    @classmethod
-    def ad_res(cls, dst_addr, date):
-        # cls.load_user_loc()
-        res_lst = []
-        cnt = 0
-        daily_m = cls.daily_active(StatItems.objects(name=u'抽样日活').first())
-        cls.DATE_DIS = datetime.timedelta(hours=-16)
-        # stat_date = cls._get_stat_date(date)
-        #     for item in StatItems.get_items_by_type(StatItems.AD_TYPE):
-        #         try:
-        #             m = cls.cal_by_id(str(item.id))
-        #             name, num = m['name'], m['num']
-        #             region_cnt = [m[loc] for loc in cls.LOC_STATED]
-        #             avr_cnt = []
-        #             for loc in cls.LOC_STATED:
-        #                 if daily_m[loc]:
-        #                     data = round(m.get(loc, 0) / daily_m[loc], 4)
-        #                     avr_cnt.append(data)
-        #                 else:
-        #                     avr_cnt.append(0)
-        #             res_lst.append([name, num] + region_cnt + [num / daily_m['num']] + avr_cnt)
-        #             cnt += 1
-        #         except Exception as e:
-        #             print(e)
-        #             continue
-        # # write_data_to_xls(dst_addr,
-        # #                   [u'名字', u'数量'] + cls.LOC_STATED + ['total avr'] + [el + 'avr' for el in cls.LOC_STATED],
-        # #                   res_lst)
-        # write_data_to_xls(dst_addr, [u'名字', u'数量'] + cls.GENDERS + [u'新用户'], res_lst)
+            except Exception as e:
+                print(e)
+                continue
+        write_data_to_multisheets(dst_addr, ['总计']+cls.LOC_STATED, ['名称','计数','新用户人次','新用户人数'],res_lst)
