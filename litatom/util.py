@@ -242,6 +242,31 @@ def write_data_to_xls(name, tb_heads, datas):
             sheet1.write(i + 1, j, datas[i][j])
     f.save(name)
 
+def write_data_to_multisheets(name, sheet_names, tb_heads, data):
+    """
+
+    :param name:
+    :param sheet_names:
+    :param tb_heads:
+    :param data:
+    :return:
+    """
+    import xlwt
+    f = xlwt.Workbook(encoding='utf-8')
+    # 建表
+    sheets = [f.add_sheet(s) for s in sheet_names]
+    # 写表头
+    for sheet in sheets:
+        for i in range(len(tb_heads)):
+            sheet.write(i, 0, tb_heads[i])
+    for sheet_num in range(data):
+        sheet_data = data[sheet_num]
+        for i in range(len(sheet_data)):
+            for j in range(len(sheet_data[i])):
+                sheets[i].write(i+1, j, data[i][j])
+    f.save(name)
+
+
 def write_data_to_xls_col(name, tb_heads, data, encoding='ascii'):
     """表头在第一列"""
     import xlwt
