@@ -90,7 +90,7 @@ class JournalService(object):
         各种location,new_loc,count_loc最近一天的用户数量
         """
         # 统计准备工作
-        res = [{}] * (len(cls.LOC_STATED) + 1)
+        res = [{} for i in range(len(cls.LOC_STATED) + 1)]
         for i in res:
             i["id"] = str(item.id)
             i['name'] = item.name
@@ -117,7 +117,7 @@ class JournalService(object):
                     continue
                 uids.add(user_id)
                 cls.cal_res_by_uid(user_id, res, new_user_acted)
-        print('len(uids)',uids)
+        print('len(uids)',len(uids))
         return res
 
     @classmethod
@@ -285,7 +285,7 @@ class JournalService(object):
         expression = item.expression
 
         # 统计准备工作
-        res = [{}] * (len(cls.LOC_STATED) + 1)
+        res = [{} for i in range(len(cls.LOC_STATED) + 1)]
         for i in res:
             i["id"] = item_id
             i['name'] = item.name

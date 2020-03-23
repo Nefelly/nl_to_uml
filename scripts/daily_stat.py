@@ -35,7 +35,7 @@ def run(stat_date=None):
     JournalService.load_user_gen()
     print('load user gen')
     res = JournalService.daily_active(StatItems.objects(name='抽样日活').first(),stat_date)
-    print(res)
+    print(res.encode('UTF-8'))
     AlertService.send_file(['644513759@qq.com'],
                            dst_addr)
     # JournalService.out_port_result(ad_addr, stat_date, StatItems.AD_TYPE)
