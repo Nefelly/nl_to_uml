@@ -389,7 +389,7 @@ class JournalService(object):
             try:
                 # res为根据该统计量的id计算得到的结果
                 res = cls.cal_by_id(str(item.id))
-                print(item,res)
+                print(item.name,res)
                 for sheet_index in range(len(res)):
                     sheet = res[sheet_index]
                     temp_res = [sheet['name'], sheet['计数'], sheet['boy'], sheet['girl'], sheet['新用户人次'], sheet['新用户人数']]
