@@ -259,11 +259,11 @@ def write_data_to_multisheets(name, sheet_names, tb_heads, data):
     for sheet in sheets:
         for i in range(len(tb_heads)):
             sheet.write(i, 0, tb_heads[i])
-    for sheet_num in range(data):
+    for sheet_num in range(len(data)):
         sheet_data = data[sheet_num]
         for i in range(len(sheet_data)):
             for j in range(len(sheet_data[i])):
-                sheets[i].write(i+1, j, data[i][j])
+                sheets[i].write(i+1, j, sheet_data[i][j])
     f.save(name)
 
 
