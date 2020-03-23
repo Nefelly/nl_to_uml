@@ -172,8 +172,10 @@ class JournalService(object):
 
         for loc_index in range(len(res)):
             for item in res[loc_index]:
+                # item 即计数,boy,girl,新用户等
                 tmp_exp = expression
                 for stat_item in res_stat_set:
+                    # stat_item是表达式中的各种统计量, res_stat_set[stat_item]是一个字典，表示那一个统计量的结果
                     tmp_exp = tmp_exp.replace(stat_item, str(res_stat_set[stat_item][loc_index][item]))
                 res[loc_index][item] = cal_exp(tmp_exp)
         return res

@@ -22,25 +22,13 @@ def run(stat_date=None):
         ad_addr = '/data/statres/%sad.xlsx' % (datetime.datetime.now() - datetime.timedelta(days=1)).strftime(
             '%Y-%m-%d')
     ensure_path(dst_addr)
-    # if not os.path.exists(dst_addr) or 1:
-    #     JournalService.out_port_result(dst_addr, stat_date, StatItems.BUSINESS_TYPE)
-    if not os.path.exists(dst_addr):
-        ensure_path(dst_addr)
-        print(1)
-    if not os.path.exists(dst_addr):
-        print(2)
-
-    JournalService.load_user_loc()
-    print('load user loc')
-    JournalService.load_user_gen()
-    print('load user gen')
-    res = JournalService.daily_active(StatItems.objects(name='抽样日活').first(),stat_date)
-    print(res.encode('UTF-8'))
+    if not os.path.exists(dst_addr) or 1:
+        JournalService.out_port_result(dst_addr, stat_date, StatItems.BUSINESS_TYPE)
     AlertService.send_file(['644513759@qq.com'],
                            dst_addr)
-    # JournalService.out_port_result(ad_addr, stat_date, StatItems.AD_TYPE)
-    # AlertService.send_file(['644513759@qq.com'],
-    #                        ad_addr)
+    JournalService.out_port_result(ad_addr, stat_date, StatItems.AD_TYPE)
+    AlertService.send_file(['644513759@qq.com'],
+                           ad_addr)
 
 
 if __name__ == "__main__":
