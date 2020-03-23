@@ -27,8 +27,13 @@ def run(stat_date=None):
     if not os.path.exists(dst_addr):
         ensure_path(dst_addr)
         print(1)
+    if not os.path.exists(dst_addr):
+        print(2)
+
     JournalService.load_user_loc()
+    print('load user loc')
     JournalService.load_user_gen()
+    print('load user gen')
     res = JournalService.daily_active(StatItems.objects(name='抽样日活').first(),stat_date)
     print(res)
     AlertService.send_file(['644513759@qq.com'],
