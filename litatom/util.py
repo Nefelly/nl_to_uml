@@ -258,7 +258,7 @@ def write_data_to_multisheets(name, sheet_names, tb_heads, data):
     # 写表头
     for sheet in sheets:
         for i in range(len(tb_heads)):
-            sheet.write(i, 0, tb_heads[i])
+            sheet.write(0, i, tb_heads[i])
     for sheet_num in range(len(data)):
         sheet_data = data[sheet_num]
         for i in range(len(sheet_data)):
