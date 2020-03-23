@@ -344,8 +344,9 @@ class DiamStatService(object):
         'diam_unban_man_time': 'name:unban_by_diamonds | SELECT COUNT(1) as res',
         'diam_unban_cons_num': 'name:unban_by_diamonds | SELECT -sum(diamonds) as res',
         'diam_accost_cons_num': 'name:accost_reset | SELECT -sum(diamonds) as res',
-        'palm_unlock_people_num':'name:palm_result |select count(DISTINCT user_id)',
-        'palm_unlock_man_time':'',
+        'palm_unlock_people_num':'name:palm_result |select count(DISTINCT user_id) as res',
+        'palm_unlock_man_time':'name:palm_result |select count(*) as res',
+        'palm_unlock_diam_cons_num':'name:palm_result |select -sum(diamonds) as res',
     }
     STAT_ACTION_QUERY_LIST = {
         '10_diam_share_man_time': 'remark:share\ prepare | select count(*) as res',
@@ -532,7 +533,8 @@ class DiamStatService(object):
                        excel_dic['acce_con_man_time_num'], excel_dic['acce_diam_cons_num'],
                        excel_dic['diam_unban_people_num'], excel_dic['diam_unban_man_time'],
                        excel_dic['diam_unban_cons_num'],
-                       action_excel_dic['accost_people_num'],action_excel_dic['accost_man_time'],excel_dic['diam_accost_cons_num']]
+                       action_excel_dic['accost_people_num'],action_excel_dic['accost_man_time'],excel_dic['diam_accost_cons_num'],
+                       excel_dic['palm_unlock_people_num'],excel_dic['palm_unlock_man_time'],excel_dic['palm_unlock_diam_cons_num']]
         return excel_data
 
     @classmethod
