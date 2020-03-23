@@ -26,6 +26,9 @@ def run(stat_date=None):
     #     JournalService.out_port_result(dst_addr, stat_date, StatItems.BUSINESS_TYPE)
     if not os.path.exists(dst_addr):
         ensure_path(dst_addr)
+        print(1)
+    JournalService.load_user_loc()
+    JournalService.load_user_gen()
     res = JournalService.daily_active(StatItems.objects(name='抽样日活').first(),stat_date)
     print(res)
     AlertService.send_file(['644513759@qq.com'],
