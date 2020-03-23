@@ -39,12 +39,6 @@ class JournalService(object):
     @classmethod
     def load_user_loc(cls):
         """类的预装载函数，把现有的LOC_STATED，加上new_，和count_前缀,同时准备USER_LOC,NEW_USER_LOC"""
-        to_append = []
-        for loc in cls.LOC_STATED:
-            to_append.append(cls._get_new_loc(loc))
-        for loc in cls.LOC_STATED:
-            to_append.append(cls._get_count_loc(loc))
-        cls.LOC_STATED += to_append
         if not cls.IS_TESTING:
             objs = UserSetting.objects()
         else:
@@ -80,14 +74,6 @@ class JournalService(object):
         return res, True
 
     @classmethod
-    def _get_new_loc(cls, loc):
-        return 'new_' + loc
-
-    @classmethod
-    def _get_count_loc(cls, loc):
-        return 'new_count_' + loc
-
-    @classmethod
     def _get_res_from_query(cls, from_time, to_time, query):
         resp = AliLogService.get_log_atom(from_time=from_time, to_time=to_time, query=query)
         for log in resp.logs:
@@ -104,21 +90,22 @@ class JournalService(object):
         各种location,new_loc,count_loc最近一天的用户数量
         """
         # 统计准备工作
-        res = [{}] * (len(cls.LOC_STATED) + 1)
+        res = [{} for i in range(len(cls.LOC_STATED) + 1)]
         for i in res:
             i["id"] = str(item.id)
             i['name'] = item.name
-            i['计数'] = 0
-            i['boy'] = 0
-            i['girl'] = 0
-            i['新用户人次'] = 0
-            i['新用户人数'] = 0
+            i['计数'] = 0.0
+            i['boy'] = 0.0
+            i['girl'] = 0.0
+            i['新用户人次'] = 0.0
+            i['新用户人数'] = 0.0
         from_time, to_time = cls._get_alilog_time_str(date)
         resp = AliLogService.get_log_atom(from_time=from_time, to_time=to_time,
                                           query='*|select count(distinct user_id) as res')
         logs = resp.logs
         for log in logs:
             res[0]['计数'] = int(log.get_contents()['res'])
+            log.log_print()
         resp_set = AliLogService.get_log_by_time_and_topic(from_time=from_time, to_time=to_time,
                                                            query='*|select distinct user_id limit 1000000')
         uids = set()
@@ -130,6 +117,7 @@ class JournalService(object):
                     continue
                 uids.add(user_id)
                 cls.cal_res_by_uid(user_id, res, new_user_acted)
+        print('len(uids)',len(uids))
         return res
 
     @classmethod
@@ -164,7 +152,6 @@ class JournalService(object):
         """
         :param expression: 一个表达式，str类型，包含若干操作数和基本运算符(python eval()可以接受的运算符);
         操作数是一个24位的统计量ID，expression是基于其它统计量的一个运算；
-        :param need_loc: 如果need_loc=True，会针对每个location，分别基于其它统计量的'loc'结果，进行计算，key为各种'loc'
         :return: 一个dict，key为'num'的为主要计算结果，基于其它统计量的'num'结果
         """
 
@@ -185,8 +172,10 @@ class JournalService(object):
 
         for loc_index in range(len(res)):
             for item in res[loc_index]:
+                # item 即计数,boy,girl,新用户等
                 tmp_exp = expression
                 for stat_item in res_stat_set:
+                    # stat_item是表达式中的各种统计量, res_stat_set[stat_item]是一个字典，表示那一个统计量的结果
                     tmp_exp = tmp_exp.replace(stat_item, str(res_stat_set[stat_item][loc_index][item]))
                 res[loc_index][item] = cal_exp(tmp_exp)
         return res
@@ -264,7 +253,7 @@ class JournalService(object):
         if new_loc not in cls.LOC_STATED:
             return
         res[0]['新用户人次'] += 1
-        sheet_index = cls.LOC_STATED.index(loc) + 1
+        sheet_index = cls.LOC_STATED.index(new_loc) + 1
         res[sheet_index]['新用户人次'] += 1
 
         if user_id in new_user_acted:
@@ -278,7 +267,6 @@ class JournalService(object):
         """
         对满足item条件限制的对象不做去重
         :param item_id: 一个统计量对应的id
-        :param need_loc:
         :return: 返回一个list，包含总计res和各个地区的res
         """
         if cls.CACHED_RES.get(item_id):
@@ -299,15 +287,15 @@ class JournalService(object):
         expression = item.expression
 
         # 统计准备工作
-        res = [{}] * (len(cls.LOC_STATED) + 1)
+        res = [{} for i in range(len(cls.LOC_STATED) + 1)]
         for i in res:
             i["id"] = item_id
             i['name'] = item.name
-            i['计数'] = 0
-            i['boy'] = 0
-            i['girl'] = 0
-            i['新用户人次'] = 0
-            i['新用户人数'] = 0
+            i['计数'] = 0.0
+            i['boy'] = 0.0
+            i['girl'] = 0.0
+            i['新用户人次'] = 0.0
+            i['新用户人数'] = 0.0
         # 如果该统计量是复合的，没有相应的表存储信息，则根据其表达式expression计算结果
         # id,name,num,以及各种loc，为返回结果res，类型为一个dict
         if not table_name:
@@ -393,18 +381,15 @@ class JournalService(object):
         cls.load_user_loc()
         print('load user location succ', cls.LOC_STATED)
         cls.load_user_gen()
-        print('load user gender succ', cls.LOC_STATED)
+        print('load user gender succ', cls.GENDERS)
         res_lst = [[] for i in range(len(cls.LOC_STATED) + 1)]
         cls.DATE_DIS = datetime.timedelta(hours=0)
-        # daily_m是一个字典,id,name为抽样日活，num为最近一日日活用户数量，以及各种loc中的各种日活用户数量
-        daily_m = cls.daily_active(StatItems.objects(name=u'抽样日活').first(), date)
-        print('load daily_m', daily_m)
-        # 遍历StatItems中所有类型为BUSINESS_TYPE的统计量item
+        # 遍历StatItems中所有类型为stat_type的统计量item
         for item in StatItems.get_items_by_type(stat_type):
             try:
                 # res为根据该统计量的id计算得到的结果
                 res = cls.cal_by_id(str(item.id))
-                print(res)
+                print(item.name,res)
                 for sheet_index in range(len(res)):
                     sheet = res[sheet_index]
                     temp_res = [sheet['name'], sheet['计数'], sheet['boy'], sheet['girl'], sheet['新用户人次'], sheet['新用户人数']]
@@ -412,5 +397,7 @@ class JournalService(object):
             except Exception as e:
                 print(e)
                 continue
+        print('```````````````````````````````````````')
+        print(res_lst)
         write_data_to_multisheets(dst_addr, ['总计'] + cls.LOC_STATED, ['名称', '计数', 'boy', 'girl', '新用户人次', '新用户人数'],
                                   res_lst)
