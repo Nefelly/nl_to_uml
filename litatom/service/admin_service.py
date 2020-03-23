@@ -31,7 +31,8 @@ from ..service import (
 from ..const import (
     MAX_TIME,
     ONE_DAY,
-    FOREVER
+    FOREVER,
+    MANUAL_FORBID,
 )
 from hendrix.conf import setting
 from ..redis import RedisClient
@@ -162,10 +163,9 @@ class AdminService(object):
             feed = Feed.get_by_id(report.target_uid)
             if feed:
                 report.target_uid = feed.user_id
-        res = ForbiddenService.forbid_user(report.target_uid, ban_time)
+        res = ForbiddenService.forbid_user(report.target_uid, ban_time, MANUAL_FORBID)
         if res:
             report.ban(ban_time)
-            ForbiddenService.feedback_to_reporters(report.target_uid, [report.uid])
             return None, True
         return u'forbid error', False
 
@@ -182,13 +182,12 @@ class AdminService(object):
         data, status = cls.ban_device_by_uid(report.target_uid)
         if status:
             report.ban(FOREVER)
-            ForbiddenService.feedback_to_reporters(report.target_uid, [report.uid])
             return None, True
         return data, status
 
     @classmethod
     def ban_device_by_uid(cls, uid):
-        res = ForbiddenService.forbid_user(uid, FOREVER)
+        res = ForbiddenService.forbid_user(uid, FOREVER, MANUAL_FORBID)
         user_setting = UserSetting.get_by_user_id(uid)
         if not user_setting or not user_setting.uuid:
             return u'has not device_id', False
@@ -202,13 +201,13 @@ class AdminService(object):
         num = Report.objects(uid=user_id).count()
         if not setting.IS_DEV and num >= 2:
             return u'user not reported too much', False
-        ForbiddenService.forbid_user(user_id, 20 * ONE_DAY)
+        ForbiddenService.forbid_user(user_id, 20 * ONE_DAY, MANUAL_FORBID)
         return None, True
 
     @classmethod
     def ban_reporter(cls, user_id):
         num = Report.objects(uid=user_id).delete()
-        res = ForbiddenService.forbid_user(user_id, 20 * ONE_DAY)
+        res = ForbiddenService.forbid_user(user_id, 20 * ONE_DAY, MANUAL_FORBID)
         return None, True
 
     @classmethod
@@ -217,7 +216,7 @@ class AdminService(object):
         if not feed:
             return u'wrong feed id', False
         feed_user_id = feed.user_id
-        res = ForbiddenService.forbid_user(feed_user_id, ban_time)
+        res = ForbiddenService.forbid_user(feed_user_id, ban_time, MANUAL_FORBID)
         FeedService.delete_feed('', str(feed.id))
         if res:
             for feed in Feed.get_by_user_id(feed_user_id):
