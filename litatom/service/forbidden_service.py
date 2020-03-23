@@ -17,7 +17,6 @@ from ..model import (
     Report,
     UserModel,
     Feed,
-    User,
     UserRecord,
 )
 from ..util import (
@@ -28,6 +27,7 @@ from ..util import (
 from ..const import (
     ONE_DAY,
     SYS_FORBID,
+    MANUAL_FORBID,
 )
 
 redis_client = RedisClient()['lit']
@@ -101,11 +101,7 @@ class ForbiddenService(object):
         if not cls.accum_illegal_credit(target_user_id, ts_now) or UserService.is_official_account(target_user_id):
             return False
         # 违规积分达到上限，非高价值用户，要被封号
-        reporters = ReportService.mark_report(target_user_id, ts_now - 3 * ONE_DAY, ts_now)
-        SpamWordService.mark_spam_word(target_user_id, ts_now - 3 * ONE_DAY, ts_now)
-        cls.sys_forbid(target_user_id, cls.DEFAULT_SYS_FORBID_TIME)
-        # 封号消息返回给举报者们
-        cls.feedback_to_reporters(target_user_id, reporters)
+        cls.forbid_user(target_user_id, cls.DEFAULT_SYS_FORBID_TIME, SYS_FORBID, ts_now)
         return True
 
     @classmethod
@@ -128,18 +124,14 @@ class ForbiddenService(object):
         return False
 
     @classmethod
-    def forbid_user(cls, user_id, forbid_ts):
-        """手工封号服务接口"""
+    def forbid_user(cls, user_id, forbid_ts, forbid_type=SYS_FORBID, ts=int(time.time())):
+        """封号服务统一接口"""
         UserService.forbid_action(user_id, forbid_ts)
-        UserRecord.add_forbidden(user_id)
-        return True
-
-    @classmethod
-    def sys_forbid(cls, user_id, forbid_ts):
-        """系统封号服务接口"""
-        UserService.forbid_action(user_id, forbid_ts)
-        UserRecord.add_sys_forbidden(user_id)
-        return True
+        UserRecord.add_forbidden(user_id, forbid_type)
+        reporters = ReportService.mark_report(user_id, ts - 3 * ONE_DAY, ts)
+        SpamWordService.mark_spam_word(user_id, ts - 3 * ONE_DAY, ts)
+        # 封号消息返回给举报者们
+        cls.feedback_to_reporters(user_id, reporters)
 
     @classmethod
     def check_spam_word_in_one_minute(cls, user_id, ts):
