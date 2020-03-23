@@ -752,19 +752,11 @@ class UserRecord(Document):
         return cls.objects(create_time__gte=from_ts, create_time__lte=to_ts)
 
     @classmethod
-    def add_forbidden(cls, user_id):
+    def add_forbidden(cls, user_id, action=SYS_FORBID):
         obj = cls()
         obj.user_id = user_id
-        obj.action = MANUAL_FORBID
+        obj.action = action
         obj.create_time = int(time.time())
         obj.save()
         return True
 
-    @classmethod
-    def add_sys_forbidden(cls, user_id):
-        obj = cls()
-        obj.user_id = user_id
-        obj.action = SYS_FORBID
-        obj.create_time = int(time.time())
-        obj.save()
-        return True
