@@ -187,8 +187,8 @@ class AliLogService(object):
         """
         if size == -1 or size > 400000:
             if isinstance(from_time, int) and isinstance(to_time, int):
-                time_delta = (to_time - from_time) / 24.0
-                for i in range(24):
+                time_delta = (to_time - from_time) / 100.0
+                for i in range(100):
                     start_time = from_time + i * time_delta
                     end_time = from_time + (i + 1) * time_delta
                     resp = cls.get_log_atom(project=project, logstore=logstore, from_time=round(start_time),
@@ -197,8 +197,8 @@ class AliLogService(object):
             elif isinstance(from_time, str) and isinstance(to_time, str):
                 from_time_date = cls.alitime_to_datetime(from_time)
                 to_time_date = cls.alitime_to_datetime(to_time)
-                time_delta = (to_time_date - from_time_date) / 24
-                for i in range(24):
+                time_delta = (to_time_date - from_time_date) / 100
+                for i in range(100):
                     start_time = cls.datetime_to_alitime(from_time_date + i * time_delta)
                     end_time = cls.datetime_to_alitime(from_time_date + (i + 1) * time_delta)
                     resp = cls.get_log_atom(project=project, logstore=logstore, from_time=start_time, to_time=end_time,

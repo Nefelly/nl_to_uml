@@ -5,13 +5,17 @@ import time
 import datetime
 import logging
 import langid
+from dateutil.relativedelta import relativedelta
 from flask import request
 from ..redis import RedisClient
 from ..util import (
     validate_phone_number,
     get_time_info,
     time_str_by_ts,
-    trunc
+    trunc,
+    parse_standard_date,
+    format_standard_date,
+    get_zero_today,
 )
 from ..const import (
     TWO_WEEKS,
@@ -231,7 +235,7 @@ class UserService(object):
         if loc:
             UserSetting.create_setting(str(user.id), loc, request.uuid)
         if not request.uuid:
-            return u'your version is too low!' , False
+            return u'your version is too low!', False
         if cls.device_blocked():
             return cls.ERROR_DEVICE_FORBIDDEN, False
         return None, True
@@ -508,6 +512,15 @@ class UserService(object):
         return False
 
     @classmethod
+    def check_valid_birthdate(cls, birthdate):
+        """无效生日均设为18岁"""
+        birth = parse_standard_date(birthdate)
+        now = get_zero_today()
+        if now - relativedelta(years=60) <= birth <= now - relativedelta(years=13):
+            return birthdate
+        return format_standard_date(now - relativedelta(years=18))
+
+    @classmethod
     def update_info(cls, user_id, data):
         els = ['nickname', 'birthdate', 'avatar', 'bio', 'country', 'referral_code']
         once = ['gender']
@@ -557,7 +570,7 @@ class UserService(object):
                 user.avatar = random.choice(random_avatars.get(gender))
         if data.get('birthdate', ''):
             User.change_age(user_id)
-            user.birthdate = data.get('birthdate')
+            user.birthdate = cls.check_valid_birthdate(data.get('birthdate'))
             user.save()
             if getattr(request, 'region',
                        '') == GlobalizationService.REGION_IN or request.loc == GlobalizationService.LOC_IN:
