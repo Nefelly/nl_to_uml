@@ -42,7 +42,7 @@ class ShareStatService(object):
         return REDIS_SHARE_KNOWN_NUM.format(user_id=user_id)
 
     @classmethod
-    def _get_clicker_key(cls, ip):
+    def get_clicker_key(cls, ip):
         return REDIS_CLICK_SHARE.format(ip=ip)
 
     @classmethod
@@ -58,7 +58,7 @@ class ShareStatService(object):
     @classmethod
     def record_clicker_redis(cls, ip):
         """把点击分享链接的人存入一小时过期的缓存当中，用于估算其是否会因此而下载"""
-        key = cls._get_clicker_key(ip)
+        key = cls.get_clicker_key(ip)
         if not redis_client.exists(ip):
             redis_client.set(key,1)
         redis_client.expire(key, cls.CLICK_EXPIRE_TIME)

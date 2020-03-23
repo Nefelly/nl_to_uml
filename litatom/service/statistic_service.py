@@ -353,8 +353,9 @@ class DiamStatService(object):
         '10_diam_share_people_num':'remark:share\ prepare | select count(distinct user_id) as res',
         '100_diam_share_man_time':'',
         '100_diam_share_people_num':'',
-        'accost_people_num':'remark:accost_pass | SELECT COUNT(DISTINCT user_id)',
-        'accost_man_time':'remark:accost_pass | SELECT COUNT(1)'
+        'accost_people_num':'remark:accost_pass | SELECT COUNT(DISTINCT user_id) as res',
+        'accost_man_time':'remark:accost_pass | SELECT COUNT(1) as res',
+        'register_reason_by_share':'remark:create_new_user |select count(distinct user_id) as res',
     }
     FREE_QUERY_LIST = {
         'diam_incr_num': 'diamonds>0|select sum(diamonds) as res',
@@ -534,7 +535,8 @@ class DiamStatService(object):
                        excel_dic['diam_unban_people_num'], excel_dic['diam_unban_man_time'],
                        excel_dic['diam_unban_cons_num'],
                        action_excel_dic['accost_people_num'],action_excel_dic['accost_man_time'],excel_dic['diam_accost_cons_num'],
-                       excel_dic['palm_unlock_people_num'],excel_dic['palm_unlock_man_time'],excel_dic['palm_unlock_diam_cons_num']]
+                       excel_dic['palm_unlock_people_num'],excel_dic['palm_unlock_man_time'],excel_dic['palm_unlock_diam_cons_num'],
+                       action_excel_dic['register_reason_by_share']]
         return excel_data
 
     @classmethod
@@ -554,7 +556,8 @@ class DiamStatService(object):
                                r'加速人数', r'加速购买人次', r'加速-钻石消耗数量',
                                r'钻石解封人数', r'钻石解封人次', r'解封-钻石消耗数量',
                                r'搭讪人数',r'搭讪人次',r'搭讪钻石消耗数量',
-                               r'手相解锁人数',r'手相解锁人次',r'手相解锁-钻石消耗数量'], res, 'utf-8')
+                               r'手相解锁人数',r'手相解锁人次',r'手相解锁-钻石消耗数量',
+                               r'分享带来新用户数'], res, 'utf-8')
 
     @classmethod
     def diam_free_report(cls, addr, date=datetime.datetime.now()):
