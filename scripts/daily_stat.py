@@ -1,16 +1,14 @@
 import os
 import sys
-import fcntl
-import datetime
-from hendrix.conf import setting
-from litatom.service import AlertService, JournalService, AliLogService
-import time
+from litatom.service import AlertService, JournalService
 import datetime
 from litatom.util import (
-    write_data_to_xls,
     ensure_path,
-    now_date_key
 )
+from litatom.model import (
+    StatItems
+)
+
 
 def run(stat_date=None):
     # stat_date = datetime.datetime(2019, 11, 27)
@@ -25,10 +23,12 @@ def run(stat_date=None):
             '%Y-%m-%d')
     ensure_path(dst_addr)
     if not os.path.exists(dst_addr) or 1:
-        JournalService.out_port_result(dst_addr,stat_date)
-    AlertService.send_file(["litatomwang@gmail.com", "w326571@126.com", '382365209@qq.com'], dst_addr)
-    JournalService.ad_res(ad_addr,stat_date)
-    AlertService.send_file(["litatomwang@gmail.com", "w326571@126.com", '382365209@qq.com'], ad_addr)
+        JournalService.out_port_result(dst_addr, stat_date, StatItems.BUSINESS_TYPE)
+    AlertService.send_file(["litatomwang@gmail.com", "w326571@126.com", '382365209@qq.com', '644513759@qq.com'],
+                           dst_addr)
+    JournalService.out_port_result(ad_addr, stat_date, StatItems.AD_TYPE)
+    AlertService.send_file(["litatomwang@gmail.com", "w326571@126.com", '382365209@qq.com', '644513759@qq.com'],
+                           ad_addr)
 
 
 if __name__ == "__main__":
@@ -37,5 +37,5 @@ if __name__ == "__main__":
     else:
         date_str = sys.argv[1]
         stat_date = datetime.datetime.strptime(sys.argv[1], '%Y-%m-%d')
-        print stat_date
+        print(stat_date)
         run(stat_date)
