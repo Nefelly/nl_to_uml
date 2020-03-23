@@ -108,11 +108,11 @@ class JournalService(object):
         for i in res:
             i["id"] = str(item.id)
             i['name'] = item.name
-            i['计数'] = 0.0
-            i['boy'] = 0.0
-            i['girl'] = 0.0
-            i['新用户人次'] = 0.0
-            i['新用户人数'] = 0.0
+            i['计数'] = 0
+            i['boy'] = 0
+            i['girl'] = 0
+            i['新用户人次'] = 0
+            i['新用户人数'] = 0
         from_time, to_time = cls._get_alilog_time_str(date)
         resp = AliLogService.get_log_atom(from_time=from_time, to_time=to_time,
                                           query='*|select count(distinct user_id) as res')
@@ -303,11 +303,11 @@ class JournalService(object):
         for i in res:
             i["id"] = item_id
             i['name'] = item.name
-            i['计数'] = 0.0
-            i['boy'] = 0.0
-            i['girl'] = 0.0
-            i['新用户人次'] = 0.0
-            i['新用户人数'] = 0.0
+            i['计数'] = 0
+            i['boy'] = 0
+            i['girl'] = 0
+            i['新用户人次'] = 0
+            i['新用户人数'] = 0
         # 如果该统计量是复合的，没有相应的表存储信息，则根据其表达式expression计算结果
         # id,name,num,以及各种loc，为返回结果res，类型为一个dict
         if not table_name:
