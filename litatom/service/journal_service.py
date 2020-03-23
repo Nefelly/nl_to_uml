@@ -105,6 +105,7 @@ class JournalService(object):
         logs = resp.logs
         for log in logs:
             res[0]['计数'] = int(log.get_contents()['res'])
+            log.log_print()
         resp_set = AliLogService.get_log_by_time_and_topic(from_time=from_time, to_time=to_time,
                                                            query='*|select distinct user_id limit 1000000')
         uids = set()
@@ -116,6 +117,7 @@ class JournalService(object):
                     continue
                 uids.add(user_id)
                 cls.cal_res_by_uid(user_id, res, new_user_acted)
+        print('len(uids)',uids)
         return res
 
     @classmethod
@@ -249,7 +251,7 @@ class JournalService(object):
         if new_loc not in cls.LOC_STATED:
             return
         res[0]['新用户人次'] += 1
-        sheet_index = cls.LOC_STATED.index(loc) + 1
+        sheet_index = cls.LOC_STATED.index(new_loc) + 1
         res[sheet_index]['新用户人次'] += 1
 
         if user_id in new_user_acted:
@@ -377,7 +379,7 @@ class JournalService(object):
         cls.load_user_loc()
         print('load user location succ', cls.LOC_STATED)
         cls.load_user_gen()
-        print('load user gender succ', cls.LOC_STATED)
+        print('load user gender succ', cls.GENDERS)
         res_lst = [[] for i in range(len(cls.LOC_STATED) + 1)]
         cls.DATE_DIS = datetime.timedelta(hours=0)
         # 遍历StatItems中所有类型为stat_type的统计量item
