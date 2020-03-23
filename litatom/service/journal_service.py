@@ -412,5 +412,7 @@ class JournalService(object):
             except Exception as e:
                 print(e)
                 continue
+        print('```````````````````````````````````````')
+        print(res_lst)
         write_data_to_multisheets(dst_addr, ['总计'] + cls.LOC_STATED, ['名称', '计数', 'boy', 'girl', '新用户人次', '新用户人数'],
                                   res_lst)
