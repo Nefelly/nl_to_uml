@@ -118,7 +118,7 @@ class JournalService(object):
                                           query='*|select count(distinct user_id) as res')
         logs = resp.logs
         for log in logs:
-            res[0]['计数'] = log.get_contents()['res']
+            res[0]['计数'] = int(log.get_contents()['res'])
         resp_set = AliLogService.get_log_by_time_and_topic(from_time=from_time, to_time=to_time,
                                                            query='*|select distinct user_id limit 1000000')
         uids = set()
