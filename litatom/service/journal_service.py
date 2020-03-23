@@ -257,7 +257,8 @@ class JournalService(object):
             return
         sheet_index = cls.LOC_STATED.index(loc) + 1
         res[sheet_index]['计数'] += 1
-        res[sheet_index][gender] += 1
+        if gender and gender in cls.GENDERS:
+            res[sheet_index][gender] += 1
 
         new_loc = cls.NEW_USER_LOC.get(user_id)
         if new_loc not in cls.LOC_STATED:
