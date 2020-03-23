@@ -29,7 +29,8 @@ from ..service import (
 )
 from ..key import (
     REDIS_ACCOUNT_ACTION,
-    REDIS_DEPOSIT_BY_ACTIVITY
+    REDIS_DEPOSIT_BY_ACTIVITY,
+    REDIS_SHARE_LIMIT
 )
 from ..redis import RedisClient
 from flask import (
@@ -235,6 +236,11 @@ class AccountService(object):
         new_day_deposit = day_deposit + diamonds
         if new_day_deposit > cls.DAY_ACTIVITY_LIMIT:
             return u'you have deposit by activity too much today, please try again tomorrow', False
+        if activity == cls.SHARE:
+            key = REDIS_SHARE_LIMIT.format(user_id=user_id)
+            if redis_client.get(key):
+                return u'you have been shared', False
+            redis_client.set(key, True, ONE_WEEK)
         redis_client.set(key, new_day_deposit, ONE_DAY)
         if activity == cls.WATCH_AD:
             data, status = AdService.verify_ad_viewed(user_id, other_info)
