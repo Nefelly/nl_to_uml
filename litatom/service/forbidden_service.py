@@ -126,6 +126,8 @@ class ForbiddenService(object):
     @classmethod
     def forbid_user(cls, user_id, forbid_ts, forbid_type=SYS_FORBID, ts=int(time.time())):
         """封号服务统一接口"""
+        if UserService.is_forbbiden(user_id):
+            return
         UserService.forbid_action(user_id, forbid_ts)
         UserRecord.add_forbidden(user_id, forbid_type)
         reporters = ReportService.mark_report(user_id, ts - 3 * ONE_DAY, ts)
