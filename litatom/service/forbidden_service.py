@@ -133,6 +133,7 @@ class ForbiddenService(object):
         SpamWordService.mark_spam_word(user_id, ts - 3 * ONE_DAY, ts)
         # 封号消息返回给举报者们
         cls.feedback_to_reporters(user_id, reporters)
+        return True
 
     @classmethod
     def check_spam_word_in_one_minute(cls, user_id, ts):
