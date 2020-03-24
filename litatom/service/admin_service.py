@@ -191,6 +191,9 @@ class AdminService(object):
         user_setting = UserSetting.get_by_user_id(uid)
         if not user_setting or not user_setting.uuid:
             return u'has not device_id', False
+        for obj in UserService.objects(uuid=user_setting.uuid):
+            if obj.user_id != uid:
+                ForbiddenService.forbid_user(obj.user_id, FOREVER, MANUAL_FORBID)
         BlockedDevices.add_device(user_setting.uuid)
         if not res:
             return 'forbid error', False
