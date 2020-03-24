@@ -126,12 +126,14 @@ class ForbiddenService(object):
     @classmethod
     def forbid_user(cls, user_id, forbid_ts, forbid_type=SYS_FORBID, ts=int(time.time())):
         """封号服务统一接口"""
-        UserService.forbid_action(user_id, forbid_ts)
-        UserRecord.add_forbidden(user_id, forbid_type)
+        if not UserService.is_forbbiden(user_id):
+            UserService.forbid_action(user_id, forbid_ts)
+            UserRecord.add_forbidden(user_id, forbid_type)
         reporters = ReportService.mark_report(user_id, ts - 3 * ONE_DAY, ts)
         SpamWordService.mark_spam_word(user_id, ts - 3 * ONE_DAY, ts)
         # 封号消息返回给举报者们
         cls.feedback_to_reporters(user_id, reporters)
+        return True
 
     @classmethod
     def check_spam_word_in_one_minute(cls, user_id, ts):
