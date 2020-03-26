@@ -69,7 +69,7 @@ class UserSettingService(object):
 
     @classmethod
     def get_setting_key(cls):
-        print request.is_ios, request.platform
+        print request.is_ios, request.platform, request.values
         return REDIS_SETTINGS_IOS if request.platform == PLATFORM_IOS else REDIS_SETTINGS_KEYS
 
     @classmethod
