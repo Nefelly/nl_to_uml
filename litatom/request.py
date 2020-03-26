@@ -63,7 +63,6 @@ class LitatomRequest(flask.Request):
     @cached_property
     def platform(self):
         p = self.values.get('platform', '').lower()
-        print p, self.args, '!!!!!'
         if p in [const.PLATFORM_ANDROID, const.PLATFORM_IOS]:
             return p
 
