@@ -16,10 +16,12 @@ from ..redis import RedisClient
 from ..const import (
     ONE_HOUR,
     TYPE_VOICE_AGORA,
-    TYPE_VOICE_TENCENT
+    TYPE_VOICE_TENCENT,
+    PLATFORM_IOS
 )
 from ..key import (
-    REDIS_SETTINGS_KEYS
+    REDIS_SETTINGS_KEYS,
+    REDIS_SETTINGS_IOS
 )
 
 from ..service import GlobalizationService
@@ -109,12 +111,15 @@ class UserSettingService(object):
 
         region = GlobalizationService.get_region()
         if setting.IS_DEV or 1:
-            cached_setting_str = redis_client.get(REDIS_SETTINGS_KEYS)
+            redis_key = REDIS_SETTINGS_IOS if request.platform == PLATFORM_IOS else REDIS_SETTINGS_KEYS
+            cached_setting_str = redis_client.get(redis_key)
             if False and not cls._valid_cache_str(cached_setting_str):
                 redis_client.delete(REDIS_SETTINGS_KEYS)
                 redis_client.set(REDIS_SETTINGS_KEYS, json.dumps(res))
             else:
-                res = json.loads(cached_setting_str)
+                tmp_res = json.loads(cached_setting_str)
+                if tmp_res:
+                    res = tmp_res
         # print region, "!" * 100, region not in [GlobalizationService.REGION_TH]
         if region not in [GlobalizationService.REGION_TH, GlobalizationService.REGION_VN]:
                res['modules_open']['video_match'] = 0
