@@ -407,8 +407,6 @@ class JournalService(object):
         # 遍历StatItems中所有类型为stat_type的统计量item
         for item in StatItems.get_items_by_type(stat_type):
             try:
-                if item.name != u'总发起匹配数':
-                    continue
                 # res为根据该统计量的id计算得到的结果
                 res = cls.cal_by_id(str(item.id))
                 print(item.name, res)
