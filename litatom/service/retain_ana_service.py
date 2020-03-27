@@ -1,23 +1,24 @@
 # coding: utf-8
-import json
 import datetime
-import time
-import string
 import logging
-import bson
-from collections import Counter
-from ..model import *
+import collections
+import xlwt
+from ..model import (
+    Feed,
+    User,
+)
 from ..util import (
-    get_zero_today,
     next_date,
     date_to_int_time,
-    write_data_to_xls,
-    ensure_path,
-    now_date_key
+    find_key_by_value,
+    now_date_key,
+    parse_standard_date,
+    format_standard_date,
+    write_sheet_certain_pos,
+    get_zero_today,
 )
-from mongoengine import (
-    DateTimeField,
-    IntField,
+from ..service import (
+    AliLogService,
 )
 
 from ..redis import RedisClient
@@ -26,115 +27,236 @@ logger = logging.getLogger(__name__)
 
 redis_client = RedisClient()['lit']
 
+
 class RetainAnaService(object):
     '''
+    用户留存数据信息服务
     '''
     IS_TESTING = False
-
-    DAY2BEFORE_ACT = {}
-    YESTODAY_ACT = {}
-
-
     USER_LOC = {}
     LOC_STATED = ['TH', 'VN']
     CACHED_RES = {}
 
-    @classmethod
-    def _get_time_str(cls, table_name, judge_field, days=-1):
-        zeroToday = get_zero_today()
-        zeroToday = zeroToday + datetime.timedelta(hours=2)
-        high_day = next_date(zeroToday, days + 1)
-        low_day = next_date(zeroToday, days)
-        is_int = isinstance(eval(table_name + '.' + judge_field), IntField)
-        low_time = low_day
-        high_time = high_day
-        if not is_int:
-            time_str = "%s__gte=%r, %s__lte=%r" % (judge_field, low_day, judge_field, high_day)
-        else:
-            low_time = date_to_int_time(low_day)
-            high_time = date_to_int_time(high_day)
-            time_str = "%s__gte=%r, %s__lte=%r" % (
-                judge_field, low_time, judge_field, high_time)
-        return time_str, low_time, high_time
+    COUNTRY_ENCODE = {'VN': 1, 'TH': 2, 'ID': 3}
+    GENDER_ENCODE = {'boy': 1, 'girl': 2}
+    ACTION_QUERY = {'startMatch': 'action:match and remark:startMatch'}
+    ACTION_ENCODE = {'startMatch': 1, 'feed_create': 101}
 
     @classmethod
-    def load_dicts(cls):
-        def get_action(action, remark):
-            if action == 'match':
-                return '%s_%s' % (action, remark)
-            return action
-            if len(remark) > 23:
-                return action
-            return '%s_%s' % (action, remark)
-        time_str, low_time, high_time = cls._get_time_str('UserSetting', 'create_time', -2)
-        action_time_str, action_low_time, action_high_time = cls._get_time_str('UserAction', 'create_time', -2)
-        action_ytime_str, action_ylow_time, action_yhigh_time = cls._get_time_str('UserAction', 'create_time', -1)
-        for obj in UserSetting.objects(create_time__gte=low_time, create_time__lte=high_time):
-            loc = obj.lang
-            user_id = obj.user_id
-            cls.USER_LOC[user_id] = loc
-            day2_actions = UserAction.objects(user_id=user_id, create_time__gte=action_low_time, create_time__lte=action_high_time)
-            cls.DAY2BEFORE_ACT[user_id] = [get_action(action.action, action.remark) for action in day2_actions] if day2_actions else ['None']
-            yestoday_acts = UserAction.objects(user_id=user_id, create_time__gte=action_ylow_time, create_time__lte=action_yhigh_time)
-            if yestoday_acts:
-                cls.YESTODAY_ACT[user_id] = [get_action(action.action, action.remark) for action in yestoday_acts]
+    def _load_user_action_info(cls, date, user_info, action):
+        action_code = cls.ACTION_ENCODE[action]
+        resp_set = AliLogService.get_log_by_time_and_topic(from_time=AliLogService.datetime_to_alitime(date),
+                                                           to_time=AliLogService.datetime_to_alitime(
+                                                               next_date(date, 1)),
+                                                           project='litatomaction', logstore='litatomactionstore',
+                                                           query=cls.ACTION_QUERY[action])
+        for resp in resp_set:
+            for log in resp.logs:
+                contents = log.get_contents()
+                user_id = contents['user_id']
+                if user_id in user_info.keys():
+                    user_info[user_id][3].add(action_code)
 
     @classmethod
-    def get_res(cls, dst_addr):
-        def get_res_by_user_ids(user_ids):
-            total_acts = 0.0
-            act_num = {}
-            last_act_num = {}
-            for uid in user_ids:
-                acts = cls.DAY2BEFORE_ACT[uid]
-                total_acts += len(acts)
-                last_act = acts[-1]
-                if last_act not in last_act_num:
-                    last_act_num[last_act] = 1
-                else:
-                    last_act_num[last_act] += 1
-                for act in acts:
-                    if act not in act_num:
-                        act_num[act] = 1
+    def _load_user_info(cls, date):
+        """
+        将指定日期的用户数据load到user_info字典中
+        :param date: datetime类型  表示0点
+        :return:
+        """
+        print('in _load_user_info', date)
+        user_info = {}
+        from_ts = date_to_int_time(date)
+        to_ts = date_to_int_time(next_date(date, 1))
+        users = User.get_by_create_time(next_date(date, -1), date)
+
+        i = 1
+        for user in users:
+            user_id = str(user.id)
+            user_info[user_id] = []
+
+            loc = user.country
+            if loc and loc in cls.COUNTRY_ENCODE:
+                user_info[user_id].append(cls.COUNTRY_ENCODE[loc])
+            else:
+                user_info[user_id].append(0)
+
+            gender = user.gender
+            if gender and gender in cls.GENDER_ENCODE:
+                user_info[user_id].append(cls.GENDER_ENCODE[gender])
+            else:
+                user_info[user_id].append(0)
+
+            age = User.age_by_user_id(user_id)
+            if age and 13 <= age <= 25:
+                user_info[user_id].append(age)
+            else:
+                user_info[user_id].append(0)
+
+            user_info[user_id].append(set())
+            if i % 1000 == 0:
+                print(i)
+            i += 1
+
+        feeds = Feed.get_by_create_time(from_ts, to_ts)
+        feed_create_code = cls.ACTION_ENCODE['feed_create']
+        for feed in feeds:
+            if feed.user_id in user_info:
+                user_info[feed.user_id][3].add(feed_create_code)
+
+        print('feed load succ')
+
+        for action in cls.ACTION_QUERY:
+            cls._load_user_action_info(date, user_info, action)
+
+        print('action load succ')
+
+        print('leave _load_user_info, user_info is listed below')
+        return user_info
+
+    @classmethod
+    def get_retain_res(cls, addr, from_date=next_date(get_zero_today(), -31), to_date=next_date(get_zero_today(), -1)):
+        print(from_date, to_date)
+        info_basic_list = []  # 存储了每日的新用户info
+        res_basic_list = []  # 存储了每日新用户数据统计
+        res_list = collections.OrderedDict()  # 存储了每日之后的次日留存、7日留存、30日留存
+        temp_date = from_date
+        while temp_date <= to_date:
+            date_info = cls.get_new_user_info(temp_date)
+            info_basic_list.append(date_info)
+            date_res = cls.get_res_from_user_info(date_info)
+            res_basic_list.append(date_res)
+            print(temp_date)
+            print(date_res)
+            temp_date += datetime.timedelta(days=1)
+
+        print('----------------------------------------------------------')
+
+        # 计算留存
+        for i in range(len(info_basic_list)):
+            current_date = next_date(from_date, i)
+            res_list[format_standard_date(current_date)] = [
+                cls.get_certain_day_retain_res(current_date, info_basic_list[i], 1),
+                cls.get_certain_day_retain_res(current_date, info_basic_list[i], 7),
+                cls.get_certain_day_retain_res(current_date, info_basic_list[i], 30)]
+            print(current_date)
+            print(res_list[format_standard_date(current_date)])
+
+        print('`````````````````````````````````````````````````````````````````````')
+        cls.write_retain_res_to_excel(addr, res_list, res_basic_list)
+
+    @classmethod
+    def write_retain_res_to_excel(cls, addr, res, basic_date_res):
+        wb = xlwt.Workbook(encoding='utf-8')
+        worksheet = [wb.add_sheet('总数'), wb.add_sheet('boy'), wb.add_sheet('girl'), wb.add_sheet('未知性别'),
+                     wb.add_sheet('VN'), wb.add_sheet('TH'), wb.add_sheet('ID'), wb.add_sheet('其它地区')]
+        for action in cls.ACTION_ENCODE:
+            worksheet.append(wb.add_sheet(action))
+        for age in range(13, 26):
+            worksheet.append(wb.add_sheet('age' + str(age)))
+        worksheet.append(wb.add_sheet(u'其它年龄'))
+
+        # 在每一行前面写入日期表头
+        i = 1
+        for date in res:
+            for sheet in worksheet:
+                write_sheet_certain_pos(sheet, i, 0, date)
+            i += 1
+
+        # 在每一列前面写入项目表头
+        for sheet in worksheet:
+            write_sheet_certain_pos(sheet, 0, 0, u'留存率/留存人数')
+            write_sheet_certain_pos(sheet, 0, 1, u'次日留存')
+            write_sheet_certain_pos(sheet, 0, 2, u'7日留存')
+            write_sheet_certain_pos(sheet, 0, 3, u'30日留存')
+
+        # 分日期写入具体数据
+        i = 0
+        for date in res:
+            for j in range(0, 3):
+                if not res[date][j]:
+                    continue
+                base_res = basic_date_res[i]
+                for sheet in worksheet:
+                    print(sheet.name)
+                    if not base_res[sheet.name]:
+                        write_sheet_certain_pos(sheet, i + 1, j + 1, 0)
                     else:
-                        act_num[act] += 1
-            decimal_num = 4
-            total_last = len(user_ids) * 1.0
-            for el in act_num:
-                act_num[el] = round(act_num[el]/total_last, decimal_num)
-                # act_num[el] = round(act_num[el], decimal_num)
-            for el in last_act_num:
-                last_act_num[el] = round(last_act_num[el]/total_last, decimal_num)
-                # last_act_num[el] = round(last_act_num[el], decimal_num)
-            return total_acts, act_num, total_last, last_act_num
+                        write_sheet_certain_pos(sheet, i + 1, j + 1,
+                                                str(res[date][j][sheet.name] / float(base_res[sheet.name])) + '/' + str(
+                                                    res[date][j][sheet.name]))
+            i += 1
+        wb.save(addr)
 
-        cls.load_dicts()
-        losing_users = [user_id for user_id in cls.DAY2BEFORE_ACT if user_id not in cls.YESTODAY_ACT]
-        retain_users = [user_id for user_id in cls.DAY2BEFORE_ACT if user_id in cls.YESTODAY_ACT]
-        totals = get_res_by_user_ids(cls.DAY2BEFORE_ACT.keys())
-        retains = get_res_by_user_ids(retain_users)
-        losings = get_res_by_user_ids(losing_users)
-        actions = totals[1].keys()
+    @classmethod
+    def get_certain_day_retain_res(cls, basic_date, basic_info, days=1):
+        now = datetime.datetime.now()
+        retain_date = next_date(basic_date, days)
+        if retain_date > now:
+            return None
+        retain_user_info = cls.get_retain_user_info(retain_date, basic_info)
+        retain_res = cls.get_res_from_user_info(retain_user_info)
+        return retain_res
 
-        def get_write_line(name, lsts):
-            total_acts, act_num, total_last, last_act_num = lsts
-            total = [name + '_total', total_acts]
-            for el in actions:
-                total.append(act_num.get(el, 0))
-            last = [name + '_last', total_last]
-            for el in actions:
-                last.append(last_act_num.get(el, 0))
-            return [total, last]
-        print actions
-        tb_head = ['name', u'总数'] + actions
-        res = []
-        res += get_write_line('total', totals)
-        res += get_write_line('retain', retains)
-        res += get_write_line('losing', losings)
-        # print res
-        for i in range(min(100, len(losing_users))):
-            user_id = losing_users[i]
-            lst = [user_id] + cls.DAY2BEFORE_ACT.get(user_id, [])[-254:]
-            res.append(lst)
-        # print res
-        write_data_to_xls(dst_addr, tb_head, res)
+    @classmethod
+    def get_new_user_info(cls, date):
+        """返回特定日期的新用户信息"""
+        user_info = cls._load_user_info(date)
+        return user_info
+
+    @classmethod
+    def get_retain_user_info(cls, date, user_info):
+        """获得留存用户"""
+        resp_set = AliLogService.get_log_by_time_and_topic(from_time=AliLogService.datetime_to_alitime(date),
+                                                           to_time=AliLogService.datetime_to_alitime(
+                                                               next_date(date, 1)),
+                                                           query='*| select distinct user_id limit 5000000')
+        res_user_info = {}
+        for resp in resp_set:
+            for log in resp.logs:
+                contents = log.get_contents()
+                user_id = contents['user_id']
+                if user_id in user_info:
+                    res_user_info[user_id] = user_info[user_id]
+        return res_user_info
+
+    @classmethod
+    def get_res_from_user_info(cls, user_info):
+        """从用户信息中获得统计信息"""
+        res = {u'总数': len(user_info)}
+        for item in cls.GENDER_ENCODE:
+            res[item] = 0
+        for item in cls.COUNTRY_ENCODE:
+            res[item] = 0
+        for item in cls.ACTION_ENCODE:
+            res[item] = 0
+        for age in range(13, 26):
+            res['age' + str(age)] = 0
+        res[u'其它年龄'] = 0
+        res[u'其它地区'] = 0
+        res[u'未知性别'] = 0
+
+        for user in user_info:
+            # location
+            if user_info[user][0] in cls.COUNTRY_ENCODE.values():
+                res[find_key_by_value(cls.COUNTRY_ENCODE, user_info[user][0])] += 1
+            else:
+                res[u'其它地区'] += 1
+
+            # gender
+            if user_info[user][1] in cls.GENDER_ENCODE.values():
+                res[find_key_by_value(cls.GENDER_ENCODE, user_info[user][1])] += 1
+            else:
+                res[u'未知性别'] += 1
+
+            # age
+            if 'age' + str(user_info[user][2]) in res:
+                res['age' + str(user_info[user][2])] += 1
+            else:
+                res[u'其它年龄'] += 1
+
+            # action
+            for action_code in user_info[user][3]:
+                res[find_key_by_value(cls.ACTION_ENCODE, action_code)] += 1
+
+        return res

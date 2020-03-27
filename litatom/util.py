@@ -159,7 +159,7 @@ def get_time_info(int_time, user_mode=False):
 
 
 def now_date_key():
-    """今日日期"""
+    """今日日期str"""
     return datetime.datetime.now().strftime('%Y-%m-%d') # for time latency reason
 
 
@@ -281,6 +281,9 @@ def write_data_to_xls_col(name, tb_heads, data, encoding='ascii'):
             sheet1.write(j, i+1, data[i][j])
     f.save(name)
 
+def write_sheet_certain_pos(sheet_name, row_pos, col_pos, data):
+    """向excel sheet具体位置中写入数据"""
+    sheet_name.write(row_pos, col_pos, data)
 
 def remove_emoji_ending(raw_string):
     formated_string = '\n'.join([x.strip() for x in raw_string.replace('\r', '\n').split('\n') if x])
@@ -342,6 +345,9 @@ def write_to_json(file, dic):
             f.write(json.dumps(item, indent=4, ensure_ascii=False))
             f.write('\n')
 
+def find_key_by_value(dic, value):
+    """从字典的值反查键，值必须唯一"""
+    return list(dic.keys())[list(dic.values()).index(value)]
 
 class CachedProperty(object):
     """Decorator like python built-in ``property``, but it results only

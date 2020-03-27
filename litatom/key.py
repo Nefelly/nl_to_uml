@@ -20,6 +20,7 @@ REDIS_ACCOUNT_ACTION = 'account:{key}'
 # share stat
 REDIS_SHARE_STAT = 'share_stat:{user_id}'
 REDIS_SHARE_KNOWN_NUM = 'share_known_num:{user_id}'
+REDIS_CLICK_SHARE = 'share_clicker:{ip}'
 
 # rate control
 REDIS_VISIT_RATE = 'visit_rate:{user_id}'

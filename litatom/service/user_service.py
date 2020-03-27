@@ -231,6 +231,8 @@ class UserService(object):
 
     @classmethod
     def _on_create_new_user(cls, user):
+        from .share_stat_service import ShareStatService
+        from .track_action_service import TrackActionService
         loc = request.loc
         if loc:
             UserSetting.create_setting(str(user.id), loc, request.uuid)
@@ -238,6 +240,10 @@ class UserService(object):
             return u'your version is too low!', False
         if cls.device_blocked():
             return cls.ERROR_DEVICE_FORBIDDEN, False
+        key = ShareStatService.get_clicker_key(request.ip)
+        if redis_client.exists(key):
+            TrackActionService.create_action(user.id,'create_user',remark='create_new_user')
+            redis_client.delete(key)
         return None, True
 
     @classmethod
