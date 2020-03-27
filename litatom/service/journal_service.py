@@ -175,6 +175,8 @@ class JournalService(object):
         for loc_index in range(len(res)):
             for item in res[loc_index]:
                 # item 即计数,boy,girl,新用户等
+                if item in ('name','id'):
+                    continue
                 tmp_exp = expression
                 for stat_item in res_stat_set:
                     print(loc_index,item,str(res_stat_set[stat_item][loc_index][item]))
@@ -394,10 +396,12 @@ class JournalService(object):
 
     @classmethod
     def out_port_result(cls, dst_addr, date, stat_type=StatItems.BUSINESS_TYPE):
-        cls.load_user_loc()
-        print('load user location succ', cls.LOC_STATED)
-        cls.load_user_gen()
-        print('load user gender succ', cls.GENDERS)
+        if not cls.USER_LOC:
+            cls.load_user_loc()
+            print('load user location succ', cls.LOC_STATED)
+        if not cls.USER_GEN:
+            cls.load_user_gen()
+            print('load user gender succ', cls.GENDERS)
         res_lst = [[] for i in range(len(cls.LOC_STATED) + 1)]
         cls.DATE_DIS = datetime.timedelta(hours=0)
         # 遍历StatItems中所有类型为stat_type的统计量item
