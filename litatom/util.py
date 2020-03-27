@@ -248,7 +248,7 @@ def write_data_to_multisheets(name, sheet_names, tb_heads, data):
     :param name:
     :param sheet_names:
     :param tb_heads:
-    :param data:
+    :param data:一个列表，列表中的每个元素也是一个列表，每个元素都是1个sheet中的数据
     :return:
     """
     import xlwt
@@ -258,12 +258,12 @@ def write_data_to_multisheets(name, sheet_names, tb_heads, data):
     # 写表头
     for sheet in sheets:
         for i in range(len(tb_heads)):
-            sheet.write(i, 0, tb_heads[i])
+            sheet.write(0, i, tb_heads[i])
     for sheet_num in range(len(data)):
         sheet_data = data[sheet_num]
         for i in range(len(sheet_data)):
             for j in range(len(sheet_data[i])):
-                sheets[i].write(i+1, j, sheet_data[i][j])
+                sheets[sheet_num].write(i+1, j, sheet_data[i][j])
     f.save(name)
 
 

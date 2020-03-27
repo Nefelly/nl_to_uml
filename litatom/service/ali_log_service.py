@@ -8,6 +8,7 @@ import logging
 from ..redis import RedisClient
 from hendrix.conf import setting
 from ..const import ALI_LOG_EXCHANGE
+from flask import request
 
 from ..util import (
     read_data_from_xls
@@ -97,6 +98,8 @@ class AliLogService(object):
         logitemList = []  # LogItem list
         logItem = LogItem()
         logItem.set_time(int(time()))
+        if request.platform:
+            contents.append(('platform', request.platform))
         logItem.set_contents(contents)
         logitemList.append(logItem)
         cls.put_logs_atom(logitemList,project,logstore,topic,source,client)
