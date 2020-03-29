@@ -243,7 +243,9 @@ class UserService(object):
         if cls.device_blocked():
             return cls.ERROR_DEVICE_FORBIDDEN, False
         key = ShareStatService.get_clicker_key(request.ip)
+        print('THIS IS THE MOST IMPORTANT THING !!!!!!------------------------------------',user.id,key)
         if redis_client.exists(key):
+            print('')
             TrackActionService.create_action(user.id,'share',remark='create_new_user')
             redis_client.delete(key)
         return None, True
