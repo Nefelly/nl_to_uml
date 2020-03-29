@@ -351,11 +351,13 @@ class DiamStatService(object):
     STAT_ACTION_QUERY_LIST = {
         '10_diam_share_man_time': 'remark:share\ prepare | select count(*) as res',
         '10_diam_share_people_num':'remark:share\ prepare | select count(distinct user_id) as res',
-        '100_diam_share_man_time':'',
-        '100_diam_share_people_num':'',
+        # '100_diam_share_man_time':'',
+        # '100_diam_share_people_num':'',
         'accost_people_num':'remark:accost_pass | SELECT COUNT(DISTINCT user_id) as res',
         'accost_man_time':'remark:accost_pass | SELECT COUNT(1) as res',
-        'register_reason_by_share':'remark:create_new_user |select count(distinct user_id) as res',
+        'share_clicker_man_time':'action:share and remark:click_share_link | SELECT COUNT(1) as res',
+        'share_clicker_people_num':'action:share and remark:click_share_link | SELECT COUNT(DISTINCT user_ip) as res',
+        'register_reason_by_share':'action:share and remark:create_new_user |select count(distinct user_id) as res',
     }
     FREE_QUERY_LIST = {
         'diam_incr_num': 'diamonds>0|select sum(diamonds) as res',
@@ -468,7 +470,7 @@ class DiamStatService(object):
         return data
 
     @classmethod
-    def cal_stats_from_list(cls, list, from_time, to_time):
+    def cal_stats_from_list(cls, list, from_time, to_time, project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE):
         """
         从阿里云日志中，计算list中所有项目
         :return: 一个tuple列表, (item_name,str(num))， 和一个字典，key为item_name, value为num
@@ -477,17 +479,16 @@ class DiamStatService(object):
         data_dic = {}
         for item in list:
             resp = AliLogService.get_log_atom(from_time=from_time, to_time=to_time, query=list[item],
-                                              project=cls.DEFAULT_PROJECT,
-                                              logstore=cls.DEFAULT_LOGSTORE)
-            for log in resp.logs:
-                contents = log.get_contents()
-                try:
+                                              project=project,logstore=logstore)
+            try:
+                for log in resp.logs:
+                    contents = log.get_contents()
                     res = contents['res']
-                except KeyError:
-                    res = 0
-                finally:
-                    data.append((item, str(res)))
-                    data_dic[item] = int(res)
+            except KeyError and AttributeError:
+                res = 0
+            finally:
+                data.append((item, str(res)))
+                data_dic[item] = int(res)
         return data, data_dic
 
     @classmethod
@@ -505,7 +506,7 @@ class DiamStatService(object):
         excel_data.append(mem_num)
         data_next, excel_dic = cls.cal_stats_from_list(cls.STAT_QUERY_LIST, from_time, to_time)
         data += data_next
-        data_next, action_excel_dic = cls.cal_stats_from_list(cls.STAT_ACTION_QUERY_LIST, from_time, to_time)
+        data_next, action_excel_dic = cls.cal_stats_from_list(cls.STAT_ACTION_QUERY_LIST, from_time, to_time, AliLogService.DEFAULT_PROJECT,AliLogService.DEFAULT_LOGSTORE)
         data += data_next
         incoming = excel_dic['diam_deposit50_man_time_num'] * cls.DIAMOND_INCOMING[50] + \
                    excel_dic['diam_deposit100_man_time_num'] * cls.DIAMOND_INCOMING[100] + \
@@ -526,7 +527,7 @@ class DiamStatService(object):
                        excel_dic['diam_deposit500_people_num'], excel_dic['diam_deposit500_man_time_num'],
                        excel_dic['watch_video_people_num'], excel_dic['watch_video_man_time'],
                        excel_dic['watch_video_diam_num'],
-                       action_excel_dic['100_diam_share_man_time'],action_excel_dic['100_diam_share_people_num'],excel_dic['get_100_diam_by_share_link'],
+                       # action_excel_dic['100_diam_share_man_time'],action_excel_dic['100_diam_share_people_num'],excel_dic['get_100_diam_by_share_link'],
                        action_excel_dic['10_diam_share_man_time'],action_excel_dic['10_diam_share_people_num'],excel_dic['get_10_diam_by_share_link'],
                        excel_dic['week_member_consumer_num'],
                        excel_dic['week_member_cons_man_time_num'],
@@ -536,7 +537,7 @@ class DiamStatService(object):
                        excel_dic['diam_unban_cons_num'],
                        action_excel_dic['accost_people_num'],action_excel_dic['accost_man_time'],excel_dic['diam_accost_cons_num'],
                        excel_dic['palm_unlock_people_num'],excel_dic['palm_unlock_man_time'],excel_dic['palm_unlock_diam_cons_num'],
-                       action_excel_dic['register_reason_by_share']]
+                       action_excel_dic['share_clicker_man_time'],action_excel_dic['share_clicker_people_num'],action_excel_dic['register_reason_by_share']]
         return excel_data
 
     @classmethod
@@ -551,13 +552,13 @@ class DiamStatService(object):
                                r'免费钻石获取人数', r'免费钻石获取人次', r'免费钻石获取数量', r'50钻石购买人数',
                                r'50钻石购买人次', r'100钻石购买人数', r'100钻石购买人次', r'200钻石购买人数', r'200钻石购买人次', r'500钻石购买人数',
                                r'500钻石购买人次', r'观看激励视频人数', r'观看激励视频人次', r'激励视频钻石数量',
-                               r'分享链接人数(100钻)',r'分享链接人次(100钻)',r'分享链接100钻石获取数量',
-                               r'分享链接人数(10钻)',r'分享链接人次(10钻)',r'分享链接10钻石获取数量', r'会员购买人数', r'会员购买人次', r'会员-钻石消耗数量',
+                               # r'分享链接人数(100钻)',r'分享链接人次(100钻)',r'分享链接100钻石获取数量',
+                               r'分享链接人次(10钻)',r'分享链接人数(10钻)',r'分享链接10钻石获取数量', r'会员购买人数', r'会员购买人次', r'会员-钻石消耗数量',
                                r'加速人数', r'加速购买人次', r'加速-钻石消耗数量',
                                r'钻石解封人数', r'钻石解封人次', r'解封-钻石消耗数量',
                                r'搭讪人数',r'搭讪人次',r'搭讪钻石消耗数量',
                                r'手相解锁人数',r'手相解锁人次',r'手相解锁-钻石消耗数量',
-                               r'分享带来新用户数'], res, 'utf-8')
+                               r'分享点击人次',r'分享点击人数',r'分享带来新用户数'], res, 'utf-8')
 
     @classmethod
     def diam_free_report(cls, addr, date=datetime.datetime.now()):

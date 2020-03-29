@@ -233,19 +233,14 @@ class UserService(object):
 
     @classmethod
     def _on_create_new_user(cls, user):
-        from .share_stat_service import ShareStatService
-        from .track_action_service import TrackActionService
         loc = request.loc
+        user_id = str(user.id)
         if loc:
-            UserSetting.create_setting(str(user.id), loc, request.uuid)
+            UserSetting.create_setting(user_id, loc, request.uuid)
         if not request.uuid:
             return u'your version is too low!', False
         if cls.device_blocked():
             return cls.ERROR_DEVICE_FORBIDDEN, False
-        key = ShareStatService.get_clicker_key(request.ip)
-        if redis_client.exists(key):
-            TrackActionService.create_action(user.id,'create_user',remark='create_new_user')
-            redis_client.delete(key)
         return None, True
 
     @classmethod
@@ -706,6 +701,16 @@ class UserService(object):
         return res, True
 
     @classmethod
+    def check_share_new_user(cls, user_id):
+        from .share_stat_service import ShareStatService
+        from .track_action_service import TrackActionService
+        key = ShareStatService.get_clicker_key(request.ip)
+        if redis_client.exists(key):
+            TrackActionService.create_action(user_id, 'share', remark='create_new_user')
+            redis_client.delete(key)
+
+
+    @classmethod
     def phone_login(cls, zone, phone, code):
         if phone[0] == '0':
             phone = phone[1:]
@@ -727,6 +732,7 @@ class UserService(object):
             if not status:
                 return msg, status
             user.save()
+            cls.check_share_new_user(str(user.id))
             cls.update_info_finished_cache(user)
             RedisLock.release_mutex(key)
         request.user_id = str(user.id)  # 为了region
@@ -760,6 +766,7 @@ class UserService(object):
             if not status:
                 return msg, status
             user.save()
+            cls.check_share_new_user(str(user.id))
             cls.update_info_finished_cache(user)
             RedisLock.release_mutex(key)
         msg, status = cls.login_job(user)
@@ -800,6 +807,7 @@ class UserService(object):
             if not status:
                 return msg, status
             user.save()
+            cls.check_share_new_user(str(user.id))
             cls.update_info_finished_cache(user)
             RedisLock.release_mutex(key)
         msg, status = cls.login_job(user)
