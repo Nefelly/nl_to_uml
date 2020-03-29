@@ -62,6 +62,7 @@ class ShareStatService(object):
         if not redis_client.exists(ip):
             redis_client.set(key,1)
         redis_client.expire(key, cls.CLICK_EXPIRE_TIME)
+        AliLogService.put_logs([('clicker',ip),('action','click_share')],logstore='shareaction')
 
     @classmethod
     def add_stat_item(cls, user_id, item):
