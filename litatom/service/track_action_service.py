@@ -39,7 +39,6 @@ class TrackActionService(object):
                 contents += [('remark', remark)]
             if version:
                 contents += [('version', version)]
-            print('content is :',contents)
             AliLogService.put_logs(contents)
         if cls.MQ_INSERT:
             if action not in ['match']:

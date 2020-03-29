@@ -357,7 +357,7 @@ class DiamStatService(object):
         'accost_man_time':'remark:accost_pass | SELECT COUNT(1) as res',
         'share_clicker_man_time':'action:share and remark:click_share_link | SELECT COUNT(1) as res',
         'share_clicker_people_num':'action:share and remark:click_share_link | SELECT COUNT(DISTINCT user_ip) as res',
-        'register_reason_by_share':'action:create_new_user |select count(distinct user_id) as res',
+        'register_reason_by_share':'action:share and remark:create_new_user |select count(distinct user_id) as res',
     }
     FREE_QUERY_LIST = {
         'diam_incr_num': 'diamonds>0|select sum(diamonds) as res',
