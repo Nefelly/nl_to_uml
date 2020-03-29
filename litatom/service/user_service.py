@@ -234,7 +234,7 @@ class UserService(object):
     @classmethod
     def _on_create_new_user(cls, user):
         from .share_stat_service import ShareStatService
-        from .ali_log_service import AliLogService
+        from .track_action_service import TrackActionService
         loc = request.loc
         if loc:
             UserSetting.create_setting(str(user.id), loc, request.uuid)
@@ -244,7 +244,7 @@ class UserService(object):
             return cls.ERROR_DEVICE_FORBIDDEN, False
         key = ShareStatService.get_clicker_key(request.ip)
         if redis_client.exists(key):
-            AliLogService.put_logs([('user_id',user.id),('action','create_new_user')],logstore='shareaction')
+            TrackActionService.create_action(user.id,'share',remark='create_new_user')
             redis_client.delete(key)
         return None, True
 
