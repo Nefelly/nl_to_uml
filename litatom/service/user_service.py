@@ -237,14 +237,18 @@ class UserService(object):
         from .track_action_service import TrackActionService
         loc = request.loc
         user_id=str(user.id)
+        print('1.user id is :',user_id)
         if loc:
             UserSetting.create_setting(user_id, loc, request.uuid)
+        print('2.user id is :',user_id)
         if not request.uuid:
             return u'your version is too low!', False
+        print('3.user id is :',user_id)
         if cls.device_blocked():
             return cls.ERROR_DEVICE_FORBIDDEN, False
+        print('4.user id is :',user_id)
         key = ShareStatService.get_clicker_key(request.ip)
-        print('THIS IS THE MOST IMPORTANT THING !!!!!!------------------------------------',user.id,key)
+        print('THIS IS THE MOST IMPORTANT THING !!!!!!------------------------------------',user_id,key)
         if redis_client.exists(key):
             print('now he record the track action')
             TrackActionService.create_action(user_id,'share',remark='create_new_user')
