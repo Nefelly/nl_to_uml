@@ -64,7 +64,8 @@ class UserSettingService(object):
                     "spam_interval": 60 * 2
                 }
             },
-            'show_accelerate': False
+            'show_accelerate': False,
+            'upload_network_err': False
         }
 
     @classmethod
