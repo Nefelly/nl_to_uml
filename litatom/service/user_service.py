@@ -236,8 +236,9 @@ class UserService(object):
         from .share_stat_service import ShareStatService
         from .track_action_service import TrackActionService
         loc = request.loc
+        user_id=str(user.id)
         if loc:
-            UserSetting.create_setting(str(user.id), loc, request.uuid)
+            UserSetting.create_setting(user_id, loc, request.uuid)
         if not request.uuid:
             return u'your version is too low!', False
         if cls.device_blocked():
@@ -246,7 +247,7 @@ class UserService(object):
         print('THIS IS THE MOST IMPORTANT THING !!!!!!------------------------------------',user.id,key)
         if redis_client.exists(key):
             print('now he record the track action')
-            TrackActionService.create_action(user.id,'share',remark='create_new_user')
+            TrackActionService.create_action(user_id,'share',remark='create_new_user')
             redis_client.delete(key)
         return None, True
 
