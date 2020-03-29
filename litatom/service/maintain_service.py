@@ -144,7 +144,7 @@ class MaintainService(object):
         UserConversation.objects(create_time__lte=judge).delete()
 
     @classmethod
-    def clear_UserMessages(cls):
+    def clear_userMessages(cls):
         keep = 7 * 86400
         judge_time = int(time.time()) - keep
         UserMessage.objects(create_time__lte=judge_time).delete()
