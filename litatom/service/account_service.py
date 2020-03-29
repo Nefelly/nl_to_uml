@@ -102,7 +102,7 @@ class AccountService(object):
             # user = User.get_by_id(user_id)
             # UserService._trans_forbidden_2_session(user)
 
-            UserService.clear_forbidden_session(request.sid.replace('session.', ''))
+            UserService.clear_forbidden_session(request.session_id.replace('session.', ''))
             return u'you are not forbbiden', False
         msg = cls.change_diamonds(user_id, -cls.UNBAN_DIAMONDS, 'unban_by_diamonds')
         if not msg:
