@@ -57,7 +57,6 @@ class FirebaseService(object):
                 'to': obj.user_token
             }
             response = requests.post(cls.SEND_URL, verify=False, headers=headers, json=data).json()
-            print response
             if response.get('failure', 1) == 1:
                 return u'send failed', False
             return None, True
@@ -87,7 +86,6 @@ class FirebaseService(object):
         }
         try:
             response = requests.post(cls.SEND_URL, verify=False, headers=headers, json=data).json()
-            print response
             if response.get('failure', 1) == 1:
                 return u'send failed', False
             return None, True

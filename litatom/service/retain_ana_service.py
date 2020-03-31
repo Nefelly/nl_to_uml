@@ -130,8 +130,6 @@ class RetainAnaService(object):
             print(date_res)
             temp_date += datetime.timedelta(days=1)
 
-        print('----------------------------------------------------------')
-
         # 计算留存
         for i in range(len(info_basic_list)):
             current_date = next_date(from_date, i)
@@ -139,10 +137,9 @@ class RetainAnaService(object):
                 cls.get_certain_day_retain_res(current_date, info_basic_list[i], 1),
                 cls.get_certain_day_retain_res(current_date, info_basic_list[i], 7),
                 cls.get_certain_day_retain_res(current_date, info_basic_list[i], 30)]
-            print(current_date)
-            print(res_list[format_standard_date(current_date)])
+            # print(current_date)
+            # print(res_list[format_standard_date(current_date)])
 
-        print('`````````````````````````````````````````````````````````````````````')
         cls.write_retain_res_to_excel(addr, res_list, res_basic_list)
 
     @classmethod
@@ -178,7 +175,6 @@ class RetainAnaService(object):
                     continue
                 base_res = basic_date_res[i]
                 for sheet in worksheet:
-                    print(sheet.name)
                     if not base_res[sheet.name]:
                         write_sheet_certain_pos(sheet, i + 1, j + 1, 0)
                     else:

@@ -113,7 +113,6 @@ class AccountService(object):
     @classmethod
     def record_to_ali(cls, user_id, name, diamonds):
         content = [('user_id', user_id), ('name', name), ('diamonds', str(diamonds)), ('loc', request.loc)]
-        # print content
         AliLogService.put_logs(content, '', '', 'litatom-account', 'account_flow')
 
     @classmethod
@@ -186,7 +185,6 @@ class AccountService(object):
                 'text': AnoyMatchService
             }
             data, status = getattr(m.get(match_type, AnoyMatchService), 'accelerate')(user_id)
-            print data, status
             if not status:
                 return data, False
         elif product == cls.ACCOST_RESET:

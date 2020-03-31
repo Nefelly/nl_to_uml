@@ -160,7 +160,6 @@ class DebugHelperService(object):
             try:
                 json.dumps(res)
             except:
-                print k, '!' * 100
                 res[k] = u'你妹的 错误词'
         if not key:
             users = []

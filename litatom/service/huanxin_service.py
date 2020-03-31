@@ -339,7 +339,7 @@ class HuanxinService(object):
         data = {'username': user_name, 'password': password}
         try:
             response = requests.post(url, verify=False, headers=headers, json=data).json()
-            print response
+            # print response
             assert response.get('entities')[0]['username']
             return True
         except Exception, e:
@@ -462,7 +462,6 @@ class HuanxinService(object):
         }
         try:
             response = requests.get(url, verify=False, headers=headers).json()
-            print response
             return response.get('data')[0]['url']
         except Exception, e:
             logger.error(traceback.format_exc())

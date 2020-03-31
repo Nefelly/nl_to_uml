@@ -95,8 +95,6 @@ class FeedService(object):
                 if cls.should_add_to_square(feed):
                     redis_client.zadd(region_key,
                                       {str(feed.id): feed.create_time})
-                else:
-                    print 'should not'
             FollowingFeedService.add_feed(feed)
 
     @classmethod

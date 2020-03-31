@@ -175,7 +175,7 @@ class JournalService(object):
                     continue
                 tmp_exp = expression
                 for stat_item in res_stat_set:
-                    print(loc_index,item,str(res_stat_set[stat_item][loc_index][item]))
+                    # print(loc_index, item, str(res_stat_set[stat_item][loc_index][item]))
                     # stat_item是表达式中的各种统计量, res_stat_set[stat_item]是一个字典，表示那一个统计量的结果
                     tmp_exp = tmp_exp.replace(stat_item, str(res_stat_set[stat_item][loc_index][item]))
                 res[loc_index][item] = cal_exp(tmp_exp)
@@ -399,7 +399,7 @@ class JournalService(object):
                     temp_res = [sheet['name'], sheet['计数'], sheet['boy'], sheet['girl'], sheet['新用户人次'], sheet['新用户人数']]
                     res_lst[sheet_index].append(temp_res)
             except Exception as e:
-                print(e)
+                # print(e)
                 continue
         write_data_to_multisheets(dst_addr, ['总计'] + cls.LOC_STATED, ['名称', '计数', 'boy', 'girl', '新用户人次', '新用户人数'],
                                   res_lst)
