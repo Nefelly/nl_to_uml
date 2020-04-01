@@ -74,10 +74,10 @@ class ShareStatService(object):
         """有人为user_id 点击share 的链接"""
         key = cls._get_key(user_id)
         if redis_client.sadd(key, item):
-            cls.record_clicker_redis(item)
+            if not cls.record_clicker_redis(item):
+                redis_client.srem(key, item)
         redis_client.expire(key, cls.CACHED_TIME)
-        if not cls.record_click_share_link(item, user_id):
-            redis_client.srem(key, item)
+        cls.record_click_share_link(item, user_id)
         return True
 
     @classmethod
