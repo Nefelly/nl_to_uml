@@ -16,6 +16,7 @@ class MonitorService(object):
                      'count(1) as called_num,avg(status) as avg_status'
     PRECISE_ANALYSIS = {
         '500_rate': ' and status:500 | SELECT COUNT(*) as res',
+        'sum_resp_time': '| SELECT sum(upstream_response_time) as res'
     }
     END_TIME = None
 
@@ -28,7 +29,7 @@ class MonitorService(object):
         eg. ('request_uri:/api/sns/v1/lit/user/avatars AND request_method:GET', ALILOG_USER_AVATARS)
             ('request_uri:/api/sns/v1/lit/user/info AND request_method:POST',ALILOG_USER_INFO_P)
         """
-        res = []
+        res = [('*', 'ALL', 'all_uri', False)]
         with open(file_path) as f:
             lines = f.readlines()
             valid_head_pattern = 'b.add_url_rule\(\'/lit/'
@@ -78,10 +79,6 @@ class MonitorService(object):
                         condition += condition_tail_get
                     res_tuple = (condition, name, uri, post_tag)
                     res.append(res_tuple)
-                    # if len(res) > 2:
-                    #     break
-        res.append(('*', 'ALL', 'all_uri', False))
-        # res = res[-1:]
         return res
 
     @classmethod
@@ -107,58 +104,8 @@ class MonitorService(object):
                                           from_time=AliLogService.datetime_to_alitime(start_time),
                                           to_time=AliLogService.datetime_to_alitime(end_time)).logs
 
-    # @classmethod
-    # def accum_stat(cls, resp_set):
-    #     """
-    #     :param resp_set: 一个迭代器，迭代一个GetLogsResponse对象
-    #     :return:平均响应时间，调用次数，错误返回频率，状态码计数
-    #     """
-    #     sum_resp_time = 0.0
-    #     called_num = 0
-    #     error_num = 0.0
-    #     status_num = {}
-    #     for status in cls.STATUS_SET:
-    #         status_num[status] = 0
-    #     for resp in resp_set:
-    #         called_num += resp.get_count()
-    #         for logs in resp.logs:
-    #             contents = logs.get_contents()
-    #             resp_time = contents['upstream_response_time']
-    #             resp_time = str2float(resp_time)
-    #             if resp_time:
-    #                 sum_resp_time += resp_time
-    #             status = int(contents['status'])
-    #             if status in cls.STATUS_SET:
-    #                 status_num[status] += 1
-    #                 if status >= 400:
-    #                     error_num += 1
-    #     if called_num > 0:
-    #         return sum_resp_time / called_num, called_num, error_num / called_num, status_num
-    #     else:
-    #         return 0, 0, 0, None
-
-    # @classmethod
-    # def put_stat_to_alilog(cls, name, time, avg_resp_time, called_num, error_rate, status_num, uri, is_post):
-    #     contents = [('from_time', AliLogService.datetime_to_alitime(time[0])), ('request_uri', uri),
-    #                 ('to_time', AliLogService.datetime_to_alitime(time[1])), ('error_rate', str(error_rate)),
-    #                 ('avg_response_time', str(avg_resp_time)), ('called_num', str(called_num))]
-    #     if is_post:
-    #         contents.append(('request_method', 'POST'))
-    #     else:
-    #         contents.append(('request_method', 'GET'))
-    #     if status_num:
-    #         status_str = ''
-    #         for status in status_num.keys():
-    #             if status_num[status] > 0:
-    #                 status_str += str(status)
-    #                 status_str += ':'
-    #                 status_str += str(status_num[status])
-    #                 status_str += ' '
-    #         contents.append(('status_stat', status_str))
-    #     AliLogService.put_logs(contents, project='litatommonitor', logstore='up-res-time-monitor', topic=name)
-
     @classmethod
-    def cal_api_stat_item(cls, base_query, item_name, start_time, end_time, called_num):
+    def cal_api_stat_item(cls, base_query, item_name, start_time, end_time, called_num=None):
         if item_name not in cls.PRECISE_ANALYSIS:
             return None
         query = base_query + cls.PRECISE_ANALYSIS[item_name]
@@ -167,7 +114,11 @@ class MonitorService(object):
         for log in logs:
             contents = log.get_contents()
             res = int(contents['res'])
-        return float(res)/called_num
+        if called_num:
+            return float(res)/called_num
+        return res
+
+
 
     @classmethod
     def read_stat(cls, logs):
@@ -196,12 +147,11 @@ class MonitorService(object):
         query_list = cls.get_query_from_files(cls.FILE_SET)
         end_time = datetime.now() if not cls.END_TIME else cls.END_TIME
         start_time = end_time + timedelta(minutes=-1)
+        weight_list=[]
         for query, name, uri, is_post in query_list:
             logs = cls.fetch_log(query + cls.QUERY_ANALYSIS, start_time, end_time)
-            # avg_resp_time, called_num, error_rate, status_num = cls.accum_stat(resp_set)
             avg_response_time, called_num, avg_status = cls.read_stat(logs)
             cls.put_stat_2_alilog(name, start_time, end_time, avg_response_time, called_num, avg_status, uri, is_post)
-            # cls.put_stat_to_alilog(name, time, avg_resp_time, called_num, error_rate, status_num, uri, is_post)
 
     @classmethod
     def find_diff(cls, compared_time=None):

@@ -291,6 +291,11 @@ def remove_emoji_ending(raw_string):
         formated_string = formated_string[:-1]
     return formated_string
 
+def dic_order_by_value(d, reverse=False):
+    """字典按值排序"""
+    d_order=sorted(d.items(),key=lambda x:x[1],reverse=reverse)
+    return d_order
+
 
 # 暂未被使用，放在这里供参考. 因为除了汉字还有各国语言非英文字符要考虑.
 def is_chinese(uchar):
