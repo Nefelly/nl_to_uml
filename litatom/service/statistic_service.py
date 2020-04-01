@@ -568,7 +568,7 @@ class DiamStatService(object):
                                r'钻石解封人数', r'钻石解封人次', r'解封-钻石消耗数量',
                                r'搭讪人数', r'搭讪人次', r'搭讪钻石消耗数量',
                                r'手相解锁人数', r'手相解锁人次', r'手相解锁-钻石消耗数量',
-                               r'分享点击人次', r'分享点击人数', r'分享带来新用户数'], res, 'utf-8')
+                               r'分享链接浏览人次', r'分享链接浏览人数', r'分享带来新用户数'], res, 'utf-8')
 
     @classmethod
     def diam_free_report(cls, addr, date=datetime.datetime.now()):
