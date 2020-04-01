@@ -30,7 +30,8 @@ class ShareStatService(object):
     """
     CACHED_TIME = ONE_WEEK
     CACHED_RECORD_TIME = ONE_MONTH
-    CLICK_EXPIRE_TIME = ONE_WEEK
+    CLICK_EXPIRE_TIME = ONE_DAY
+    MAX_CLICKER_NUM = 3
     ERR_SHARE_NOT_ENOUGH = 'not enough shared members'
 
     @classmethod
@@ -57,12 +58,11 @@ class ShareStatService(object):
 
     @classmethod
     def record_clicker_redis(cls, ip):
-        """把点击分享链接的人存入一小时过期的缓存当中，用于估算其是否会因此而下载"""
-        max_click = 3
+        """把点击分享链接的人存入一日过期的缓存当中，用于估算其是否会因此而下载"""
         key = cls.get_clicker_key(ip)
         num = redis_client.incr(key)
         redis_client.expire(key, cls.CLICK_EXPIRE_TIME)
-        if num > max_click:
+        if num > cls.MAX_CLICKER_NUM:
             return False
         return True
         # if not redis_client.exists(ip):
