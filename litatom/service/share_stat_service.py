@@ -115,12 +115,12 @@ class ShareStatService(object):
             return cls.ERR_SHARE_NOT_ENOUGH, False
         key = cls._get_known_num_key(user_id)
         redis_client.set(key, cls.get_stat_item_num(user_id))
-        return AccountService.deposit_by_activity(user_id,AccountService.SHARE_5)
+        return AccountService.deposit_by_activity(user_id, AccountService.SHARE_5)
 
     @classmethod
     def record_click_share_link(cls, user_ip, target_uid):
-        contents = [('action','share'),('remark','click_share_link'),('user_ip',str(user_ip)),
-                    ('share_user_id',target_uid)]
+        contents = [('action', 'share'), ('remark', 'click_share_link'), ('user_ip', str(user_ip)),
+                    ('share_user_id', target_uid)]
         AliLogService.put_logs(contents)
 
 
