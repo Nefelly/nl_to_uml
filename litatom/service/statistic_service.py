@@ -484,6 +484,7 @@ class DiamStatService(object):
                 for log in resp.logs:
                     contents = log.get_contents()
                     res = contents['res']
+                    print(item,res)
             except KeyError and AttributeError:
                 res = 0
             finally:
