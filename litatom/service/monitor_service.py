@@ -147,7 +147,7 @@ class MonitorService(object):
         query_list = cls.get_query_from_files(cls.FILE_SET)
         end_time = datetime.now() if not cls.END_TIME else cls.END_TIME
         start_time = end_time + timedelta(minutes=-1)
-        weight_list=[]
+        # TODO: 统计接口权重，即响应时间总和占总响应时间总和比例，设置一个字典，按值排序
         for query, name, uri, is_post in query_list:
             logs = cls.fetch_log(query + cls.QUERY_ANALYSIS, start_time, end_time)
             avg_response_time, called_num, avg_status = cls.read_stat(logs)
@@ -160,9 +160,11 @@ class MonitorService(object):
         :return:
         '''
         now_res = {}
+        end_time = datetime.now() if not cls.END_TIME else cls.END_TIME
+        start_time = end_time + timedelta(minutes=-1)
         query_list = cls.get_query_from_files(cls.FILE_SET)
         for query, name, uri, is_post in query_list:
-            logs, time = cls.fetch_log(query + cls.QUERY_ANALYSIS)
+            logs= cls.fetch_log(query + cls.QUERY_ANALYSIS, start_time, end_time)
             # avg_resp_time, called_num, error_rate, status_num = cls.accum_stat(resp_set)
             avg_response_time, called_num, avg_status = cls.read_stat(logs)
             if avg_response_time == 'null':
@@ -171,8 +173,6 @@ class MonitorService(object):
             now_res[uri] = [float(avg_response_time), int(called_num)]
         before_res = {}
         cls.END_TIME = parse_standard_time(compared_time) if compared_time else datetime.now() - timedelta(days=29)
-        end_time = datetime.now() if not cls.END_TIME else cls.END_TIME
-        start_time = end_time + timedelta(minutes=-1)
         for query, name, uri, is_post in query_list:
             logs = cls.fetch_log(query + cls.QUERY_ANALYSIS, start_time, end_time)
             avg_response_time, called_num, avg_status = cls.read_stat(logs)
