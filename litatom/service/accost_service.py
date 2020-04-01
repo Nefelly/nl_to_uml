@@ -3,12 +3,17 @@ import logging
 from ..redis import RedisClient
 from ..key import (
     REDIS_ACCOST_RATE,
-    REDIS_ACCOST_STOP_RATE
+    REDIS_ACCOST_STOP_RATE,
+    REDIS_ACCOST_DAY_STOP
+)
+from ..util import (
+    now_date_key
 )
 from ..const import (
     ONE_MIN,
     ACTION_ACCOST_STOP,
-    ACTION_ACCOST_NEED_VIDEO
+    ACTION_ACCOST_NEED_VIDEO,
+    ONE_DAY
 )
 from ..service import (
     TrackActionService,
@@ -30,10 +35,16 @@ class AccostService(object):
     ACCOST_RATE = 5
     ACCOST_STOP_INTER = 10 * ONE_MIN
     ACCOST_STOP_RATE = 19
+    DAY_STOP_RATE = 100
 
     @classmethod
     def can_accost(cls, user_id, session_id, loc, version):
         def should_stop():
+            day_stop = REDIS_ACCOST_DAY_STOP.format(now_date_key=now_date_key(), user_id=user_id)
+            if int(redis_client.get(day_stop)) >= cls.DAY_STOP_RATE:
+                return True
+            redis_client.incr(day_stop)
+            redis_client.expire(day_stop, ONE_DAY)
             stop_key = REDIS_ACCOST_STOP_RATE.format(user_id=user_id)
             stop_num = redis_client.get(stop_key)
             if not stop_num:
