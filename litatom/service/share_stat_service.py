@@ -15,7 +15,7 @@ from ..service import (
 from ..const import (
     ONE_WEEK,
     ONE_MONTH,
-    ONE_HOUR,
+    ONE_DAY,
 )
 from ..redis import RedisClient
 
@@ -30,7 +30,7 @@ class ShareStatService(object):
     """
     CACHED_TIME = ONE_WEEK
     CACHED_RECORD_TIME = ONE_MONTH
-    CLICK_EXPIRE_TIME = ONE_HOUR
+    CLICK_EXPIRE_TIME = ONE_WEEK
     ERR_SHARE_NOT_ENOUGH = 'not enough shared members'
 
     @classmethod
@@ -58,10 +58,16 @@ class ShareStatService(object):
     @classmethod
     def record_clicker_redis(cls, ip):
         """把点击分享链接的人存入一小时过期的缓存当中，用于估算其是否会因此而下载"""
+        max_click = 3
         key = cls.get_clicker_key(ip)
-        if not redis_client.exists(ip):
-            redis_client.set(key,1)
+        num = redis_client.incr(key)
         redis_client.expire(key, cls.CLICK_EXPIRE_TIME)
+        if num > max_click:
+            return False
+        return True
+        # if not redis_client.exists(ip):
+        #     redis_client.set(key, 1)
+
 
     @classmethod
     def add_stat_item(cls, user_id, item):
@@ -70,7 +76,8 @@ class ShareStatService(object):
         if redis_client.sadd(key, item):
             cls.record_clicker_redis(item)
         redis_client.expire(key, cls.CACHED_TIME)
-        cls.record_click_share_link(item, user_id)
+        if not cls.record_click_share_link(item, user_id):
+            redis_client.srem(key, item)
         return True
 
     @classmethod
