@@ -489,7 +489,6 @@ class DiamStatService(object):
             except KeyError and AttributeError:
                 res = 0
             finally:
-                print(item,res)
                 data.append((item, str(res)))
                 data_dic[item] = int(res)
         return data, data_dic
