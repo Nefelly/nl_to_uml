@@ -703,12 +703,13 @@ class UserService(object):
     @classmethod
     def check_share_new_user(cls, user_id):
         from .share_stat_service import ShareStatService
-        from .track_action_service import TrackActionService
-        key = ShareStatService.get_clicker_key(request.ip)
+        from .ali_log_service import AliLogService
+        ip = request.ip
+        key = ShareStatService.get_clicker_key(ip)
         if redis_client.exists(key):
-            TrackActionService.create_action(user_id, 'share', remark='create_new_user')
+            contents = [('action', 'share'), ('remark', 'create_new_user'), ('user_id', user_id), ('user_ip', ip)]
+            AliLogService.put_logs(contents)
             redis_client.delete(key)
-
 
     @classmethod
     def phone_login(cls, zone, phone, code):
