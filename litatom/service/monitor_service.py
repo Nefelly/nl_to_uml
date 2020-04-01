@@ -14,6 +14,9 @@ class MonitorService(object):
     STATUS_SET = {200, 400, 404, 405, 408, 499, 500, 502, 503, 504}
     QUERY_ANALYSIS = '|SELECT avg(upstream_response_time) as avg_response_time,' \
                      'count(1) as called_num,avg(status) as avg_status'
+    PRECISE_ANALYSIS = {
+        '500_rate': ' and status:500 | SELECT COUNT(*) as res',
+    }
     END_TIME = None
 
     @classmethod
@@ -94,18 +97,15 @@ class MonitorService(object):
         return res
 
     @classmethod
-    def fetch_log(cls, query):
+    def fetch_log(cls, query, start_time, end_time):
         """
         根据输入的query，找出litatomstore近一分钟的日志；由于要直接做分析，所以调用get_log_atom接口，结果总数不能超过1000000
         :param query:
         :return:一个GetLogsResponse对象
         """
-        end_time = datetime.now() if not cls.END_TIME else cls.END_TIME
-        start_time = end_time + timedelta(minutes=-1)
         return AliLogService.get_log_atom(project='litatom', logstore='litatomstore', query=query,
                                           from_time=AliLogService.datetime_to_alitime(start_time),
-                                          to_time=AliLogService.datetime_to_alitime(end_time)).logs, (
-                   start_time, end_time)
+                                          to_time=AliLogService.datetime_to_alitime(end_time)).logs
 
     # @classmethod
     # def accum_stat(cls, resp_set):
@@ -158,6 +158,18 @@ class MonitorService(object):
     #     AliLogService.put_logs(contents, project='litatommonitor', logstore='up-res-time-monitor', topic=name)
 
     @classmethod
+    def cal_api_stat_item(cls, base_query, item_name, start_time, end_time, called_num):
+        if item_name not in cls.PRECISE_ANALYSIS:
+            return None
+        query = base_query + cls.PRECISE_ANALYSIS[item_name]
+        logs = cls.fetch_log(query, start_time, end_time)
+        res = 0
+        for log in logs:
+            contents = log.get_contents()
+            res = int(contents['res'])
+        return float(res)/called_num
+
+    @classmethod
     def read_stat(cls, logs):
         for log in logs:
             contents = log.get_contents()
@@ -169,9 +181,9 @@ class MonitorService(object):
             return avg_response_time, called_num, avg_status
 
     @classmethod
-    def put_stat_2_alilog(cls, name, time, avg_resp_time, called_num, avg_status, uri, is_post):
-        contents = [('from_time', AliLogService.datetime_to_alitime(time[0])), ('request_uri', uri),
-                    ('to_time', AliLogService.datetime_to_alitime(time[1])), ('avg_status', str(avg_status)),
+    def put_stat_2_alilog(cls, name, start_time, end_time, avg_resp_time, called_num, avg_status, uri, is_post):
+        contents = [('from_time', AliLogService.datetime_to_alitime(start_time)), ('request_uri', uri),
+                    ('to_time', AliLogService.datetime_to_alitime(end_time)), ('avg_status', str(avg_status)),
                     ('avg_response_time', str(avg_resp_time)), ('called_num', str(called_num))]
         if is_post:
             contents.append(('request_method', 'POST'))
@@ -182,11 +194,13 @@ class MonitorService(object):
     @classmethod
     def monitor_report(cls):
         query_list = cls.get_query_from_files(cls.FILE_SET)
+        end_time = datetime.now() if not cls.END_TIME else cls.END_TIME
+        start_time = end_time + timedelta(minutes=-1)
         for query, name, uri, is_post in query_list:
-            logs, time = cls.fetch_log(query + cls.QUERY_ANALYSIS)
+            logs = cls.fetch_log(query + cls.QUERY_ANALYSIS, start_time, end_time)
             # avg_resp_time, called_num, error_rate, status_num = cls.accum_stat(resp_set)
             avg_response_time, called_num, avg_status = cls.read_stat(logs)
-            cls.put_stat_2_alilog(name, time, avg_response_time, called_num, avg_status, uri, is_post)
+            cls.put_stat_2_alilog(name, start_time, end_time, avg_response_time, called_num, avg_status, uri, is_post)
             # cls.put_stat_to_alilog(name, time, avg_resp_time, called_num, error_rate, status_num, uri, is_post)
 
     @classmethod
@@ -203,12 +217,14 @@ class MonitorService(object):
             avg_response_time, called_num, avg_status = cls.read_stat(logs)
             if avg_response_time == 'null':
                 continue
-            print query, avg_response_time, called_num, avg_status
+            print(query, avg_response_time, called_num, avg_status)
             now_res[uri] = [float(avg_response_time), int(called_num)]
         before_res = {}
         cls.END_TIME = parse_standard_time(compared_time) if compared_time else datetime.now() - timedelta(days=29)
+        end_time = datetime.now() if not cls.END_TIME else cls.END_TIME
+        start_time = end_time + timedelta(minutes=-1)
         for query, name, uri, is_post in query_list:
-            logs, time = cls.fetch_log(query + cls.QUERY_ANALYSIS)
+            logs = cls.fetch_log(query + cls.QUERY_ANALYSIS, start_time, end_time)
             avg_response_time, called_num, avg_status = cls.read_stat(logs)
             if avg_response_time == 'null':
                 continue
@@ -218,7 +234,7 @@ class MonitorService(object):
                 continue
             avg_response_time, now_num = now_res[k]
             before_rsp_time, before_num = before_res[k]
-            print '{:40s} {:10f} {:10f} {:10f}, {:10f}'.format(k, avg_response_time, before_rsp_time, (avg_response_time - before_rsp_time) / before_rsp_time * 100,
-                                                               (avg_response_time - before_rsp_time) * now_num), now_num
-
-
+            print('{:40s} {:10f} {:10f} {:10f}, {:10f}'.format(k, avg_response_time, before_rsp_time, (
+                        avg_response_time - before_rsp_time) / before_rsp_time * 100,
+                                                               (avg_response_time - before_rsp_time) * now_num),
+                  now_num)
