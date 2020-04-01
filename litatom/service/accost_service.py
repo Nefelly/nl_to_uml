@@ -41,7 +41,8 @@ class AccostService(object):
     def can_accost(cls, user_id, session_id, loc, version):
         def should_stop():
             day_stop = REDIS_ACCOST_DAY_STOP.format(now_date_key=now_date_key(), user_id=user_id)
-            if int(redis_client.get(day_stop)) >= cls.DAY_STOP_RATE:
+            str_num = redis_client.get(day_stop)
+            if str_num and int(str_num) >= cls.DAY_STOP_RATE:
                 return True
             redis_client.incr(day_stop)
             redis_client.expire(day_stop, ONE_DAY)
