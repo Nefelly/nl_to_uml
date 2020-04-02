@@ -115,7 +115,7 @@ class MonitorService(object):
             try:
                 contents = log.get_contents()
                 res = float(contents['res'])
-            except AttributeError or KeyError:
+            except AttributeError or KeyError or ValueError:
                 res = 0
         if called_num:
             return float(res) / called_num
