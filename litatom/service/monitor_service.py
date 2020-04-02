@@ -114,12 +114,12 @@ class MonitorService(object):
         for log in logs:
             try:
                 contents = log.get_contents()
-                res = float(contents['res'])
+                res = contents['res']
             except AttributeError or KeyError or ValueError:
                 res = 0
         if called_num:
             return float(res) / called_num
-        return res
+        return float(res)
 
     @classmethod
     def read_stat(cls, logs):
