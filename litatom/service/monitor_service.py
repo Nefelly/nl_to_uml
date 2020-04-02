@@ -117,6 +117,7 @@ class MonitorService(object):
                 res = contents['res']
             except AttributeError or KeyError or ValueError:
                 res = 0
+        print(item_name,res)
         if called_num:
             return float(res) / called_num
         return float(res)
