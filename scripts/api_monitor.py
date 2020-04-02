@@ -16,7 +16,7 @@ def run():
     except:
         print('program already in run')
         sys.exit(0)
-    MonitorService.monitor_report('test.xls')
+    MonitorService.monitor_online()
 
 
 if __name__ == '__main__':
