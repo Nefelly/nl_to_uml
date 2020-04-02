@@ -230,7 +230,7 @@ def read_data_from_xls(name):
 def write_data_to_xls(name, tb_heads, datas):
     """表头在第一行"""
     import xlwt
-    f = xlwt.Workbook()
+    f = xlwt.Workbook(encoding='utf-8')
     sheet1 = f.add_sheet(name.split('/')[-1], cell_overwrite_ok=True)
     for i in range(len(tb_heads)):
         sheet1.write(0, i, tb_heads[i])
@@ -290,6 +290,11 @@ def remove_emoji_ending(raw_string):
     while len(formated_string) > 0 and is_emoji(formated_string[-1]):
         formated_string = formated_string[:-1]
     return formated_string
+
+def dic_order_by_value(d, reverse=False):
+    """字典按值排序"""
+    d_order=sorted(d.items(),key=lambda x:x[1],reverse=reverse)
+    return d_order
 
 
 # 暂未被使用，放在这里供参考. 因为除了汉字还有各国语言非英文字符要考虑.
