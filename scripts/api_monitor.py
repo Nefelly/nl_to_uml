@@ -4,6 +4,7 @@ from litatom.service import MonitorService
 
 from hendrix.conf import setting
 
+
 def run():
     mutex_f = '/var/run/%s.mutex' % __file__.split('/')[-1].replace('.py', '')
     if setting.IS_DEV:
@@ -13,9 +14,9 @@ def run():
         fcntl.flock(f,
                     fcntl.LOCK_EX | fcntl.LOCK_NB)
     except:
-        print 'program already in run'
+        print('program already in run')
         sys.exit(0)
-    MonitorService.monitor_report()
+    MonitorService.monitor_report('test.xls')
 
 
 if __name__ == '__main__':

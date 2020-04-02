@@ -2,7 +2,7 @@
 import re
 import os
 from ..util import (
-    str2float,
+    write_data_to_xls,
     parse_standard_time
 )
 from datetime import *
@@ -112,13 +112,14 @@ class MonitorService(object):
         logs = cls.fetch_log(query, start_time, end_time)
         res = 0
         for log in logs:
-            contents = log.get_contents()
-            res = int(contents['res'])
+            try:
+                contents = log.get_contents()
+                res = int(contents['res'])
+            except AttributeError or KeyError:
+                res = 0
         if called_num:
-            return float(res)/called_num
+            return float(res) / called_num
         return res
-
-
 
     @classmethod
     def read_stat(cls, logs):
@@ -132,8 +133,10 @@ class MonitorService(object):
             return avg_response_time, called_num, avg_status
 
     @classmethod
-    def put_stat_2_alilog(cls, name, start_time, end_time, avg_resp_time, called_num, avg_status, uri, is_post):
+    def put_stat_2_alilog(cls, name, start_time, end_time, rate_500, avg_resp_time, called_num, avg_status, uri,
+                          is_post):
         contents = [('from_time', AliLogService.datetime_to_alitime(start_time)), ('request_uri', uri),
+                    ('500_rate', rate_500),
                     ('to_time', AliLogService.datetime_to_alitime(end_time)), ('avg_status', str(avg_status)),
                     ('avg_response_time', str(avg_resp_time)), ('called_num', str(called_num))]
         if is_post:
@@ -143,15 +146,29 @@ class MonitorService(object):
         AliLogService.put_logs(contents, project='litatommonitor', logstore='up-res-time-monitor', topic=name)
 
     @classmethod
-    def monitor_report(cls):
+    def monitor_report(cls, addr=None):
         query_list = cls.get_query_from_files(cls.FILE_SET)
         end_time = datetime.now() if not cls.END_TIME else cls.END_TIME
         start_time = end_time + timedelta(minutes=-1)
-        # TODO: 统计接口权重，即响应时间总和占总响应时间总和比例，设置一个字典，按值排序
+        res = []
+        all_weight = 0
         for query, name, uri, is_post in query_list:
             logs = cls.fetch_log(query + cls.QUERY_ANALYSIS, start_time, end_time)
             avg_response_time, called_num, avg_status = cls.read_stat(logs)
-            cls.put_stat_2_alilog(name, start_time, end_time, avg_response_time, called_num, avg_status, uri, is_post)
+            rate_500 = cls.cal_api_stat_item(query, '500_rate', start_time, end_time, called_num)
+            temp_wight = cls.cal_api_stat_item(query, 'sum_resp_time', start_time, end_time)
+            if name == 'ALL':
+                all_weight = float(temp_wight)
+                weight = 1
+            else:
+                weight = temp_wight / all_weight
+            res.append([name, weight, avg_response_time, called_num, rate_500, avg_status, uri])
+
+            cls.put_stat_2_alilog(name, start_time, end_time, rate_500, avg_response_time, called_num, avg_status, uri, is_post)
+        if addr:
+            write_data_to_xls(addr,['接口名','调用时长权重','平均访问时长','调用次数','500比率','平均状态码','uri'],
+                              res)
+
 
     @classmethod
     def find_diff(cls, compared_time=None):
@@ -164,7 +181,7 @@ class MonitorService(object):
         start_time = end_time + timedelta(minutes=-1)
         query_list = cls.get_query_from_files(cls.FILE_SET)
         for query, name, uri, is_post in query_list:
-            logs= cls.fetch_log(query + cls.QUERY_ANALYSIS, start_time, end_time)
+            logs = cls.fetch_log(query + cls.QUERY_ANALYSIS, start_time, end_time)
             # avg_resp_time, called_num, error_rate, status_num = cls.accum_stat(resp_set)
             avg_response_time, called_num, avg_status = cls.read_stat(logs)
             if avg_response_time == 'null':
@@ -185,6 +202,6 @@ class MonitorService(object):
             avg_response_time, now_num = now_res[k]
             before_rsp_time, before_num = before_res[k]
             print('{:40s} {:10f} {:10f} {:10f}, {:10f}'.format(k, avg_response_time, before_rsp_time, (
-                        avg_response_time - before_rsp_time) / before_rsp_time * 100,
+                    avg_response_time - before_rsp_time) / before_rsp_time * 100,
                                                                (avg_response_time - before_rsp_time) * now_num),
                   now_num)

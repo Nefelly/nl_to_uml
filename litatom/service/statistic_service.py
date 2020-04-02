@@ -486,7 +486,7 @@ class DiamStatService(object):
                     res = contents['res']
                     if not res or res == 'null':
                         res = 0
-            except KeyError and AttributeError:
+            except KeyError or AttributeError:
                 res = 0
             finally:
                 data.append((item, str(res)))
