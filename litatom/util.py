@@ -230,7 +230,7 @@ def read_data_from_xls(name):
 def write_data_to_xls(name, tb_heads, datas):
     """表头在第一行"""
     import xlwt
-    f = xlwt.Workbook()
+    f = xlwt.Workbook(encoding='utf-8')
     sheet1 = f.add_sheet(name.split('/')[-1], cell_overwrite_ok=True)
     for i in range(len(tb_heads)):
         sheet1.write(0, i, tb_heads[i])
