@@ -134,6 +134,13 @@ class MonitorService(object):
             return float(res)
 
     @classmethod
+    def get_list_res(cls, base_query, stat_item_list, start_time, end_time):
+        res_list = []
+        for item in stat_item_list:
+            res_list.append(cls.get_res(base_query, item, start_time, end_time))
+        return res_list
+
+    @classmethod
     def put_stat_2_alilog(cls, name, start_time, end_time, rate_500, avg_resp_time, called_num, avg_status, uri,
                           is_post):
         contents = [('from_time', AliLogService.datetime_to_alitime(start_time)), ('request_uri', uri),
@@ -154,8 +161,7 @@ class MonitorService(object):
         fail_list = []
         list_500 = []
         for query, name, uri, is_post in query_list:
-            called_num = cls.get_res(query, 'called_num', start_time, end_time)
-            num_500 = cls.get_res(query, '500_num', start_time, end_time)
+            called_num, num_500 = cls.get_res(query, ['called_num','500_num'], start_time, end_time)
             if called_num:
                 rate_500 = num_500 / called_num
             else:
@@ -182,10 +188,7 @@ class MonitorService(object):
             if called_num == 0:
                 res.append([name, 0, 0, 0, 0, 0, uri])
                 continue
-            avg_resp_time = cls.get_res(query, 'avg_resp_time', start_time, end_time)
-            avg_status = cls.get_res(query, 'avg_status', start_time, end_time)
-            num_500 = cls.get_res(query, '500_num', start_time, end_time)
-            sum_resp_time = cls.get_res(query, 'sum_resp_time', start_time, end_time)
+            avg_resp_time, avg_status, num_500, sum_resp_time = cls.get_res(query, ['avg_resp_time','avg_status','500_num','sum_resp_time'], start_time, end_time)
             if name == 'ALL':
                 weight = 1
                 total_sum_resp_time = sum_resp_time
@@ -206,39 +209,36 @@ class MonitorService(object):
         res = cls.monitor_report(start_time, end_time)
         res.sort(key=lambda x: x[1], reverse=True)
         write_data_to_xls(addr, ['接口名', '优化期望', '调用时长权重', '平均访问时长', '调用次数', '500比率', '平均状态码', 'uri'], res)
-    #
-    # @classmethod
-    # def find_diff(cls, compared_time=None):
-    #     '''
-    #     寻找两个时间段之间的接口的调用的时间差 结果集 【接口 第一平均时间 第二平均时间 %time_added  】
-    #     :return:
-    #     '''
-    #     now_res = {}
-    #     end_time = datetime.now() if not cls.END_TIME else cls.END_TIME
-    #     start_time = end_time + timedelta(minutes=-1)
-    #     query_list = cls.get_query_from_files(cls.FILE_SET)
-    #     for query, name, uri, is_post in query_list:
-    #         logs = cls.fetch_log(query + cls.QUERY_ANALYSIS, start_time, end_time)
-    #         # avg_resp_time, called_num, error_rate, status_num = cls.accum_stat(resp_set)
-    #         avg_response_time, called_num, avg_status = cls.read_stat(logs)
-    #         if avg_response_time == 'null':
-    #             continue
-    #         print(query, avg_response_time, called_num, avg_status)
-    #         now_res[uri] = [float(avg_response_time), int(called_num)]
-    #     before_res = {}
-    #     cls.END_TIME = parse_standard_time(compared_time) if compared_time else datetime.now() - timedelta(days=29)
-    #     for query, name, uri, is_post in query_list:
-    #         logs = cls.fetch_log(query + cls.QUERY_ANALYSIS, start_time, end_time)
-    #         avg_response_time, called_num, avg_status = cls.read_stat(logs)
-    #         if avg_response_time == 'null':
-    #             continue
-    #         before_res[uri] = [float(avg_response_time), int(called_num)]
-    #     for k in now_res:
-    #         if k not in before_res:
-    #             continue
-    #         avg_response_time, now_num = now_res[k]
-    #         before_rsp_time, before_num = before_res[k]
-    #         print('{:40s} {:10f} {:10f} {:10f}, {:10f}'.format(k, avg_response_time, before_rsp_time, (
-    #                 avg_response_time - before_rsp_time) / before_rsp_time * 100,
-    #                                                            (avg_response_time - before_rsp_time) * now_num),
-    #               now_num)
+
+    @classmethod
+    def find_diff(cls, compared_time=None):
+        '''
+        寻找两个时间段之间的接口的调用的时间差 结果集 【接口 第一平均时间 第二平均时间 %time_added  】
+        :return:
+        '''
+        now_res = {}
+        end_time = datetime.now() if not cls.END_TIME else cls.END_TIME
+        start_time = end_time + timedelta(minutes=-1)
+        query_list = cls.get_query_from_files(cls.FILE_SET)
+        for query, name, uri, is_post in query_list:
+            avg_response_time, called_num, avg_status = cls.get_list_res(query,['avg_resp_time','called_num','avg_status'],start_time,end_time)
+            if not called_num:
+                continue
+            print(query, avg_response_time, called_num, avg_status)
+            now_res[uri] = [float(avg_response_time), int(called_num)]
+        before_res = {}
+        cls.END_TIME = parse_standard_time(compared_time) if compared_time else datetime.now() - timedelta(days=29)
+        for query, name, uri, is_post in query_list:
+            avg_response_time, called_num, avg_status = cls.get_list_res(query,['avg_resp_time','called_num','avg_status'],start_time,end_time)
+            if not called_num:
+                continue
+            before_res[uri] = [float(avg_response_time), int(called_num)]
+        for k in now_res:
+            if k not in before_res:
+                continue
+            avg_response_time, now_num = now_res[k]
+            before_rsp_time, before_num = before_res[k]
+            print('{:40s} {:10f} {:10f} {:10f}, {:10f}'.format(k, avg_response_time, before_rsp_time, (
+                    avg_response_time - before_rsp_time) / before_rsp_time * 100,
+                                                               (avg_response_time - before_rsp_time) * now_num),
+                  now_num)
