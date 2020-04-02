@@ -130,7 +130,7 @@ class MonitorService(object):
                 return 0, 0, 0
             avg_response_time = contents['avg_response_time']
             avg_status = contents['avg_status']
-            return avg_response_time, called_num, avg_status
+            return float(avg_response_time), int(called_num), float(avg_status)
 
     @classmethod
     def put_stat_2_alilog(cls, name, start_time, end_time, rate_500, avg_resp_time, called_num, avg_status, uri,
