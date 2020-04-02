@@ -162,7 +162,7 @@ class MonitorService(object):
                 rate_500 = 0
             if rate_500 >= cls.THRESHOLD_FAIL:
                 fail_list.append([name, rate_500, num_500, called_num, uri])
-            elif num_500 / called_num >= cls.THRESHOLD_500:
+            elif rate_500 >= cls.THRESHOLD_500:
                 list_500.append([name, rate_500, num_500, called_num, uri])
         print(fail_list)
         print(list_500)
