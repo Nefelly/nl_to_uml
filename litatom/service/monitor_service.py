@@ -181,6 +181,7 @@ class MonitorService(object):
             called_num = cls.get_res(query, 'called_num', start_time, end_time)
             if called_num == 0:
                 res.append([name, 0, 0, 0, 0, 0, uri])
+                continue
             avg_resp_time = cls.get_res(query, 'avg_resp_time', start_time, end_time)
             avg_status = cls.get_res(query, 'avg_status', start_time, end_time)
             num_500 = cls.get_res(query, '500_num', start_time, end_time)
@@ -196,7 +197,6 @@ class MonitorService(object):
                     expect_improvement = (avg_resp_time - total_avg_resp_time) * called_num
                 else:
                     expect_improvement = 0
-            print([name, expect_improvement, weight, avg_resp_time, called_num, num_500 / called_num, avg_status, uri])
             res.append(
                 [name, expect_improvement, weight, avg_resp_time, called_num, num_500 / called_num, avg_status, uri])
         return res
