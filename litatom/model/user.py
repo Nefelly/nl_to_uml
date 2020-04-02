@@ -225,6 +225,7 @@ class User(Document, UserSessionMixin):
     session = StringField()
     sessionCreateTime = DateTimeField()
     logined = BooleanField(default=False)
+    platform = StringField(default='android')
     bio = StringField()
     phone = StringField()
     country = StringField()

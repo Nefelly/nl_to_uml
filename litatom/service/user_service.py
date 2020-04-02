@@ -235,6 +235,8 @@ class UserService(object):
     def _on_create_new_user(cls, user):
         loc = request.loc
         user_id = str(user.id)
+        if request.platform:
+            user.platform = request.platform
         if loc:
             UserSetting.create_setting(user_id, loc, request.uuid)
         if not request.uuid:
