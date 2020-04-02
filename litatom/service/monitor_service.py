@@ -153,6 +153,7 @@ class MonitorService(object):
         start_time = end_time + timedelta(minutes=-1)
         fail_list = []
         list_500 = []
+        i=0
         for query, name, uri, is_post in query_list:
             called_num = cls.get_res(query, 'called_num', start_time, end_time)
             num_500 = cls.get_res(query, '500_num', start_time, end_time)
@@ -160,6 +161,8 @@ class MonitorService(object):
                 rate_500 = num_500 / called_num
             else:
                 rate_500 = 0
+            i+=1
+            print(rate_500,i)
             if rate_500 >= cls.THRESHOLD_FAIL:
                 fail_list.append([name, rate_500, num_500, called_num, uri])
             elif rate_500 >= cls.THRESHOLD_500:
