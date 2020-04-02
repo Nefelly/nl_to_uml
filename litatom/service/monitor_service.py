@@ -196,6 +196,7 @@ class MonitorService(object):
                     expect_improvement = (avg_resp_time - total_avg_resp_time) * called_num
                 else:
                     expect_improvement = 0
+            print([name, expect_improvement, weight, avg_resp_time, called_num, num_500 / called_num, avg_status, uri])
             res.append(
                 [name, expect_improvement, weight, avg_resp_time, called_num, num_500 / called_num, avg_status, uri])
         return res
