@@ -126,11 +126,11 @@ class MonitorService(object):
         for log in logs:
             contents = log.get_contents()
             called_num = contents['called_num']
-            if not called_num:
+            if not called_num or called_num == '0':
                 return 0, 0, 0
             avg_response_time = contents['avg_response_time']
             avg_status = contents['avg_status']
-            print(called_num,avg_response_time,avg_status)
+            print(called_num, avg_response_time, avg_status)
             return float(avg_response_time), int(called_num), float(avg_status)
 
     @classmethod
@@ -168,10 +168,9 @@ class MonitorService(object):
 
             # cls.put_stat_2_alilog(name, start_time, end_time, rate_500, avg_response_time, called_num, avg_status, uri, is_post)
         if addr:
-            res.sort(key=lambda x:x[1],reverse=True)
-            write_data_to_xls(addr,['接口名','调用时长权重','平均访问时长','调用次数','500比率','平均状态码','uri'],
+            res.sort(key=lambda x: x[1], reverse=True)
+            write_data_to_xls(addr, ['接口名', '调用时长权重', '平均访问时长', '调用次数', '500比率', '平均状态码', 'uri'],
                               res)
-
 
     @classmethod
     def find_diff(cls, compared_time=None):
