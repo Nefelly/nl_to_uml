@@ -16,7 +16,7 @@ from litatom.util import (
 
 def run(*date):
     if not date:
-        from_date = next_date(get_zero_today(), -1)
+        from_date = next_date(get_zero_today(), -2)
         to_date = from_date
     elif len(date) < 2:
         from_date = parse_standard_date(date[0])
