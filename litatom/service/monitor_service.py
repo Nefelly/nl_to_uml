@@ -166,6 +166,7 @@ class MonitorService(object):
 
             cls.put_stat_2_alilog(name, start_time, end_time, rate_500, avg_response_time, called_num, avg_status, uri, is_post)
         if addr:
+            res.sort(key=lambda x:x[1],reverse=True)
             write_data_to_xls(addr,['接口名','调用时长权重','平均访问时长','调用次数','500比率','平均状态码','uri'],
                               res)
 
