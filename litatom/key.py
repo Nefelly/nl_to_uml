@@ -127,4 +127,5 @@ REDIS_VIDEO_CHAT_IN_CHAT = 'video_chat_in_chat:{user_id}'
 # dev owned
 REDIS_SETTINGS_KEYS = 'dev_settings'
 REDIS_SETTINGS_IOS = 'setting_ios'
+REDIS_SETTINGS_IOS_VERSION = 'setting_ios_v:{version}'
 REDIS_ACCESS_TOKEN = 'access_token'

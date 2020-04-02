@@ -21,7 +21,8 @@ from ..const import (
 )
 from ..key import (
     REDIS_SETTINGS_KEYS,
-    REDIS_SETTINGS_IOS
+    REDIS_SETTINGS_IOS,
+    REDIS_SETTINGS_IOS_VERSION
 )
 
 from ..service import GlobalizationService
@@ -70,7 +71,11 @@ class UserSettingService(object):
 
     @classmethod
     def get_setting_key(cls):
-        return REDIS_SETTINGS_IOS if request.platform == PLATFORM_IOS else REDIS_SETTINGS_KEYS
+        if request.platform != PLATFORM_IOS:
+            return REDIS_SETTINGS_KEYS
+        if request.version and request.version > '1.2.3':
+            return REDIS_SETTINGS_IOS_VERSION.format(version=request.version)
+        return REDIS_SETTINGS_IOS
 
     @classmethod
     def change_setting(cls, data):
