@@ -25,7 +25,7 @@ class MonitorService(object):
     THRESHOLD_500 = 0.2
     THRESHOLD_FAIL = 0.9
     QUERY_LIST = []
-    ALERTED_USER_LIST = ['382365209@qq.com','644513759@qq.com']
+    ALERTED_USER_LIST = ['382365209@qq.com', '644513759@qq.com']
     END_TIME = None
 
     @classmethod
@@ -153,7 +153,6 @@ class MonitorService(object):
         start_time = end_time + timedelta(minutes=-1)
         fail_list = []
         list_500 = []
-        i=0
         for query, name, uri, is_post in query_list:
             called_num = cls.get_res(query, 'called_num', start_time, end_time)
             num_500 = cls.get_res(query, '500_num', start_time, end_time)
@@ -161,46 +160,49 @@ class MonitorService(object):
                 rate_500 = num_500 / called_num
             else:
                 rate_500 = 0
-            i+=1
-            print(rate_500,i)
             if rate_500 >= cls.THRESHOLD_FAIL:
                 fail_list.append([name, rate_500, num_500, called_num, uri])
             elif rate_500 >= cls.THRESHOLD_500:
                 list_500.append([name, rate_500, num_500, called_num, uri])
-        print(fail_list)
-        print(list_500)
         if fail_list:
             AlertService.send_mail(cls.ALERTED_USER_LIST, str(fail_list), 'FAIL-API-ALERT')
         if list_500:
             AlertService.send_mail(cls.ALERTED_USER_LIST, str(list_500), '500-API-ALERT')
 
-    # @classmethod
-    # def monitor_report(cls):
-    #     query_list = cls.get_query_from_files(cls.FILE_SET)
-    #     end_time = datetime.now() if not cls.END_TIME else cls.END_TIME
-    #     start_time = end_time + timedelta(minutes=-1)
-    #     res = []
-    #     all_weight = 0
-    #     all_avg_resp_time = 0
-    #     for query, name, uri, is_post in query_list:
-    #         logs = cls.fetch_log(query + cls.QUERY_ANALYSIS, start_time, end_time)
-    #         avg_response_time, called_num, avg_status = cls.read_stat(logs)
-    #         rate_500 = cls.cal_api_stat_item(query, '500_rate', start_time, end_time, called_num)
-    #         temp_wight = cls.cal_api_stat_item(query, 'sum_resp_time', start_time, end_time)
-    #         if name == 'ALL':
-    #             all_weight = float(temp_wight)
-    #             weight = 1
-    #             all_avg_resp_time
-    #         else:
-    #             weight = temp_wight / all_weight
-    #         res.append([name, weight, avg_response_time, called_num, rate_500, avg_status, uri])
-    #     return res
-    #
-    # @classmethod
-    # def output_report(cls, addr, start_time=None, end_time=None):
-    #     res = cls.monitor_report()
-    #     res.sort(key=lambda x: x[1], reverse=True)
-    #     write_data_to_xls(addr, ['接口名', '调用时长权重', '平均访问时长', '调用次数', '500比率', '平均状态码', 'uri'], res)
+    @classmethod
+    def monitor_report(cls, start_time=None, end_time=None):
+        query_list = cls.get_query_from_files(cls.FILE_SET)
+        end_time = datetime.now() if not end_time else end_time
+        start_time = end_time + timedelta(minutes=-1) if not start_time else start_time
+        res = []
+        all_weight = 0
+        total_avg_resp_time = 0
+        for query, name, uri, is_post in query_list:
+            called_num = cls.get_res(query, 'called_num', start_time, end_time)
+            if not called_num:
+                res.append([name, 0, 0, 0, 0, 0, uri])
+            avg_resp_time = cls.get_res(query, 'avg_resp_time', start_time, end_time)
+            avg_status = cls.get_res(query, 'avg_status', start_time, end_time)
+            num_500 = cls.get_res(query, '500_num', start_time, end_time)
+            if name == 'ALL':
+                weight = 1
+                total_avg_resp_time = avg_resp_time
+                expect_improvement = 0
+            else:
+                sum_resp_time = cls.get_res(query, 'sum_resp_time', start_time, end_time)
+                weight = sum_resp_time / all_weight
+                if avg_resp_time > total_avg_resp_time:
+                    expect_improvement = (avg_resp_time - total_avg_resp_time) * called_num
+                else:
+                    expect_improvement = 0
+            res.append([name, expect_improvement, weight, avg_resp_time, called_num, num_500 / called_num, avg_status, uri])
+        return res
+
+    @classmethod
+    def output_report(cls, addr, start_time=None, end_time=None):
+        res = cls.monitor_report()
+        res.sort(key=lambda x: x[1], reverse=True)
+        write_data_to_xls(addr, ['接口名', '优化期望', '调用时长权重', '平均访问时长', '调用次数', '500比率', '平均状态码', 'uri'], res)
     #
     # @classmethod
     # def find_diff(cls, compared_time=None):
