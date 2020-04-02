@@ -175,7 +175,7 @@ class MonitorService(object):
         end_time = datetime.now() if not end_time else end_time
         start_time = end_time + timedelta(minutes=-1) if not start_time else start_time
         res = []
-        all_weight = 0
+        total_sum_resp_time = 0
         total_avg_resp_time = 0
         for query, name, uri, is_post in query_list:
             called_num = cls.get_res(query, 'called_num', start_time, end_time)
@@ -184,18 +184,20 @@ class MonitorService(object):
             avg_resp_time = cls.get_res(query, 'avg_resp_time', start_time, end_time)
             avg_status = cls.get_res(query, 'avg_status', start_time, end_time)
             num_500 = cls.get_res(query, '500_num', start_time, end_time)
+            sum_resp_time = cls.get_res(query, 'sum_resp_time', start_time, end_time)
             if name == 'ALL':
                 weight = 1
+                total_sum_resp_time = sum_resp_time
                 total_avg_resp_time = avg_resp_time
                 expect_improvement = 0
             else:
-                sum_resp_time = cls.get_res(query, 'sum_resp_time', start_time, end_time)
-                weight = sum_resp_time / all_weight
+                weight = sum_resp_time / total_sum_resp_time
                 if avg_resp_time > total_avg_resp_time:
                     expect_improvement = (avg_resp_time - total_avg_resp_time) * called_num
                 else:
                     expect_improvement = 0
-            res.append([name, expect_improvement, weight, avg_resp_time, called_num, num_500 / called_num, avg_status, uri])
+            res.append(
+                [name, expect_improvement, weight, avg_resp_time, called_num, num_500 / called_num, avg_status, uri])
         return res
 
     @classmethod
