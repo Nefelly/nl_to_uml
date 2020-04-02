@@ -179,7 +179,7 @@ class MonitorService(object):
         total_avg_resp_time = 0
         for query, name, uri, is_post in query_list:
             called_num = cls.get_res(query, 'called_num', start_time, end_time)
-            if not called_num:
+            if called_num == 0:
                 res.append([name, 0, 0, 0, 0, 0, uri])
             avg_resp_time = cls.get_res(query, 'avg_resp_time', start_time, end_time)
             avg_status = cls.get_res(query, 'avg_status', start_time, end_time)
