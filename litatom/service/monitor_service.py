@@ -130,6 +130,7 @@ class MonitorService(object):
                 return 0, 0, 0
             avg_response_time = contents['avg_response_time']
             avg_status = contents['avg_status']
+            print(called_num,avg_response_time,avg_status)
             return float(avg_response_time), int(called_num), float(avg_status)
 
     @classmethod
@@ -153,6 +154,7 @@ class MonitorService(object):
         res = []
         all_weight = 0
         for query, name, uri, is_post in query_list:
+            print(uri)
             logs = cls.fetch_log(query + cls.QUERY_ANALYSIS, start_time, end_time)
             avg_response_time, called_num, avg_status = cls.read_stat(logs)
             rate_500 = cls.cal_api_stat_item(query, '500_rate', start_time, end_time, called_num)
