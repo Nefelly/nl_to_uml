@@ -495,7 +495,7 @@ class UserService(object):
         user.save()
         if user.huanxin and user.huanxin.user_id:
             HuanxinService.deactive_user(user.huanxin.user_id)
-        feeds = Feed.objects(user_id=user_id, create_time__gte=int(time.time()) - 3 * ONE_MIN)
+        feeds = Feed.objects(user_id=user_id, create_time__gte=int(time.time()) - 3 * ONE_DAY)
         for _ in feeds:
             _.delete()
             MqService.push(REMOVE_EXCHANGE, {"feed_id": str(_.id)})
