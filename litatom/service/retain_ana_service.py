@@ -68,9 +68,8 @@ class RetainAnaService(object):
         user_info = {}
         from_ts = date_to_int_time(date)
         to_ts = date_to_int_time(next_date(date, 1))
-        users = User.get_by_create_time(next_date(date, -1), date)
+        users = User.objects(create_time__gte=next_date(date, -1),create_time__lte=date, platform='android')
 
-        i = 1
         for user in users:
             user_id = str(user.id)
             user_info[user_id] = []
@@ -94,9 +93,6 @@ class RetainAnaService(object):
                 user_info[user_id].append(0)
 
             user_info[user_id].append(set())
-            if i % 1000 == 0:
-                print(i)
-            i += 1
 
         feeds = Feed.get_by_create_time(from_ts, to_ts)
         feed_create_code = cls.ACTION_ENCODE['feed_create']
@@ -104,19 +100,12 @@ class RetainAnaService(object):
             if feed.user_id in user_info:
                 user_info[feed.user_id][3].add(feed_create_code)
 
-        print('feed load succ')
-
         for action in cls.ACTION_QUERY:
             cls._load_user_action_info(date, user_info, action)
-
-        print('action load succ')
-
-        print('leave _load_user_info, user_info is listed below')
         return user_info
 
     @classmethod
     def get_retain_res(cls, addr, from_date=next_date(get_zero_today(), -31), to_date=next_date(get_zero_today(), -1)):
-        print(from_date, to_date)
         info_basic_list = []  # 存储了每日的新用户info
         res_basic_list = []  # 存储了每日新用户数据统计
         res_list = collections.OrderedDict()  # 存储了每日之后的次日留存、7日留存、30日留存
@@ -126,8 +115,6 @@ class RetainAnaService(object):
             info_basic_list.append(date_info)
             date_res = cls.get_res_from_user_info(date_info)
             res_basic_list.append(date_res)
-            print(temp_date)
-            print(date_res)
             temp_date += datetime.timedelta(days=1)
 
         # 计算留存
