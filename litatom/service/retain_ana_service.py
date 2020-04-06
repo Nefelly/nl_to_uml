@@ -138,8 +138,9 @@ class RetainAnaService(object):
     @classmethod
     def write_retain_res_to_excel(cls, addr, res, basic_date_res):
         wb = xlwt.Workbook(encoding='utf-8')
-        worksheet = [wb.add_sheet('总数'), wb.add_sheet('boy'), wb.add_sheet('girl'), wb.add_sheet('未知性别'),
-                     wb.add_sheet('VN'), wb.add_sheet('TH'), wb.add_sheet('ID'), wb.add_sheet('其它地区')]
+        worksheet = [wb.add_sheet('总数',cell_overwrite_ok=True), wb.add_sheet('boy',cell_overwrite_ok=True), wb.add_sheet('girl',cell_overwrite_ok=True),
+                     wb.add_sheet('未知性别',cell_overwrite_ok=True), wb.add_sheet('VN',cell_overwrite_ok=True), wb.add_sheet('TH',cell_overwrite_ok=True),
+                     wb.add_sheet('ID',cell_overwrite_ok=True), wb.add_sheet('其它地区',cell_overwrite_ok=True)]
         for action in cls.ACTION_ENCODE:
             worksheet.append(wb.add_sheet(action))
         for age in range(13, 26):
@@ -156,9 +157,10 @@ class RetainAnaService(object):
         # 在每一列前面写入项目表头
         for sheet in worksheet:
             write_sheet_certain_pos(sheet, 0, 0, u'留存率/留存人数')
-            write_sheet_certain_pos(sheet, 0, 1, u'次日留存')
-            write_sheet_certain_pos(sheet, 0, 2, u'7日留存')
-            write_sheet_certain_pos(sheet, 0, 3, u'30日留存')
+            write_sheet_certain_pos(sheet, 0, 1, u'当日新增用户人数')
+            write_sheet_certain_pos(sheet, 0, 2, u'次日留存')
+            write_sheet_certain_pos(sheet, 0, 3, u'7日留存')
+            write_sheet_certain_pos(sheet, 0, 4, u'30日留存')
 
         # 分日期写入具体数据
         i = 0
@@ -169,11 +171,12 @@ class RetainAnaService(object):
                 base_res = basic_date_res[i]
                 for sheet in worksheet:
                     if not base_res[sheet.name]:
-                        write_sheet_certain_pos(sheet, i + 1, j + 1, 0)
+                        write_sheet_certain_pos(sheet, i + 1, j + 2, 0)
                     else:
-                        write_sheet_certain_pos(sheet, i + 1, j + 1,
+                        write_sheet_certain_pos(sheet, i + 1, 1, str(base_res[sheet.name]))
+                        write_sheet_certain_pos(sheet, i + 1, j + 2,
                                                 str(res[date][j][sheet.name] / float(base_res[sheet.name])) + '/' + str(
-                                                    res[date][j][sheet.name]) + '/' + str(base_res[sheet.name]))
+                                                    res[date][j][sheet.name]))
             i += 1
         wb.save(addr)
 
