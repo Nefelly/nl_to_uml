@@ -68,7 +68,7 @@ class RetainAnaService(object):
         user_info = {}
         from_ts = date_to_int_time(date)
         to_ts = date_to_int_time(next_date(date, 1))
-        users = User.objects(create_time__gte=next_date(date, -1),create_time__lte=date, platform='android')
+        users = User.objects(create_time__gte=date,create_time__lte=next_date(date,1), platform='android')
 
         for user in users:
             user_id = str(user.id)
@@ -102,6 +102,12 @@ class RetainAnaService(object):
 
         for action in cls.ACTION_QUERY:
             cls._load_user_action_info(date, user_info, action)
+        return user_info
+
+    @classmethod
+    def get_new_user_info(cls, date):
+        """返回特定日期的新用户信息"""
+        user_info = cls._load_user_info(date)
         return user_info
 
     @classmethod
@@ -180,12 +186,6 @@ class RetainAnaService(object):
         retain_user_info = cls.get_retain_user_info(retain_date, basic_info)
         retain_res = cls.get_res_from_user_info(retain_user_info)
         return retain_res
-
-    @classmethod
-    def get_new_user_info(cls, date):
-        """返回特定日期的新用户信息"""
-        user_info = cls._load_user_info(date)
-        return user_info
 
     @classmethod
     def get_retain_user_info(cls, date, user_info):
