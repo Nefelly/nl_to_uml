@@ -23,13 +23,17 @@ from ....response import (
 from ..form import (
     PhoneLoginForm
 )
+from ....const import (
+    ONE_HOUR
+)
 from ....service import (
     UserService,
     UserMessageService,
     FirebaseService,
     AccountService,
     AccostService,
-    ConversationService
+    ConversationService,
+    TokenBucketService
 )
 from ....const import (
     MAX_TIME
@@ -115,6 +119,9 @@ def get_user_info(target_user_id):
 
 @session_required
 def add_conversation():
+    key = 'filter_conversation:{user_id}'.format(user_id=request.user_id)
+    if not TokenBucketService.get_token(key, 1, 50, 100, ONE_HOUR, 2 * ONE_HOUR):
+        return success()
     data = request.json
     other_user_id = data.get('other_user_id')
     conversation_id = data.get('conversation_id')
