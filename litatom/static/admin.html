@@ -8,6 +8,7 @@
  <th>reported user id</th>
  <th>reason/feed content/chat record</th>
  <th>pictures</th>
+    <th>picture_from_feed</th>
  <th>audio</th>
  <th>ban/reject/ban_device</th>
  </tr>
@@ -24,6 +25,7 @@
 <td v-if="item.pics.length === 0">
 no pictures
 </td>
+    <td>{{item.pic_from_feed}}</td>
     <td><audio v-if="item.audio_url" audio id="audio1" controls="controls" :src="item.audio_url" type="audio/x-mpeg">
 </audio> </td>
 <td><button name='ban'  style="background:red" @click='ban(item.report_id)'>ban</button><br /> <br /><br /> <button name='reject' @click='reject(item.report_id)'>reject</button>
