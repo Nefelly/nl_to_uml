@@ -309,9 +309,11 @@ class ReportService(object):
             res['chat_record'] = '\n'.join(res_record)
         else:
             res['chat_record'] = ''
+        res['pic_from_feed'] = False
         if report.related_feed:
             feed = Feed.get_by_id(report.related_feed)
             if feed:
+                res['pic_from_feed'] = True
                 res['content'] = feed.content if feed.content else ''
                 if feed.audios:
                     res['audio_url'] = 'http://www.litatom.com/api/sns/v1/lit/mp3audio/%s' % feed.audios[0]
