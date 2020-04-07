@@ -11,7 +11,8 @@ import time
 
 def foo():
     print "started at", time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
-    MaintainService.clear_following_feed()
+    MaintainService.clear_userMessages()
+    MaintainService.clear_user_conversations()
     print "ended at", time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
 
 def run():
