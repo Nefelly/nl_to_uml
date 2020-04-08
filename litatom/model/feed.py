@@ -214,7 +214,6 @@ class FeedLike(Document):
 
     @classmethod
     def get_by_ids(cls, uid, feed_id):
-        return None
         return cls.objects(uid=uid, feed_id=feed_id).first()
 
     @classmethod
