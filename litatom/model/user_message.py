@@ -71,6 +71,8 @@ class UserConversation(Document):
 
     @classmethod
     def add_conversation(cls, user_id, other_user_id, conversation_id, from_type=None):
+        if cls.get_by_user_id_conversation_id(user_id, conversation_id):
+            return True
         obj = cls(user_id=user_id, other_user_id=other_user_id, conversation_id=conversation_id)
         if from_type:
             obj.from_type = from_type
