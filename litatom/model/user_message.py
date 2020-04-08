@@ -14,7 +14,11 @@ class UserMessage(Document):
     '''
     用户登录时给用户推送的消息
     '''
-
+    meta = {
+        'strict': False,
+        'db_alias': 'relations',
+        'shard_key': {'uid': 'hashed'}
+    }
 
     related_feedid = StringField()
     uid = StringField(required=True)
