@@ -246,7 +246,7 @@ class FeedLike(Document):
         if feed_like_num > cls.LIKE_NUM_THRESHOLD - cls.PROTECT:  # PROTECT 用来保护缓存不会因为like num 一上一下不断刷缓存
             if feed_like_num >= cls.LIKE_NUM_THRESHOLD:
                 redis_client.delete(key)
-            obj = cls.objects(uid=uid, feed_id=feed_id).first()
+            obj = cls.get_by_ids(uid, feed_id)
             return True if obj else False
         cls.ensure_cache(feed_id)
         return redis_client.sismember(key, uid)
