@@ -6,13 +6,16 @@ import logging
 from ..key import (
     REDIS_SHARE_STAT,
     REDIS_SHARE_KNOWN_NUM,
+    REDIS_CLICK_SHARE,
 )
 from ..service import (
-    AccountService
+    AccountService,
+    AliLogService
 )
 from ..const import (
     ONE_WEEK,
     ONE_MONTH,
+    ONE_DAY,
 )
 from ..redis import RedisClient
 
@@ -27,6 +30,8 @@ class ShareStatService(object):
     """
     CACHED_TIME = ONE_WEEK
     CACHED_RECORD_TIME = ONE_MONTH
+    CLICK_EXPIRE_TIME = ONE_DAY
+    MAX_CLICKER_NUM = 3
     ERR_SHARE_NOT_ENOUGH = 'not enough shared members'
 
     @classmethod
@@ -36,6 +41,10 @@ class ShareStatService(object):
     @classmethod
     def _get_known_num_key(cls, user_id):
         return REDIS_SHARE_KNOWN_NUM.format(user_id=user_id)
+
+    @classmethod
+    def get_clicker_key(cls, ip):
+        return REDIS_CLICK_SHARE.format(ip=ip)
 
     @classmethod
     def ensure_cache(cls, user_id):
@@ -48,10 +57,27 @@ class ShareStatService(object):
             redis_client.expire(key, cls.CACHED_TIME)
 
     @classmethod
+    def record_clicker_redis(cls, ip):
+        """把点击分享链接的人存入一日过期的缓存当中，用于估算其是否会因此而下载"""
+        key = cls.get_clicker_key(ip)
+        num = redis_client.incr(key)
+        redis_client.expire(key, cls.CLICK_EXPIRE_TIME)
+        if num > cls.MAX_CLICKER_NUM:
+            return False
+        return True
+        # if not redis_client.exists(ip):
+        #     redis_client.set(key, 1)
+
+
+    @classmethod
     def add_stat_item(cls, user_id, item):
+        """有人为user_id 点击share 的链接"""
         key = cls._get_key(user_id)
-        redis_client.sadd(key, item)
+        if redis_client.sadd(key, item):
+            if not cls.record_clicker_redis(item):
+                redis_client.srem(key, item)
         redis_client.expire(key, cls.CACHED_TIME)
+        cls.record_click_share_link(item, user_id)
         return True
 
     @classmethod
@@ -89,6 +115,12 @@ class ShareStatService(object):
             return cls.ERR_SHARE_NOT_ENOUGH, False
         key = cls._get_known_num_key(user_id)
         redis_client.set(key, cls.get_stat_item_num(user_id))
-        return AccountService.deposit_by_activity(user_id,AccountService.SHARE_5)
+        return AccountService.deposit_by_activity(user_id, AccountService.SHARE_5)
+
+    @classmethod
+    def record_click_share_link(cls, user_ip, target_uid):
+        contents = [('action', 'share'), ('remark', 'click_share_link'), ('user_ip', str(user_ip)),
+                    ('share_user_id', target_uid)]
+        AliLogService.put_logs(contents)
 
 

@@ -8,6 +8,7 @@ import logging
 from ..redis import RedisClient
 from hendrix.conf import setting
 from ..const import ALI_LOG_EXCHANGE
+from flask import request
 
 from ..util import (
     read_data_from_xls
@@ -97,6 +98,8 @@ class AliLogService(object):
         logitemList = []  # LogItem list
         logItem = LogItem()
         logItem.set_time(int(time()))
+        if request.platform:
+            contents.append(('platform', request.platform))
         logItem.set_contents(contents)
         logitemList.append(logItem)
         cls.put_logs_atom(logitemList,project,logstore,topic,source,client)
@@ -160,7 +163,8 @@ class AliLogService(object):
             res = client.get_log(project=project, logstore=logstore, from_time=from_time, to_time=to_time,
                                  size=size, query=query)
         except LogException as e:
-            print(e)
+            # print(e)
+            pass
         else:
             if not attributes:
                 return res
@@ -187,8 +191,8 @@ class AliLogService(object):
         """
         if size == -1 or size > 400000:
             if isinstance(from_time, int) and isinstance(to_time, int):
-                time_delta = (to_time - from_time) / 24.0
-                for i in range(24):
+                time_delta = (to_time - from_time) / 100.0
+                for i in range(100):
                     start_time = from_time + i * time_delta
                     end_time = from_time + (i + 1) * time_delta
                     resp = cls.get_log_atom(project=project, logstore=logstore, from_time=round(start_time),
@@ -197,8 +201,8 @@ class AliLogService(object):
             elif isinstance(from_time, str) and isinstance(to_time, str):
                 from_time_date = cls.alitime_to_datetime(from_time)
                 to_time_date = cls.alitime_to_datetime(to_time)
-                time_delta = (to_time_date - from_time_date) / 24
-                for i in range(24):
+                time_delta = (to_time_date - from_time_date) / 100
+                for i in range(100):
                     start_time = cls.datetime_to_alitime(from_time_date + i * time_delta)
                     end_time = cls.datetime_to_alitime(from_time_date + (i + 1) * time_delta)
                     resp = cls.get_log_atom(project=project, logstore=logstore, from_time=start_time, to_time=end_time,

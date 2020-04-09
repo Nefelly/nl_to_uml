@@ -318,6 +318,9 @@ class DiamStatService(object):
         'diam_deposit_num': 'name:deposit|SELECT sum(diamonds) as res',
         'diam_deposit_people_num': 'name:deposit|SELECT COUNT(DISTINCT user_id) as res',
         'diam_deposit_man_time_num': 'name:deposit|SELECT COUNT(1) as res',
+        'free_diam_gain_people_num': 'name:watch_video or name:share_5 or name:share | SELECT COUNT(DISTINCT user_id) as res',
+        'free_diam_gain_man_time': 'name:watch_video or name:share_5 or name:share | SELECT COUNT(1) as res',
+        'free_diam_gain_num': 'name:watch_video or name:share_5 or name:share | SELECT sum(diamonds) as res',
         'diam_deposit50_people_num': 'name:deposit and diamonds=50|SELECT COUNT(DISTINCT user_id) as res',
         'diam_deposit50_man_time_num': 'name:deposit and diamonds=50|SELECT COUNT(1) as res',
         'diam_deposit100_people_num': 'name:deposit and diamonds=100|SELECT COUNT(DISTINCT user_id) as res',
@@ -326,12 +329,35 @@ class DiamStatService(object):
         'diam_deposit200_man_time_num': 'name:deposit and diamonds=200|SELECT COUNT(1) as res',
         'diam_deposit500_people_num': 'name:deposit and diamonds=500|SELECT COUNT(DISTINCT user_id) as res',
         'diam_deposit500_man_time_num': 'name:deposit and diamonds=500|SELECT COUNT(1) as res',
+        'watch_video_people_num': 'name:watch_video| SELECT count(DISTINCT user_id) as res',
+        'watch_video_man_time': 'name:watch_video| SELECT count(1) as res',
+        'watch_video_diam_num': 'name:watch_video| SELECT sum(diamonds) as res',
+        'get_100_diam_by_share_link': 'name:share_5| SELECT sum(diamonds) as res',
+        'get_10_diam_by_share_link': 'name:share| SELECT sum(diamonds) as res',
         'week_member_consumer_num': 'name:week_member |SELECT COUNT(DISTINCT user_id) as res',
         'week_member_cons_man_time_num': 'name:week_member |SELECT COUNT(1) as res',
         'week_member_diam_cons_num': 'name:week_member |SELECT -sum(diamonds) as res',
         'acce_consumer_num': 'name:accelerate | SELECT count(DISTINCT user_id) as res',
         'acce_con_man_time_num': 'name:accelerate | SELECT count(1) as res',
         'acce_diam_cons_num': 'name:accelerate | SELECT -sum(diamonds) as res',
+        'diam_unban_people_num': 'name:unban_by_diamonds | SELECT COUNT(DISTINCT user_id) as res',
+        'diam_unban_man_time': 'name:unban_by_diamonds | SELECT COUNT(1) as res',
+        'diam_unban_cons_num': 'name:unban_by_diamonds | SELECT -sum(diamonds) as res',
+        'diam_accost_cons_num': 'name:accost_reset | SELECT -sum(diamonds) as res',
+        'palm_unlock_people_num': 'name:palm_result |select count(DISTINCT user_id) as res',
+        'palm_unlock_man_time': 'name:palm_result |select count(*) as res',
+        'palm_unlock_diam_cons_num': 'name:palm_result |select -sum(diamonds) as res',
+    }
+    STAT_ACTION_QUERY_LIST = {
+        '10_diam_share_man_time': 'remark:share\ prepare | select count(*) as res',
+        '10_diam_share_people_num': 'remark:share\ prepare | select count(distinct user_id) as res',
+        # '100_diam_share_man_time':'',
+        # '100_diam_share_people_num':'',
+        'accost_people_num': 'remark:accost_pass | SELECT COUNT(DISTINCT user_id) as res',
+        'accost_man_time': 'remark:accost_pass | SELECT COUNT(1) as res',
+        'share_clicker_man_time': 'action:share and remark:click_share_link | SELECT COUNT(1) as res',
+        'share_clicker_people_num': 'action:share and remark:click_share_link | SELECT COUNT(DISTINCT user_ip) as res',
+        'register_reason_by_share': 'action:share and remark:create_new_user |select count(distinct user_id) as res',
     }
     FREE_QUERY_LIST = {
         'diam_incr_num': 'diamonds>0|select sum(diamonds) as res',
@@ -444,7 +470,7 @@ class DiamStatService(object):
         return data
 
     @classmethod
-    def cal_stats_from_list(cls, list, from_time, to_time):
+    def cal_stats_from_list(cls, list, from_time, to_time, project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE):
         """
         从阿里云日志中，计算list中所有项目
         :return: 一个tuple列表, (item_name,str(num))， 和一个字典，key为item_name, value为num
@@ -453,17 +479,18 @@ class DiamStatService(object):
         data_dic = {}
         for item in list:
             resp = AliLogService.get_log_atom(from_time=from_time, to_time=to_time, query=list[item],
-                                              project=cls.DEFAULT_PROJECT,
-                                              logstore=cls.DEFAULT_LOGSTORE)
-            for log in resp.logs:
-                contents = log.get_contents()
-                try:
+                                              project=project, logstore=logstore)
+            try:
+                for log in resp.logs:
+                    contents = log.get_contents()
                     res = contents['res']
-                except KeyError:
-                    res = 0
-                finally:
-                    data.append((item, str(res)))
-                    data_dic[item] = int(res)
+                    if not res or res == 'null':
+                        res = 0
+            except KeyError or AttributeError:
+                res = 0
+            finally:
+                data.append((item, str(res)))
+                data_dic[item] = int(res)
         return data, data_dic
 
     @classmethod
@@ -481,6 +508,10 @@ class DiamStatService(object):
         excel_data.append(mem_num)
         data_next, excel_dic = cls.cal_stats_from_list(cls.STAT_QUERY_LIST, from_time, to_time)
         data += data_next
+        data_next, action_excel_dic = cls.cal_stats_from_list(cls.STAT_ACTION_QUERY_LIST, from_time, to_time,
+                                                              AliLogService.DEFAULT_PROJECT,
+                                                              AliLogService.DEFAULT_LOGSTORE)
+        data += data_next
         incoming = excel_dic['diam_deposit50_man_time_num'] * cls.DIAMOND_INCOMING[50] + \
                    excel_dic['diam_deposit100_man_time_num'] * cls.DIAMOND_INCOMING[100] + \
                    excel_dic['diam_deposit200_man_time_num'] * cls.DIAMOND_INCOMING[200] + \
@@ -491,16 +522,31 @@ class DiamStatService(object):
                        excel_dic['diam_cons_man_time_num'],
                        excel_dic['diam_deposit_people_num'],
                        excel_dic['diam_deposit_num'], excel_dic['diam_deposit_man_time_num'],
+                       excel_dic['free_diam_gain_people_num'], excel_dic['free_diam_gain_man_time'],
+                       excel_dic['free_diam_gain_num'],
                        excel_dic['diam_deposit50_people_num'],
                        excel_dic['diam_deposit50_man_time_num'], excel_dic['diam_deposit100_people_num'],
                        excel_dic['diam_deposit100_man_time_num'],
                        excel_dic['diam_deposit200_people_num'], excel_dic['diam_deposit200_man_time_num'],
-                       excel_dic['diam_deposit500_people_num'],
-                       excel_dic['diam_deposit500_man_time_num'], excel_dic['week_member_consumer_num'],
+                       excel_dic['diam_deposit500_people_num'], excel_dic['diam_deposit500_man_time_num'],
+                       excel_dic['watch_video_people_num'], excel_dic['watch_video_man_time'],
+                       excel_dic['watch_video_diam_num'],
+                       # action_excel_dic['100_diam_share_man_time'],action_excel_dic['100_diam_share_people_num'],
+                       excel_dic['get_100_diam_by_share_link'],
+                       action_excel_dic['10_diam_share_man_time'], action_excel_dic['10_diam_share_people_num'],
+                       excel_dic['get_10_diam_by_share_link'],
+                       excel_dic['week_member_consumer_num'],
                        excel_dic['week_member_cons_man_time_num'],
                        excel_dic['week_member_diam_cons_num'], excel_dic['acce_consumer_num'],
-                       excel_dic['acce_con_man_time_num'],
-                       excel_dic['acce_diam_cons_num']]
+                       excel_dic['acce_con_man_time_num'], excel_dic['acce_diam_cons_num'],
+                       excel_dic['diam_unban_people_num'], excel_dic['diam_unban_man_time'],
+                       excel_dic['diam_unban_cons_num'],
+                       action_excel_dic['accost_people_num'], action_excel_dic['accost_man_time'],
+                       excel_dic['diam_accost_cons_num'],
+                       excel_dic['palm_unlock_people_num'], excel_dic['palm_unlock_man_time'],
+                       excel_dic['palm_unlock_diam_cons_num'],
+                       action_excel_dic['share_clicker_man_time'], action_excel_dic['share_clicker_people_num'],
+                       action_excel_dic['register_reason_by_share']]
         return excel_data
 
     @classmethod
@@ -508,14 +554,21 @@ class DiamStatService(object):
         yesterday_res = cls.diam_stat_report(date)
         # AliLogService.put_logs(yesterday_res, project='litatom-account', logstore='diamond_stat')
         res = [yesterday_res]
-        for delta in range(1,days_delta):
-            res.append(cls.diam_stat_report(date-datetime.timedelta(days=delta)))
+        for delta in range(1, days_delta):
+            res.append(cls.diam_stat_report(date - datetime.timedelta(days=delta)))
         write_data_to_xls_col(addr,
-                              [r'日期',r'会员数', r'收入', r'钻石消耗人数', r'钻石消耗数量', r'钻石消耗人次', r'钻石购买人数', r'钻石购买数量', r'钻石购买人次',
-                               r'50钻石购买人数',
+                              [r'日期', r'会员数', r'收入', r'钻石消耗人数', r'钻石消耗数量', r'钻石消耗人次', r'钻石购买人数', r'钻石购买数量', r'钻石购买人次',
+                               r'免费钻石获取人数', r'免费钻石获取人次', r'免费钻石获取数量', r'50钻石购买人数',
                                r'50钻石购买人次', r'100钻石购买人数', r'100钻石购买人次', r'200钻石购买人数', r'200钻石购买人次', r'500钻石购买人数',
-                               r'500钻石购买人次', r'会员购买人数', r'会员购买人次', r'会员-钻石消耗数量',
-                               r'加速人数', r'加速购买人次', r'加速-钻石消耗数量'], res, 'utf-8')
+                               r'500钻石购买人次', r'观看激励视频人数', r'观看激励视频人次', r'激励视频钻石数量',
+                               # r'分享链接人数(100钻)',r'分享链接人次(100钻)',
+                               r'分享链接100钻石获取数量',
+                               r'分享链接人次(10钻)', r'分享链接人数(10钻)', r'分享链接10钻石获取数量', r'会员购买人数', r'会员购买人次', r'会员-钻石消耗数量',
+                               r'加速人数', r'加速购买人次', r'加速-钻石消耗数量',
+                               r'钻石解封人数', r'钻石解封人次', r'解封-钻石消耗数量',
+                               r'搭讪人数', r'搭讪人次', r'搭讪钻石消耗数量',
+                               r'手相解锁人数', r'手相解锁人次', r'手相解锁-钻石消耗数量',
+                               r'分享链接浏览人次', r'分享链接浏览人数', r'分享带来新用户数'], res, 'utf-8')
 
     @classmethod
     def diam_free_report(cls, addr, date=datetime.datetime.now()):
@@ -559,9 +612,8 @@ class DiamStatService(object):
 
 
 class ForbidStatService(object):
-
-    PIC_URL='http://www.litatom.com/api/sns/v1/lit/simage/'
-    AUDIO_URL='http://www.litatom.com/api/sns/v1/lit/audio/'
+    PIC_URL = 'http://www.litatom.com/api/sns/v1/lit/simage/'
+    AUDIO_URL = 'http://www.litatom.com/api/sns/v1/lit/audio/'
 
     @classmethod
     def _load_spam_record(cls, temp_res, from_ts, to_ts):
@@ -594,21 +646,22 @@ class ForbidStatService(object):
                 temp_res[report.target_uid][u'举报' + str(temp_num + 1)] = {u'举报者': report.uid, u'举报原因': report.reason,
                                                                           u'举报时间': time_str_by_ts(report.create_ts)}
                 if report.pics:
-                    pics = [cls.PIC_URL+pic for pic in report.pics]
+                    pics = [cls.PIC_URL + pic for pic in report.pics]
                     temp_res[report.target_uid][u'举报' + str(temp_num + 1)][u'举报图片'] = pics
                 elif report.related_feed:
                     feed = Feed.objects(id=report.related_feed).first()
                     temp_res[report.target_uid][u'举报' + str(temp_num + 1)][u'举报feed'] = {}
                     if not feed:
-                        temp_res[report.target_uid][u'举报' + str(temp_num + 1)][u'举报feed']['ERROR'] = 'FEED CAN NOT BE FOUND'
+                        temp_res[report.target_uid][u'举报' + str(temp_num + 1)][u'举报feed'][
+                            'ERROR'] = 'FEED CAN NOT BE FOUND'
                     else:
                         if feed.content:
                             temp_res[report.target_uid][u'举报' + str(temp_num + 1)][u'举报feed']['content'] = feed.content
                         if feed.pics:
-                            pics = [cls.PIC_URL+pic for pic in feed.pics]
+                            pics = [cls.PIC_URL + pic for pic in feed.pics]
                             temp_res[report.target_uid][u'举报' + str(temp_num + 1)][u'举报feed']['pictures'] = pics
                         if feed.audios:
-                            audios = [cls.AUDIO_URL+audio for audio in feed.audios]
+                            audios = [cls.AUDIO_URL + audio for audio in feed.audios]
                             temp_res[report.target_uid][u'举报' + str(temp_num + 1)][u'举报feed']['audios'] = audios
 
     @classmethod

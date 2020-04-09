@@ -52,6 +52,7 @@ b.add_url_rule('/lit/admin/login', 'admin-login', endpoint.admin.login, methods=
 b.add_url_rule('/lit/admin/hello', 'admin-hello', endpoint.admin.hello)
 b.add_url_rule('/lit/admin/query_reports', 'admin-query_reports', endpoint.admin.query_reports)
 b.add_url_rule('/lit/admin/ban/<report_id>', 'admin-ban', endpoint.admin.ban_user)
+b.add_url_rule('/lit/admin/ban_device/<report_id>', 'admin-ban-device', endpoint.admin.ban_device)
 b.add_url_rule('/lit/admin/ban_user_by_feed/<feed_id>', 'admin-ban_by_feed', endpoint.admin.ban_user_by_feed)
 b.add_url_rule('/lit/admin/unban', 'admin-unban', endpoint.admin.unban)
 b.add_url_rule('/lit/admin/reject/<report_id>', 'admin-reject', endpoint.admin.reject)
@@ -143,7 +144,7 @@ b.add_url_rule('/lit/activity/palm/times_left', 'activity-palm-times-left', endp
 b.add_url_rule('/lit/activity/user_share/<share_user_id>', 'activity-user-share', endpoint.activity.user_share)
 b.add_url_rule('/lit/activity/share_static1', 'activity-share-static', endpoint.activity.share_static)
 b.add_url_rule('/lit/activity/claim_rewards', 'activity-claim-rewards', endpoint.activity.claim_rewards)
-b.add_url_rule('/lit/activity/share_num','activity-share-num',endpoint.activity.share_num)
+b.add_url_rule('/lit/activity/share_num', 'activity-share-num',endpoint.activity.share_num)
 
 # anoy_match
 b.add_url_rule('/lit/anoy_match/get_fakeid', 'anoy-match-create-fakeid', endpoint.anoy_match.get_fakeid)

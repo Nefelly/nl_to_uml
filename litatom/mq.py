@@ -96,7 +96,6 @@ class MQProducer(object):
         try:
             send()
         except Exception, e:
-            print e
             # logger.info('retry publish rabbitmq message caused by: %r', e)
             try:
                 send()

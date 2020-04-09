@@ -24,6 +24,8 @@
     Request = GetRequest();
     var Loc = Request['loc']
     console.log(Request['loc'])
+    var Platform = Request['platform']
+    var version = Request['version']
     var Dealed = Request['dealed']
     if(!Loc){
         Loc='TH'
@@ -41,7 +43,7 @@ created() {this.submitForm();},
 
 methods: {
       submitForm: function() {
-        this.$http.get(BASE_URL + 'home/settings?loc=' + Loc).then(function(result){
+        this.$http.get(BASE_URL + 'home/settings?loc=' + Loc + '&platform=' + Platform + '&version=' + version).then(function(result){
         var data = result.data.data;
 	    var jstring = JSON.stringify(data) ;// 建议用这个
             // console.log(jstring);
@@ -53,7 +55,7 @@ methods: {
         data = document.getElementById('setting_data').value;
         var obj = eval("("+data+")");
         var obj = JSON.parse(data)
-        this.$http.post(BASE_URL + 'admin/change_setting', obj).then(function(result){
+        this.$http.post(BASE_URL + 'admin/change_setting?loc=' + Loc + '&platform=' + Platform + '&version=' + version, obj).then(function(result){
             if (result.data.result === 0){alert('success!');}
             else{alert('failed');}
         })

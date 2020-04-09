@@ -159,7 +159,7 @@ def get_time_info(int_time, user_mode=False):
 
 
 def now_date_key():
-    """今日日期"""
+    """今日日期str"""
     return datetime.datetime.now().strftime('%Y-%m-%d') # for time latency reason
 
 
@@ -230,7 +230,7 @@ def read_data_from_xls(name):
 def write_data_to_xls(name, tb_heads, datas):
     """表头在第一行"""
     import xlwt
-    f = xlwt.Workbook()
+    f = xlwt.Workbook(encoding='utf-8')
     sheet1 = f.add_sheet(name.split('/')[-1], cell_overwrite_ok=True)
     for i in range(len(tb_heads)):
         sheet1.write(0, i, tb_heads[i])
@@ -241,6 +241,31 @@ def write_data_to_xls(name, tb_heads, datas):
 
             sheet1.write(i + 1, j, datas[i][j])
     f.save(name)
+
+def write_data_to_multisheets(name, sheet_names, tb_heads, data):
+    """
+
+    :param name:
+    :param sheet_names:
+    :param tb_heads:
+    :param data:一个列表，列表中的每个元素也是一个列表，每个元素都是1个sheet中的数据
+    :return:
+    """
+    import xlwt
+    f = xlwt.Workbook(encoding='utf-8')
+    # 建表
+    sheets = [f.add_sheet(s) for s in sheet_names]
+    # 写表头
+    for sheet in sheets:
+        for i in range(len(tb_heads)):
+            sheet.write(0, i, tb_heads[i])
+    for sheet_num in range(len(data)):
+        sheet_data = data[sheet_num]
+        for i in range(len(sheet_data)):
+            for j in range(len(sheet_data[i])):
+                sheets[sheet_num].write(i+1, j, sheet_data[i][j])
+    f.save(name)
+
 
 def write_data_to_xls_col(name, tb_heads, data, encoding='ascii'):
     """表头在第一列"""
@@ -256,12 +281,20 @@ def write_data_to_xls_col(name, tb_heads, data, encoding='ascii'):
             sheet1.write(j, i+1, data[i][j])
     f.save(name)
 
+def write_sheet_certain_pos(sheet_name, row_pos, col_pos, data):
+    """向excel sheet具体位置中写入数据"""
+    sheet_name.write(row_pos, col_pos, data)
 
 def remove_emoji_ending(raw_string):
     formated_string = '\n'.join([x.strip() for x in raw_string.replace('\r', '\n').split('\n') if x])
     while len(formated_string) > 0 and is_emoji(formated_string[-1]):
         formated_string = formated_string[:-1]
     return formated_string
+
+def dic_order_by_value(d, reverse=False):
+    """字典按值排序"""
+    d_order=sorted(d.items(),key=lambda x:x[1],reverse=reverse)
+    return d_order
 
 
 # 暂未被使用，放在这里供参考. 因为除了汉字还有各国语言非英文字符要考虑.
@@ -317,6 +350,9 @@ def write_to_json(file, dic):
             f.write(json.dumps(item, indent=4, ensure_ascii=False))
             f.write('\n')
 
+def find_key_by_value(dic, value):
+    """从字典的值反查键，值必须唯一"""
+    return list(dic.keys())[list(dic.values()).index(value)]
 
 class CachedProperty(object):
     """Decorator like python built-in ``property``, but it results only

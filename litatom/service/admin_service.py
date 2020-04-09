@@ -30,7 +30,9 @@ from ..service import (
 )
 from ..const import (
     MAX_TIME,
-    ONE_DAY
+    ONE_DAY,
+    FOREVER,
+    MANUAL_FORBID,
 )
 from hendrix.conf import setting
 from ..redis import RedisClient
@@ -161,25 +163,54 @@ class AdminService(object):
             feed = Feed.get_by_id(report.target_uid)
             if feed:
                 report.target_uid = feed.user_id
-        res = ForbiddenService.forbid_user(report.target_uid, ban_time)
+        res = ForbiddenService.forbid_user(report.target_uid, ban_time, MANUAL_FORBID)
         if res:
             report.ban(ban_time)
-            ForbiddenService.feedback_to_reporters(report.target_uid, [report.uid])
             return None, True
         return u'forbid error', False
+
+    @classmethod
+    def ban_device_by_report(cls, report_id):
+        report = Report.get_by_id(report_id)
+        if not report:
+            return u'wrong report id', False
+        user = User.get_by_id(report.target_uid)
+        if not user:
+            feed = Feed.get_by_id(report.target_uid)
+            if feed:
+                report.target_uid = feed.user_id
+        data, status = cls.ban_device_by_uid(report.target_uid)
+        if status:
+            report.ban(FOREVER)
+            return None, True
+        return data, status
+
+    @classmethod
+    def ban_device_by_uid(cls, uid):
+        res = ForbiddenService.forbid_user(uid, FOREVER, MANUAL_FORBID)
+        user_setting = UserSetting.get_by_user_id(uid)
+        if not user_setting or not user_setting.uuid:
+            return u'has not device_id', False
+        for obj in UserSetting.objects(uuid=user_setting.uuid):
+            if obj.user_id != uid:
+                ForbiddenService.forbid_user(obj.user_id, FOREVER, MANUAL_FORBID)
+        BlockedDevices.add_device(user_setting.uuid)
+        if not res:
+            return 'forbid error', False
+        return None, True
 
     @classmethod
     def ban_by_uid(cls, user_id):
         num = Report.objects(uid=user_id).count()
         if not setting.IS_DEV and num >= 2:
             return u'user not reported too much', False
-        ForbiddenService.forbid_user(user_id, 20 * ONE_DAY)
+        ForbiddenService.forbid_user(user_id, 20 * ONE_DAY, MANUAL_FORBID)
         return None, True
 
     @classmethod
     def ban_reporter(cls, user_id):
         num = Report.objects(uid=user_id).delete()
-        res = ForbiddenService.forbid_user(user_id, 20 * ONE_DAY)
+        res = ForbiddenService.forbid_user(user_id, 20 * ONE_DAY, MANUAL_FORBID)
         return None, True
 
     @classmethod
@@ -188,7 +219,7 @@ class AdminService(object):
         if not feed:
             return u'wrong feed id', False
         feed_user_id = feed.user_id
-        res = ForbiddenService.forbid_user(feed_user_id, ban_time)
+        res = ForbiddenService.forbid_user(feed_user_id, ban_time, MANUAL_FORBID)
         FeedService.delete_feed('', str(feed.id))
         if res:
             for feed in Feed.get_by_user_id(feed_user_id):
@@ -211,7 +242,6 @@ class AdminService(object):
         host, port, user, pwd, db = get_args_from_db('DB_LIT')
         sql = '''mongoexport -h %s --port %r -u %s -p %s --authenticationDatabase %s -d %s -c %s -f %s --type=csv -q '%s' --out %s''' % (
         host, port, user, pwd, db, db, table_name, fields, query, save_add)
-        print sql
         os.system(sql)
         return save_add, True
 

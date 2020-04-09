@@ -19,7 +19,7 @@ ALI_LOG_EXCHANGE = 'ali_log_exchange'
 # PIC_UPLOAD_EXCHANGE = 'feed_check'
 
 # cookie 中的存 session 的 key
-SESSION_SESSION_ID_KEY = 'sessionid.1'
+SESSION_SESSION_ID_KEY = 'sessionid.'
 PLATFORM_IOS = 'ios'
 PLATFORM_ANDROID = 'android'
 DEFAULT_QUERY_LIMIT = 100
@@ -34,6 +34,7 @@ TYPE_VOICE_TENCENT = 'tencent'
 CODE_PRIOR_VOICE = TYPE_VOICE_TENCENT
 
 BACKUP_HOST = 'http://www.litmatchapp.com'
+BACKUP_DNS = 'litmatchapp'
 
 ALL_FILTER = True
 
@@ -69,6 +70,7 @@ ONE_DAY = 60 * 60 * 24
 ONE_WEEK = 60 * 60 * 24 * 7
 TWO_WEEKS = 60 * 60 * 24 * 14
 ONE_MONTH = 60 * 60 * 24 * 30
+FOREVER = 1200 * ONE_MONTH
 
 # redis中空集的占位符
 NAN = 'NAN'

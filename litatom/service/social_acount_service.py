@@ -187,7 +187,7 @@ class GoogleService(object):
         if not res:
             contents = [('token',token),('product_id',product_id),('user_id',user_id)]
             cls.put_invalid_log_to_ali_log(contents)
-            return cls.ERR_INVALID_TOKEN,False
+            return cls.ERR_INVALID_TOKEN, False
         return None,True
 
     @classmethod

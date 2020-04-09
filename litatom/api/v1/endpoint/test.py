@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 #logger.addHandler(loghanlder)
 
 def test():
-    return jsonify(Success)
+    return jsonify(request.url)
 
 def hello():
     logger.error("hello, this is a mistake")

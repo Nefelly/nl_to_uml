@@ -20,11 +20,14 @@ REDIS_ACCOUNT_ACTION = 'account:{key}'
 # share stat
 REDIS_SHARE_STAT = 'share_stat:{user_id}'
 REDIS_SHARE_KNOWN_NUM = 'share_known_num:{user_id}'
+REDIS_CLICK_SHARE = 'share_clicker:{ip}'
 
 # rate control
 REDIS_VISIT_RATE = 'visit_rate:{user_id}'
 REDIS_ACCOST_RATE = 'accost_rate:{user_id}'
 REDIS_ACCOST_STOP_RATE = 'accost_stop_rate:{user_id}'
+REDIS_ACCOST_DAY_STOP = 'accost_day_stop:{now_date_key}{user_id}'
+REDIS_SHARE_LIMIT = 'share_limit:{user_id}'
 
 # cache
 REDIS_USER_CACHE = 'user_cache:{user_id}'
@@ -123,4 +126,6 @@ REDIS_VIDEO_CHAT_IN_CHAT = 'video_chat_in_chat:{user_id}'
 
 # dev owned
 REDIS_SETTINGS_KEYS = 'dev_settings'
+REDIS_SETTINGS_IOS = 'setting_ios'
+REDIS_SETTINGS_IOS_VERSION = 'setting_ios_v:{version}'
 REDIS_ACCESS_TOKEN = 'access_token'

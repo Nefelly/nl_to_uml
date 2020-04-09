@@ -153,6 +153,27 @@ class HuanxinAccount(EmbeddedDocument):
         }
 
 
+class BlockedDevices(Document):
+    meta = {
+        'strict': False,
+    }
+    uuid = StringField(required=True)
+    create_time = DateTimeField(required=True, default=datetime.datetime.now)
+
+    @classmethod
+    def add_device(cls, uuid):
+        if cls.get_by_device(uuid):
+            return True
+        obj = cls()
+        obj.uuid = uuid
+        obj.save()
+
+    @classmethod
+    def get_by_device(cls, uuid):
+        obj = cls.objects(uuid=uuid).first()
+        return obj
+
+
 class SocialAccountInfo(EmbeddedDocument):
     meta = {
         'strict': False,
@@ -204,6 +225,7 @@ class User(Document, UserSessionMixin):
     session = StringField()
     sessionCreateTime = DateTimeField()
     logined = BooleanField(default=False)
+    platform = StringField(default='android')
     bio = StringField()
     phone = StringField()
     country = StringField()
@@ -318,7 +340,10 @@ class User(Document, UserSessionMixin):
 
     @classmethod
     def _age_by_cache(cls, res):
-        return int(res) if res != NO_SET and res else cls.DEFUALT_AGE
+        if res != NO_SET and res:
+            if int(res) > 0:
+                return int(res)
+        return cls.DEFUALT_AGE
 
     @classmethod
     def age_by_user_id(cls, user_id):
@@ -471,6 +496,14 @@ class User(Document, UserSessionMixin):
     @classmethod
     def get_by_nickname(cls, nickname):
         return cls.objects(nickname=nickname).first()
+
+    @classmethod
+    def get_users_by_nickname(cls, nickname):
+        return cls.objects(nickname=nickname)
+
+    @classmethod
+    def get_by_create_time(cls, from_time, to_time):
+        return cls.objects(create_time__gte=from_time, create_time__lte=to_time)
 
     @property
     def finished_info(self):
@@ -728,19 +761,11 @@ class UserRecord(Document):
         return cls.objects(create_time__gte=from_ts, create_time__lte=to_ts)
 
     @classmethod
-    def add_forbidden(cls, user_id):
+    def add_forbidden(cls, user_id, action=SYS_FORBID):
         obj = cls()
         obj.user_id = user_id
-        obj.action = MANUAL_FORBID
+        obj.action = action
         obj.create_time = int(time.time())
         obj.save()
         return True
 
-    @classmethod
-    def add_sys_forbidden(cls, user_id):
-        obj = cls()
-        obj.user_id = user_id
-        obj.action = SYS_FORBID
-        obj.create_time = int(time.time())
-        obj.save()
-        return True

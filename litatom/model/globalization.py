@@ -145,6 +145,7 @@ class RegionWord(Document):
             'vi': {'newcomer': [u'Anh ấy là thành viên mới', u'Cô ấy là thành viên mới'], 'mystierious': [u'Anh ấy là người bí ẩn', u'Cô ấy là người bí ẩn']},
             'th': {'newcomer': [u'เขาเป็นผู้ใช้งานใหม่', u'เธอเป็นผู้ใช้งานใหม่'], 'mystierious': [u'เขาคือบุคคลลึกลับ', u'เธอคือบุคคลลึกลับ']},
             'ja': {'newcomer': [u'彼は新規ユーザー', u'彼女は新規ユーザー'], 'mystierious': [u'ミステリアスな男子', u'ミステリアスな女子']},
+            'id': {'newcomer': [u'Dia pendatang baru', u'Dia pendatang baru'], 'mystierious': [u'Dia misterius', u'Dia misterius']},
         },
         'alert_word': {
             'en': u'Warning,Our system has noticed inappropriate behavior on your account. Please keep positive. If you are warned three times,you will be banned. If you believe you’ve been incorrectly flagged, please send your litmatch name in your email to litatomwang@gmail.com',

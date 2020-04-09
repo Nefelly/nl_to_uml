@@ -144,6 +144,7 @@ class UserMessageService(object):
         message = cls.get_message(m_type)
         if content:
             message += ': "%s"' % content
+        # 应该要是接收者地区的语言  这里为了效率起见 直接用发送者的语言
         FirebaseService.send_to_user(user_id, related_nickname, message)
         return obj_id
 

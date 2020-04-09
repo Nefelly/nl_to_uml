@@ -3,15 +3,21 @@ import logging
 from ..redis import RedisClient
 from ..key import (
     REDIS_ACCOST_RATE,
-    REDIS_ACCOST_STOP_RATE
+    REDIS_ACCOST_STOP_RATE,
+    REDIS_ACCOST_DAY_STOP
+)
+from ..util import (
+    now_date_key
 )
 from ..const import (
     ONE_MIN,
     ACTION_ACCOST_STOP,
-    ACTION_ACCOST_NEED_VIDEO
+    ACTION_ACCOST_NEED_VIDEO,
+    ONE_DAY
 )
 from ..service import (
-    TrackActionService
+    TrackActionService,
+    AliLogService,
 )
 
 logger = logging.getLogger(__name__)
@@ -29,10 +35,17 @@ class AccostService(object):
     ACCOST_RATE = 5
     ACCOST_STOP_INTER = 10 * ONE_MIN
     ACCOST_STOP_RATE = 19
+    DAY_STOP_RATE = 100
 
     @classmethod
-    def can_accost(cls, user_id):
+    def can_accost(cls, user_id, session_id, loc, version):
         def should_stop():
+            day_stop = REDIS_ACCOST_DAY_STOP.format(now_date_key=now_date_key(), user_id=user_id)
+            str_num = redis_client.get(day_stop)
+            if str_num and int(str_num) >= cls.DAY_STOP_RATE:
+                return True
+            redis_client.incr(day_stop)
+            redis_client.expire(day_stop, ONE_DAY)
             stop_key = REDIS_ACCOST_STOP_RATE.format(user_id=user_id)
             stop_num = redis_client.get(stop_key)
             if not stop_num:
@@ -46,12 +59,13 @@ class AccostService(object):
                 redis_client.decr(stop_key)
                 return False
         key = REDIS_ACCOST_RATE.format(user_id=user_id)
-        rate = cls.ACCOST_RATE - 1   # the first time is used
+        rate = cls.ACCOST_RATE - 1  # the first time is used
         res = redis_client.get(key)
         if not res:
             if should_stop():
                 return cls.ACCOST_BAN
             redis_client.set(key, rate, cls.ACCOST_INTER)
+            cls.record_accost(user_id, session_id, loc, version)
             return cls.ACCOST_PASS
         else:
             res = int(res)
@@ -62,6 +76,7 @@ class AccostService(object):
                 if should_stop():
                     return cls.ACCOST_BAN
                 redis_client.decr(key)
+                cls.record_accost(user_id, session_id, loc, version)
                 return cls.ACCOST_PASS
 
     @classmethod
@@ -69,3 +84,9 @@ class AccostService(object):
         key = REDIS_ACCOST_RATE.format(user_id=user_id)
         redis_client.set(key, cls.ACCOST_RATE, cls.ACCOST_INTER)
         return None, True
+
+    @classmethod
+    def record_accost(cls, user_id, session_id, loc, version):
+        contents = [('action', 'accost'),('location',loc),('remark', 'accost_pass'),('session_id', str(session_id)),
+                    ('user_id', str(user_id)),('version',version)]
+        AliLogService.put_logs(contents)

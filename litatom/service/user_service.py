@@ -5,13 +5,17 @@ import time
 import datetime
 import logging
 import langid
+from dateutil.relativedelta import relativedelta
 from flask import request
 from ..redis import RedisClient
 from ..util import (
     validate_phone_number,
     get_time_info,
     time_str_by_ts,
-    trunc
+    trunc,
+    parse_standard_date,
+    format_standard_date,
+    get_zero_today,
 )
 from ..const import (
     TWO_WEEKS,
@@ -31,7 +35,8 @@ from ..key import (
     REDIS_USER_INFO_FINISHED,
     REDIS_ONLINE_GENDER_REGION,
     REDIS_UID_GENDER,
-    REDIS_HUANXIN_ONLINE
+    REDIS_HUANXIN_ONLINE,
+    REDIS_KEY_FORBIDDEN_SESSION_USER
 )
 from ..model import (
     User,
@@ -48,6 +53,7 @@ from ..model import (
     ReferralCode,
     UserModel,
     UserAccount,
+    BlockedDevices
 )
 from ..service import (
     SmsCodeService,
@@ -70,6 +76,7 @@ class UserService(object):
     CREATE_LOCK = 'user_create'
     NICKNAME_LEN_LIMIT = 60
     BIO_ELN_LIMIT = 150
+    ERROR_DEVICE_FORBIDDEN = u'Your device has been blocked'
 
     @classmethod
     def get_all_ids(cls):
@@ -92,6 +99,20 @@ class UserService(object):
             cls.should_unforbid(user)
             return time_str_by_ts(user.forbidden_ts)
         return None
+
+    @classmethod
+    def device_blocked(cls):
+        uuid = request.uuid
+        if BlockedDevices.get_by_device(uuid):
+            return True
+        return False
+
+    @classmethod
+    def get_followers_by_uid(cls, user_id):
+        user = User.get_by_id(user_id)
+        if not user:
+            return -1
+        return user.follower
 
     @classmethod
     def get_forbidden_error(cls, msg, default_json={}):
@@ -150,9 +171,11 @@ class UserService(object):
         max_num = 10
         objs = []
         if len(nickname) <= 3:
-            obj = User.get_by_nickname(nickname)
-            if obj:
+            for obj in User.get_users_by_nickname(nickname):
                 objs.append(obj)
+                cnt += 1
+                if cnt >= max_num:
+                    break
         else:
             for _ in User.objects(nickname__contains=nickname):
                 objs.append(_)
@@ -185,6 +208,11 @@ class UserService(object):
         return user and user.forbidden
 
     @classmethod
+    def clear_forbidden_session(cls, forbidden_session):
+        key = REDIS_KEY_FORBIDDEN_SESSION_USER.format(session=forbidden_session)
+        redis_client.delete(key)
+
+    @classmethod
     def unban_user(cls, user_id):
         user = User.get_by_id(user_id)
         if user:
@@ -206,9 +234,16 @@ class UserService(object):
     @classmethod
     def _on_create_new_user(cls, user):
         loc = request.loc
+        user_id = str(user.id)
+        if request.platform:
+            user.platform = request.platform
         if loc:
-            UserSetting.create_setting(str(user.id), loc, request.uuid)
-        return True
+            UserSetting.create_setting(user_id, loc, request.uuid)
+        if not request.uuid:
+            return u'your version is too low!', False
+        if cls.device_blocked():
+            return cls.ERROR_DEVICE_FORBIDDEN, False
+        return None, True
 
     @classmethod
     def _on_update_info(cls, user, data):
@@ -460,7 +495,7 @@ class UserService(object):
         user.save()
         if user.huanxin and user.huanxin.user_id:
             HuanxinService.deactive_user(user.huanxin.user_id)
-        feeds = Feed.objects(user_id=user_id, create_time__gte=int(time.time()) - 3 * ONE_MIN)
+        feeds = Feed.objects(user_id=user_id, create_time__gte=int(time.time()) - 3 * ONE_DAY)
         for _ in feeds:
             _.delete()
             MqService.push(REMOVE_EXCHANGE, {"feed_id": str(_.id)})
@@ -480,6 +515,15 @@ class UserService(object):
         if u and u.avatar == '5a6989ec-74a2-11e9-977f-00163e02deb4':
             return True
         return False
+
+    @classmethod
+    def check_valid_birthdate(cls, birthdate):
+        """无效生日均设为18岁"""
+        birth = parse_standard_date(birthdate)
+        now = get_zero_today()
+        if now - relativedelta(years=60) <= birth <= now - relativedelta(years=13):
+            return birthdate
+        return format_standard_date(now - relativedelta(years=18))
 
     @classmethod
     def update_info(cls, user_id, data):
@@ -531,7 +575,7 @@ class UserService(object):
                 user.avatar = random.choice(random_avatars.get(gender))
         if data.get('birthdate', ''):
             User.change_age(user_id)
-            user.birthdate = data.get('birthdate')
+            user.birthdate = cls.check_valid_birthdate(data.get('birthdate'))
             user.save()
             if getattr(request, 'region',
                        '') == GlobalizationService.REGION_IN or request.loc == GlobalizationService.LOC_IN:
@@ -585,15 +629,22 @@ class UserService(object):
         if user_id in [u'5cbc571e3fff2235defd5a65']:  # system account
             cls.set_not_online(user_id)
             return
-        redis_client.zadd(REDIS_HUANXIN_ONLINE, {user_id: int_time})
-        gender = cls.get_gender(user_id)
+        pp = redis_client.pipeline()
+        pp.zadd(REDIS_HUANXIN_ONLINE, {user_id: int_time})
+        pp.get(REDIS_UID_GENDER.format(user_id=user_id))
+        _, gender = pp.execute()
+        if not gender:
+            gender = cls.get_gender(user_id)
+        # redis_client.zadd(REDIS_HUANXIN_ONLINE, {user_id: int_time})
+        # gender = cls.get_gender(user_id)
         if gender:
             # key = REDIS_ONLINE_GENDER.format(gender=gender)
             key = GlobalizationService._online_key_by_region_gender(gender)
-            redis_client.zadd(key, {user_id: int_time})
-            redis_client.zadd(GlobalizationService._online_key_by_region_gender(), {user_id: int_time})
-            # if int_time % 100 == 0:
-            #     redis_client.zremrangebyscore(key, -1, int_time - ONLINE_LIVE)
+            pp.zadd(key, {user_id: int_time})
+            pp.zadd(GlobalizationService._online_key_by_region_gender(), {user_id: int_time})
+            pp.execute()
+            # redis_client.zadd(key, {user_id: int_time})
+            # redis_client.zadd(GlobalizationService._online_key_by_region_gender(), {user_id: int_time})
 
     @classmethod
     def set_not_online(cls, user_id):
@@ -652,6 +703,17 @@ class UserService(object):
         return res, True
 
     @classmethod
+    def check_share_new_user(cls, user_id):
+        from .share_stat_service import ShareStatService
+        from .ali_log_service import AliLogService
+        ip = request.ip
+        key = ShareStatService.get_clicker_key(ip)
+        if redis_client.exists(key):
+            contents = [('action', 'share'), ('remark', 'create_new_user'), ('user_id', user_id), ('user_ip', ip)]
+            AliLogService.put_logs(contents)
+            redis_client.delete(key)
+
+    @classmethod
     def phone_login(cls, zone, phone, code):
         if phone[0] == '0':
             phone = phone[1:]
@@ -669,8 +731,11 @@ class UserService(object):
             user = User()
             user.huanxin = cls.create_huanxin()
             user.phone = zone_phone
+            msg, status = cls._on_create_new_user(user)
+            if not status:
+                return msg, status
             user.save()
-            cls._on_create_new_user(user)
+            cls.check_share_new_user(str(user.id))
             cls.update_info_finished_cache(user)
             RedisLock.release_mutex(key)
         request.user_id = str(user.id)  # 为了region
@@ -700,8 +765,11 @@ class UserService(object):
             user.huanxin = cls.create_huanxin()
             user.google = SocialAccountInfo.make(google_id, idinfo)
             user.create_time = datetime.datetime.now()
+            msg, status = cls._on_create_new_user(user)
+            if not status:
+                return msg, status
             user.save()
-            cls._on_create_new_user(user)
+            cls.check_share_new_user(str(user.id))
             cls.update_info_finished_cache(user)
             RedisLock.release_mutex(key)
         msg, status = cls.login_job(user)
@@ -738,8 +806,11 @@ class UserService(object):
                 user.huanxin = cls.create_huanxin()
                 user.facebook = SocialAccountInfo.make(facebook_id, idinfo)
                 user.create_time = datetime.datetime.now()
+            msg, status = cls._on_create_new_user(user)
+            if not status:
+                return msg, status
             user.save()
-            cls._on_create_new_user(user)
+            cls.check_share_new_user(str(user.id))
             cls.update_info_finished_cache(user)
             RedisLock.release_mutex(key)
         msg, status = cls.login_job(user)

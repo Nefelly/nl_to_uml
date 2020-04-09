@@ -2,7 +2,7 @@
 import datetime
 import time
 import json
-from flask import request
+from math import floor
 from ..redis import (
     RedisClient,
 )
@@ -17,7 +17,6 @@ from ..model import (
     Report,
     UserModel,
     Feed,
-    User,
     UserRecord,
 )
 from ..util import (
@@ -28,17 +27,19 @@ from ..util import (
 from ..const import (
     ONE_DAY,
     SYS_FORBID,
+    MANUAL_FORBID,
 )
 
 redis_client = RedisClient()['lit']
 
 
 class ForbiddenService(object):
-    REPORT_WEIGHTING = 5
+    REPORT_WEIGHTING = 4
     ALERT_WEIGHTING = 2
     MATCH_REPORT_WEIGHTING = 4
     FORBID_THRESHOLD = 10
     DEFAULT_SYS_FORBID_TIME = 3 * ONE_DAY
+    COMPENSATION_PER_TEN_FOLLOWER = 2
 
     @classmethod
     def check_spam_word(cls, word, user_id):
@@ -99,15 +100,8 @@ class ForbiddenService(object):
         # 官方账号不会被检查封号
         if not cls.accum_illegal_credit(target_user_id, ts_now) or UserService.is_official_account(target_user_id):
             return False
-        # 违规积分达到封号要求，高价值用户暂不处理
-        if cls.is_high_value_user(target_user_id):
-            return False
         # 违规积分达到上限，非高价值用户，要被封号
-        reporters = ReportService.mark_report(target_user_id, ts_now - 3 * ONE_DAY, ts_now)
-        SpamWordService.mark_spam_word(target_user_id, ts_now - 3 * ONE_DAY, ts_now)
-        cls.sys_forbid(target_user_id, cls.DEFAULT_SYS_FORBID_TIME)
-        # 封号消息返回给举报者们
-        cls.feedback_to_reporters(target_user_id, reporters)
+        cls.forbid_user(target_user_id, cls.DEFAULT_SYS_FORBID_TIME, SYS_FORBID, ts_now)
         return True
 
     @classmethod
@@ -123,39 +117,41 @@ class ForbiddenService(object):
         alert_num = TrackSpamRecord.count_by_time_and_uid(user_id, time_3days_ago, timestamp_now)
         report_total_num = Report.count_by_time_and_uid_distinct(user_id, time_3days_ago, timestamp_now)
         report_match_num = Report.count_match_by_time_and_uid(user_id, time_3days_ago, timestamp_now)
-        illegal_credit = alert_num * cls.ALERT_WEIGHTING + (
-                report_total_num - report_match_num) * cls.REPORT_WEIGHTING + report_match_num * cls.MATCH_REPORT_WEIGHTING
+        illegal_credit = alert_num * cls.ALERT_WEIGHTING + (report_total_num - report_match_num) * cls.REPORT_WEIGHTING \
+                         + report_match_num * cls.MATCH_REPORT_WEIGHTING - cls.get_high_value_compensation(user_id)
         if illegal_credit >= cls.FORBID_THRESHOLD:
             return True
         return False
 
     @classmethod
-    def forbid_user(cls, user_id, forbid_ts):
-        """手工封号服务接口"""
-        UserService.forbid_action(user_id, forbid_ts)
-        UserRecord.add_forbidden(user_id)
-        return True
-
-    @classmethod
-    def sys_forbid(cls, user_id, forbid_ts):
-        """系统封号服务接口"""
-        UserService.forbid_action(user_id, forbid_ts)
-        UserRecord.add_sys_forbidden(user_id)
+    def forbid_user(cls, user_id, forbid_ts, forbid_type=SYS_FORBID, ts=int(time.time())):
+        """封号服务统一接口"""
+        if not UserService.is_forbbiden(user_id):
+            UserService.forbid_action(user_id, forbid_ts)
+            UserRecord.add_forbidden(user_id, forbid_type)
+        reporters = ReportService.mark_report(user_id, ts - 3 * ONE_DAY, ts)
+        SpamWordService.mark_spam_word(user_id, ts - 3 * ONE_DAY, ts)
+        # 封号消息返回给举报者们
+        cls.feedback_to_reporters(user_id, reporters)
         return True
 
     @classmethod
     def check_spam_word_in_one_minute(cls, user_id, ts):
         """检查两条spam_word之间的间隔是不是在1min之内，是的话不计入封号积分制度"""
-        if TrackSpamRecord.count_by_time_and_uid(user_id, ts-60, ts) > 0:
+        if TrackSpamRecord.count_by_time_and_uid(user_id, ts - 60, ts) > 0:
             return True
         return False
 
     @classmethod
+    def get_high_value_compensation(cls, user_id):
+        """根据用户粉丝数量，获得一些补偿违规积分，避免高价值用户被举报封号"""
+        followers = UserService.get_followers_by_uid(user_id)
+        res = floor(followers / 10) * cls.COMPENSATION_PER_TEN_FOLLOWER
+        return res if res >= 0 else 0
+
+    @classmethod
     def is_high_value_user(cls, user_id):
-        user = User.get_by_id(user_id)
-        if user and user.follower >= 20:
-            return True
-        return False
+        return UserService.get_followers_by_uid(user_id) >= 20
 
     @classmethod
     def alert_to_user(cls, user_id, msg=None, alert_type=None):
@@ -216,7 +212,8 @@ class SpamWordService(object):
     @classmethod
     def mark_spam_word(cls, user_id, from_time, to_time):
         """将一段时间user_id的track_spam_record记录标位‘已处理’，参数时间都是时间戳(int)"""
-        objs = TrackSpamRecord.objects(user_id=user_id, create_time__gte=from_time, create_time__lte=to_time, dealed=False)
+        objs = TrackSpamRecord.objects(user_id=user_id, create_time__gte=from_time, create_time__lte=to_time,
+                                       dealed=False)
         for obj in objs:
             obj.dealed = True
             obj.save()
@@ -312,9 +309,11 @@ class ReportService(object):
             res['chat_record'] = '\n'.join(res_record)
         else:
             res['chat_record'] = ''
+        res['pic_from_feed'] = False
         if report.related_feed:
             feed = Feed.get_by_id(report.related_feed)
             if feed:
+                res['pic_from_feed'] = True
                 res['content'] = feed.content if feed.content else ''
                 if feed.audios:
                     res['audio_url'] = 'http://www.litatom.com/api/sns/v1/lit/mp3audio/%s' % feed.audios[0]

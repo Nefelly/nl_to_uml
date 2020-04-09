@@ -29,7 +29,8 @@ from ..service import (
 )
 from ..key import (
     REDIS_ACCOUNT_ACTION,
-    REDIS_DEPOSIT_BY_ACTIVITY
+    REDIS_DEPOSIT_BY_ACTIVITY,
+    REDIS_SHARE_LIMIT
 )
 from ..redis import RedisClient
 from flask import (
@@ -63,7 +64,7 @@ class AccountService(object):
         WATCH_AD: 1,
         SHARE_5: 100,
     }
-    UNBAN_DIAMONDS = 50
+    UNBAN_DIAMONDS = 1000
     DAY_ACTIVITY_LIMIT = 500 if not setting.IS_DEV else 200
     MEMBER_SHIPS = [WEEK_MEMBER]
     ERR_DIAMONDS_NOT_ENOUGH = 'not enough diamonds, please deposit first.'
@@ -93,7 +94,15 @@ class AccountService(object):
 
     @classmethod
     def unban_by_diamonds(cls, user_id):
+        if UserService.device_blocked():
+            return UserService.ERROR_DEVICE_FORBIDDEN, False
         if not UserService.is_forbbiden(user_id):
+            ''' 不用重新登陆'''
+            # from ..model import User
+            # user = User.get_by_id(user_id)
+            # UserService._trans_forbidden_2_session(user)
+
+            UserService.clear_forbidden_session(request.session_id.replace('session.', ''))
             return u'you are not forbbiden', False
         msg = cls.change_diamonds(user_id, -cls.UNBAN_DIAMONDS, 'unban_by_diamonds')
         if not msg:
@@ -104,7 +113,6 @@ class AccountService(object):
     @classmethod
     def record_to_ali(cls, user_id, name, diamonds):
         content = [('user_id', user_id), ('name', name), ('diamonds', str(diamonds)), ('loc', request.loc)]
-        print content
         AliLogService.put_logs(content, '', '', 'litatom-account', 'account_flow')
 
     @classmethod
@@ -177,7 +185,6 @@ class AccountService(object):
                 'text': AnoyMatchService
             }
             data, status = getattr(m.get(match_type, AnoyMatchService), 'accelerate')(user_id)
-            print data, status
             if not status:
                 return data, False
         elif product == cls.ACCOST_RESET:
@@ -227,6 +234,11 @@ class AccountService(object):
         new_day_deposit = day_deposit + diamonds
         if new_day_deposit > cls.DAY_ACTIVITY_LIMIT:
             return u'you have deposit by activity too much today, please try again tomorrow', False
+        if activity == cls.SHARE:
+            key = REDIS_SHARE_LIMIT.format(user_id=user_id)
+            if redis_client.get(key):
+                return u'you have been shared', False
+            redis_client.set(key, True, ONE_WEEK)
         redis_client.set(key, new_day_deposit, ONE_DAY)
         if activity == cls.WATCH_AD:
             data, status = AdService.verify_ad_viewed(user_id, other_info)

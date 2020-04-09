@@ -167,6 +167,8 @@ class LitatomRequest(flask.Request):
     @cached_property
     def version(self):
         version = self.values.get('version', '')
+        if not version.replace('.', '').isdigit():
+            return None
         return version
 
     @cached_property
