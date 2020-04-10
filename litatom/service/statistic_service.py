@@ -276,11 +276,11 @@ class StatisticService(object):
         print "install", "register", "rate"
         print len(ts), registered_cnt, registered_cnt / len(ts) * 1.0
 
-        mm = []  #
-        for l in ms:
-            if l not in m:
-                mm.append(l)
-        kk = [UserSetting.objects(uuid=el).count() for el in mm]
+        # mm = []  #
+        # for l in ms:
+        #     if l not in m:
+        #         mm.append(l)
+        # kk = [UserSetting.objects(uuid=el).count() for el in mm]
 
     # @classmethod
     # def get_online_users(cls, gender=None, start_p=0, num=10):
