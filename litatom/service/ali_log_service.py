@@ -63,6 +63,9 @@ class AliLogService(object):
     @classmethod
     def put_logs_atom(cls, logitemList, project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE, topic=DEFAULT_TOPIC,
                       source=DEFAULT_SOURCE, client=DEFAULT_CLIENT):
+        request = PutLogsRequest(project, logstore, topic, source, logitemList)
+        response = client.put_logs(request)
+        return response.get_all_headers()
         from ..mq import MQProducer
         try:
             request = PutLogsRequest(project, logstore, topic, source, logitemList)
