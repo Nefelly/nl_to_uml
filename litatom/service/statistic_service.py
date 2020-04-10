@@ -246,17 +246,17 @@ class StatisticService(object):
                            create_time__lte=end).distinct('uuid')
 
         # 以前注册用户的设备
-        registered_cnt = 0
-        for uuid in ts:
-            u  =  UserSetting.objects(uuid=uuid).first()
-            if u and User.get_by_id(u.user_id).create_time < stat_date:
-                registered_cnt += 1
+        # registered_cnt = 0
+        # for uuid in ts:
+        #     u  =  UserSetting.objects(uuid=uuid).first()
+        #     if u and User.get_by_id(u.user_id).create_time < stat_date:
+        #         registered_cnt += 1
 
         m = {}
         cnt = 0
         for l in ts:
             if l in m:
-                m[uuid] = 1
+                m[l] = 1
                 cnt += 1
 
         # 新增的注册用户
@@ -274,7 +274,7 @@ class StatisticService(object):
                 registered_uuid +=1
 
         print "install", "register", "rate"
-        print len(ts), registered_cnt, registered_cnt / len(ts) * 1.0
+        print len(ts), registered_uuid, registered_uuid / len(ts) * 1.0
 
         # mm = []  #
         # for l in ms:
