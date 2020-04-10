@@ -117,7 +117,7 @@ class AliLogService(object):
             logItem.set_time(int(time()))
             logItem.set_contents(contents)
             logitemList.append(logItem)
-        cls.put_logs_atom(logitemList,project,logstore,topic,source,client)
+        cls.put_logs_atom(logitemList, project, logstore, topic, source, client)
 
     @classmethod
     def put_daily_stat(cls, contents, topic='undefined'):
