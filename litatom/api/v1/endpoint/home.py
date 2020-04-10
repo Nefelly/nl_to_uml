@@ -45,6 +45,7 @@ from ....service import (
     UserService,
     QiniuService,
     ForbiddenService,
+    AliOssService
 )
 
 logger = logging.getLogger(__name__)
@@ -114,14 +115,16 @@ def get_online_filter():
 
 
 def download_app():
-    from flask import send_from_directory
+    from flask import send_from_directory, send_file
     version = request.values.get('version')
     f_name = 'lit.apk'
     if version:
         if not version.replace('.', '').isdigit() or '.' in [version[0], version[-1]]:
             return fail('wrong version')
         f_name = '%s.apk' % version
-    return send_from_directory(APP_PATH, f_name, as_attachment=True)
+        apk = AliOssService.get_binary_from_bucket(f_name)
+    return send_file(apk, attachment_filename=f_name, as_attachment=True)
+    # return send_from_directory(APP_PATH, f_name, as_attachment=True)
 
 
 def get_wording():

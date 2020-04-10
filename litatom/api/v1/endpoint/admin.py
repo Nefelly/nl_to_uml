@@ -50,7 +50,8 @@ from ....service import (
     UserSettingService,
     AsyncCmdService,
     AccountService,
-    FeedbackService
+    FeedbackService,
+    AliOssService
 )
 from  ....const import (
     MAX_TIME,
@@ -92,7 +93,8 @@ def upload_apk():
         if not version.replace('.', '').isdigit() or '.' in [version[0], version[-1]]:
             return fail('wrong version')
         f_name = '%s.apk' % version
-    apk.save(os.path.join(APP_PATH, f_name))
+    AliOssService.upload_from_binary(apk, f_name)
+    # apk.save(os.path.join(APP_PATH, f_name))
     return success()
 
 #@admin_session_required
