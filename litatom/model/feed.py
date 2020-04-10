@@ -151,7 +151,7 @@ class Feed(Document):
             return None
         obj = cls.objects(id=feed_id).first()
         # redis_client.incr('feed_cache_miss_cnt')
-        redis_client.set(cache_key, cPickle.dumps(obj), ONE_HOUR)
+        redis_client.set(cache_key, cPickle.dumps(obj), ex=ONE_HOUR)
         return obj
 
     @classmethod
