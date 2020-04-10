@@ -255,8 +255,8 @@ class StatisticService(object):
         m = {}
         cnt = 0
         for l in ts:
+            m[l] = 1
             if l in m:
-                m[l] = 1
                 cnt += 1
 
         # 新增的注册用户
@@ -266,6 +266,7 @@ class StatisticService(object):
 
 
         ms = [el.uuid for el in uids if el]
+        print ms[:5]
 
         # 新增设备已注册的
         registered_uuid = 0
