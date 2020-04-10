@@ -275,6 +275,14 @@ def track_action():
     return fail()
 
 
+def track_network():
+    data = request.json
+    return success()
+    # if status:
+    #     return success()
+    # return fail()
+
+
 def index():
     return current_app.send_static_file('index.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
 
