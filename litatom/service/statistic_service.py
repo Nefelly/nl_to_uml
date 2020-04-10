@@ -275,7 +275,7 @@ class StatisticService(object):
                 registered_uuid +=1
 
         print "install", "register", "rate"
-        print len(ts), registered_uuid, registered_uuid / len(ts) * 1.0
+        print len(ts), registered_uuid, registered_uuid * 1.0 / len(ts)
 
         # mm = []  #
         # for l in ms:
