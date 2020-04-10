@@ -10,6 +10,7 @@ from ..util import (
     get_ts_from_str,
     format_standard_date,
     date_to_int_time,
+    next_date
 )
 from ..key import (
     REDIS_ONLINE_CNT_CACHE
@@ -42,6 +43,7 @@ from ..model import (
     TrackSpamRecord,
     Report,
     Feed,
+    Uuids
 )
 
 redis_client = RedisClient()['lit']
@@ -231,6 +233,54 @@ class StatisticService(object):
             'user_infos': user_infos,
             'next_start': next_start
         }
+
+    @classmethod
+    def stat_register_rate(cls, date_str):
+        stat_date = datetime.datetime.strptime(date_str, '%Y-%m-%d')
+        end = next_date(stat_date, 1)
+        ls = UserSetting.objects(create_time__gte=stat_date,
+                                 create_time__lte=end).distinct('uuid')
+
+        # 安装设备数
+        ts = Uuids.objects(create_time__gte=stat_date,
+                           create_time__lte=end).distinct('uuid')
+
+        # 以前注册用户的设备
+        registered_cnt = 0
+        for uuid in ts:
+            u  =  UserSetting.objects(uuid=uuid).first()
+            if u and User.get_by_id(u.user_id).create_time < stat_date:
+                registered_cnt += 1
+
+        m = {}
+        cnt = 0
+        for l in ts:
+            if l in m:
+                m[uuid] = 1
+                cnt += 1
+
+        # 新增的注册用户
+        uids = [UserSetting.get_by_user_id(str(el.id)) for el in
+                User.objects(create_time__gte=stat_date, create_time__lte=end)]
+
+
+
+        ms = [el.uuid for el in uids]
+
+        # 新增设备已注册的
+        registered_uuid = 0
+        for el in ms:
+            if el in m:
+                registered_uuid +=1
+
+        print "install", "register", "rate"
+        print len(ts), registered_cnt, registered_cnt / len(ts) * 1.0
+
+        mm = []  #
+        for l in ms:
+            if l not in m:
+                mm.append(l)
+        kk = [UserSetting.objects(uuid=el).count() for el in mm]
 
     # @classmethod
     # def get_online_users(cls, gender=None, start_p=0, num=10):

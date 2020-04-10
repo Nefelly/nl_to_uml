@@ -85,18 +85,21 @@ def stat_avr_time():
                 mm[u2].append(_.inter_time)
         
 
-def stat_register_rate():
-    ls = UserSetting.objects(create_time__gte=datetime.datetime(2019, 11, 18),
-                             create_time__lte=datetime.datetime(2019, 11, 19)).distinct('uuid')
-    ts = Uuids.objects(create_time__gte=datetime.datetime(2019, 11, 18),
-                       create_time__lte=datetime.datetime(2019, 11, 19)).distinct('uuid')
+def stat_register_rate(date_str):
+    from litatom.util import next_date
+    stat_date = datetime.datetime.strptime(date_str, '%Y-%m-%d')
+    end = next_date(stat_date, 1)
+    ls = UserSetting.objects(create_time__gte=stat_date,
+                             create_time__lte=end).distinct('uuid')
+    ts = Uuids.objects(create_time__gte=stat_date,
+                       create_time__lte=end).distinct('uuid')
     m = {}
     cnt = 0
     for l in ls:
         if l in m:
             cnt += 1
     uids = [UserSetting.get_by_user_id(str(el.id)) for el in
-            User.objects(create_time__gte=datetime.datetime(2019, 11, 18), create_time__lte=datetime.datetime(2019, 11, 19))]
+            User.objects(create_time__gte=stat_date, create_time__lte=end)]
     ms = [el.uuid for el in uids]
     mm = []
     for l in ms:
