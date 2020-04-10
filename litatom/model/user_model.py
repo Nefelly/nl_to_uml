@@ -190,12 +190,13 @@ class Uuids(Document):
         'alias': 'db_alias'
     }
     uuid = StringField(required=True)
+    loc = StringField()
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
 
     @classmethod
-    def create(cls, uuid):
+    def create(cls, uuid, loc=None):
         obj = cls.objects(uuid=uuid).first()
         if not obj:
-            obj = cls(uuid=uuid)
+            obj = cls(uuid=uuid, loc=loc)
             obj.save()
         return str(obj.id)
