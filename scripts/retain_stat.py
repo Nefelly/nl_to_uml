@@ -23,7 +23,7 @@ def run(*date):
         to_date = from_date
     elif len(date) < 2:
         to_date = next_date(get_zero_today(), -2)
-        from_date = next_date(get_zero_today(), -int(date[0]))
+        from_date = next_date(to_date, -int(date[0]))
     else:
         from_date = parse_standard_date(date[0])
         to_date = parse_standard_date(date[1])
