@@ -81,7 +81,7 @@ class TrackActionService(object):
         for el in json_data:
             raw = [('user_id', user_id), ('uuid', uuid)]
             for k in el:
-                raw.append((k, el.get(k)))
+                raw.append((k, str(el.get(k))))
             contents.append(raw)
         print contents
         AliLogService.put_logs_batch(contents, project='client-track', logstore='client-track')
