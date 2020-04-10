@@ -282,11 +282,10 @@ def track_network():
     data = data.get("track")
     stream = base64.decodestring(data)
     json_data = json.loads(zlib.decompress(stream, 16+zlib.MAX_WBITS))
-    print json_data
-    return success()
-    # if status:
-    #     return success()
-    # return fail()
+    status = TrackActionService.batch_create_client_track(json_data)
+    if status:
+        return success()
+    return fail()
 
 
 def index():

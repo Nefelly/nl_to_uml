@@ -61,6 +61,32 @@ class TrackActionService(object):
         # return cls._create_action(user_id, action, other_user_id, amount, remark, version)
 
     @classmethod
+    def batch_create_client_track(cls, json_data):
+        '''
+        json_data
+        [{u'path': u'/api/sns/v1/lit/home/online_users', u'code': 0, u'bytes': 2817, u'time': 125},
+        {u'path': u'/api/sns/v1/lit/user/messages', u'code': 0, u'bytes': 93, u'time': 107},
+        {u'path': u'/api/sns/v1/lit/user/query_online', u'code': 0, u'bytes': 110, u'time': 125}]
+        :param user_id:
+        :param action:
+        :param other_user_id:
+        :param amount:
+        :param remark:
+        :param version:
+        :return:
+        '''
+        user_id = request.user_id if request.user_id else ''
+        uuid = request.uuid if request.uuid else ''
+        contents = []
+        for el in json_data:
+            raw = [('user_id', user_id), ('uuid', uuid)]
+            for k in el:
+                raw.append((k, el.get(k)))
+            contents.append(raw)
+        AliLogService.put_logs_batch(contents, project='track-client', logstore='track-client')
+        return True
+
+    @classmethod
     def pymongo_batch_insert(cls, collection, payload_list):
         insert_pack = []
         for el in payload_list:
