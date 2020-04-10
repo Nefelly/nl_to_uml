@@ -239,7 +239,7 @@ class AccountService(object):
             if redis_client.get(key):
                 return u'you have been shared', False
             redis_client.set(key, True, ONE_WEEK)
-        redis_client.set(key, new_day_deposit, ONE_DAY)
+        redis_client.set(key, new_day_deposit, ex=ONE_DAY)
         if activity == cls.WATCH_AD:
             data, status = AdService.verify_ad_viewed(user_id, other_info)
             if not status:
