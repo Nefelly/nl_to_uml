@@ -1,6 +1,8 @@
 # coding: utf-8
 import logging
 import json
+import zlib
+import base64
 
 from flask import (
     jsonify,
@@ -277,6 +279,10 @@ def track_action():
 
 def track_network():
     data = request.json
+    data = data.get("track")
+    stream = base64.decodestring(data)
+    json_data = json.loads(zlib.decompress(stream, 16+zlib.MAX_WBITS))
+    print json_data
     return success()
     # if status:
     #     return success()
