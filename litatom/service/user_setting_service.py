@@ -104,7 +104,7 @@ class UserSettingService(object):
     @classmethod
     def get_settings(cls, user_id=None):
         if not user_id and request.uuid:
-            Uuids.create(request.uuid)
+            Uuids.create(request.uuid, request.loc)
         res = copy.deepcopy(cls.DEFAULT_SETTING)
         # need_pop = False
         # if user_id:
