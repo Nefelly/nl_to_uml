@@ -15,12 +15,15 @@ from litatom.util import (
 
 
 def run(*date):
+    """
+    :param date: 默认参数代表前天留存，一个参数n则代表从前天前的n天到前天为止的留存，两个参数则具体化留存日期区间
+    """
     if not date:
         from_date = next_date(get_zero_today(), -2)
         to_date = from_date
     elif len(date) < 2:
-        from_date = parse_standard_date(date[0])
-        to_date = from_date
+        to_date = next_date(get_zero_today(), -2)
+        from_date = next_date(get_zero_today(), -int(date[0]))
     else:
         from_date = parse_standard_date(date[0])
         to_date = parse_standard_date(date[1])
