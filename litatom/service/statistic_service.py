@@ -265,7 +265,7 @@ class StatisticService(object):
 
 
 
-        ms = [el.uuid for el in uids]
+        ms = [el.uuid for el in uids if el]
 
         # 新增设备已注册的
         registered_uuid = 0
