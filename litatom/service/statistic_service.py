@@ -238,8 +238,8 @@ class StatisticService(object):
     def stat_register_rate(cls, date_str):
         stat_date = datetime.datetime.strptime(date_str, '%Y-%m-%d')
         end = next_date(stat_date, 1)
-        ls = UserSetting.objects(create_time__gte=stat_date,
-                                 create_time__lte=end).distinct('uuid')
+        # ls = UserSetting.objects(create_time__gte=stat_date,
+        #                          create_time__lte=end).distinct('uuid')
 
         # 安装设备数
         ts = Uuids.objects(create_time__gte=stat_date,
