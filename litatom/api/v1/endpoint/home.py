@@ -124,7 +124,10 @@ def download_app():
             return fail('wrong version')
         f_name = '%s.apk' % version
         apk = AliOssService.get_binary_from_bucket(f_name)
-    apk.save(os.path.join(APP_PATH, f_name))
+        with open(os.path.join(APP_PATH, f_name) ,'w') as f:
+            f.write(apk)
+            f.close()
+        # apk.save(os.path.join(APP_PATH, f_name))
     # return send_file(apk, attachment_filename=f_name, as_attachment=True)
     return send_from_directory(APP_PATH, f_name, as_attachment=True)
 
