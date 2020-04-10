@@ -83,6 +83,7 @@ class TrackActionService(object):
             for k in el:
                 raw.append((k, el.get(k)))
             contents.append(raw)
+        print contents
         AliLogService.put_logs_batch(contents, project='client-track', logstore='client-track')
         return True
 
