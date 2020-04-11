@@ -21,7 +21,7 @@ from ...decorator import (
 )
 
 from ....util import write_data_to_xls
-
+from flask_compress import Compress
 from ...error import (
     Success,
     FailedLackOfField
@@ -60,6 +60,7 @@ from  ....const import (
 )
 logger = logging.getLogger(__name__)
 app = Flask(__name__, static_folder='static')
+Compress(app)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = timedelta(seconds=1)
 
 def login():
