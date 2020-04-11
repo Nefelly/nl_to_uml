@@ -162,7 +162,7 @@ class MonitorService(object):
         fail_list = []
         list_500 = []
         for query, name, uri, is_post in query_list:
-            called_num, num_500 = cls.get_res(query, ['called_num','500_num'], start_time, end_time)
+            called_num, num_500 = cls.get_list_res(query, ['called_num','500_num'], start_time, end_time)
             if called_num:
                 rate_500 = num_500 / called_num
             else:
@@ -189,7 +189,7 @@ class MonitorService(object):
             if called_num == 0:
                 res.append([name, 0, 0, 0, 0, 0, uri])
                 continue
-            avg_resp_time, avg_status, num_500, sum_resp_time = cls.get_res(query, ['avg_resp_time','avg_status','500_num','sum_resp_time'], start_time, end_time)
+            avg_resp_time, avg_status, num_500, sum_resp_time = cls.get_list_res(query, ['avg_resp_time','avg_status','500_num','sum_resp_time'], start_time, end_time)
             if name == 'ALL':
                 weight = 1
                 total_sum_resp_time = sum_resp_time
