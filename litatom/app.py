@@ -99,7 +99,7 @@ class LitatomAppFactory(object):
                    errhandlers=True):
         app_cls = app_cls or cls.app_cls
         app = app_cls(cls.app_name)
-        compress.init_app(app)
+        # compress.init_app(app)
         app.config.from_object(setting)
         if logging:
             cls.setup_logging(app)
