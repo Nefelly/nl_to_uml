@@ -22,7 +22,6 @@ from ...decorator import (
 
 from ....util import write_data_to_xls
 from flask_compress import Compress
-from flask_gzip import Gzip
 from ...error import (
     Success,
     FailedLackOfField
