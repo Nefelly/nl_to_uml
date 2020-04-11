@@ -15,7 +15,7 @@ from flask import (
 from hendrix.conf import setting
 import mongoengine.errors
 from werkzeug.wsgi import peek_path_info
-
+from flask_compress import Compress
 from . import log
 from .request import LitatomRequest
 from .response import LitatomResponse, failure
@@ -27,6 +27,7 @@ from .signal import (
     request_finished_handler,
     teardown_request_handler,
 )
+compress = Compress()
 # file_name = '/rdata/litatom' if not setting.IS_DEV else '/rdata/devlitatom'
 # logger = logging.getLogger(__name__)
 # #logger.setLevel(logging.INFO)
@@ -98,6 +99,7 @@ class LitatomAppFactory(object):
                    errhandlers=True):
         app_cls = app_cls or cls.app_cls
         app = app_cls(cls.app_name)
+        compress.init_app(app)
         app.config.from_object(setting)
         if logging:
             cls.setup_logging(app)
