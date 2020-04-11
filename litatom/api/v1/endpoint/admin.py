@@ -61,6 +61,7 @@ from  ....const import (
 logger = logging.getLogger(__name__)
 app = Flask(__name__, static_folder='static')
 Compress(app)
+compress = Compress()
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = timedelta(seconds=1)
 
 def login():
