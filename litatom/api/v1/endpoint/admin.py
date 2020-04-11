@@ -65,7 +65,7 @@ app = Flask(__name__, static_folder='static')
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = timedelta(seconds=1)
 # # app.config['COMPRESS_MIN_SIZE'] = 10
 # app.config['COMPRESS_MIMETYPES'] = ['application/json']
-gzip = Gzip(app)
+app = Gzip(app)
 # Compress(app)
 
 def login():
