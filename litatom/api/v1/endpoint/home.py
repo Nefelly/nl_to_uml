@@ -273,6 +273,7 @@ def track_chat():
 
 @session_required
 def track_action():
+    print request.headers
     form = TrackActionForm(data=request.json)
     action = form.action.data
     remark = form.remark.data
