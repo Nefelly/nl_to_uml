@@ -61,12 +61,13 @@ from  ....const import (
 )
 logger = logging.getLogger(__name__)
 
-app = Flask(__name__, static_folder='static')
+# app = Flask(__name__, static_folder='static')
+app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = timedelta(seconds=1)
-# # app.config['COMPRESS_MIN_SIZE'] = 10
-# app.config['COMPRESS_MIMETYPES'] = ['application/json']
-app = Gzip(app)
-# Compress(app)
+app.config['COMPRESS_MIN_SIZE'] = 10
+app.config['COMPRESS_MIMETYPES'] =['text/html', 'text/css', 'text/xml', 'application/json', 'application/javascript']
+# app = Gzip(app)
+Compress(app)
 
 def login():
     data = request.json
