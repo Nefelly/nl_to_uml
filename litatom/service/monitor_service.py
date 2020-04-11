@@ -115,6 +115,7 @@ class MonitorService(object):
         :param query:
         :return:一个GetLogsResponse对象
         """
+        print stat_item
         if stat_item not in cls.STAT_ANALYSIS:
             return 0
         resp = AliLogService.get_log_atom(project='litatom', logstore='litatomstore',
