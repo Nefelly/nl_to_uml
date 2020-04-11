@@ -101,7 +101,6 @@ class LitatomAppFactory(object):
         app = app_cls(cls.app_name)
         app.config.from_object(setting)
         compress.init_app(app)
-        print 'ashhhhh'
         if logging:
             cls.setup_logging(app)
         if signals:
