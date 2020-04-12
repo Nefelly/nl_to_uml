@@ -236,9 +236,9 @@ class AccountService(object):
             return u'you have deposit by activity too much today, please try again tomorrow', False
         if activity == cls.SHARE:
             key = REDIS_SHARE_LIMIT.format(user_id=user_id)
-            last_share_time = int(redis_client.get(key))
+            last_share_time = redis_client.get(key)
             if last_share_time:
-                return {"share_time": last_share_time}, False
+                return {"share_time": int(last_share_time)}, False
                 # return u'you have been shared', False
             redis_client.set(key, int(time.time()), ex=ONE_WEEK)
         redis_client.set(key, new_day_deposit, ex=ONE_DAY)
