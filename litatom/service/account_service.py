@@ -207,7 +207,7 @@ class AccountService(object):
         diamonds = payload.get('diamonds')
         if not token:
             AccountFlowRecord.create(user_id, AccountFlowRecord.WRONG, diamonds)
-        else:
+        elif not setting.IS_DEV:
             key = REDIS_ACCOUNT_ACTION.format(key=('pay' + token))
             r = redis_client.get(key)
             if r:
