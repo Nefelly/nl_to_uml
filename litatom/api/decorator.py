@@ -47,6 +47,12 @@ def set_exp(view):
 
 
 def set_exp_arg(arg=ONE_DAY):
+    '''
+    参考  https://blog.csdn.net/u013858731/article/details/54971762?utm_source=blogxgwz7
+    一般 先 session_required 校验 再校验这个
+    :param arg:
+    :return:
+    '''
     def _deco(view):
         @functools.wraps(view)
         def wrapper(*args, **kwargs):
