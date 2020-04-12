@@ -13,7 +13,9 @@ from flask import (
 from ....service import (
     ExperimentService
 )
-
+from ...decorator import (
+    set_exp
+)
 from ...error import Success
 
 logger = logging.getLogger(__name__)
@@ -21,11 +23,12 @@ logger = logging.getLogger(__name__)
 #loghanlder = logging.FileHandler("/rdata/devlog", encoding='utf-8')
 #logger.addHandler(loghanlder)
 
+
+@set_exp
 def test():
-    request.user_id = '111'
-    ExperimentService.set_exp()
     print ExperimentService.get_exp_value('haha')
     return jsonify(request.url)
+
 
 def hello():
     logger.error("hello, this is a mistake")

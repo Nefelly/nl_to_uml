@@ -34,12 +34,23 @@ def _has_admin_username():
         return None  # 标示session验证时出现了Exception
     return request.admin_user_name
 
+
 def set_exp(view):
     @functools.wraps(view)
     def wrapper(*args, **kwargs):
         ExperimentService.set_exp()
         return view(*args, **kwargs)
     return wrapper
+
+
+def set_exp_arg(arg):
+    def _deco(view):
+        @functools.wraps(view)
+        def wrapper(*args, **kwargs):
+            ExperimentService.set_exp(expire=arg)
+            return view(*args, **kwargs)
+        return wrapper
+    return _deco
 
 
 def session_required(view):

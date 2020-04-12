@@ -25,10 +25,12 @@ class ExperimentService(object):
     @classmethod
     def _get_key(cls, key, exp_name):
         key_exp = '%s_%s' % (key, exp_name)
+        print  REDIS_EXP.format(key_exp=key_exp)
         return REDIS_EXP.format(key_exp=key_exp)
 
     @classmethod
     def set_exp(cls, key=None, expire=ONE_DAY):
+        request.user_id = '112'
         if not key:
             key = request.user_id
         exp_name = request.experiment_name
