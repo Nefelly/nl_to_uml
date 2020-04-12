@@ -25,8 +25,9 @@ logger = logging.getLogger(__name__)
 #loghanlder = logging.FileHandler("/rdata/devlog", encoding='utf-8')
 #logger.addHandler(loghanlder)
 
-@session_required
+
 @set_exp_arg(20)
+@session_required
 def test():
     return jsonify(ExperimentService.get_exp_value('haha'))
 
