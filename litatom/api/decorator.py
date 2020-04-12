@@ -18,6 +18,7 @@ from ..service import (
     UserService,
     AdminService,
     GlobalizationService,
+    ExperimentService
 )
 from ..response import guest_forbidden
 logger = logging.getLogger(__name__)
@@ -32,6 +33,14 @@ def _has_admin_username():
     if request.admin_user_name is None:
         return None  # 标示session验证时出现了Exception
     return request.admin_user_name
+
+def set_exp(view):
+    @functools.wraps(view)
+    def wrapper(*args, **kwargs):
+        ExperimentService.set_exp()
+        return view(*args, **kwargs)
+    return wrapper
+
 
 def session_required(view):
     @functools.wraps(view)

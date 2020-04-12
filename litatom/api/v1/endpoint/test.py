@@ -10,6 +10,9 @@ from flask import (
     render_template
 )
 
+from ....service import (
+    ExperimentService
+)
 
 from ...error import Success
 
@@ -19,6 +22,9 @@ logger = logging.getLogger(__name__)
 #logger.addHandler(loghanlder)
 
 def test():
+    request.user_id = '111'
+    ExperimentService.set_exp()
+    print ExperimentService.get_exp_value('haha')
     return jsonify(request.url)
 
 def hello():

@@ -172,6 +172,20 @@ class LitatomRequest(flask.Request):
         return version
 
     @cached_property
+    def experiment_name(self):
+        experiment_name = self.values.get('experiment_name', '')
+        if not experiment_name:
+            return None
+        return experiment_name
+
+    @cached_property
+    def experiment_value(self):
+        experiment_value = self.values.get('experiment_value', '')
+        if not experiment_value:
+            return None
+        return experiment_value
+
+    @cached_property
     def loc(self):
         loc = self.values.get('loc', '')
         return GlobalizationService.get_real_loc(loc)

@@ -105,6 +105,10 @@ REDIS_VOICE_CHAT_CALLED = 'voice_chat_called:{user_id}'
 REDIS_VOICE_CHAT_IN_CHAT = 'voice_chat_in_chat:{user_id}'
 
 
+# experiment
+REDIS_EXP = 'exp:{key_exp}'
+
+
 # video match
 REDIS_USER_VIDEO_MATCH_LEFT = 'video_user_match_left:{user_date}'   # 过期时间一天
 REDIS_VIDEO_FAKE_ID_UID = 'video_fakeid_uid:{fake_id}'

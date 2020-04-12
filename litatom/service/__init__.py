@@ -7,6 +7,7 @@ from .ali_log_service import AliLogService
 from .monitor_service import MonitorService
 from .globalization_service import GlobalizationService
 from .mq_service import MqService
+from .experiment_service import ExperimentService
 from .track_action_service import TrackActionService
 from .user_model_service import UserModelService
 from .async_service import AsyncCmdService
