@@ -2,6 +2,7 @@
 import json
 import time
 import traceback
+import copy
 from hendrix.conf import setting
 import logging
 from ..model import (
@@ -258,4 +259,10 @@ class AccountService(object):
 
     @classmethod
     def get_pay_activities(cls):
-        return cls.PAY_ACTIVITIES, True
+        res = copy.deepcopy(cls.PAY_ACTIVITIES)
+        if request.user_id:
+            share_key = REDIS_SHARE_LIMIT.format(user_id=request.user_id)
+            last_share_time = redis_client.get(share_key)
+            last_share_time = int(last_share_time) if last_share_time else 0
+            res.update(last_share_time=last_share_time)
+        return res, True
