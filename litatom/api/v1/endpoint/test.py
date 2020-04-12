@@ -15,7 +15,8 @@ from ....service import (
 )
 from ...decorator import (
     set_exp,
-    set_exp_arg
+    set_exp_arg,
+    session_required
 )
 from ...error import Success
 
@@ -24,7 +25,7 @@ logger = logging.getLogger(__name__)
 #loghanlder = logging.FileHandler("/rdata/devlog", encoding='utf-8')
 #logger.addHandler(loghanlder)
 
-
+@session_required
 @set_exp_arg(20)
 def test():
     return jsonify(ExperimentService.get_exp_value('haha'))
