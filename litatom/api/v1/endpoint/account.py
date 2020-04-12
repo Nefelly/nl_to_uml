@@ -4,7 +4,7 @@ from flask import (
     jsonify,
     request
 )
-
+from hendrix.conf import setting
 from ...decorator import (
     session_required,
     session_finished_required,
@@ -67,8 +67,11 @@ def pay_inform():
     payload = request.json
     user_id = request.user_id
     try:
-        TrackActionService.create_action(request.user_id, 'pay_inform', None, None, json.dumps(payload))
-        data, status = GoogleService.judge_order_online(payload, user_id)
+        if setting.IS_DEV:
+            data, status = None, True
+        else:
+            TrackActionService.create_action(request.user_id, 'pay_inform', None, None, json.dumps(payload))
+            data, status = GoogleService.judge_order_online(payload, user_id)
     except Exception as e:
         logger.error('pay_inform error:%s', e)
         status = True
