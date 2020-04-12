@@ -239,8 +239,8 @@ class AccountService(object):
             share_key = REDIS_SHARE_LIMIT.format(user_id=user_id)
             last_share_time = redis_client.get(share_key)
             if last_share_time:
-                return {"share_time": int(last_share_time)}, False
-                # return u'you have been shared', False
+                # return {"share_time": int(last_share_time)}, False
+                return u'you have been shared', False
             redis_client.set(share_key, int(time.time()), ex=ONE_WEEK)
         if activity == cls.WATCH_AD:
             data, status = AdService.verify_ad_viewed(user_id, other_info)
