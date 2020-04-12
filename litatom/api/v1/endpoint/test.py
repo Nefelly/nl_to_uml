@@ -14,7 +14,8 @@ from ....service import (
     ExperimentService
 )
 from ...decorator import (
-    set_exp
+    set_exp,
+    set_exp_arg
 )
 from ...error import Success
 
@@ -24,10 +25,9 @@ logger = logging.getLogger(__name__)
 #logger.addHandler(loghanlder)
 
 
-@set_exp
+@set_exp_arg(20)
 def test():
-    print ExperimentService.get_exp_value('haha')
-    return jsonify(request.url)
+    return jsonify(ExperimentService.get_exp_value('haha'))
 
 
 def hello():
