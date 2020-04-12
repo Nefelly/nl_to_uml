@@ -176,10 +176,11 @@ class RegionWord(Document):
             'ja': u'今は%d番です。%d分間お待ちください。'
         },
         'filter_inform': {
-            'en': u'Filtering will take effect in matching scenarios and recommended user lists',
-            'vi': u'Sự chọn lọc sẽ giúp hiệu quả hơn giữa các điều kiện ghép đôi và danh sách người dùng được đề nghị ',
-            'th': u'การเลือกตัวกรองจะมีผลต่อการแมช์และรายชื่อผู้ใช้ที่แนะนำ',
-            'ja': u'フィルターはマッチングとおすすめのユーザーリストにある'
+            'en': u'filtering will result in matching and user recommendations',
+            'vi': u'Lọc chọn ở mục kết đôi match sẽ có hiệu lực với danh sách người dùng gợi ý ',
+            'th': u'การเลือกตัวกรองมีผลต่อการจับคู่และรายชื่อผู้ใช้แนะนำ',
+            'ja': u'フィルターはマッチングとおすすめのユーザーリストにある',
+            'id': u'Pemfilteran dapat berefek pada rekomendasi user yang diberikan dan match'
         }
 
     }
