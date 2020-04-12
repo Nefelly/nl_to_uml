@@ -30,6 +30,7 @@ from  ....key import (
 
 logger = logging.getLogger(__name__)
 
+
 @session_required
 def change_register_to_yes():
     user = User.get_by_id(request.user_id)
@@ -37,11 +38,19 @@ def change_register_to_yes():
     user.save()
     return success(user.to_json())
 
+
 def redis_status():
     if not setting.IS_DEV:
         return success()
     key = request.args.get('key')
     return success(DebugHelperService.debug_all_keys(key))
+
+
+def clear_keys():
+    if not setting.IS_DEV:
+        return success()
+    DebugHelperService.clear_keys()
+    return success()
 
 def batch_create_login():
     return success(DebugHelperService.batch_create_login())

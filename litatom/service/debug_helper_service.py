@@ -138,8 +138,17 @@ class DebugHelperService(object):
         return None, True
 
     @classmethod
+    def clear_keys(cls):
+        key_len = len(redis_client.keys())
+        for k in redis_client.keys():
+            if k not in ['huanxin_access_token', 'dev_settings', 'huanxin_access_token_expire']:
+                redis_client.delete(k)
+        return True
+
+    @classmethod
     def debug_all_keys(cls, key=None):
         res = {'time_now': int(time.time())}
+
         for k in redis_client.keys():
             if key and key not in k:
                 continue

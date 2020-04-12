@@ -165,6 +165,7 @@ b.add_url_rule('/lit/anoy_match/accelerate_info', 'anoy-match-accelerate-info', 
 
 # debug
 b.add_url_rule('/lit/debug/redis_status', 'debug-redis-status', endpoint.debug.redis_status)
+b.add_url_rule('/lit/debug/clear_redis', 'debug-clear-redis', endpoint.debug.clear_keys)
 b.add_url_rule('/lit/debug/batch_create_login', 'debug-batch-create-login', endpoint.debug.batch_create_login)
 b.add_url_rule('/lit/debug/batch_anoy_match_start', 'debug-batch-anoy-match-start', endpoint.debug.batch_anoy_match_start)
 b.add_url_rule('/lit/debug/query_region', 'debug-query-region', endpoint.debug.query_region)
