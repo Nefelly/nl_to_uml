@@ -32,6 +32,8 @@ class ExperimentService(object):
     def set_exp(cls, key=None, expire=ONE_DAY):
         if not key:
             key = request.user_id
+        if key is None:
+            return True
         exp_name = request.experiment_name
         if not exp_name:
             return

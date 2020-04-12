@@ -14,6 +14,9 @@ from flask import (
 from ..util import (
     time_str_by_ts,
 )
+from ..const import (
+    ONE_DAY
+)
 from ..service import (
     UserService,
     AdminService,
@@ -43,7 +46,7 @@ def set_exp(view):
     return wrapper
 
 
-def set_exp_arg(arg):
+def set_exp_arg(arg=ONE_DAY):
     def _deco(view):
         @functools.wraps(view)
         def wrapper(*args, **kwargs):

@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 #logger.addHandler(loghanlder)
 
 
-@set_exp_arg(20)
+@set_exp_arg()
 @session_required
 def test():
     return jsonify(ExperimentService.get_exp_value('haha'))
