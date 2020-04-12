@@ -121,7 +121,10 @@ def session_finished_required(view):
         if has_user_id is None:  # 检查时发生了Exception, 报错而不登出.
             # logger.error("nnnnn-10")
             if request.forbidden_user_id:
-                return jsonify(UserService.get_forbidden_error(error.FailedUserBanned))
+                return jsonify(UserService.get_forbidden_error(msg=GlobalizationService.get_region_word("banned_warn") % UserService.get_forbidden_time_by_uid(request.user_id),
+                                                               default_json=error.FailedUserBanned))
+            # if request.forbidden_user_id:
+            #     return jsonify(UserService.get_forbidden_error(error.FailedUserBanned))
             return jsonify(error.FailedSession)
     return wrapper
 
