@@ -592,6 +592,9 @@ class MatchService(object):
 
         matched_id = None
         if CAN_MATCH_ONLINE:
+            '''
+            这个十分危险，语音用户容易匹配错人
+            '''
             times_left, status = cls._match_left_verify(user_id)
             if status and (cls.MATCH_TMS - times_left) % 5 == 0 and cls.MATCH_TMS != times_left:
                 matched_id, has_matched = cls._match_yesterday(fake_id, gender)
