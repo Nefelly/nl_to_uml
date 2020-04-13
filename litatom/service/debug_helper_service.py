@@ -142,7 +142,8 @@ class DebugHelperService(object):
         key_len = len(redis_client.keys())
         for k in redis_client.keys():
             if k not in ['huanxin_access_token', 'dev_settings', 'huanxin_access_token_expire']:
-                redis_client.delete(k)
+                if 'setting' not in k:
+                    redis_client.delete(k)
         return True
 
     @classmethod
