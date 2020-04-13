@@ -99,7 +99,17 @@ class ShareStatService(object):
         if not total_num:
             return 0
         known_num = cls.get_known_num(user_id)
-        return total_num - known_num
+        res_num = total_num - known_num
+
+        '''由于缓存的用户的分享链接已经过期，导致次数对不上'''
+        if res_num < 0:
+            known_num = 0
+            key = cls._get_known_num_key(user_id)
+            redis_client.set(key, 0, cls.CACHED_TIME)
+            res_num = total_num
+        return res_num
+
+
 
     @classmethod
     def get_stat_items(cls, user_id):
@@ -114,7 +124,7 @@ class ShareStatService(object):
         if cls.get_shown_num(user_id) < 5:
             return cls.ERR_SHARE_NOT_ENOUGH, False
         key = cls._get_known_num_key(user_id)
-        redis_client.set(key, cls.get_stat_item_num(user_id))
+        redis_client.set(key, cls.get_stat_item_num(user_id), cls.CACHED_TIME)
         return AccountService.deposit_by_activity(user_id, AccountService.SHARE_5)
 
     @classmethod
