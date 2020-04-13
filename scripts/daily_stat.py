@@ -22,6 +22,7 @@ def run(stat_date=None):
         ad_addr = '/data/statres/%sad.xlsx' % (datetime.datetime.now() - datetime.timedelta(days=1)).strftime(
             '%Y-%m-%d')
     ensure_path(dst_addr)
+    print(stat_date)
     if not os.path.exists(dst_addr) or 1:
         JournalService.out_port_result(dst_addr, stat_date, StatItems.BUSINESS_TYPE)
     AlertService.send_file(["litatomwang@gmail.com", "op.shiyang.yu@gmail.com","396408395@qq.com","w326571@126.com", '382365209@qq.com','644513759@qq.com'],dst_addr)
