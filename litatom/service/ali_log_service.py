@@ -61,8 +61,12 @@ class AliLogService(object):
         return date
 
     @classmethod
-    def put_logs_atom(cls, logitemList, project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE, topic=DEFAULT_TOPIC,
+    def _put_logs_atom(cls, logitemList, project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE, topic=DEFAULT_TOPIC,
                       source=DEFAULT_SOURCE, client=DEFAULT_CLIENT):
+        '''最底层的上传日志服务'''
+        if setting.IS_DEV:
+            logstore = 'test-lit'
+            project = 'test-lit'
         request = PutLogsRequest(project, logstore, topic, source, logitemList)
         response = client.put_logs(request)
         return response.get_all_headers()
@@ -78,7 +82,7 @@ class AliLogService(object):
             for logitem in logitemList:
                 item_time = logitem.get_time()
                 item_content = logitem.get_contents()
-                normal_logitem_list.append((item_time,item_content))
+                normal_logitem_list.append((item_time, item_content))
             MQProducer(
                 'tasks',
                 setting.DEFAULT_MQ_HOST,
@@ -105,7 +109,7 @@ class AliLogService(object):
             contents.append(('platform', request.platform))
         logItem.set_contents(contents)
         logitemList.append(logItem)
-        cls.put_logs_atom(logitemList,project,logstore,topic,source,client)
+        cls._put_logs_atom(logitemList, project, logstore, topic, source, client)
 
     @classmethod
     def put_logs_batch(cls, contents_list, topic=DEFAULT_TOPIC, source=DEFAULT_SOURCE, project=DEFAULT_PROJECT,
@@ -120,7 +124,7 @@ class AliLogService(object):
             logItem.set_time(int(time()))
             logItem.set_contents(contents)
             logitemList.append(logItem)
-        cls.put_logs_atom(logitemList, project, logstore, topic, source, client)
+        cls._put_logs_atom(logitemList, project, logstore, topic, source, client)
 
     @classmethod
     def put_daily_stat(cls, contents, topic='undefined'):
