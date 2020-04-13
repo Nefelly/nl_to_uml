@@ -519,7 +519,10 @@ class UserService(object):
     @classmethod
     def check_valid_birthdate(cls, birthdate):
         """无效生日均设为18岁"""
-        birth = parse_standard_date(birthdate)
+        try:
+            birth = parse_standard_date(birthdate)
+        except:
+            return format_standard_date(get_zero_today() - relativedelta(years=18))
         now = get_zero_today()
         if now - relativedelta(years=60) <= birth <= now - relativedelta(years=13):
             return birthdate
