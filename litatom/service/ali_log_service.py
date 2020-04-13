@@ -67,7 +67,6 @@ class AliLogService(object):
         if setting.IS_DEV:
             logstore = 'test-lit'
             project = 'test-lit'
-            print 'get innnn', logitemList
         request = PutLogsRequest(project, logstore, topic, source, logitemList)
         response = client.put_logs(request)
         return response.get_all_headers()
