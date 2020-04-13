@@ -171,7 +171,7 @@ class JournalService(object):
         for loc_index in range(len(res)):
             for item in res[loc_index]:
                 # item 即计数,boy,girl,新用户等
-                if item in ('name','id'):
+                if item in ('name', 'id'):
                     continue
                 tmp_exp = expression
                 for stat_item in res_stat_set:
@@ -353,9 +353,14 @@ class JournalService(object):
                 "Report": "target_uid",
                 "Feedback": "uid"
             }
+            if item.name in [u'警告数']:
+                eval_str = 'TrackSpamRecord.objects(%s,%s).distinct(\'user_id\')' % (time_str, expression)
+                new_user_acted = set()
+                for user_id in eval(eval_str):
+                    cls.cal_res_by_uid(user_id, res, new_user_acted)
             # 对每个location，在loc_cnts这个dict中，存三个字段，loc,new_loc,count_loc
             # 只对有count且不大于1000000的才进行分location统计
-            if cnt and cnt < 1000000:
+            elif cnt and cnt < 1000000:
                 eval_str = '%s.objects(%s,%s)' % (table_name, time_str, expression)
                 if cls.IS_TESTING:
                     eval_str += '.limit(1000)'
