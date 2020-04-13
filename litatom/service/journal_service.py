@@ -398,7 +398,7 @@ class JournalService(object):
         for item in StatItems.get_items_by_type(stat_type):
             try:
                 # res为根据该统计量的id计算得到的结果
-                if not item.name == u'警告数':
+                if not str(item.id) == '5e12e7bf3fff22086bdc6e7f':
                     continue
                 print(item.name)
                 res = cls.cal_by_id(str(item.id))
