@@ -400,6 +400,7 @@ class JournalService(object):
                 # res为根据该统计量的id计算得到的结果
                 if not item.name == u'警告数':
                     continue
+                print(item.name)
                 res = cls.cal_by_id(str(item.id))
                 for sheet_index in range(len(res)):
                     sheet = res[sheet_index]
