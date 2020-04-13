@@ -20,7 +20,8 @@ if 'dev' in os.getcwd():
     with open("ansible/debug_conf") as f:
       envf = yaml.load(f)
 # Load env var from YAML
-else if '/litatom' in os.getcwd():
+elif '/litatom' in os.getcwd():
+  print 'online', '!' * 100
   with open("ansible/online_conf") as f:
       envf = yaml.load(f)
 
