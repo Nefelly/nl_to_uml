@@ -16,11 +16,11 @@ import json
 import sys
 import os
 
-if 'devlitatom' in os.getcwd():
+if 'dev' in os.getcwd():
     with open("ansible/debug_conf") as f:
       envf = yaml.load(f)
 # Load env var from YAML
-else:
+else if '/litatom' in os.getcwd():
   with open("ansible/online_conf") as f:
       envf = yaml.load(f)
 
