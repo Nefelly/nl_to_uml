@@ -68,7 +68,6 @@ class ShareStatService(object):
         # if not redis_client.exists(ip):
         #     redis_client.set(key, 1)
 
-
     @classmethod
     def add_stat_item(cls, user_id, item):
         """有人为user_id 点击share 的链接"""
@@ -108,8 +107,6 @@ class ShareStatService(object):
             redis_client.set(key, 0, cls.CACHED_TIME)
             res_num = total_num
         return res_num
-
-
 
     @classmethod
     def get_stat_items(cls, user_id):
