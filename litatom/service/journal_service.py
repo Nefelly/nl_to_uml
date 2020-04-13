@@ -23,7 +23,7 @@ redis_client = RedisClient()['lit']
 
 
 class JournalService(object):
-    IS_TESTING = True
+    IS_TESTING = False
     DATE_DIS = datetime.timedelta(hours=0)
 
     USER_LOC = {}  # user_id:loc
@@ -398,9 +398,6 @@ class JournalService(object):
         for item in StatItems.get_items_by_type(stat_type):
             try:
                 # res为根据该统计量的id计算得到的结果
-                if not str(item.id) == '5e12e7bf3fff22086bdc6e7f':
-                    continue
-                print(item.name)
                 res = cls.cal_by_id(str(item.id))
                 for sheet_index in range(len(res)):
                     sheet = res[sheet_index]

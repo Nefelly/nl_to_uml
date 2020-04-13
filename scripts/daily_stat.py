@@ -25,10 +25,9 @@ def run(stat_date=None):
     print(dst_addr)
     if not os.path.exists(dst_addr) or 1:
         JournalService.out_port_result(dst_addr, stat_date, StatItems.BUSINESS_TYPE)
-    AlertService.send_file(['644513759@qq.com'],dst_addr)
-    # AlertService.send_file(["litatomwang@gmail.com", "op.shiyang.yu@gmail.com","396408395@qq.com","w326571@126.com", '382365209@qq.com','644513759@qq.com'],dst_addr)
-    # JournalService.out_port_result(ad_addr, stat_date, StatItems.AD_TYPE)
-    # AlertService.send_file(["litatomwang@gmail.com", "op.shiyang.yu@gmail.com","396408395@qq.com","w326571@126.com", '382365209@qq.com','644513759@qq.com'],ad_addr)
+    AlertService.send_file(["litatomwang@gmail.com", "op.shiyang.yu@gmail.com","396408395@qq.com","w326571@126.com", '382365209@qq.com','644513759@qq.com'],dst_addr)
+    JournalService.out_port_result(ad_addr, stat_date, StatItems.AD_TYPE)
+    AlertService.send_file(["litatomwang@gmail.com", "op.shiyang.yu@gmail.com","396408395@qq.com","w326571@126.com", '382365209@qq.com','644513759@qq.com'],ad_addr)
 
 
 if __name__ == "__main__":
