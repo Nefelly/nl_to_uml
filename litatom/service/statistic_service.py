@@ -235,47 +235,50 @@ class StatisticService(object):
         }
 
     @classmethod
-    def stat_register_rate(cls, date_str):
-        stat_date = datetime.datetime.strptime(date_str, '%Y-%m-%d')
-        end = next_date(stat_date, 1)
-        # ls = UserSetting.objects(create_time__gte=stat_date,
-        #                          create_time__lte=end).distinct('uuid')
+    def stat_register_rate(cls, date_str, num=1):
+        start_date = datetime.datetime.strptime(date_str, '%Y-%m-%d')
+        for _ in range(num):
+            stat_date = next_date(start_date, _)
+            print stat_date
+            end = next_date(stat_date, 1)
+            # ls = UserSetting.objects(create_time__gte=stat_date,
+            #                          create_time__lte=end).distinct('uuid')
 
-        # 安装设备数
-        ts = Uuids.objects(create_time__gte=stat_date,
-                           create_time__lte=end).distinct('uuid')
+            # 安装设备数
+            ts = Uuids.objects(create_time__gte=stat_date,
+                               create_time__lte=end).distinct('uuid')
 
-        # 以前注册用户的设备
-        # registered_cnt = 0
-        # for uuid in ts:
-        #     u  =  UserSetting.objects(uuid=uuid).first()
-        #     if u and User.get_by_id(u.user_id).create_time < stat_date:
-        #         registered_cnt += 1
+            # 以前注册用户的设备
+            # registered_cnt = 0
+            # for uuid in ts:
+            #     u  =  UserSetting.objects(uuid=uuid).first()
+            #     if u and User.get_by_id(u.user_id).create_time < stat_date:
+            #         registered_cnt += 1
 
-        m = {}
-        cnt = 0
-        for l in ts:
-            m[l] = 1
-            if l in m:
-                cnt += 1
+            m = {}
+            cnt = 0
+            for l in ts:
+                m[l] = 1
+                if l in m:
+                    cnt += 1
 
-        # 新增的注册用户
-        uids = [UserSetting.get_by_user_id(str(el.id)) for el in
-                User.objects(create_time__gte=stat_date, create_time__lte=end)]
+            # 新增的注册用户
+            uids = [UserSetting.get_by_user_id(str(el.id)) for el in
+                    User.objects(create_time__gte=stat_date, create_time__lte=end)]
 
 
 
-        ms = [el.uuid for el in uids if el]
-        print ms[:5]
+            ms = [el.uuid for el in uids if el]
+            print ms[:5]
 
-        # 新增设备已注册的
-        registered_uuid = 0
-        for el in ms:
-            if el in m:
-                registered_uuid +=1
+            # 新增设备已注册的
+            registered_uuid = 0
+            for el in ms:
+                if el in m:
+                    registered_uuid +=1
 
-        print "install", "register", "rate"
-        print len(ts), registered_uuid, registered_uuid * 1.0 / len(ts)
+            print "install", "register", "rate"
+            print len(ts), registered_uuid, registered_uuid * 1.0 / len(ts)
 
         # mm = []  #
         # for l in ms:
