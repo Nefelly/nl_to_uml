@@ -36,6 +36,7 @@ from ..service import (
     MqService,
     QiniuService,
     ForbiddenService,
+    AntiSpamRateService
 )
 from ..model import (
     Feed,
@@ -54,6 +55,8 @@ class FeedService(object):
         # return True
         user_id = feed.user_id
         judge_time = int(time.time()) - ONE_HOUR
+        if feed.self_high:
+            return False
         status = Feed.objects(user_id=user_id, create_time__gte=judge_time).count() <= 3
         if not status and setting.IS_DEV:
             return True
@@ -172,7 +175,8 @@ class FeedService(object):
             time_now = int(time.time())
             if time_now - feed.create_time >= 2 * ONE_DAY:
                 return
-            cls._add_to_feed_hq(str(feed.id))
+            if not feed.self_high and not AntiSpamRateService.is_spamed_recent(feed.user_id):
+                cls._add_to_feed_hq(str(feed.id))
 
     @classmethod
     def move_up_feed(cls, feed_id, ts):

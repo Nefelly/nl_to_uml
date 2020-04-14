@@ -29,6 +29,10 @@ REDIS_ACCOST_STOP_RATE = 'accost_stop_rate:{user_id}'
 REDIS_ACCOST_DAY_STOP = 'accost_day_stop:{now_date_key}{user_id}'
 REDIS_SHARE_LIMIT = 'share_limit:{user_id}'
 
+# spam rate
+REDIS_SPAMED = 'spam:{user_id}'
+SPAM_RATE_CONTROL = 'spam:{user_interval_type}'
+
 # cache
 REDIS_USER_CACHE = 'user_cache:{user_id}'
 REDIS_USER_ACCOUNT_CACHE = 'user_account_cache:{user_id}'
