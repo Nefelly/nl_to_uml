@@ -4,9 +4,9 @@ from .token_bucket_service import TokenBucketService
 from .ip2address_service import Ip2AddressService
 from .youtube_service import YoutubeService
 from .ali_log_service import AliLogService
-from .anti_spam_rate_service import AntiSpamRateService
 from .monitor_service import MonitorService
 from .globalization_service import GlobalizationService
+from .anti_spam_rate_service import AntiSpamRateService
 from .mq_service import MqService
 from .experiment_service import ExperimentService
 from .track_action_service import TrackActionService

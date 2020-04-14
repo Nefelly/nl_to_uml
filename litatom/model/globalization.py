@@ -181,7 +181,44 @@ class RegionWord(Document):
             'th': u'การเลือกตัวกรองมีผลต่อการจับคู่และรายชื่อผู้ใช้แนะนำ',
             'ja': u'フィルターはマッチングとおすすめのユーザーリストにある',
             'id': u'Pemfilteran dapat berefek pada rekomendasi user yang diberikan dan match'
+        },
+        'rate_conversation_diamonds': {
+            'en': u'You initiate the conversation too much，Use diamonds to unlock',
+            'vi': u'Bạn gửi tin nhắn cho quá nhiều người, dùng kim cương mở',
+            'th': u'คุณเริ่มสนทนามากเกินไป ใช้เพชรเพื่อปลดล็อก',
+            'id': u'Anda terlalu banyak memulai pembicaraan, gunakan diamond untuk membuka kunci'
+        },
+        'rate_conversation_stop': {
+            'en': u'You initiate the conversation too much today',
+            'vi': u'Bạn đã trò chuyện quá nhiều lần trong hôm nay',
+            'th': u'วันนี้คุณเริ่มสนทนามากเกินไป',
+            'id': u'Anda terlalu banyak memulai pembicaraan hari ini'
+        },
+        'rate_follow_diamonds': {
+            'en': u'You follow too many people，Use diamonds to unlock',
+            'vi': u'Bạn đã theo dõi quá nhiều người, dùng kim cương mở khoá',
+            'th': u'คุณติดตามคนเยอะเกินไป ใช้เพชรเพื่อปลดล็อก',
+            'id': u'Anda mengikuti terlalu banyak orang， gunakan diamond untuk membuka kunci'
+        },
+        'rate_follow_stop': {
+            'en': u'You follow too many people today',
+            'vi': u'Bạn theo dõi quá nhiều người trong hôm nay',
+            'th': u'วันนี้คุณติดตามคนเยอะเกินไป',
+            'id': u'Anda mengikuti terlalu banyak orang hari ini'
+        },
+        'rate_comment_diamonds': {
+            'en': u'You comment too many people，Use diamonds to unlock',
+            'vi': u'Bạn bình luận quá nhiều lần, dùng kim cương mở khoá',
+            'th': u'คุณคอมเม้นต์ให้คนอื่นมากเกินไป ใช้เพชรเพื่อปลดล็อก',
+            'id': u'Anda berkomentar terlalu banyak, gunakan diamond untuk membuka kunci'
+        },
+        'rate_comment_stop': {
+            'en': u'You comment too many people today',
+            'vi': u'Bạn bình luận quá nhiều lần trong hôm nay',
+            'th': u'ววันนี้คุณคอมเม้นต์ให้คนอื่นมากเกินไป',
+            'id': u'Anda berkomentar terlalu banyak hari ini'
         }
+
 
     }
 

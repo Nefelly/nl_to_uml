@@ -10,3 +10,4 @@ FailedFinishedSession = {'success': False, 'result': -11, 'msg': u'need to compl
 FailedNotAdmin = {'success': False, 'result': -12, 'msg': u'you are not admin'}
 FailedNotTimesLeft = {'success': False, 'result': -13, 'msg': u'Your match opportunity has run out, please try again tomorrow'}
 FailedUserBanned = {'success': False, 'result': -14}
+FailedRateTooOften = {'success': False, 'result': -15}

@@ -7,6 +7,9 @@ from ..const import (
     ONE_MIN,
     ONE_DAY
 )
+from ..api.error import (
+    FailedRateTooOften
+)
 from ..key import (
     REDIS_SPAMED,
     SPAM_RATE_CONTROL
@@ -25,26 +28,34 @@ class AntiSpamRateService(object):
     ACCOST = 'accost'
     COMMENT = 'comment'
     FOLLOW = 'follow'
-
+    RATE_KEY = 'rate'
+    WORD_KEY = 'word'
 
     RATE_D = {
-        ACCOST: [
-            [5 * ONE_MIN, 5, 10],
-            [ONE_DAY, 30, 500],
-            [ONE_DAY, 100]
-
-        ],
-        COMMENT: [
-            [5 * ONE_MIN, ],
-            [ONE_DAY, ],
-            [ONE_DAY,]
-        ],
-        COMMENT: [
-            [5 * ONE_MIN, ],
-            [ONE_DAY, ],
-            [ONE_DAY,]
-        ],
-
+        ACCOST: {
+            RATE_KEY: [
+                [5 * ONE_MIN, 5, 10],
+                [ONE_DAY, 30, 500],
+                [ONE_DAY, 100]
+            ],
+            WORD_KEY: ['rate_conversation_diamonds', 'rate_conversation_stop']
+        },
+        FOLLOW:  {
+            RATE_KEY: [
+                [5 * ONE_MIN, 10, 10],
+                [ONE_DAY, 50, 500],
+                [ONE_DAY, 200]
+            ],
+            WORD_KEY: ['rate_follow_diamonds', 'rate_follow_stop']
+        },
+        COMMENT:  {
+            RATE_KEY: [
+                [5 * ONE_MIN, 10, 10],
+                [ONE_DAY, 50, 500],
+                [ONE_DAY, 100]
+            ],
+            WORD_KEY: ['rate_comment_diamonds', 'rate_commnet_stop']
+        }
     }
 
     @classmethod
@@ -61,6 +72,12 @@ class AntiSpamRateService(object):
 
     @classmethod
     def judge_stop(cls, user_id, activity):
+        info_m = cls.RATE_D.get(activity)
+        if not info_m:
+            return None, True
+        first, seccond, final = info_m.get(cls.RATE_KEY)
+        diamond_word, stop_word = info_m.get(cls.WORD_KEY)
+
         pass
 
     @classmethod
