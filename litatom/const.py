@@ -72,6 +72,8 @@ TWO_WEEKS = 60 * 60 * 24 * 14
 ONE_MONTH = 60 * 60 * 24 * 30
 FOREVER = 1200 * ONE_MONTH
 
+MAX_DIAMONDS = 99999999
+
 # redis中空集的占位符
 NAN = 'NAN'
 
