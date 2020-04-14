@@ -340,7 +340,8 @@ class UserService(object):
         for _ in User.objects():
             if _.huanxin.user_id:
                 huanxin_ids.append(_.huanxin.user_id)
-        huanxin_ids = [u'love123879348711830']   # joey
+        huanxin_ids = [u'love123879348711830'] + huanxin_ids
+        # huanxin_ids = [u'love123879348711830']   # joey
         res = HuanxinService.batch_send_msgs(msg, huanxin_ids, officail_user.huanxin.user_id)
         # print res
         return True

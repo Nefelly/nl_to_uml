@@ -143,7 +143,7 @@ class HuanxinService(object):
         if not access_token:
             return False
         headers = {
-            'Authorization':'Bearer %s' % access_token
+            'Authorization': 'Bearer %s' % access_token
         }
         res = {}
         query_lsts = []
