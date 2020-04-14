@@ -10,6 +10,9 @@ from ..const import (
 from ..api.error import (
     FailedRateTooOften
 )
+from ..service import (
+    GlobalizationService
+)
 from ..key import (
     REDIS_SPAMED,
     SPAM_RATE_CONTROL
@@ -30,6 +33,9 @@ class AntiSpamRateService(object):
     FOLLOW = 'follow'
     RATE_KEY = 'rate'
     WORD_KEY = 'word'
+    LEVEL_FIRST = 0
+    LEVEL_SECCOND = 1
+    LEVEL_STOP = 2
 
     RATE_D = {
         ACCOST: {
@@ -71,14 +77,30 @@ class AntiSpamRateService(object):
         return redis_client.get(key) is None
 
     @classmethod
+    def _get_error_message(cls, word):
+        res = FailedRateTooOften
+        msg = GlobalizationService.get_region_word(word)
+        res.update({'message': msg})
+        return res
+
+    @classmethod
     def judge_stop(cls, user_id, activity):
         info_m = cls.RATE_D.get(activity)
         if not info_m:
             return None, True
-        first, seccond, final = info_m.get(cls.RATE_KEY)
+        first, second, final = info_m.get(cls.RATE_KEY)
+        first_interval, first_stop, first_diamonds = first
+        second_interval, second_stop, second_diamonds = second
         diamond_word, stop_word = info_m.get(cls.WORD_KEY)
 
-        pass
+        user_interval_type_stop = '%s_%s_%d' % (user_id, activity, cls.LEVEL_STOP)
+        stop_key = REDIS_SPAMED.format(user_interval_type=user_interval_type_stop)
+        stop_num = redis_client.get(stop_key)
+        stop_num = 0 if not stop_num else int(stop_num)
+        stop_interval, stop_judge = final
+        if stop_num >= stop_judge:
+            return cls._get_error_message(stop_word), False
+
 
     @classmethod
     def reset_spam_type(cls, user_id, activity, ):
