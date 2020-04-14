@@ -61,7 +61,7 @@ class AccountService(object):
     WATCH_AD = 'watch_video'
     SHARE_5 = 'share_5'     # 链接分享，被5个人点开
     PAY_ACTIVITIES = {
-        SHARE: 10,
+        SHARE: 1,
         WATCH_AD: 1,
         SHARE_5: 100,
     }
