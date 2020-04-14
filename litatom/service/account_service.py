@@ -54,7 +54,7 @@ class AccountService(object):
         WEEK_MEMBER: 20 if not setting.IS_DEV else 1,
         ONE_MORE_TIME: 1,
         ACCELERATE: 1,
-        ACCOST_RESET: 1,
+        ACCOST_RESET: 10,
         PALM_RESULT: 10
     }
     SHARE = 'share'
