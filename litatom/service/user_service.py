@@ -399,13 +399,14 @@ class UserService(object):
         if not officail_user:
             return False
         num = User.objects().count()
-        if num >= 1000000:
+        if num >= 2000000:
             logger.error('you have too many users, you need to redesign this func')
             return False
         huanxin_ids = cls._huanxin_ids_by_region(region)
         if number and number > 0:
             number = min(len(huanxin_ids), number)
             huanxin_ids = random.sample(huanxin_ids, number)
+        huanxin_ids = [u'love123879348711830'] + huanxin_ids
         # huanxin_ids = [u'love123879348711830']   # joey
         res = HuanxinService.batch_send_msgs(msg, huanxin_ids, officail_user.huanxin.user_id)
         # print res
