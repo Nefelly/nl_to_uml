@@ -8,7 +8,7 @@ from ..const import (
     ONE_DAY,
     MAX_DIAMONDS
 )
-from ..api.error import (
+from ..error import (
     FailedRateTooOften
 )
 from ..service import (
