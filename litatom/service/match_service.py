@@ -540,7 +540,7 @@ class MatchService(object):
             if cls._in_match(fake_id, fake_id2):
                 return fake_id2, True
             redis_client.delete(matched_key)
-        fake_id2 = cls.pure_get_fake_id(out_uid)
+        fake_id2, status = cls.pure_get_fake_id(out_uid)
         if redis_client.get(cls.TYPE_MATCH_BEFORE.format(low_high_fakeid=low_high_pair(fake_id, fake_id2))):
             return None, False
         if BlockService.get_block_msg(user_id, out_uid):
