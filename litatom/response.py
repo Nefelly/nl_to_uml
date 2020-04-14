@@ -64,7 +64,7 @@ def failure(err=None):
 def fail(msg=None, **kwargs):
     res = {'result': -1, 'success': False}
     if msg:
-        if isinstance(res, dict) and 'result' in res:
+        if isinstance(msg, dict) and 'result' in msg:
             return LitatomResponse(msg)
         res['message'] = msg
     if kwargs:
