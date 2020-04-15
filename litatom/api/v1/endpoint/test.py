@@ -37,7 +37,7 @@ def test():
     return jsonify(ExperimentService.get_exp_value('haha'))
 
 @session_required
-def get_comment():
+def test_anti():
     activity = request.values.get('activity')
     data, status = AntiSpamRateService.judge_stop(request.user_id, request)
     if not status:

@@ -9,6 +9,7 @@ blueprint = b = Blueprint('api_v1', __name__)
 # lit
 b.add_url_rule('/lit/test', 'lit-test', endpoint.test.test)
 b.add_url_rule('/lit/hello', 'lit-hello', endpoint.test.hello)
+b.add_url_rule('/lit/test_anti', 'lit-test_anti', endpoint.test.test_anti)
 
 # sms-code
 b.add_url_rule('/lit/get_sms_code', 'get-sms-code', endpoint.sms_code.get_sms_code, methods=['POST'])
