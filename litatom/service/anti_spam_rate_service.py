@@ -101,6 +101,7 @@ class AntiSpamRateService(object):
     def out_of_times(cls, key, num):
         stop_num = redis_client.get(key)
         stop_num = 0 if not stop_num else int(stop_num)
+        print stop_num, num
         return stop_num > num
 
     @classmethod
@@ -125,7 +126,6 @@ class AntiSpamRateService(object):
         stop_key = cls.get_key(user_id, activity, cls.LEVEL_STOP)
         if cls.out_of_times(stop_key, stop_num):
             cls.inform_spam(user_id)
-            print 'here'
             return cls._get_error_message(stop_word), False
 
         second_key = cls.get_key(user_id, activity, cls.LEVEL_SECCOND)
