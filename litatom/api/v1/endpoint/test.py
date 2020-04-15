@@ -39,7 +39,7 @@ def test():
 @session_required
 def test_anti():
     activity = request.values.get('activity')
-    data, status = AntiSpamRateService.judge_stop(request.user_id, request)
+    data, status = AntiSpamRateService.judge_stop(request.user_id, activity)
     if not status:
         return fail(data)
     return success(data)
