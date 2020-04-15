@@ -43,7 +43,7 @@ b.add_url_rule('/lit/account/deposit_by_activity', 'account-deposit_by_activity'
 b.add_url_rule('/lit/account/buy_product', 'account-buy_product', endpoint.account.buy_product, methods=['POST'])
 b.add_url_rule('/lit/account/diamond_products', 'account-diamond_products', endpoint.account.diamond_products)
 b.add_url_rule('/lit/account/unban_by_diamonds', 'account-unban-by-diamonds', endpoint.account.unban_by_diamonds)
-b.add_url_rule('/lit/account/reset_rate_by_diamonds', 'account-reset_rate_by_diamonds', endpoint.account.reset_rate_by_diamonds)
+b.add_url_rule('/lit/account/reset_rate_by_diamonds', 'account-reset_rate_by_diamonds', endpoint.account.reset_rate_by_diamonds, methods=['POST'])
 
 
 # admin
