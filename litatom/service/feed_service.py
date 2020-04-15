@@ -101,7 +101,7 @@ class FeedService(object):
                 feed.delete()
             else:
                 #  need region to send to this because of request env
-                if cls.should_add_to_square(feed):
+                if feed.pics and cls.should_add_to_square(feed):
                     redis_client.zadd(region_key,
                                       {str(feed.id): feed.create_time})
             FollowingFeedService.add_feed(feed)
