@@ -67,7 +67,7 @@ class AntiSpamRateService(object):
                 [ONE_DAY, 50, 500],
                 [ONE_DAY, 100]
             ],
-            WORD_KEY: ['rate_comment_diamonds', 'rate_commnet_stop']
+            WORD_KEY: ['rate_comment_diamonds', 'rate_comment_stop']
         }
     }
 
