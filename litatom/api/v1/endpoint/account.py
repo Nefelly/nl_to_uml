@@ -96,6 +96,7 @@ def deposit_by_activity():
         return fail(data)
     return success(data)
 
+
 @session_required
 def reset_rate_by_diamonds():
     data = request.json
@@ -104,6 +105,7 @@ def reset_rate_by_diamonds():
     if not status:
         return fail(data)
     return success(data)
+
 
 @forbidden_session_required
 def unban_by_diamonds():
