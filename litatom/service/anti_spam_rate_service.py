@@ -101,8 +101,8 @@ class AntiSpamRateService(object):
     def out_of_times(cls, key, num):
         stop_num = redis_client.get(key)
         stop_num = 0 if not stop_num else int(stop_num)
-        print stop_num, num
-        return stop_num > num
+        ''' 先判断 再往上加的  所以第二次 stop_num 为 1 第三次 为 2'''
+        return stop_num >= num
 
     @classmethod
     def judge_stop(cls, user_id, activity):
