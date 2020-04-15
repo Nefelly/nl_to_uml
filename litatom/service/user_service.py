@@ -371,7 +371,7 @@ class UserService(object):
         if number:
             huanxin_ids = []
             loc = locs[0] if isinstance(locs, list) else locs
-            for _ in User.objects(country=loc).order_by('-create_time').limit(num):
+            for _ in User.objects(country=loc).order_by('-create_time').limit(number):
                 if _.huanxin.user_id:
                     huanxin_ids.append(_.huanxin.user_id)
             return huanxin_ids
