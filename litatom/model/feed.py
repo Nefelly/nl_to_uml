@@ -64,6 +64,10 @@ class Feed(Document):
     def self_high(self):
         return self.dislike_num >= self.NOT_PUB_NUM
 
+    @property
+    def should_remove_from_follow(self):
+        return self.dislike_num >= self.SELF_HIGH_NUM
+
     def save(self, *args, **kwargs):
         if getattr(self, 'id', ''):
             self._disable_cache(str(self.id))

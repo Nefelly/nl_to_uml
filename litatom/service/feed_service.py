@@ -190,6 +190,8 @@ class FeedService(object):
     def remove_from_pub(cls, feed):
         cls._del_from_feed_pool(feed)
         cls._del_from_feed_hq(feed)
+        if feed.should_remove_from_follow:
+            FollowingFeedService.remove_feed(feed)
 
     @classmethod
     def move_up_feed(cls, feed_id, ts):
