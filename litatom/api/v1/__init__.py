@@ -187,6 +187,7 @@ b.add_url_rule('/lit/feed/following_feeds', 'feed-following-feeds', endpoint.fee
 b.add_url_rule('/lit/feed/square', 'feed-square-feeds', endpoint.feed.square_feeds)
 b.add_url_rule('/lit/feed/hq', 'feed-hq-feeds', endpoint.feed.hq_feeds)
 b.add_url_rule('/lit/feed/like/<feed_id>', 'feed-like-feed', endpoint.feed.like_feed)
+b.add_url_rule('/lit/feed/dislike/<feed_id>', 'feed-dislike-feed', endpoint.feed.dislike_feed)
 b.add_url_rule('/lit/feed/delete/<feed_id>', 'feed-delete-feed', endpoint.feed.delete_feed)
 b.add_url_rule('/lit/feed/comment/<feed_id>', 'feed-comment-feed', endpoint.feed.comment_feed, methods=['POST'])
 b.add_url_rule('/lit/feed/del_comment/<comment_id>', 'feed-comment-delete', endpoint.feed.del_comment)
