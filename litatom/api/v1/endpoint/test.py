@@ -11,7 +11,8 @@ from flask import (
 )
 
 from ....service import (
-    ExperimentService
+    ExperimentService,
+    AntiSpamRateService
 )
 from ...decorator import (
     set_exp,
@@ -19,6 +20,10 @@ from ...decorator import (
     session_required
 )
 from ...error import Success
+from ....response import (
+    success,
+    fail
+)
 
 logger = logging.getLogger(__name__)
 #print dir(logger)
@@ -31,6 +36,13 @@ logger = logging.getLogger(__name__)
 def test():
     return jsonify(ExperimentService.get_exp_value('haha'))
 
+@session_required
+def get_comment():
+    activity = request.values.get('activity')
+    data, status = AntiSpamRateService.judge_stop(request.user_id, request)
+    if not status:
+        return fail(data)
+    return success(data)
 
 def hello():
     logger.error("hello, this is a mistake")
