@@ -75,25 +75,25 @@ class AntiSpamRateService(object):
         RATE_D = {
             ACCOST: {
                 RATE_KEY: [
-                    [ONE_MIN, 1, 10],
-                    [ONE_DAY, 2, 500],
-                    [ONE_DAY, 3]
+                    [ONE_MIN, 4, 10],
+                    [ONE_DAY, 8, 500],
+                    [ONE_DAY, 10]
                 ],
                 WORD_KEY: ['rate_conversation_diamonds', 'rate_conversation_stop']
             },
             FOLLOW: {
                 RATE_KEY: [
-                    [2 * ONE_MIN, 1, 10],
-                    [ONE_DAY, 2, 500],
-                    [ONE_DAY, 3]
+                    [2 * ONE_MIN, 4, 10],
+                    [ONE_DAY, 8, 500],
+                    [ONE_DAY, 10]
                 ],
                 WORD_KEY: ['rate_follow_diamonds', 'rate_follow_stop']
             },
             COMMENT: {
                 RATE_KEY: [
-                    [5 * ONE_MIN, 1, 10],
-                    [ONE_DAY, 2, 500],
-                    [ONE_DAY, 3]
+                    [5 * ONE_MIN, 4, 10],
+                    [ONE_DAY, 8, 500],
+                    [ONE_DAY, 10]
                 ],
                 WORD_KEY: ['rate_comment_diamonds', 'rate_commnet_stop']
             }
