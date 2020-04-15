@@ -62,7 +62,7 @@ class FeedService(object):
             return False
         status = Feed.objects(user_id=user_id, create_time__gte=judge_time).count() <= 3
         # if not status and setting.IS_DEV:
-        if not status:
+        if status:
             return True
         AntiSpamRateService.inform_spam(user_id)
         return status
