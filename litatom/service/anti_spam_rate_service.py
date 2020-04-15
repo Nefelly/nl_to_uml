@@ -101,7 +101,6 @@ class AntiSpamRateService(object):
     def out_of_times(cls, key, num):
         stop_num = redis_client.get(key)
         stop_num = 0 if not stop_num else int(stop_num)
-        print stop_num, num
         ''' 先判断 再往上加的  所以第二次 stop_num 为 1 第三次 为 2'''
         return stop_num >= num
 
@@ -171,5 +170,6 @@ class AntiSpamRateService(object):
             return cls._get_error_message(word), False
         redis_client.delete(cls.get_key(user_id, activity, cls.LEVEL_FIRST))
         if forbid_level == cls.LEVEL_SECCOND:
+            ''' 如果要第一级不清空 应该另外做判断'''
             redis_client.delete(cls.get_key(user_id, activity, cls.LEVEL_SECCOND))
         return None, True
