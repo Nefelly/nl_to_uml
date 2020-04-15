@@ -83,8 +83,10 @@ class AntiSpamRateService(object):
 
     @classmethod
     def _get_error_message(cls, word, diamonds=None):
-        res = FailedRateTooOften
         msg = GlobalizationService.get_region_word(word)
+        if diamonds is None:
+            return msg
+        res = FailedRateTooOften
         res.update({'message': msg})
         if diamonds is not None:
             res.update({'diamonds': diamonds})
