@@ -22,7 +22,8 @@ from ..const import (
 )
 from ..key import (
     REDIS_FEED_CACHE,
-    REDIS_FEED_LIKE_CACHE
+    REDIS_FEED_LIKE_CACHE,
+    REDIS_FEED_DISLIKE_CACHE
 )
 from ..redis import RedisClient
 
@@ -317,6 +318,119 @@ class FeedLike(Document):
                 else:
                     redis_client.srem(key, uid)
         return like_now
+
+class FeedDislike(Document):
+    DISLIKE_NUM_THRESHOLD = 500
+    PROTECT = 5
+    CACHED_TIME = 50 * ONE_MIN
+    feed_id = StringField(required=True)
+    uid = StringField(required=True)
+    create_time = DateTimeField(required=True, default=datetime.datetime.now)
+
+    @classmethod
+    def get_by_ids(cls, uid, feed_id):
+        return cls.objects(uid=uid, feed_id=feed_id).first()
+
+    @classmethod
+    def get_redis_key(cls, feed_id):
+        return REDIS_FEED_DISLIKE_CACHE.format(feed_id=feed_id)
+
+    @classmethod
+    def ensure_cache(cls, feed_id):
+        key = cls.get_redis_key(feed_id)
+        if not redis_client.exists(key):
+            uids = [e.uid for e in cls.objects(feed_id=feed_id)]
+            if uids:
+                redis_client.sadd(key, *uids)
+                redis_client.expire(key, cls.CACHED_TIME)
+            # 在没有值的键上补充一个占位符，避免redis优化自动删除该键导致重复建立
+            else:
+                redis_client.sadd(key, NAN)
+                redis_client.expire(key, cls.CACHED_TIME)
+
+    @classmethod
+    def in_dislike(cls, uid, feed_id, feed_dislike_num):
+        """
+        根据uid,feed_id，判断uid对feed_id是否dislike
+        1. 如果feed_dislike_num小于等于DISLIKE_NUM_THRESHOLD-PROTECT，必须缓存进redis
+        2. 如果feed_dislike_num已经大于等于DISLIKE_NUM_THRESHOLD,必须清除缓存
+        3. 如果feed_dislike_num介于(DISLIKE_NUM_THRESHOLD-PROTECT,DISLIKE_NUM_THRESHOLD)，暂不清除缓存，但是用db检索数据
+        """
+        key = cls.get_redis_key(feed_id)
+        if feed_dislike_num > cls.DISLIKE_NUM_THRESHOLD - cls.PROTECT:  # PROTECT 用来保护缓存不会因为dislike num 一上一下不断刷缓存
+            if feed_dislike_num >= cls.DISLIKE_NUM_THRESHOLD:
+                redis_client.delete(key)
+            obj = cls.get_by_ids(uid, feed_id)
+            return True if obj else False
+        cls.ensure_cache(feed_id)
+        return redis_client.sismember(key, uid)
+
+    @classmethod
+    def del_by_feedid(cls, feed_id):
+        cls.objects(feed_id=feed_id).delete()
+
+    # @classmethod
+    # def dislike(cls, uid, feed_id):
+    #     if not cls.get_by_ids(uid, feed_id):
+    #         obj = cls(uid=uid, feed_id=feed_id)
+    #         obj.save()
+    #     return True
+    #
+    # @classmethod
+    # def undislike(cls, uid, feed_id):
+    #     obj = cls.get_by_ids(uid, feed_id)
+    #     if obj:
+    #         obj.delete()
+    #         obj.save()
+    #         return True
+    #     return False
+
+    # def save(self, *args, **kwargs):
+    #     if getattr(self, 'user_id', ''):
+    #         self._disable_cache(str(self.user_id))
+    #     super(FeedDislike, self).save(*args, **kwargs)
+    #
+    # def delete(self, *args, **kwargs):
+    #     if getattr(self, 'user_id', ''):
+    #         self._disable_cache(str(self.user_id))
+    #     super(FeedDislike, self).delete(*args, **kwargs)
+
+    @classmethod
+    def reverse(cls, uid, feed_id, feed_dislike_num):
+        '''
+        返回最终是否是dislike
+        :param feed_dislike_num:
+        :param uid:
+        :param feed_id:
+        :return:
+        '''
+        obj = cls.get_by_ids(uid, feed_id)
+        if not obj:
+            obj = cls(uid=uid, feed_id=feed_id)
+            obj.save()
+            dislike_now = True
+        else:
+            obj.delete()
+            dislike_now = False
+        # 1. 如果feed_dislike_num >= DISLIKE_NUM_THRESHOLD，则无论结果如何，不必将数据缓存
+        # 2. 如果feed_dislike_num属于[DISLIKE_NUM_THRESHOLD-PROTECT,DISLIKE_NUM_THRESHOLD)，
+        #       在该feed已经被缓存的情况下，如果新增dislike则缓存该项，如果去掉dislike则移除缓存该项
+        # 3. 如果feed_dislike_num < DISLIKE_NUM_THRESHOLD - PROTECT,必须确保有缓存，然后更新缓存
+        if cls.DISLIKE_NUM_THRESHOLD > feed_dislike_num:
+            key = cls.get_redis_key(feed_id)
+            if cls.DISLIKE_NUM_THRESHOLD - cls.PROTECT <= feed_dislike_num:
+                if redis_client.exists(key):
+                    if dislike_now:
+                        redis_client.sadd(key, uid)
+                    else:
+                        redis_client.srem(key, uid)
+            else:
+                cls.ensure_cache(feed_id)
+                if dislike_now:
+                    redis_client.sadd(key, uid)
+                else:
+                    redis_client.srem(key, uid)
+        return dislike_now
 
 
 class FeedComment(Document):
