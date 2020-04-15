@@ -177,7 +177,6 @@ class FeedService(object):
 
     @classmethod
     def _del_from_feed_hq(cls, feed):
-        print "get innnn"
         redis_client.zrem(cls._redis_feed_region_key(REDIS_FEED_HQ_REGION), str(feed.id))
 
     @classmethod
@@ -191,6 +190,7 @@ class FeedService(object):
 
     @classmethod
     def remove_from_pub(cls, feed):
+        print "get innnn"
         cls._del_from_feed_pool(feed)
         cls._del_from_feed_hq(feed)
         if feed.should_remove_from_follow:
