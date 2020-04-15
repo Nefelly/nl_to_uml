@@ -369,32 +369,6 @@ class FeedDislike(Document):
     def del_by_feedid(cls, feed_id):
         cls.objects(feed_id=feed_id).delete()
 
-    # @classmethod
-    # def dislike(cls, uid, feed_id):
-    #     if not cls.get_by_ids(uid, feed_id):
-    #         obj = cls(uid=uid, feed_id=feed_id)
-    #         obj.save()
-    #     return True
-    #
-    # @classmethod
-    # def undislike(cls, uid, feed_id):
-    #     obj = cls.get_by_ids(uid, feed_id)
-    #     if obj:
-    #         obj.delete()
-    #         obj.save()
-    #         return True
-    #     return False
-
-    # def save(self, *args, **kwargs):
-    #     if getattr(self, 'user_id', ''):
-    #         self._disable_cache(str(self.user_id))
-    #     super(FeedDislike, self).save(*args, **kwargs)
-    #
-    # def delete(self, *args, **kwargs):
-    #     if getattr(self, 'user_id', ''):
-    #         self._disable_cache(str(self.user_id))
-    #     super(FeedDislike, self).delete(*args, **kwargs)
-
     @classmethod
     def reverse(cls, uid, feed_id, feed_dislike_num):
         '''
