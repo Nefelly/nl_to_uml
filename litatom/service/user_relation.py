@@ -11,7 +11,8 @@ from ..const import (
 )
 from ..service import (
     HuanxinService,
-    FollowingFeedService
+    FollowingFeedService,
+    AntiSpamRateService
 )
 from ..model import (
     UserModel
@@ -37,6 +38,9 @@ class FollowService(object):
         block_msg = BlockService.get_block_msg(user_id, followed_user_id)
         if block_msg:
             return block_msg, False
+        data, status = AntiSpamRateService.judge_stop(user_id, AntiSpamRateService.FOLLOW)
+        if not status:
+            return data, False
         status = Follow.follow(user_id, followed_user_id)
         if status:
             cls._on_follow(user_id, followed_user_id)

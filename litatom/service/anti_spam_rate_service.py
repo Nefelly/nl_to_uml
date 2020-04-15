@@ -37,6 +37,7 @@ class AntiSpamRateService(object):
     LEVEL_FIRST = 1
     LEVEL_SECCOND = 2
     LEVEL_STOP = 3
+    TIME_TO_LIVE = ONE_DAY
 
     '''
     5min  停止次数 及钻石数 

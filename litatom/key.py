@@ -32,6 +32,7 @@ REDIS_SHARE_LIMIT = 'share_limit:{user_id}'
 # spam rate
 REDIS_SPAMED = 'spam:{user_id}'
 REDIS_SPAM_RATE_CONTROL = 'spam:{user_interval_type}'
+REDIS_USER_FEED_COMMENT = 'feed_comment:{user_id_feed}'
 
 # cache
 REDIS_USER_CACHE = 'user_cache:{user_id}'
