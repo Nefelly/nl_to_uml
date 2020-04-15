@@ -52,8 +52,10 @@ def clear_keys():
     DebugHelperService.clear_keys()
     return success()
 
+
 def batch_create_login():
     return success(DebugHelperService.batch_create_login())
+
 
 def batch_anoy_match_start():
     return success(DebugHelperService.batch_anoy_match_start())

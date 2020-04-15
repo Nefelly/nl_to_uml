@@ -193,6 +193,12 @@ class AntiSpamRateService(object):
         return 0
 
     @classmethod
+    def remove_keys(cls, user_id):
+        for _ in [cls.ACCOST, cls.COMMENT, cls.FOLLOW]:
+            for l in [cls.LEVEL_STOP, cls.LEVEL_SECCOND, cls.LEVEL_FIRST]:
+                redis_client.delete(cls.get_key(user_id, _, cls.LEVEL_FIRST))
+
+    @classmethod
     def reset_spam_type(cls, user_id, activity, diamonds=0):
         forbid_level = cls.get_forbid_level(user_id, activity)
         if forbid_level == cls.LEVEL_STOP:
