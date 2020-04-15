@@ -159,6 +159,7 @@ class FeedService(object):
 
     @classmethod
     def _del_from_feed_pool(cls, feed):
+        print cls._redis_feed_region_key(REDIS_FEED_SQUARE_REGION)
         redis_client.zrem(cls._redis_feed_region_key(REDIS_FEED_SQUARE_REGION), str(feed.id))
 
     @classmethod
