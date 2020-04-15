@@ -3,6 +3,7 @@ import json
 import time
 import traceback
 import logging
+from hendrix.conf import setting
 from ..const import (
     ONE_MIN,
     ONE_DAY,
@@ -69,6 +70,34 @@ class AntiSpamRateService(object):
             WORD_KEY: ['rate_comment_diamonds', 'rate_commnet_stop']
         }
     }
+
+    if setting.IS_DEV:
+        RATE_D = {
+            ACCOST: {
+                RATE_KEY: [
+                    [ONE_MIN, 1, 10],
+                    [ONE_DAY, 2, 500],
+                    [ONE_DAY, 3]
+                ],
+                WORD_KEY: ['rate_conversation_diamonds', 'rate_conversation_stop']
+            },
+            FOLLOW: {
+                RATE_KEY: [
+                    [2 * ONE_MIN, 1, 10],
+                    [ONE_DAY, 2, 500],
+                    [ONE_DAY, 3]
+                ],
+                WORD_KEY: ['rate_follow_diamonds', 'rate_follow_stop']
+            },
+            COMMENT: {
+                RATE_KEY: [
+                    [5 * ONE_MIN, 1, 10],
+                    [ONE_DAY, 2, 500],
+                    [ONE_DAY, 3]
+                ],
+                WORD_KEY: ['rate_comment_diamonds', 'rate_commnet_stop']
+            }
+        }
 
     @classmethod
     def inform_spam(cls, user_id):
