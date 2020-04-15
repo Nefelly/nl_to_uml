@@ -366,8 +366,15 @@ class UserService(object):
         return True
 
     @classmethod
-    def _huanxin_ids_by_region(cls, region):
+    def _huanxin_ids_by_region(cls, region, number=0):
         locs = GlobalizationService.KNOWN_REGION_LOC.get(region, '')
+        if number:
+            huanxin_ids = []
+            loc = locs[0] if isinstance(locs, list) else locs
+            for _ in User.objects(country=loc).order_by('-create_time').limit(num):
+                if _.huanxin.user_id:
+                    huanxin_ids.append(_.huanxin.user_id)
+            return huanxin_ids
         all_known_locs = []
         for _ in GlobalizationService.KNOWN_REGION_LOC.values():
             if isinstance(_, list):
