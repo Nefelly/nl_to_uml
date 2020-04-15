@@ -114,6 +114,7 @@ class AntiSpamRateService(object):
     @classmethod
     def _get_error_message(cls, word, diamonds=None):
         msg = GlobalizationService.get_region_word(word)
+        print word, msg
         if diamonds is None:
             return msg
         res = FailedRateTooOften
