@@ -373,10 +373,10 @@ class FeedService(object):
             num = 1 if dislike_now else -1
         feed.chg_dislike_num(num)
         if feed.user_id != user_id:
-            if dislike_now:
+            if is_dislike:
                 if feed.self_high:
                     cls.remove_from_pub(feed)
-        return {'dislike_now': dislike_now}, True
+        return {'dislike_now': is_dislike}, True
 
     @classmethod
     def comment_feed(cls, user_id, feed_id, content, comment_id=None):
