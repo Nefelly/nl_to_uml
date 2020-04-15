@@ -137,7 +137,7 @@ class FeedService(object):
 
             disliked = False
             if feed.dislike_num:
-                disliked = FeedLike.in_dislike(visitor_user_id, str(feed.id), feed.dislike_num)
+                disliked = FeedDisike.in_dislike(visitor_user_id, str(feed.id), feed.dislike_num)
             res['disliked'] = disliked
         return res
 
