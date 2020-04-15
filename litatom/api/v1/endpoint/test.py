@@ -44,6 +44,7 @@ def test_anti():
         return fail(data)
     return success(data)
 
+
 def hello():
     logger.error("hello, this is a mistake")
     assert False
