@@ -156,7 +156,7 @@ class AntiSpamRateService(object):
         if forbid_level:
             if forbid_level == cls.LEVEL_STOP:
                 return MAX_DIAMONDS
-            return cls.RATE_D.get(activity)[forbid_level - 1][2]
+            return cls.RATE_D.get(activity).get(cls.RATE_KEY)[forbid_level - 1][2]
         return 0
 
     @classmethod
