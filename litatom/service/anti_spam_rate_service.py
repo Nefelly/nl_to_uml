@@ -16,7 +16,7 @@ from ..service import (
 )
 from ..key import (
     REDIS_SPAMED,
-    SPAM_RATE_CONTROL
+    REDIS_SPAM_RATE_CONTROL
 )
 
 from ..redis import RedisClient
@@ -93,7 +93,7 @@ class AntiSpamRateService(object):
     @classmethod
     def get_key(cls, user_id, activity, level):
         user_interval_type_stop = '%s_%s_%d' % (user_id, activity, level)
-        return REDIS_SPAMED.format(user_interval_type=user_interval_type_stop)
+        return REDIS_SPAM_RATE_CONTROL.format(user_interval_type=user_interval_type_stop)
 
     @classmethod
     def out_of_times(cls, key, num):
