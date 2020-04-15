@@ -53,7 +53,7 @@ class AntiSpamRateService(object):
         },
         FOLLOW:  {
             RATE_KEY: [
-                [5 * ONE_MIN, 2, 10],
+                [2 * ONE_MIN, 2, 10],
                 [ONE_DAY, 5, 500],
                 [ONE_DAY, 10]
             ],
@@ -123,6 +123,7 @@ class AntiSpamRateService(object):
         stop_key = cls.get_key(user_id, activity, cls.LEVEL_STOP)
         if cls.out_of_times(stop_key, stop_num):
             cls.inform_spam(user_id)
+            print 'here'
             return cls._get_error_message(stop_word), False
 
         second_key = cls.get_key(user_id, activity, cls.LEVEL_SECCOND)
