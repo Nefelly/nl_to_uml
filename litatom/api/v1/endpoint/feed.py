@@ -118,12 +118,14 @@ def like_feed(feed_id):
         return success(data)
     return fail(data)
 
+
 @session_finished_required
 def dislike_feed(feed_id):
     data, status = FeedService.dislike_feed(request.user_id, feed_id)
     if status:
         return success(data)
     return fail(data)
+
 
 @session_finished_required
 def comment_feed(feed_id):
