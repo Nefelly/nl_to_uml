@@ -177,6 +177,7 @@ class FeedService(object):
 
     @classmethod
     def _del_from_feed_hq(cls, feed):
+        print "get innnn"
         redis_client.zrem(cls._redis_feed_region_key(REDIS_FEED_HQ_REGION), str(feed.id))
 
     @classmethod
@@ -369,8 +370,8 @@ class FeedService(object):
             if is_dislike:
                 return None, True
         else:
-            dislike_now = FeedDislike.reverse(user_id, feed_id, feed.dislike_num)
-            num = 1 if dislike_now else -1
+            is_dislike = FeedDislike.reverse(user_id, feed_id, feed.dislike_num)
+            num = 1 if is_dislike else -1
         feed.chg_dislike_num(num)
         if feed.user_id != user_id:
             if is_dislike:
