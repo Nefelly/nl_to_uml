@@ -145,7 +145,7 @@ class AntiSpamRateService(object):
     def get_forbid_level(cls, user_id, activity):
         for el in [cls.LEVEL_STOP, cls.LEVEL_SECCOND, cls.LEVEL_FIRST]:
             key = cls.get_key(user_id, activity, el)
-            num = cls.RATE_D.get(activity)[el - 1][1]
+            num = cls.RATE_D.get(activity).get(cls.RATE_KEY)[el - 1][1]
             if cls.out_of_times(key, num):
                 return el
         return None
