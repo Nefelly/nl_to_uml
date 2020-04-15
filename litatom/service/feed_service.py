@@ -412,6 +412,7 @@ class FeedService(object):
             feed_comment_cache = REDIS_USER_FEED_COMMENT.format(user_id_feed=user_id+feed_id)
             if not redis_client.get(feed_comment_cache):
                 data, status = AntiSpamRateService.judge_stop(user_id, AntiSpamRateService.COMMENT)
+                print '!' * 100, data
                 if not status:
                     return data, False
                 redis_client.set(feed_comment_cache, 1, AntiSpamRateService.TIME_TO_LIVE)
