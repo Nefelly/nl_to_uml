@@ -409,7 +409,7 @@ class UserService(object):
         if num >= 2000000:
             logger.error('you have too many users, you need to redesign this func')
             return False
-        huanxin_ids = cls._huanxin_ids_by_region(region, 3 * num)
+        huanxin_ids = cls._huanxin_ids_by_region(region, 3 * number)
         if number and number > 0:
             number = min(len(huanxin_ids), number)
             huanxin_ids = random.sample(huanxin_ids, number)
