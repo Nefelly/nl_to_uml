@@ -191,6 +191,7 @@ class FeedService(object):
 
     @classmethod
     def remove_from_pub(cls, feed):
+        request.user_id = feed.user_id
         print "get innnn"
         cls._del_from_feed_pool(feed)
         cls._del_from_feed_hq(feed)
