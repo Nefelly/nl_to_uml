@@ -42,6 +42,7 @@ from ..service import (
 from ..model import (
     Feed,
     FeedLike,
+    FeedDislike,
     FeedComment,
 )
 
@@ -50,6 +51,7 @@ redis_client = RedisClient()['lit']
 
 class FeedService(object):
     LATEST_TYPE = 'latest'
+
 
     @classmethod
     def should_add_to_square(cls, feed):
@@ -132,6 +134,11 @@ class FeedService(object):
             if feed.like_num:
                 liked = FeedLike.in_like(visitor_user_id, str(feed.id), feed.like_num)
             res['liked'] = liked
+
+            disliked = False
+            if feed.dislike_num:
+                disliked = FeedLike.in_dislike(visitor_user_id, str(feed.id), feed.dislike_num)
+            res['disliked'] = disliked
         return res
 
     @classmethod
@@ -180,6 +187,11 @@ class FeedService(object):
                 cls._add_to_feed_hq(str(feed.id))
 
     @classmethod
+    def remove_from_pub(cls, feed):
+        cls._del_from_feed_pool(feed)
+        cls._del_from_feed_hq(feed)
+
+    @classmethod
     def move_up_feed(cls, feed_id, ts):
         return True
         # score = redis_client.zscore(REDIS_FEED_SQUARE, feed_id)
@@ -213,6 +225,7 @@ class FeedService(object):
         cls._del_from_feed_pool(feed)
         cls._del_from_feed_hq(feed)
         FeedLike.del_by_feedid(feed_id)
+        FeedDislike.del_by_feedid(feed_id)
         FeedComment.objects(feed_id=feed_id).delete()
         feed.delete()
         MqService.push(REMOVE_EXCHANGE, {"feed_id": feed_id})
@@ -338,6 +351,28 @@ class FeedService(object):
                 cls.judge_add_to_feed_hq(feed)
                 UserMessageService.add_message(feed.user_id, user_id, UserMessageService.MSG_LIKE, feed_id)
         return {'like_now': like_now}, True
+
+    @classmethod
+    def dislike_feed(cls, user_id, feed_id, reverse=True):
+        feed = Feed.get_by_id(feed_id)
+        if not feed:
+            return 'wrong feed id', False
+        if feed.user_id == user_id:
+            return u'you can\'t dislike yourself.', False
+        num = 1
+        if not reverse:
+            is_dislike = FeedDislike.in_dislike(user_id, feed_id, feed.dislike_num)
+            if is_dislike:
+                return None, True
+        else:
+            dislike_now = FeedDislike.reverse(user_id, feed_id, feed.dislike_num)
+            num = 1 if dislike_now else -1
+        feed.chg_dislike_num(num)
+        if feed.user_id != user_id:
+            if dislike_now:
+                if feed.self_high:
+                    cls.remove_from_pub(feed)
+        return {'dislike_now': dislike_now}, True
 
     @classmethod
     def comment_feed(cls, user_id, feed_id, content, comment_id=None):

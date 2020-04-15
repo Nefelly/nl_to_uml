@@ -218,6 +218,7 @@ def report():
         feed_info, status_feed = FeedService.get_feed_info(None, feed_id)
         if not status_feed:
             return fail(feed_info)
+        FeedService.dislike_feed(user_id, feed_id, False)
         pics = feed_info['pics']
         data, status = ForbiddenService.resolve_report(user_id, reason, pics, target_user_id, feed_id)
     elif chat_record:

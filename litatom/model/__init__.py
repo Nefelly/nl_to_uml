@@ -5,6 +5,7 @@ from .block import (
 from .feed import (
     Feed,
     FeedLike,
+    FeedDislike,
     FeedComment,
     FollowingFeed
 )

@@ -36,14 +36,16 @@ class Feed(Document):
         'alias': 'db_alias',
 
     }
+    SELF_HIGH_NUM = 3
+    NOT_PUB_NUM = 2
 
     user_id = StringField(required=True)
     like_num = IntField(required=True, default=0)
+    dislike_num = IntField(required=True, default=0)
     comment_num = IntField(required=True, default=0)
     content = StringField()
     pics = ListField(default=[])
     audios = ListField(default=[])
-    self_high = BooleanField(default=False)
     create_time = IntField(required=True, default=int(time.time()))
 
     @classmethod
@@ -57,6 +59,10 @@ class Feed(Document):
     @classmethod
     def _disable_cache(cls, feed_id):
         redis_client.delete(REDIS_FEED_CACHE.format(feed_id=feed_id))
+
+    @property
+    def self_high(self):
+        return self.dislike_num >= self.NOT_PUB_NUM
 
     def save(self, *args, **kwargs):
         if getattr(self, 'id', ''):
@@ -78,6 +84,7 @@ class Feed(Document):
             'id': str(self.id),
             'user_id': self.user_id,
             'like_num': self.like_num,
+            'dislike_num': self.dislike_num,
             'comment_num': self.comment_num,
             'pics': self.pics if self.pics else [],
             'audios': self.audios if self.audios else [],
@@ -140,6 +147,12 @@ class Feed(Document):
         self.like_num += num
         if self.like_num < 0:
             self.like_num = 0
+        self.save()
+        
+    def chg_dislike_num(self, num=1):
+        self.dislike_num += num
+        if self.dislike_num < 0:
+            self.dislike_num = 0
         self.save()
 
     @classmethod
