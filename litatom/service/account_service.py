@@ -51,9 +51,9 @@ class AccountService(object):
     ACCOST_RESET = 'accost_reset'
     PALM_RESULT = 'palm_result'
     PRODUCT_INFOS = {
-        WEEK_MEMBER: 20 if not setting.IS_DEV else 1,
-        ONE_MORE_TIME: 1,
-        ACCELERATE: 1,
+        WEEK_MEMBER: 50 if not setting.IS_DEV else 1,
+        ONE_MORE_TIME: 5,
+        ACCELERATE: 5,
         ACCOST_RESET: 10,
         PALM_RESULT: 10
     }
