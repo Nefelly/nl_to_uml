@@ -79,7 +79,7 @@ class TrackActionService(object):
         uuid = request.uuid if request.uuid else ''
         contents = []
         for el in json_data:
-            raw = [('user_id', user_id), ('uuid', uuid)]
+            raw = [('user_id', user_id), ('uuid', uuid), ('loc', request.loc), ('version', request.version)]
             for k in el:
                 raw.append((k, str(el.get(k))))
             contents.append(raw)
