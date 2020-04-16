@@ -299,7 +299,10 @@ class FeedService(object):
                    'next_start': next_start
                }
         if start_ts >= MAX_TIME:
-            pinned_feed_info = cls._feed_info(cls.get_pinned_feed(user_id), visitor_user_id)
+            pinned_feed_info = {}
+            pinned_feed = cls.get_pinned_feed(user_id)
+            if pinned_feed and not pinned_feed.should_remove_from_follow:
+                pinned_feed_info = cls._feed_info(pinned_feed, visitor_user_id)
             res[pinned_key] = pinned_feed_info
         return res, True
 
