@@ -52,7 +52,6 @@ redis_client = RedisClient()['lit']
 class FeedService(object):
     LATEST_TYPE = 'latest'
 
-
     @classmethod
     def should_add_to_square(cls, feed):
         # return True
