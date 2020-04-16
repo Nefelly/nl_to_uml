@@ -191,10 +191,11 @@ class FeedService(object):
 
     @classmethod
     def remove_from_pub(cls, feed):
-        request.user_id = feed.user_id
-        print "get innnn"
+        back_region = request.region
+        request.region = GlobalizationService.get_region_by_user_id(feed.user_id)
         cls._del_from_feed_pool(feed)
         cls._del_from_feed_hq(feed)
+        request.region = back_region
         if feed.should_remove_from_follow:
             FollowingFeedService.remove_feed(feed)
 
