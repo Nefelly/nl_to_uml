@@ -295,7 +295,7 @@ class FeedService(object):
                    'has_next': has_next,
                    'next_start': next_start
                }
-        if start_ts == MAX_TIME:
+        if start_ts >= MAX_TIME:
             pinned_feed_info = cls._feed_info(cls.get_pinned_feed(user_id), visitor_user_id)
             if pinned_feed_info:
                 pinned_feed_info['pinned'] = True
