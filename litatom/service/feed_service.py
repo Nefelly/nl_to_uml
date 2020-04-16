@@ -285,6 +285,8 @@ class FeedService(object):
         next_start = -1
         feeds = Feed.objects(user_id=user_id, create_time__lte=start_ts).order_by('-create_time').limit(num + 1)
         feeds = list(feeds)
+        if visitor_user_id != user_id:
+            feeds = [el for el in feeds if not el.should_remove_from_follow]
         # feeds.reverse()   # 时间顺序错误
         has_next = False
         if len(feeds) == num + 1:
