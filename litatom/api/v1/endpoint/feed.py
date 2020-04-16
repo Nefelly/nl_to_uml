@@ -55,6 +55,19 @@ def delete_feed(feed_id):
         return fail(data)
     return success()
 
+@session_finished_required
+def pin_feed(feed_id):
+    data, status = FeedService.pin_feed(request.user_id, feed_id)
+    if not status:
+        return fail(data)
+    return success()
+
+@session_finished_required
+def unpin_feed(feed_id):
+    data, status = FeedService.unpin_feed(request.user_id, feed_id)
+    if not status:
+        return fail(data)
+    return success()
 
 def user_feeds(other_user_id):
     visitor_user_id = request.user_id

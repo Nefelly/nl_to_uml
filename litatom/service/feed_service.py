@@ -44,6 +44,7 @@ from ..model import (
     FeedLike,
     FeedDislike,
     FeedComment,
+    UserSetting
 )
 
 redis_client = RedisClient()['lit']
@@ -65,6 +66,28 @@ class FeedService(object):
             return True
         AntiSpamRateService.inform_spam(user_id)
         return status
+
+    @classmethod
+    def pin_feed(cls, user_id, feed_id):
+        user_setting = UserSetting.get_by_user_id(user_id)
+        user_setting.pinned_feed = feed_id
+        user_setting.save()
+        feed = Feed.get_by_id(feed_id)
+        if not feed:
+            return u'you should pin your own feed', False
+        return None, True
+
+    @classmethod
+    def unpin_feed(cls, user_id, feed_id=None):
+        user_setting = UserSetting.get_by_user_id(user_id)
+        if not user_setting:
+            return None, True
+        if feed_id:
+            if user_setting.pinned_feed != feed_id:
+                return u'your unpin feed_id is not right', False
+        user_setting.pinned_feed = ''
+        user_setting.save()
+        return None, True
 
     @classmethod
     def _on_add_feed(cls, feed):
@@ -239,9 +262,18 @@ class FeedService(object):
         return None, True
 
     @classmethod
+    def get_pinned_feed(cls, user_id):
+        user_setting = UserSetting.get_by_user_id(user_id)
+        if user_setting.pinned_feed:
+            return Feed.get_by_id(user_setting.pinned_feed)
+        return None
+
+    @classmethod
     def feeds_by_userid(cls, visitor_user_id, user_id, start_ts=MAX_TIME, num=10):
+        pinned_key = 'pinned'
         if request.ip_should_filter:
             return {
+                       pinned_key: {},
                        'feeds': [],
                        'has_next': False,
                        'next_start': -1
@@ -260,11 +292,15 @@ class FeedService(object):
             has_next = True
             next_start = feeds[-1].create_time
             feeds = feeds[:-1]
-        return {
+        res = {
                    'feeds': map(cls._feed_info, feeds, [visitor_user_id for el in feeds]),
                    'has_next': has_next,
                    'next_start': next_start
-               }, True
+               }
+        if start_ts == MAX_TIME:
+            pinned_feed_info = cls._feed_info(cls.get_pinned_feed(user_id), visitor_user_id)
+            res[pinned_key] = pinned_feed_info
+        return res, True
 
     @classmethod
     def _feeds_by_pool(cls, redis_key, user_id, start_p, num, pool_type=None):

@@ -193,6 +193,8 @@ b.add_url_rule('/lit/feed/comment/<feed_id>', 'feed-comment-feed', endpoint.feed
 b.add_url_rule('/lit/feed/del_comment/<comment_id>', 'feed-comment-delete', endpoint.feed.del_comment)
 b.add_url_rule('/lit/feed/comment/<feed_id>', 'feed-feed-comments', endpoint.feed.feed_comments)
 b.add_url_rule('/lit/feed/info/<feed_id>', 'feed-feed-info', endpoint.feed.feed_info)
+b.add_url_rule('/lit/feed/pin_feed/<feed_id>', 'feed-pin_feed', endpoint.feed.pin_feed)
+b.add_url_rule('/lit/feed/unpin_feed/<feed_id>', 'feed-unpin_feed', endpoint.feed.unpin_feed)
 
 # user_relations
 b.add_url_rule('/lit/block/<other_user_id>', 'block', endpoint.user_relations.block)
