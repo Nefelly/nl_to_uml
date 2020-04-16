@@ -47,5 +47,5 @@ def index():
     return current_app.send_static_file(send_file), 200, {'Content-Type': 'text/html; charset=utf-8'}
 
 def favicon():
-    return current_app.send_static_file('static/favicon.ico'), 200, {'Content-Type': 'text/html; charset=utf-8'}
+    return current_app.send_static_file('favicon.ico'), 200, {'Content-Type': 'text/html; charset=utf-8'}
 
