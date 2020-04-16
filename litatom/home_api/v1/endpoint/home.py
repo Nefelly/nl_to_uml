@@ -49,5 +49,5 @@ def index():
 
 
 def favicon():
-    return current_app.send_static_file('icon.png')
+    return current_app.send_static_file('icon.jpeg')
 
