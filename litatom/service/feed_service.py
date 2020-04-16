@@ -270,8 +270,10 @@ class FeedService(object):
 
     @classmethod
     def feeds_by_userid(cls, visitor_user_id, user_id, start_ts=MAX_TIME, num=10):
+        pinned_key = 'pinned'
         if request.ip_should_filter:
             return {
+                       pinned_key: {},
                        'feeds': [],
                        'has_next': False,
                        'next_start': -1
@@ -297,9 +299,7 @@ class FeedService(object):
                }
         if start_ts >= MAX_TIME:
             pinned_feed_info = cls._feed_info(cls.get_pinned_feed(user_id), visitor_user_id)
-            if pinned_feed_info:
-                pinned_feed_info['pinned'] = True
-            res['feeds'] = [pinned_feed_info] + res['feeds']
+            res[pinned_key] = pinned_feed_info
         return res, True
 
     @classmethod
