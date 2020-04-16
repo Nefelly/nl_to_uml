@@ -407,6 +407,7 @@ class FeedService(object):
             is_dislike = FeedDislike.in_dislike(user_id, feed_id, feed.dislike_num)
             if is_dislike:
                 return None, True
+            is_dislike = FeedDislike.reverse(user_id, feed_id, feed.dislike_num)
         else:
             is_dislike = FeedDislike.reverse(user_id, feed_id, feed.dislike_num)
             num = 1 if is_dislike else -1
