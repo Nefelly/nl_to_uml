@@ -287,7 +287,9 @@ def track_action():
 
 def track_network():
     data = request.json
-    data = data.get("track")
+    if not data or not data.get("track"):
+        return success()
+    data = data.get("track", [])
     stream = base64.decodestring(data)
     json_data = json.loads(zlib.decompress(stream, 16+zlib.MAX_WBITS))
     status = TrackActionService.batch_create_client_track(json_data)
