@@ -55,9 +55,9 @@ class AntiSpamRateService(object):
         },
         FOLLOW:  {
             RATE_KEY: [
-                [2 * ONE_MIN, 2, 10],
-                [ONE_DAY, 5, 500],
-                [ONE_DAY, 10]
+                [2 * ONE_MIN, 10, 10],
+                [ONE_DAY, 50, 500],
+                [ONE_DAY, 200]
             ],
             WORD_KEY: ['rate_follow_diamonds', 'rate_follow_stop']
         },

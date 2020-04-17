@@ -87,6 +87,6 @@ class AccostService(object):
 
     @classmethod
     def record_accost(cls, user_id, session_id, loc, version):
-        contents = [('action', 'accost'),('location',loc),('remark', 'accost_pass'),('session_id', str(session_id)),
-                    ('user_id', str(user_id)),('version',version)]
+        contents = [('action', 'accost'), ('location', loc), ('remark', 'accost_pass'), ('session_id', str(session_id)),
+                    ('user_id', str(user_id)), ('version', version)]
         AliLogService.put_logs(contents)
