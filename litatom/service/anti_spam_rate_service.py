@@ -247,4 +247,5 @@ class AntiSpamRateService(object):
             activity = '%s_%s' % (activity, 'reset')
         contents = [('action', 'spam_rate_control'), ('location', loc), ('user_id', str(user_id)), ('version', version),
                     ('activity_level', '%s_%d' % (activity, stop_level))]
+        print contents
         AliLogService.put_logs(contents)
