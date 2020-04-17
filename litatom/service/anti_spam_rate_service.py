@@ -150,7 +150,6 @@ class AntiSpamRateService(object):
         stop_num = redis_client.get(key)
         stop_num = 0 if not stop_num else int(stop_num)
         ''' 先判断 再往上加的  所以第二次 stop_num 为 1 第三次 为 2'''
-        print num, stop_num, '*' * 100
         return stop_num == num
 
     @classmethod
@@ -248,5 +247,4 @@ class AntiSpamRateService(object):
             activity = '%s_%s' % (activity, 'reset')
         contents = [('action', 'spam_rate_control'), ('location', loc), ('user_id', str(user_id)), ('version', version),
                     ('activity_level', '%s_%d' % (activity, stop_level))]
-        print contents, '!' * 100
         AliLogService.put_logs(contents)
