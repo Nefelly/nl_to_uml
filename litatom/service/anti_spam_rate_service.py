@@ -212,6 +212,7 @@ class AntiSpamRateService(object):
         if forbid_level == cls.LEVEL_STOP:
             word = cls.RATE_D.get(activity)[cls.WORD_KEY][1]
             return cls._get_error_message(word), False
+        cls.record_over(user_id, activity + 'reset', forbid_level, request.loc, request.version)
         redis_client.delete(cls.get_key(user_id, activity, cls.LEVEL_FIRST))
         if forbid_level == cls.LEVEL_SECCOND:
             ''' 如果要第一级不清空 应该另外做判断'''
@@ -222,6 +223,6 @@ class AntiSpamRateService(object):
     def record_over(cls, user_id, activity, stop_level, loc, version):
         loc = '' if not loc else loc
         version = '' if not version else version
-        contents = [('action', 'spam_rate_control'), ('location', loc), ('remark', 'accost_pass'),
-                    ('user_id', str(user_id)), ('version', version), ('activity_level', '%s_%d' % (activity, stop_level))]
+        contents = [('action', 'spam_rate_control'), ('location', loc), ('user_id', str(user_id)), ('version', version),
+                    ('activity_level', '%s_%d' % (activity, stop_level))]
         AliLogService.put_logs(contents)
