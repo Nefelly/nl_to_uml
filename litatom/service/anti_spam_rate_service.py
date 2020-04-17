@@ -9,11 +9,15 @@ from ..const import (
     ONE_DAY,
     MAX_DIAMONDS
 )
+from flask import (
+    request
+)
 from ..error import (
     FailedRateTooOften
 )
 from ..service import (
-    GlobalizationService
+    GlobalizationService,
+    AliLogService
 )
 from ..key import (
     REDIS_SPAMED,
@@ -157,16 +161,19 @@ class AntiSpamRateService(object):
         stop_key = cls.get_key(user_id, activity, cls.LEVEL_STOP)
         if cls.out_of_times(stop_key, stop_num):
             cls.inform_spam(user_id)
+            cls.record_over(user_id, activity, cls.LEVEL_STOP, request.loc, request.version)
             return cls._get_error_message(stop_word), False
 
         second_key = cls.get_key(user_id, activity, cls.LEVEL_SECCOND)
         if cls.out_of_times(second_key, second_stop):
             cls.inform_spam(user_id)
+            cls.record_over(user_id, activity, cls.LEVEL_SECCOND, request.loc, request.version)
             return cls._get_error_message(diamond_word, second_diamonds), False
 
         first_key = cls.get_key(user_id, activity, cls.LEVEL_FIRST)
         if cls.out_of_times(first_key, first_stop):
             cls.inform_spam(user_id)
+            cls.record_over(user_id, activity, cls.LEVEL_FIRST, request.loc, request.version)
             return cls._get_error_message(diamond_word, first_diamonds), False
 
         '''增加次数'''
@@ -210,3 +217,9 @@ class AntiSpamRateService(object):
             ''' 如果要第一级不清空 应该另外做判断'''
             redis_client.delete(cls.get_key(user_id, activity, cls.LEVEL_SECCOND))
         return None, True
+
+    @classmethod
+    def record_over(cls, user_id, activity, stop_level, loc, version):
+        contents = [('action', 'spam_rate_control'), ('location', loc), ('remark', 'accost_pass'),
+                    ('user_id', str(user_id)), ('version', version), ('activity_level', '%s_%d' % (activity, stop_level))]
+        AliLogService.put_logs(contents)
