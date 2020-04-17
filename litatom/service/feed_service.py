@@ -269,10 +269,8 @@ class FeedService(object):
 
     @classmethod
     def feeds_by_userid(cls, visitor_user_id, user_id, start_ts=MAX_TIME, num=10):
-        pinned_key = 'pinned'
         if request.ip_should_filter:
             return {
-                       pinned_key: {},
                        'feeds': [],
                        'has_next': False,
                        'next_start': -1
@@ -304,7 +302,8 @@ class FeedService(object):
             ''' 自high的不能置顶'''
             if pinned_feed and not pinned_feed.should_remove_from_follow:
                 pinned_feed_info = cls._feed_info(pinned_feed, visitor_user_id)
-            res[pinned_key] = pinned_feed_info
+            if pinned_feed_info:
+                res['pinned'] = pinned_feed_info
         return res, True
 
     @classmethod
