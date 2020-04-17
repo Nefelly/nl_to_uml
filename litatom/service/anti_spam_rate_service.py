@@ -154,8 +154,6 @@ class AntiSpamRateService(object):
 
     @classmethod
     def judge_stop(cls, user_id, activity):
-
-
         def incr_key(key, interval):
             v = redis_client.incr(key)
             if v == 1:
