@@ -64,7 +64,7 @@ class FeedService(object):
         # if not status and setting.IS_DEV:
         if status:
             return True
-        AntiSpamRateService.inform_spam(user_id)
+        AntiSpamRateService.inform_spam(user_id, 'feed_over')
         return status
 
     @classmethod

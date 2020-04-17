@@ -21,7 +21,8 @@ from ..service import (
 )
 from ..key import (
     REDIS_SPAMED,
-    REDIS_SPAM_RATE_CONTROL
+    REDIS_SPAM_RATE_CONTROL,
+    REDIS_SPAMED_INFORMED
 )
 
 from ..redis import RedisClient
@@ -43,6 +44,7 @@ class AntiSpamRateService(object):
     LEVEL_SECCOND = 2
     LEVEL_STOP = 3
     TIME_TO_LIVE = ONE_DAY
+    EVER_SPAMED = 3 * ONE_DAY
 
     '''
     5min  停止次数 及钻石数 
@@ -104,10 +106,15 @@ class AntiSpamRateService(object):
         }
 
     @classmethod
-    def inform_spam(cls, user_id):
+    def inform_spam(cls, user_id, activity=None):
         '''告知用户曾经被频控过'''
         key = REDIS_SPAMED.format(user_id=user_id)
-        redis_client.set(key, 1, 3 * ONE_DAY)
+        redis_client.set(key, 1, cls.EVER_SPAMED)
+        if activity:
+            spam_informed_key = REDIS_SPAMED_INFORMED.format(user_id_activity=user_id + activity)
+            if not redis_client.get(spam_informed_key):
+                cls.record_over(user_id, activity, 0)
+                redis_client.set(spam_informed_key, 1, cls.EVER_SPAMED)
 
     @classmethod
     def is_spamed_recent(cls, user_id):
@@ -140,6 +147,13 @@ class AntiSpamRateService(object):
         return stop_num >= num
 
     @classmethod
+    def just_out_times(cls, key, num):
+        stop_num = redis_client.get(key)
+        stop_num = 0 if not stop_num else int(stop_num)
+        ''' 先判断 再往上加的  所以第二次 stop_num 为 1 第三次 为 2'''
+        return stop_num == num + 1
+
+    @classmethod
     def judge_stop(cls, user_id, activity):
 
 
@@ -161,19 +175,26 @@ class AntiSpamRateService(object):
         stop_key = cls.get_key(user_id, activity, cls.LEVEL_STOP)
         if cls.out_of_times(stop_key, stop_num):
             cls.inform_spam(user_id)
-            cls.record_over(user_id, activity, cls.LEVEL_STOP, request.loc, request.version)
+            '''多次尝试 只记录一次'''
+            if cls.just_out_times(stop_key, stop_num):
+                cls.record_over(user_id, activity, cls.LEVEL_FIRST)
+                incr_key(stop_key, first_interval)
             return cls._get_error_message(stop_word), False
 
         second_key = cls.get_key(user_id, activity, cls.LEVEL_SECCOND)
         if cls.out_of_times(second_key, second_stop):
             cls.inform_spam(user_id)
-            cls.record_over(user_id, activity, cls.LEVEL_SECCOND, request.loc, request.version)
+            if cls.just_out_times(second_key, second_stop):
+                cls.record_over(user_id, activity, cls.LEVEL_SECCOND)
+                incr_key(second_key, second_interval)
             return cls._get_error_message(diamond_word, second_diamonds), False
 
         first_key = cls.get_key(user_id, activity, cls.LEVEL_FIRST)
         if cls.out_of_times(first_key, first_stop):
             cls.inform_spam(user_id)
-            cls.record_over(user_id, activity, cls.LEVEL_FIRST, request.loc, request.version)
+            if cls.just_out_times(first_key, first_stop):
+                cls.record_over(user_id, activity, cls.LEVEL_FIRST)
+                incr_key(first_key, first_interval)
             return cls._get_error_message(diamond_word, first_diamonds), False
 
         '''增加次数'''
@@ -212,7 +233,7 @@ class AntiSpamRateService(object):
         if forbid_level == cls.LEVEL_STOP:
             word = cls.RATE_D.get(activity)[cls.WORD_KEY][1]
             return cls._get_error_message(word), False
-        cls.record_over(user_id, activity + 'reset', forbid_level, request.loc, request.version)
+        # cls.record_over(user_id, activity, forbid_level, request.loc, request.version, reset = True)
         redis_client.delete(cls.get_key(user_id, activity, cls.LEVEL_FIRST))
         if forbid_level == cls.LEVEL_SECCOND:
             ''' 如果要第一级不清空 应该另外做判断'''
@@ -220,9 +241,11 @@ class AntiSpamRateService(object):
         return None, True
 
     @classmethod
-    def record_over(cls, user_id, activity, stop_level, loc, version):
-        loc = '' if not loc else loc
-        version = '' if not version else version
+    def record_over(cls, user_id, activity, stop_level, reset=False):
+        loc = '' if not request.loc else request.loc
+        version = '' if not request.version else request.version
+        if reset:
+            activity = '%s_%s' % (activity, 'reset')
         contents = [('action', 'spam_rate_control'), ('location', loc), ('user_id', str(user_id)), ('version', version),
                     ('activity_level', '%s_%d' % (activity, stop_level))]
         AliLogService.put_logs(contents)
