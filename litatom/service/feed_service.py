@@ -263,7 +263,7 @@ class FeedService(object):
     @classmethod
     def get_pinned_feed(cls, user_id):
         user_setting = UserSetting.get_by_user_id(user_id)
-        if user_setting.pinned_feed:
+        if user_setting and user_setting.pinned_feed:
             return Feed.get_by_id(user_setting.pinned_feed)
         return None
 
