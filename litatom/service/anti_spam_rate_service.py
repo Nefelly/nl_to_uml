@@ -220,6 +220,8 @@ class AntiSpamRateService(object):
 
     @classmethod
     def record_over(cls, user_id, activity, stop_level, loc, version):
+        loc = '' if not loc else loc
+        version = '' if not version else version
         contents = [('action', 'spam_rate_control'), ('location', loc), ('remark', 'accost_pass'),
                     ('user_id', str(user_id)), ('version', version), ('activity_level', '%s_%d' % (activity, stop_level))]
         AliLogService.put_logs(contents)
