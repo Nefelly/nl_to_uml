@@ -471,6 +471,7 @@ class DiamStatService(object):
         for item in list:
             resp = AliLogService.get_log_atom(from_time=from_time, to_time=to_time, query=list[item],
                                               project=project, logstore=logstore)
+            print 'hhhhhh'
             try:
                 for log in resp.logs:
                     contents = log.get_contents()
