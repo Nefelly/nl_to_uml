@@ -27,7 +27,8 @@ from ..const import (
     TYPE_VOICE_TENCENT,
     TYPE_VOICE_AGORA,
     CODE_PRIOR_VOICE,
-    ALL_FILTER
+    ALL_FILTER,
+    PLATFORM_IOS
 )
 from ..service import (
     GlobalizationService,
@@ -74,7 +75,7 @@ class VoiceMatchService(MatchService):
         if not status:
             return res, status
         voice_type = request.args.get('voice_type', None)
-        if request.version < '2.6.6':
+        if request.version < '2.6.6' and request.platform != PLATFORM_IOS:
             return res, status
         if voice_type:
             redis_client.set(REDIS_VOICE_SDK_TYPE.format(user_id=user_id), voice_type, ex=cls.TOTAL_WAIT)
