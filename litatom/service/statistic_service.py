@@ -473,14 +473,15 @@ class DiamStatService(object):
             resp = AliLogService.get_log_atom(from_time=from_time, to_time=to_time, query=list[item],
                                               project=project, logstore=logstore)
             try:
-                for log in resp.logs:
-                    contents = log.get_contents()
-                    res = contents['res']
-                    if not res or res == 'null':
-                        res = 0
-            # except KeyError or AttributeError:
-            except Exception as e:
-                print e
+                if resp:
+                    for log in resp.logs:
+                        contents = log.get_contents()
+                        res = contents['res']
+                        if not res or res == 'null':
+                            res = 0
+                else:
+                    res = 0
+            except KeyError or AttributeError:
                 res = 0
             finally:
                 data.append((item, str(res)))

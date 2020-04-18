@@ -106,8 +106,11 @@ class AliLogService(object):
         logitemList = []  # LogItem list
         logItem = LogItem()
         logItem.set_time(int(time()))
-        if request.platform:
-            contents.append(('platform', request.platform))
+        try:
+            if request.platform:
+                contents.append(('platform', request.platform))
+        except:
+            pass
         logItem.set_contents(contents)
         logitemList.append(logItem)
         cls._put_logs_atom(logitemList, project, logstore, topic, source, client)
