@@ -40,6 +40,7 @@ class ForbiddenService(object):
     FORBID_THRESHOLD = 10
     DEFAULT_SYS_FORBID_TIME = 3 * ONE_DAY
     COMPENSATION_PER_TEN_FOLLOWER = 2
+    COMPENSATION_UPPER_THRESHOLD = 10
 
     @classmethod
     def check_spam_word(cls, word, user_id):
@@ -147,7 +148,8 @@ class ForbiddenService(object):
         """根据用户粉丝数量，获得一些补偿违规积分，避免高价值用户被举报封号"""
         followers = UserService.get_followers_by_uid(user_id)
         res = floor(followers / 10) * cls.COMPENSATION_PER_TEN_FOLLOWER
-        return res if res >= 0 else 0
+        res = res if res >= 0 else 0
+        return res if res <= cls.COMPENSATION_UPPER_THRESHOLD else cls.COMPENSATION_UPPER_THRESHOLD
 
     @classmethod
     def is_high_value_user(cls, user_id):
