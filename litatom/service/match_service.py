@@ -119,6 +119,8 @@ class MatchService(object):
             anoy_gender_key = cls.MATCH_KEY_BY_REGION_GENDER(cls.MATCH_TYPE, gender)
         else:
             anoy_gender_key = cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender)
+        if ExperimentService.get_exp_value('match_strategy') == 'delay':
+            int_time = int_time + 15
         redis_client.zadd(anoy_gender_key, {fake_id: int_time})
 
     @classmethod
@@ -511,6 +513,7 @@ class MatchService(object):
         redis_client.set(cls.TYPE_UID_FAKE_ID.format(user_id=user_id), fake_id, ex=cls.TOTAL_WAIT)
 
         cls._add_to_match_pool(gender, fake_id, user_id)
+
 
         # 进入匹配过期
         redis_client.set(cls.TYPE_FAKE_START.format(fake_id=fake_id), int(time.time()), cls.MATCH_WAIT)
