@@ -122,7 +122,7 @@ class MatchService(object):
         print "get in", '!' * 100, ExperimentService.get_exp_value('match_strategy')
         if ExperimentService.get_exp_value('match_strategy') == 'delay':
             print "get in", '!' * 100
-            int_time = int_time + 15
+            int_time = int_time + 100
         redis_client.zadd(anoy_gender_key, {fake_id: int_time})
 
     @classmethod
