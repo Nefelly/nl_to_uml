@@ -119,9 +119,9 @@ class MatchService(object):
             anoy_gender_key = cls.MATCH_KEY_BY_REGION_GENDER(cls.MATCH_TYPE, gender)
         else:
             anoy_gender_key = cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender)
-        print "get in", '!' * 100, ExperimentService.get_exp_value('match_strategy')
         if ExperimentService.get_exp_value('match_strategy') == 'delay':
             int_time = int_time + 100
+            print "get in", '!' * 100, ExperimentService.get_exp_value('match_strategy'), int_time
         redis_client.zadd(anoy_gender_key, {fake_id: int_time})
 
     @classmethod
@@ -302,6 +302,7 @@ class MatchService(object):
                     return None, False
         choose_gender = other_gender if not request.is_homo else gender
         choose_max_time = int_time  # MAX_TIME
+        print choose_max_time, '*' * 100
         accelerate_fakeids = redis_client.zrangebyscore(cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, choose_gender), judge_time + 3, MAX_TIME, 0, cls.MAX_CHOOSE_NUM)
         other_fakeids = redis_client.zrangebyscore(cls.MATCH_KEY_BY_REGION_GENDER(cls.MATCH_TYPE, choose_gender), judge_time + 3, choose_max_time, 0, cls.MAX_CHOOSE_NUM)
         if request.is_homo:
