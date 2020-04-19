@@ -63,9 +63,13 @@ class AccostService(object):
                 return False
 
         if ExperimentService.get_exp_value('accost') == 'limit':
-            key = REDIS_EXP_ACCOST.format(user_id=user_id)
-            num = redis_client.incr(key)
-            
+            exp_key = REDIS_EXP_ACCOST.format(user_id=user_id)
+            num = redis_client.incr(exp_key)
+            if num == 1:
+                redis_client.expire(exp_key, ONE_DAY)
+            if num > 5:
+                return cls.ACCOST_NEED_VIDEO
+            return cls.ACCOST_PASS
 
         key = REDIS_ACCOST_RATE.format(user_id=user_id)
         rate = cls.ACCOST_RATE - 1  # the first time is used
@@ -92,6 +96,8 @@ class AccostService(object):
     def reset_accost(cls, user_id, data=None):
         key = REDIS_ACCOST_RATE.format(user_id=user_id)
         redis_client.set(key, cls.ACCOST_RATE, cls.ACCOST_INTER)
+        if ExperimentService.get_exp_value('accost') == 'limit':
+            redis_client.delete(REDIS_EXP_ACCOST.format(user_id=user_id))
         return None, True
 
     @classmethod
