@@ -292,6 +292,7 @@ class MatchService(object):
             redis_client.delete(matched_key)
         int_time = int(time.time())
         if ExperimentService.get_exp_value('match_strategy') == 'delay':
+            print redis_client.zscore(cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender), fake_id)
             if redis_client.zscore(cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender), fake_id) > int_time:
                 print 'fuck' * 100
                 return None, False
