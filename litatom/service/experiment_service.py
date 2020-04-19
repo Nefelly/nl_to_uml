@@ -6,7 +6,7 @@ import logging
 from flask import (
     request
 )
-from hendrix_conf import setting
+from hendrix.conf import setting
 from ..key import (
     REDIS_EXP
 )
