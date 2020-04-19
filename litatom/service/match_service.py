@@ -297,10 +297,10 @@ class MatchService(object):
             if other_cnt == 1:
                 if my_cnt > 1:
                     return None, False
-
         choose_gender = other_gender if not request.is_homo else gender
+        choose_max_time = int_time  # MAX_TIME
         accelerate_fakeids = redis_client.zrangebyscore(cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, choose_gender), judge_time + 3, MAX_TIME, 0, cls.MAX_CHOOSE_NUM)
-        other_fakeids = redis_client.zrangebyscore(cls.MATCH_KEY_BY_REGION_GENDER(cls.MATCH_TYPE, choose_gender), judge_time + 3, MAX_TIME, 0, cls.MAX_CHOOSE_NUM)
+        other_fakeids = redis_client.zrangebyscore(cls.MATCH_KEY_BY_REGION_GENDER(cls.MATCH_TYPE, choose_gender), judge_time + 3, choose_max_time, 0, cls.MAX_CHOOSE_NUM)
         if request.is_homo:
             accelerate_fakeids = [el for el in accelerate_fakeids if el != fake_id]
             other_fakeids = [el for el in other_fakeids if el != fake_id]
@@ -409,7 +409,6 @@ class MatchService(object):
         now_date = now_date_key()
         match_left_key = cls.TYPE_USER_MATCH_LEFT.format(user_date=user_id + now_date)
         default_match_times = cls.MATCH_TMS   #  if not cls._is_member(user_id) else cls.FAKE_MAX_TIME
-        print ExperimentService.get_exp_value('times_left_exp'), '!' * 100
         if ExperimentService.get_exp_value('times_left_exp') == 'less':
             default_match_times = 5
         redis_client.setnx(match_left_key, default_match_times)

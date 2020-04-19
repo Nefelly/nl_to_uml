@@ -4,7 +4,8 @@ from ..redis import RedisClient
 from ..key import (
     REDIS_ACCOST_RATE,
     REDIS_ACCOST_STOP_RATE,
-    REDIS_ACCOST_DAY_STOP
+    REDIS_ACCOST_DAY_STOP,
+    REDIS_EXP_ACCOST
 )
 from ..util import (
     now_date_key
@@ -18,6 +19,7 @@ from ..const import (
 from ..service import (
     TrackActionService,
     AliLogService,
+    ExperimentService
 )
 
 logger = logging.getLogger(__name__)
@@ -39,6 +41,7 @@ class AccostService(object):
 
     @classmethod
     def can_accost(cls, user_id, session_id, loc, version):
+
         def should_stop():
             day_stop = REDIS_ACCOST_DAY_STOP.format(now_date_key=now_date_key(), user_id=user_id)
             str_num = redis_client.get(day_stop)
@@ -58,6 +61,12 @@ class AccostService(object):
                     return True
                 redis_client.decr(stop_key)
                 return False
+
+        if ExperimentService.get_exp_value('accost') == 'limit':
+            key = REDIS_EXP_ACCOST.format(user_id=user_id)
+            num = redis_client.incr(key)
+            
+
         key = REDIS_ACCOST_RATE.format(user_id=user_id)
         rate = cls.ACCOST_RATE - 1  # the first time is used
         res = redis_client.get(key)

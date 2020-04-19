@@ -78,6 +78,7 @@ def get_match_func(func_name):
     return getattr(service, FUNC_SERVICE_FUNC.get(func_name))
 
 
+@set_exp_arg()
 @session_finished_required
 def get_fakeid():
     data, status = get_match_func(sys._getframe().f_code.co_name)(request.user_id)

@@ -7,7 +7,8 @@ from flask import (
 
 from ...decorator import (
     session_required,
-    session_finished_required
+    session_finished_required,
+    set_exp_arg
 )
 
 from ...error import (
@@ -160,6 +161,7 @@ def search_user():
     return success(data)
 
 
+@set_exp_arg()
 @session_required
 def accost():
     status = AccostService.can_accost(request.user_id, request.session_id, request.loc, request.version)
