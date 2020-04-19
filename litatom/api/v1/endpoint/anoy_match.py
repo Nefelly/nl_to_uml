@@ -8,7 +8,8 @@ from flask import (
 
 from ...decorator import (
     session_required,
-    session_finished_required
+    session_finished_required,
+    set_exp_arg
 )
 
 from ...error import (
@@ -120,6 +121,7 @@ def get_tips():
     return success(data)
 
 
+@set_exp_arg()
 @session_finished_required
 def match_times_left():
     # if get_match_type() != VOICE_TYPE:
