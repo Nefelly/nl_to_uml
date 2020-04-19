@@ -2,7 +2,7 @@
 import functools
 import logging
 import warnings
-from hendrix import setting
+from hendrix.conf import setting
 import bson
 from . import error
 from flask import (
