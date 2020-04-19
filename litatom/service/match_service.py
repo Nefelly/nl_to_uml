@@ -118,7 +118,7 @@ class MatchService(object):
         if not is_accelerate:
             anoy_gender_key = cls.MATCH_KEY_BY_REGION_GENDER(cls.MATCH_TYPE, gender)
             if ExperimentService.get_exp_value('match_strategy') == 'delay':
-                int_time = int_time + 100
+                int_time = int_time + 20
                 print "get in", '!' * 100, ExperimentService.get_exp_value('match_strategy'), int_time
         else:
             anoy_gender_key = cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender)
