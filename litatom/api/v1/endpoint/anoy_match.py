@@ -178,7 +178,7 @@ def video_list():
     # data = YoutubeVideo.get_video_infos(request.region)
     if not data:
         data = []
-    # data = []
+    data = []
     return success(data)
 
 @session_required
