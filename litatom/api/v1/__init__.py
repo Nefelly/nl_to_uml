@@ -96,6 +96,7 @@ b.add_url_rule('/lit/admin/deal_feedback/<feedback_id>', 'admin-deal-feedback', 
 b.add_url_rule('/lit/admin/feedback_page', 'admin-feedback_page', endpoint.admin.feedback_page)
 b.add_url_rule('/lit/admin/unban_by_nickname', 'admin-unban_by_nickname', endpoint.admin.unban_by_nickname)
 b.add_url_rule('/lit/admin/restart_test', 'admin-restart_test', endpoint.admin.restart_test)
+b.add_url_rule('/lit/admin/set_exp', 'admin-set_exp', endpoint.admin.set_exp)
 
 
 # picture

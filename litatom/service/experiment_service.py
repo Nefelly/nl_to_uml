@@ -6,6 +6,7 @@ import logging
 from flask import (
     request
 )
+from hendrix_conf import setting
 from ..key import (
     REDIS_EXP
 )
@@ -38,6 +39,9 @@ class ExperimentService(object):
             return
         exp_value = request.experiment_value
         if exp_value == 'default':
+            '''测试环境可以重新设置值'''
+            if setting.IS_DEV:
+                redis_client.delete(cls._get_key(key, exp_name))
             return
         if exp_value is None:
             return
