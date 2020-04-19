@@ -138,7 +138,7 @@ class RegionWord(Document):
             'th': ['ZwcmNkzm7m0', 'fhbxpm8yZWA', 'ReXNvQUURdI', 'ZJNI3vBZvqc', 'ILU9NbWn4t0', 'B8Hu35Qyw5w', 'tBGHuRhU_yk', 'SecLbWBvDP8', 'oHSlO4UQ16o', 'n32PxBLrut4'], 
             'en': ['b-7qGd5jM2s', 'pWAP7fIwGnI', 'XOBGHAQB-wI', 'kJQP7kiw5Fk', 'cBVGlBWQzuc', 'PMhWCD6u4fA', 'lBiRs4wzIhI', 'SecLbWBvDP8', '250rS-RvwlU', 'Y0viP67wNqk'],
             'india': ['b-7qGd5jM2s', 'pWAP7fIwGnI', 'XOBGHAQB-wI', 'kJQP7kiw5Fk', 'cBVGlBWQzuc', 'PMhWCD6u4fA', 'lBiRs4wzIhI', 'SecLbWBvDP8', '250rS-RvwlU', 'Y0viP67wNqk'],
-            'id': ['b-7qGd5jM2s', 'pWAP7fIwGnI', 'XOBGHAQB-wI', 'kJQP7kiw5Fk', 'cBVGlBWQzuc', 'PMhWCD6u4fA', 'lBiRs4wzIhI', 'SecLbWBvDP8', '250rS-RvwlU', 'Y0viP67wNqk'],
+            'id': ['wVH2iWZ1oyU', '9We3pS6aqvA', 'HTj2n52jz94', 'cwrCz2Yl5bw', '_khNMobLZns', 'HBWC9wTk4tQ', 'nQpYHiB0k6k', 'WhVyGGenmQw', 'RHgVhC8ow00', 'PWA5w0Yxco', 'VWH3GDikM9M', 'bo_efYhYU2A']
         },
         'bio': {
             'en': {'newcomer': ['He is a newcomer', 'She is a newcomer'], 'mystierious': ['He is mysterious', 'She is mysterious']},
