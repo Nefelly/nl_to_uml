@@ -293,6 +293,7 @@ class MatchService(object):
         int_time = int(time.time())
         if ExperimentService.get_exp_value('match_strategy') == 'delay':
             if redis_client.zscore(cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender), fake_id) > int_time:
+                print 'fuck' * 100
                 return None, False
         judge_time = int_time - cls.MATCH_WAIT
         if not request.is_homo:
