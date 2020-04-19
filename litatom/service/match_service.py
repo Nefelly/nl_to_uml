@@ -409,6 +409,7 @@ class MatchService(object):
         now_date = now_date_key()
         match_left_key = cls.TYPE_USER_MATCH_LEFT.format(user_date=user_id + now_date)
         default_match_times = cls.MATCH_TMS   #  if not cls._is_member(user_id) else cls.FAKE_MAX_TIME
+        print ExperimentService.get_exp_value('times_left_exp'), '!' * 100
         if ExperimentService.get_exp_value('times_left_exp') == 'less':
             default_match_times = 5
         redis_client.setnx(match_left_key, default_match_times)
