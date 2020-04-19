@@ -306,7 +306,6 @@ class MatchService(object):
                     return None, False
         choose_gender = other_gender if not request.is_homo else gender
         choose_max_time = int_time  # MAX_TIME
-        print choose_max_time, '*' * 100
         accelerate_fakeids = redis_client.zrangebyscore(cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, choose_gender), judge_time + 3, MAX_TIME, 0, cls.MAX_CHOOSE_NUM)
         other_fakeids = redis_client.zrangebyscore(cls.MATCH_KEY_BY_REGION_GENDER(cls.MATCH_TYPE, choose_gender), judge_time + 3, choose_max_time, 0, cls.MAX_CHOOSE_NUM)
         if request.is_homo:
