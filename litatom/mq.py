@@ -100,7 +100,6 @@ class MQProducer(object):
             try:
                 send()
             except Exception, e:
-                print e
                 # logger.exception('Publish rabbitmq message faild')
                 if not self.ignore_err:
                     raise

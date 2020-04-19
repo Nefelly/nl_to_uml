@@ -17,7 +17,10 @@ from flask import (
 )
 
 from ...decorator import (
-    admin_session_required
+    admin_session_required,
+    test_required,
+    get_user_id,
+    set_exp_arg
 )
 
 from ....util import write_data_to_xls
@@ -51,12 +54,14 @@ from ....service import (
     AsyncCmdService,
     AccountService,
     FeedbackService,
-    AliOssService
+    AliOssService,
+    ExperimentService
 )
 from  ....const import (
     MAX_TIME,
     ONE_DAY,
-    APP_PATH
+    APP_PATH,
+    ONE_WEEK
 )
 logger = logging.getLogger(__name__)
 
@@ -159,6 +164,7 @@ def feeds_square_for_admin():
 def official_feed():
     return current_app.send_static_file('official_feed.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
 
+
 def admin_words():
     return current_app.send_static_file('region_info.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
 
@@ -231,16 +237,11 @@ def restart_test():
     subprocess.Popen('git pull&&sv stop devlitatom&&lsof -i:8001|awk \'{print $2}\'|xargs kill -9&&sv restart devlitatom &', shell=True)
     return success()
 
-def get_user_id():
-    phone = request.args.get('phone')
-    target_loc = request.loc
-    user_id = request.user_id
-    if phone and phone.startswith('86'):
-        user = User.get_by_phone(phone)
-        if user:
-            user_id = str(user.id)
-            request.user_id = user_id
-    return user_id
+
+@test_required
+@set_exp_arg(ONE_WEEK)
+def set_exp():
+    return success(ExperimentService.get_exp_value(request.experiment_name))
 
 
 def change_loc():

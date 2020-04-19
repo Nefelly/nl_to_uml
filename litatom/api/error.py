@@ -11,3 +11,4 @@ FailedNotAdmin = {'success': False, 'result': -12, 'msg': u'you are not admin'}
 FailedNotTimesLeft = {'success': False, 'result': -13, 'msg': u'Your match opportunity has run out, please try again tomorrow'}
 FailedUserBanned = {'success': False, 'result': -14}
 FailedRateTooOften = {'success': False, 'result': -15}
+FailedNotTest = {'success': False, 'result': -199, 'msg': u'You must be on test environment to play this'}
