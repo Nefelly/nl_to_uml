@@ -28,6 +28,7 @@ class Report(Document):
     chat_record = StringField()
     deal_res = StringField()
     dealed = BooleanField(required=True, default=False)
+    duplicated = BooleanField(default=False)
     deal_user = StringField()
     related_feed = StringField()
     region = StringField()
@@ -40,6 +41,12 @@ class Report(Document):
         if not bson.ObjectId.is_valid(report_id):
             return None
         return cls.objects(id=report_id).first()
+
+    @classmethod
+    def set_same_report_to_dealed(cls, uid, target_uid):
+        for _ in cls.objects(uid=uid, target_uid=target_uid, dealed=False):
+            _.duplicated = True
+            _.save()
 
     def to_json(self, *args, **kwargs):
         if not self:

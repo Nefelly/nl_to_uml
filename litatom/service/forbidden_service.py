@@ -72,6 +72,8 @@ class ForbiddenService(object):
             return None, False
         # 一日内举报不可超过五次
         ts_now = int(time.time())
+
+
         cnt = Report.count_report_by_uid(target_user_id, ts_now - ONE_DAY, ts_now)
         if cnt >= 5:
             return 'You have report too many times today, please try later', False
