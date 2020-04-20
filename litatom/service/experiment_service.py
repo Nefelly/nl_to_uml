@@ -38,11 +38,11 @@ class ExperimentService(object):
                 },
                 {
                     paths_key: ["user/accost"],
-                    paths_key: "accost"
+                    exp_key: "accost"
                 },
                 {
                     paths_key: ["anoy_match/times_left"],
-                    paths_key:  "times_left_exp"
+                    exp_key:  "times_left_exp"
                 }
             ]
         }
