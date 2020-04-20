@@ -45,7 +45,8 @@ from ....service import (
     UserService,
     QiniuService,
     ForbiddenService,
-    AliOssService
+    AliOssService,
+    ExperimentService
 )
 
 logger = logging.getLogger(__name__)
@@ -311,6 +312,10 @@ def rules():
     f_name = 'rules_%s.html' % GlobalizationService.get_region()
     return render_template(f_name), 200, {'Content-Type': 'text/html; charset=utf-8'}
 
+
+def experiments():
+    data = ExperimentService.get_conf()
+    return success(data)
 
 @session_required
 def action_by_user_id():

@@ -24,6 +24,30 @@ class ExperimentService(object):
     '''
 
     @classmethod
+    def get_conf(cls):
+        exp_key = 'exp_name'
+        paths_key = 'paths'
+        res = {
+            "experiments": [
+                {
+                    paths_key:[
+                        "anoy_match/get_fake_id",
+                        "anoy_match/anoy_match"
+                    ],
+                    exp_key: "match_strategy"
+                },
+                {
+                    paths_key: ["user/accost"],
+                    paths_key: "accost"
+                },
+                {
+                    paths_key: ["anoy_match/times_left"],
+                    paths_key:  "times_left_exp"
+                }
+            ]
+        }
+
+    @classmethod
     def _get_key(cls, key, exp_name):
         key_exp = '%s_%s' % (key, exp_name)
         return REDIS_EXP.format(key_exp=key_exp)
