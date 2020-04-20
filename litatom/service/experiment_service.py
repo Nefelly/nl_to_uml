@@ -77,4 +77,5 @@ class ExperimentService(object):
     def get_exp_value(cls, exp_name, key=None):
         if not key:
             key = request.user_id
+        print cls._get_key(key, exp_name)
         return redis_client.get(cls._get_key(key, exp_name))

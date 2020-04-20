@@ -120,7 +120,7 @@ class MatchService(object):
             print cls._get_matched_times(user_id), '*' * 100
             if cls._get_matched_times(user_id) >= 1:
                 ''' 延时进入池子'''
-                print request.user_id, ExperimentService.get_exp_value('match_strategy') == 'delay'
+                print request.user_id, ExperimentService.get_exp_value('match_strategy'), ExperimentService.get_exp_value('match_strategy') == 'delay'
                 if ExperimentService.get_exp_value('match_strategy') == 'delay':
                     print 'get innnnn', request.user_id
                     int_time = int_time + 15
