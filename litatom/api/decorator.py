@@ -2,7 +2,7 @@
 import functools
 import logging
 import warnings
-
+from hendrix.conf import setting
 import bson
 from . import error
 from flask import (
@@ -16,6 +16,9 @@ from ..util import (
 )
 from ..const import (
     ONE_DAY
+)
+from ..model import (
+    User
 )
 from ..service import (
     UserService,
@@ -60,6 +63,26 @@ def set_exp_arg(arg=ONE_DAY):
             return view(*args, **kwargs)
         return wrapper
     return _deco
+
+def get_user_id():
+    phone = request.args.get('phone')
+    target_loc = request.loc
+    user_id = request.user_id
+    if phone and phone.startswith('86'):
+        user = User.get_by_phone(phone)
+        if user:
+            user_id = str(user.id)
+            request.user_id = user_id
+    return user_id
+
+def test_required(view):
+    @functools.wraps(view)
+    def wrapper(*args, **kwargs):
+        if not setting.IS_DEV:
+            return jsonify(error.FailedNotTest)
+        get_user_id()
+        return view(*args, **kwargs)
+    return wrapper
 
 
 def session_required(view):
