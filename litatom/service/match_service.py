@@ -116,8 +116,8 @@ class MatchService(object):
         int_time = int(time.time())
         is_accelerate = cls._is_accelerate(user_id)
         if not is_accelerate:
+            anoy_gender_key = cls.MATCH_KEY_BY_REGION_GENDER(cls.MATCH_TYPE, gender)
             if cls._get_matched_times(user_id) >= 1:
-                anoy_gender_key = cls.MATCH_KEY_BY_REGION_GENDER(cls.MATCH_TYPE, gender)
                 ''' 延时进入池子'''
                 if ExperimentService.get_exp_value('match_strategy') == 'delay':
                     int_time = int_time + 15
