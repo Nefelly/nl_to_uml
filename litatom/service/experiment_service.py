@@ -63,7 +63,7 @@ class ExperimentService(object):
         if not exp_name:
             return
         exp_value = request.experiment_value
-        if exp_value == 'default':
+        if exp_value == 'reset':
             '''测试环境可以重新设置值'''
             if setting.IS_DEV:
                 redis_client.delete(cls._get_key(key, exp_name))
