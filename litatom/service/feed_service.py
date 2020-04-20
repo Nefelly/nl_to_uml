@@ -218,7 +218,8 @@ class FeedService(object):
         cls._del_from_feed_hq(feed)
         request.region = back_region
         if feed.should_remove_from_follow:
-            FollowingFeedService.remove_feed(feed)
+            MqService.push(REMOVE_EXCHANGE, {"feed_id": str(feed.id)})
+            # FollowingFeedService.remove_feed(feed)
 
     @classmethod
     def move_up_feed(cls, feed_id, ts):

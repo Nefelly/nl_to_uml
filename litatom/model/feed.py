@@ -43,6 +43,7 @@ class Feed(Document):
     like_num = IntField(required=True, default=0)
     dislike_num = IntField(required=True, default=0)
     comment_num = IntField(required=True, default=0)
+    not_shown = BooleanField(default=False)
     content = StringField()
     pics = ListField(default=[])
     audios = ListField(default=[])
@@ -51,6 +52,10 @@ class Feed(Document):
     @classmethod
     def feed_num(cls, user_id):
         return cls.objects(user_id=user_id).count()
+
+    def change_to_not_shown(self):
+        self.not_shown = True
+        self.save()
 
     @classmethod
     def get_by_user_id(cls, user_id):
@@ -66,7 +71,7 @@ class Feed(Document):
 
     @property
     def should_remove_from_follow(self):
-        return self.dislike_num >= self.SELF_HIGH_NUM
+        return self.dislike_num >= self.SELF_HIGH_NUM or self.not_shown
 
     def save(self, *args, **kwargs):
         if getattr(self, 'id', ''):

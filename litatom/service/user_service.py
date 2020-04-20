@@ -509,8 +509,11 @@ class UserService(object):
         if user.huanxin and user.huanxin.user_id:
             HuanxinService.deactive_user(user.huanxin.user_id)
         feeds = Feed.objects(user_id=user_id, create_time__gte=int(time.time()) - 3 * ONE_DAY)
+        from ..service import FeedService
         for _ in feeds:
-            _.delete()
+            FeedService.remove_from_pub(_)
+            # _.delete()
+            _.change_to_not_shown()
             MqService.push(REMOVE_EXCHANGE, {"feed_id": str(_.id)})
 
     @classmethod
