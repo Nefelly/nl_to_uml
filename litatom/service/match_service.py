@@ -116,10 +116,11 @@ class MatchService(object):
         int_time = int(time.time())
         is_accelerate = cls._is_accelerate(user_id)
         if not is_accelerate:
-            anoy_gender_key = cls.MATCH_KEY_BY_REGION_GENDER(cls.MATCH_TYPE, gender)
-            ''' 延时进入池子'''
-            if ExperimentService.get_exp_value('match_strategy') == 'delay':
-                int_time = int_time + 15
+            if cls._get_matched_times(user_id) >= 1:
+                anoy_gender_key = cls.MATCH_KEY_BY_REGION_GENDER(cls.MATCH_TYPE, gender)
+                ''' 延时进入池子'''
+                if ExperimentService.get_exp_value('match_strategy') == 'delay':
+                    int_time = int_time + 15
         else:
             anoy_gender_key = cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender)
         redis_client.zadd(anoy_gender_key, {fake_id: int_time})
