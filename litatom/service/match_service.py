@@ -117,12 +117,9 @@ class MatchService(object):
         is_accelerate = cls._is_accelerate(user_id)
         if not is_accelerate:
             anoy_gender_key = cls.MATCH_KEY_BY_REGION_GENDER(cls.MATCH_TYPE, gender)
-            print cls._get_matched_times(user_id), '*' * 100
             if cls._get_matched_times(user_id) >= 1:
                 ''' 延时进入池子'''
-                print request.user_id, ExperimentService.get_exp_value('match_strategy'), 'same', ExperimentService.get_exp_value('match_strategy') == 'delay'
                 if ExperimentService.get_exp_value('match_strategy') == 'delay':
-                    print 'get innnnn', request.user_id
                     int_time = int_time + 15
         else:
             anoy_gender_key = cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender)
@@ -292,12 +289,10 @@ class MatchService(object):
         if fake_id2:
             if cls._in_match(fake_id, fake_id2):
                 # redis_client.delete(cls.TYPE_FAKE_START.format(fake_id=fake_id))
-                print 'gett', fake_id2
                 return fake_id2, True
             redis_client.delete(matched_key)
         int_time = int(time.time())
         if ExperimentService.get_exp_value('match_strategy') == 'delay':
-            print 'get innnnn', request.user_id
             if redis_client.zscore(cls.MATCH_KEY_BY_REGION_GENDER(cls.MATCH_TYPE, gender), fake_id) > int_time:
                 return None, False
         judge_time = int_time - cls.MATCH_WAIT
@@ -314,7 +309,6 @@ class MatchService(object):
         choose_max_time = int_time  # MAX_TIME
         accelerate_fakeids = redis_client.zrangebyscore(cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, choose_gender), judge_time + 3, MAX_TIME, 0, cls.MAX_CHOOSE_NUM)
         other_fakeids = redis_client.zrangebyscore(cls.MATCH_KEY_BY_REGION_GENDER(cls.MATCH_TYPE, choose_gender), judge_time + 3, choose_max_time, 0, cls.MAX_CHOOSE_NUM)
-        print other_fakeids, '!' * 100
         if request.is_homo:
             accelerate_fakeids = [el for el in accelerate_fakeids if el != fake_id]
             other_fakeids = [el for el in other_fakeids if el != fake_id]
