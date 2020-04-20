@@ -120,6 +120,7 @@ class MatchService(object):
             if cls._get_matched_times(user_id) >= 1:
                 ''' 延时进入池子'''
                 if ExperimentService.get_exp_value('match_strategy') == 'delay':
+                    print 'get innnnn', request.user_id
                     int_time = int_time + 15
         else:
             anoy_gender_key = cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender)
@@ -294,6 +295,7 @@ class MatchService(object):
             redis_client.delete(matched_key)
         int_time = int(time.time())
         if ExperimentService.get_exp_value('match_strategy') == 'delay':
+            print 'get innnnn', request.user_id
             if redis_client.zscore(cls.MATCH_KEY_BY_REGION_GENDER(cls.MATCH_TYPE, gender), fake_id) > int_time:
                 return None, False
         judge_time = int_time - cls.MATCH_WAIT
