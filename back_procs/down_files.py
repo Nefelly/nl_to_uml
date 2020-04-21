@@ -5,6 +5,8 @@ def down():
     urls = []
     for el in f:
         print el
+        if 'data' not in el:
+            continue
         url = el.split('data\\":\\"')[1].split('\\"}"')[0]
         print url
     cnt = 0
