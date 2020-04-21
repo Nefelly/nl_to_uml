@@ -135,6 +135,7 @@ def like_feed(feed_id):
 @session_finished_required
 def dislike_feed(feed_id):
     data, status = FeedService.dislike_feed(request.user_id, feed_id)
+    print data, status
     if status:
         return success(data)
     return fail(data)
