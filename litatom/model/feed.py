@@ -265,6 +265,8 @@ class FeedLike(Document):
         2. 如果feed_like_num已经大于等于LIKE_NUM_THRESHOLD,必须清除缓存
         3. 如果feed_like_num介于(LIKE_NUM_THRESHOLD-PROTECT,LIKE_NUM_THRESHOLD)，暂不清除缓存，但是用db检索数据
         """
+        if not uid:
+            return False
         key = cls.get_redis_key(feed_id)
         if feed_like_num > cls.LIKE_NUM_THRESHOLD - cls.PROTECT:  # PROTECT 用来保护缓存不会因为like num 一上一下不断刷缓存
             if feed_like_num >= cls.LIKE_NUM_THRESHOLD:
@@ -378,6 +380,8 @@ class FeedDislike(Document):
         2. 如果feed_dislike_num已经大于等于DISLIKE_NUM_THRESHOLD,必须清除缓存
         3. 如果feed_dislike_num介于(DISLIKE_NUM_THRESHOLD-PROTECT,DISLIKE_NUM_THRESHOLD)，暂不清除缓存，但是用db检索数据
         """
+        if not uid:
+            return False
         key = cls.get_redis_key(feed_id)
         if feed_dislike_num > cls.DISLIKE_NUM_THRESHOLD - cls.PROTECT:  # PROTECT 用来保护缓存不会因为dislike num 一上一下不断刷缓存
             if feed_dislike_num >= cls.DISLIKE_NUM_THRESHOLD:
