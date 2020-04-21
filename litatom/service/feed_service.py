@@ -22,7 +22,8 @@ from ..const import (
     ONE_DAY,
     REMOVE_EXCHANGE,
     ADD_EXCHANGE,
-    ONE_HOUR
+    ONE_HOUR,
+    ONE_MIN
 )
 
 from ..service import (
@@ -57,7 +58,7 @@ class FeedService(object):
     def should_add_to_square(cls, feed):
         # return True
         user_id = feed.user_id
-        judge_time = int(time.time()) - ONE_HOUR
+        judge_time = int(time.time()) - 5 * ONE_MIN
         if feed.self_high:
             return False
         status = Feed.objects(user_id=user_id, create_time__gte=judge_time).count() <= 3
