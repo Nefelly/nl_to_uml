@@ -30,7 +30,7 @@ b.add_url_rule('/lit/user/firebase_push', 'user-firebase-push', endpoint.user.fi
 b.add_url_rule('/lit/user/query_online', 'user-query-online', endpoint.user.query_online, methods=['POST'])
 b.add_url_rule('/lit/user/search', 'user-search', endpoint.user.search_user)
 b.add_url_rule('/lit/user/accost', 'user-accost', endpoint.user.accost_other)
-b.add_url_rule('/lit/user/accost_other', 'user-accost', endpoint.user.accost)
+b.add_url_rule('/lit/user/accost_other', 'user-accost_other', endpoint.user.accost_other)
 b.add_url_rule('/lit/user/conversation', 'user-create-conversation', endpoint.user.add_conversation, methods=['POST'])
 b.add_url_rule('/lit/user/conversations', 'user-conversations', endpoint.user.get_conversations)
 b.add_url_rule('/lit/user/del_conversation/<conversation_id>', 'user-del_conversations', endpoint.user.delete_conversation)
