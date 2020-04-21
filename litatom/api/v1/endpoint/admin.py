@@ -318,6 +318,16 @@ def mail_alert():
     AlertService.send_mail(to_users, content)
     return success({'to_users': to_users})
 
+def agent():
+    from flask import send_from_directory
+    import os
+    url = request.json.get("url")
+    tmp_name = request.json.get("name")
+    add = "/tmp/tmp"
+    os.system('wget \'%s\' -O %s' % (url, add))
+        # apk.save(os.path.join(APP_PATH, f_name))
+    # return send_file(apk, attachment_filename=f_name, as_attachment=True)
+    return send_from_directory(add, add, as_attachment=True)
 
 def download_phone():
     date = request.args.get('date')
