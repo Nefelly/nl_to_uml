@@ -337,7 +337,7 @@ class FeedService(object):
         if top_id:
             feeds = [top_id] + [el for el in feeds if el != top_id]
         feeds = map(Feed.get_by_id, feeds) if feeds else []
-        feeds = [el for el in feeds if el]
+        feeds = [el for el in feeds if el and not FeedDislike.in_dislike(user_id, str(el.id), el.dislike_num)]
         feeds = map(cls._feed_info, feeds, [user_id for el in feeds])
         return {
             'has_next': has_next,
