@@ -34,7 +34,8 @@ from ....service import (
     AccountService,
     AccostService,
     ConversationService,
-    TokenBucketService
+    TokenBucketService,
+    AntiSpamRateService
 )
 from ....const import (
     MAX_TIME
@@ -171,6 +172,15 @@ def accost():
         'status': status
     }
     return success(res)
+
+
+@set_exp_arg()
+@session_required
+def accost_other():
+    data, status = AntiSpamRateService.judge_stop(request.user_id, AntiSpamRateService.ACCOST)
+    if not status:
+        return fail(data)
+    return success(data)
 
 
 def get_avatars():
