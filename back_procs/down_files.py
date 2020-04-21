@@ -10,7 +10,7 @@ def down():
         urls.append(url)
         print url
     cnt = 0
-    save_dir = '/data/musics/'
+    save_dir = '/data/musics/turkey army/'
     for _ in urls:
         cnt += 1
         cmd = "wget \'%s\' -O %s" % (_, save_dir + str(cnt) + '.mp4')
