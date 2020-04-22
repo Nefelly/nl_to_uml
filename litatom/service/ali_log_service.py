@@ -111,7 +111,7 @@ class AliLogService(object):
         logItem = LogItem()
         logItem.set_time(int(time()))
         for content in contents:
-            for i in len(content):
+            for i in range(len(content)):
                 if content[i][1] is None:
                     content[i][1] = ''
         try:
