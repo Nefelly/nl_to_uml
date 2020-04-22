@@ -112,6 +112,7 @@ class AliLogService(object):
         logItem.set_time(int(time()))
         for content in contents:
             for i in range(len(content)):
+                print content[i], i
                 if content[i][1] is None:
                     content[i][1] = ''
         try:
