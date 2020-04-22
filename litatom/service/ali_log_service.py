@@ -110,6 +110,10 @@ class AliLogService(object):
         logitemList = []  # LogItem list
         logItem = LogItem()
         logItem.set_time(int(time()))
+        for content in contents:
+            for i in len(content):
+                if content[i][1] is None:
+                    content[i][1] = ''
         try:
             if request.platform:
                 contents.append(('platform', request.platform))
