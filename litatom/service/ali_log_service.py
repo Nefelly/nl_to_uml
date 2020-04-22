@@ -8,6 +8,7 @@ import logging
 from ..redis import RedisClient
 from hendrix.conf import setting
 from ..const import ALI_LOG_EXCHANGE
+from ..mq import MQProducer
 from flask import request
 
 from ..util import (
@@ -68,10 +69,13 @@ class AliLogService(object):
         if setting.IS_DEV:
             logstore = 'test-lit'
             project = 'test-lit'
-        request = PutLogsRequest(project, logstore, topic, source, logitemList)
-        response = client.put_logs(request)
-        return response.get_all_headers()
-        from ..mq import MQProducer
+        # try:
+        #     request = PutLogsRequest(project, logstore, topic, source, logitemList)
+        #     response = client.put_logs(request)
+        #     return logger.error('put ali logs error: %s', e)
+        # except Exception as e:
+        #     logger.log()
+
         try:
             request = PutLogsRequest(project, logstore, topic, source, logitemList)
             response = client.put_logs(request)
