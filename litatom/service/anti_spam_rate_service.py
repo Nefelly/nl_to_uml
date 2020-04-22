@@ -176,7 +176,7 @@ class AntiSpamRateService(object):
             if cls.just_out_times(stop_key, stop_num):
                 cls.record_over(user_id, activity, cls.LEVEL_FIRST)
                 incr_key(stop_key, first_interval)
-            return cls._get_error_message(stop_word), False
+            return cls._get_error_message(stop_word, activity), False
 
         second_key = cls.get_key(user_id, activity, cls.LEVEL_SECCOND)
         if cls.out_of_times(second_key, second_stop):
@@ -184,7 +184,7 @@ class AntiSpamRateService(object):
             if cls.just_out_times(second_key, second_stop):
                 cls.record_over(user_id, activity, cls.LEVEL_SECCOND)
                 incr_key(second_key, second_interval)
-            return cls._get_error_message(diamond_word, second_diamonds), False
+            return cls._get_error_message(diamond_word, activity, second_diamonds), False
 
         first_key = cls.get_key(user_id, activity, cls.LEVEL_FIRST)
         if cls.out_of_times(first_key, first_stop):
@@ -192,7 +192,7 @@ class AntiSpamRateService(object):
             if cls.just_out_times(first_key, first_stop):
                 cls.record_over(user_id, activity, cls.LEVEL_FIRST)
                 incr_key(first_key, first_interval)
-            return cls._get_error_message(diamond_word, first_diamonds), False
+            return cls._get_error_message(diamond_word, activity, first_diamonds), False
 
         '''增加次数'''
         incr_key(first_key, first_interval)
