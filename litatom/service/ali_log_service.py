@@ -69,13 +69,6 @@ class AliLogService(object):
         if setting.IS_DEV:
             logstore = 'test-lit'
             project = 'test-lit'
-        # try:
-        #     request = PutLogsRequest(project, logstore, topic, source, logitemList)
-        #     response = client.put_logs(request)
-        #     return logger.error('put ali logs error: %s', e)
-        # except Exception as e:
-        #     logger.log()
-
         try:
             request = PutLogsRequest(project, logstore, topic, source, logitemList)
             response = client.put_logs(request)
