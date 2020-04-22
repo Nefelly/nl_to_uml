@@ -123,12 +123,12 @@ class AntiSpamRateService(object):
         return redis_client.get(key) is None
 
     @classmethod
-    def _get_error_message(cls, word, diamonds=None):
+    def _get_error_message(cls, word, activity, diamonds=None):
         msg = GlobalizationService.get_region_word(word)
         if diamonds is None:
             return msg
         res = FailedRateTooOften
-        res.update({'message': msg})
+        res.update({'message': msg, 'activity': activity})
         if diamonds is not None:
             res.update({'diamonds': diamonds})
         return res
