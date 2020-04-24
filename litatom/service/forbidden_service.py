@@ -10,6 +10,7 @@ from ..service import (
     GlobalizationService,
     UserService,
     FirebaseService,
+    QiniuService,
 )
 from ..model import (
     SpamWord,
@@ -37,6 +38,7 @@ class ForbiddenService(object):
     REPORT_WEIGHTING = 4
     ALERT_WEIGHTING = 2
     MATCH_REPORT_WEIGHTING = 4
+    REVIEW_FEED_PIC_WEIGHTING = 2
     FORBID_THRESHOLD = 10
     DEFAULT_SYS_FORBID_TIME = 3 * ONE_DAY
     COMPENSATION_PER_TEN_FOLLOWER = 2
@@ -120,11 +122,26 @@ class ForbiddenService(object):
         alert_num = TrackSpamRecord.count_by_time_and_uid(user_id, time_3days_ago, timestamp_now)
         report_total_num = Report.count_by_time_and_uid_distinct(user_id, time_3days_ago, timestamp_now)
         report_match_num = Report.count_match_by_time_and_uid(user_id, time_3days_ago, timestamp_now)
+        review_pic_num = cls.accum_review_feed_pic_num(user_id,time_3days_ago,timestamp_now)
         illegal_credit = alert_num * cls.ALERT_WEIGHTING + (report_total_num - report_match_num) * cls.REPORT_WEIGHTING \
-                         + report_match_num * cls.MATCH_REPORT_WEIGHTING - cls.get_high_value_compensation(user_id)
+                         + report_match_num * cls.MATCH_REPORT_WEIGHTING + review_pic_num * cls.REVIEW_FEED_PIC_WEIGHTING \
+                         - cls.get_high_value_compensation(user_id)
         if illegal_credit >= cls.FORBID_THRESHOLD:
             return True
         return False
+
+    @classmethod
+    def accum_review_feed_pic_num(cls, user_id, time_3days_ago, timestamp_now):
+        reported_feed = Report.get_report_with_pic_by_time(user_id, time_3days_ago, timestamp_now)
+        review_pic_num = 0
+        for feed_id in reported_feed:
+            feed = Feed.get_by_id(feed_id)
+            pics = feed.pics
+            for pic in pics:
+                reason, advice = QiniuService.should_pic_block_from_file_id(pic)
+                if reason == 'pulp' and advice == 'r':
+                    review_pic_num += 1
+        return review_pic_num
 
     @classmethod
     def forbid_user(cls, user_id, forbid_ts, forbid_type=SYS_FORBID, ts=int(time.time())):

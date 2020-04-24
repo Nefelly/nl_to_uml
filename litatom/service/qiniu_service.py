@@ -26,6 +26,11 @@ class QiniuService(object):
 
     @classmethod
     def should_pic_block_from_file_id(cls, fileid):
+        """
+        如果是违规图，将返回(原因，建议)，否则返回None
+        原因分为：'pulp','terror','politician','ads',目前只打开了pulp
+        建议：'b':block, 'r':review
+        """
         return cls.should_pic_block_from_url("http://www.litatom.com/api/sns/v1/lit/image/" + fileid)
 
     @classmethod
@@ -82,9 +87,11 @@ class QiniuService(object):
                         cls.record_fail(out_url, scenes, r)
                     if details and details[0].get('suggestion') == 'block':
                         cls.record_fail(out_url, scenes, r)
-                        return r
+                        return r,'b'
+                    if details and details[0].get('suggestion') == 'review':
+                        return r,'r'
                 return ''
-            except Exception, e:
+            except Exception as e:
                 logger.error(traceback.format_exc())
                 logger.error('Error verify Qiniu, url: %r, err: %r, test_res:%r', out_url, e, test_res)
         return ''

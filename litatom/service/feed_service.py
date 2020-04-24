@@ -108,8 +108,8 @@ class FeedService(object):
         illegal_pic = None
         if pics:
             for pic in pics:
-                reason = QiniuService.should_pic_block_from_file_id(pic)
-                if reason:
+                reason, advice = QiniuService.should_pic_block_from_file_id(pic)
+                if reason and advice == 'b':
                     illegal_pic = pic
                     break
         feed = Feed.get_by_id(feed_id)
