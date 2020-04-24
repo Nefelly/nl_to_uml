@@ -41,12 +41,11 @@ class JournalService(object):
     @classmethod
     def load_user_loc(cls):
         """类的预装载函数，把现有的LOC_STATED，加上new_，和count_前缀,同时准备USER_LOC,NEW_USER_LOC"""
-        # if not cls.IS_TESTING:
-        #     objs = UserSetting.objects()
-        # else:
-        #     objs = UserSetting.objects().limit(1000)
-        for obj in UserSetting.objects().fields(user_id=1, lang=1):
-        # for obj in objs:
+        if not cls.IS_TESTING:
+            objs = UserSetting.objects().only('user_id', 'lang')
+        else:
+            objs = UserSetting.objects().limit(1000)
+        for obj in objs:
             cls.USER_LOC[obj.user_id] = obj.lang
         new_users = eval('UserSetting.objects(%s)' % cls._get_time_str('UserSetting', 'create_time'))
         for obj in new_users:
