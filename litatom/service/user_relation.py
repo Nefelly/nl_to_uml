@@ -143,7 +143,7 @@ class FollowService(object):
             objs = objs[:-1]
         follow_uids = [obj.uid for obj in objs]
         from ..service import UserService
-        users = map(User.get_by_id, follow_uids)
+        # users = map(User.get_by_id, follow_uids)
         res = {
             'has_next': has_next,
             'next_start': next_start,
