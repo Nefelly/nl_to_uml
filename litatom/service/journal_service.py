@@ -43,6 +43,7 @@ class JournalService(object):
         """类的预装载函数，把现有的LOC_STATED，加上new_，和count_前缀,同时准备USER_LOC,NEW_USER_LOC"""
         if not cls.IS_TESTING:
             objs = UserSetting.objects().only('user_id', 'lang')
+            print 'gets over'
         else:
             objs = UserSetting.objects().limit(1000)
         for obj in objs:
