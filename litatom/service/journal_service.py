@@ -46,6 +46,7 @@ class JournalService(object):
         else:
             objs = UserSetting.objects().limit(1000)
         cnt = 1
+        print type(objs), type(UserSetting.objects())
         for obj in objs:
             # cls.USER_LOC[obj.user_id] = obj.lang
             cnt += 1
