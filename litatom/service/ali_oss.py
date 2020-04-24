@@ -131,8 +131,9 @@ class AliOssService(object):
             # qrcode_image = Image.open(qrcode).convert("RGBA")
             # qrcode_image = qrcode_image.resize(self.qrcode_size_large, Image.ANTIALIAS)
         # except:
+            print 'hhhhh'
             return out
-        return res
+        return out
 
     @classmethod
     def replace_to_small(cls, fileid, x_s=300):
