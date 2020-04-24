@@ -44,7 +44,7 @@ class JournalService(object):
         if not cls.IS_TESTING:
             objs = UserSetting.objects()
         else:
-            objs = UserSetting.objects().limit(10000)
+            objs = UserSetting.objects().limit(100000)
         for obj in objs:
             cls.USER_LOC[obj.user_id] = obj.lang
             del obj
