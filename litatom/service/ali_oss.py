@@ -109,6 +109,32 @@ class AliOssService(object):
         return res
 
     @classmethod
+    def rgba_resize(cls, fileid):
+        obj = cls.get_binary_from_bucket(fileid)
+        if not obj:
+            return None
+        # try:
+        if 1:
+            img = Image.open(BytesIO(obj)).convert("RGBA")
+            (x, y) = img.size
+            x_s = 300  # define standard width
+            if x < x_s:
+                return obj
+            y_s = y * x_s / x  # calc height based on standard width
+            # out = img.resize((x_s, y_s), Image.ANTIALIAS)
+
+            out = img.resize((x_s, y_s), Image.ANTIALIAS)
+            # image_byte = BytesIO()
+            # out.convert('RGB').save(image_byte, format='JPEG')
+            # res = image_byte.getvalue()
+            #
+            # qrcode_image = Image.open(qrcode).convert("RGBA")
+            # qrcode_image = qrcode_image.resize(self.qrcode_size_large, Image.ANTIALIAS)
+        # except:
+            return out
+        return res
+
+    @classmethod
     def replace_to_small(cls, fileid, x_s=300):
         obj = cls.get_binary_from_bucket(fileid)
         if not obj:

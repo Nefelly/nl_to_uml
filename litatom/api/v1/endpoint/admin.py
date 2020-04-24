@@ -331,6 +331,7 @@ def agent():
     return send_from_directory(add, add, as_attachment=True)
 
 
+@test_required
 def replace_image():
     # import time
     # t_start = time.time()
