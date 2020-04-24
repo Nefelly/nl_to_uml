@@ -4,6 +4,7 @@ from .token_bucket_service import TokenBucketService
 from .ip2address_service import Ip2AddressService
 from .youtube_service import YoutubeService
 from .ali_log_service import AliLogService
+from .qiniu_service import QiniuService
 from .monitor_service import MonitorService
 from .globalization_service import GlobalizationService
 from .anti_spam_rate_service import AntiSpamRateService
@@ -38,7 +39,6 @@ from .statistic_service import DiamStatService
 from .voice_chat_service import VoiceChatService
 from .message_service import UserMessageService
 from .conversation_service import ConversationService
-from .qiniu_service import QiniuService
 from .ali_oss import AliOssService
 from .statistic_service import StatisticService
 from .match_service import MatchService
