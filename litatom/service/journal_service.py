@@ -45,10 +45,11 @@ class JournalService(object):
             objs = UserSetting.objects().limit(1000)
         for obj in objs:
             cls.USER_LOC[obj.user_id] = obj.lang
+        del objs
         new_users = eval('UserSetting.objects(%s)' % cls._get_time_str('UserSetting', 'create_time'))
         for obj in new_users:
             cls.NEW_USER_LOC[obj.user_id] = obj.lang
-        del objs
+        del new_users
 
     @classmethod
     def load_user_gen(cls):
