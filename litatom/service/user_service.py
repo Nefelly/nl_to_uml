@@ -700,6 +700,9 @@ class UserService(object):
         return True
 
     @classmethod
+    def user_infos_order
+
+    @classmethod
     def uids_online(cls, uids):
         if not isinstance(uids, list):
             return u'wrong user_ids', False
@@ -906,7 +909,7 @@ class UserService(object):
         block_num = UserModel.get_block_num_by_user_id(user_id)
         basic_info = cls.get_basic_info(target_user)
         basic_info.update({
-            # 'followed': Follow.in_follow(user_id, target_user_id),
+            'be_followed': FollowService.in_follow(target_user_id, user_id),
             'followed': FollowService.in_follow(user_id, target_user_id) if target_user.follower > 0 else False,
             'blocked': Blocked.in_block(user_id, target_user_id, block_num),
             # 'is_blocked': Blocked.in_block(target_user_id, user_id),

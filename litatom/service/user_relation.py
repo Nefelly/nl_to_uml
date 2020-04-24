@@ -107,6 +107,10 @@ class FollowService(object):
         return None, True
 
     @classmethod
+    def order_by_online(cls, uids):
+        return
+
+    @classmethod
     def following(cls, user_id, start_ts=0, num=10):
         objs = Follow.objects(uid=user_id, create_time__gte=start_ts).order_by('create_time').limit(num + 1)
         objs = list(objs)
@@ -116,6 +120,7 @@ class FollowService(object):
             has_next = True
             next_start = objs[-1].create_time
             objs = objs[:-1]
+
         follow_uids = [obj.followed for obj in objs]
         users = map(User.get_by_id, follow_uids)
         res = {
