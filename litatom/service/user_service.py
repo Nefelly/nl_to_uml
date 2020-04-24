@@ -733,7 +733,6 @@ class UserService(object):
             return u'wrong user_ids', False
         res = {}
         judge_time = int(time.time()) - USER_ACTIVE
-
         uids_score = cls._uids_score(uids)
         for uid, score in uids_score.iteritems():
             if score < judge_time:
