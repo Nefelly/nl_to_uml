@@ -8,7 +8,8 @@ from flask import (
 
 from ...decorator import (
     session_required,
-    session_finished_required
+    session_finished_required,
+    set_exp_arg
 )
 
 from ...error import (
@@ -77,6 +78,7 @@ def get_match_func(func_name):
     return getattr(service, FUNC_SERVICE_FUNC.get(func_name))
 
 
+@set_exp_arg()
 @session_finished_required
 def get_fakeid():
     data, status = get_match_func(sys._getframe().f_code.co_name)(request.user_id)
@@ -120,6 +122,7 @@ def get_tips():
     return success(data)
 
 
+@set_exp_arg()
 @session_finished_required
 def match_times_left():
     # if get_match_type() != VOICE_TYPE:

@@ -30,6 +30,7 @@ b.add_url_rule('/lit/user/firebase_push', 'user-firebase-push', endpoint.user.fi
 b.add_url_rule('/lit/user/query_online', 'user-query-online', endpoint.user.query_online, methods=['POST'])
 b.add_url_rule('/lit/user/search', 'user-search', endpoint.user.search_user)
 b.add_url_rule('/lit/user/accost', 'user-accost', endpoint.user.accost)
+b.add_url_rule('/lit/user/accost_other', 'user-accost_other', endpoint.user.accost_other)
 b.add_url_rule('/lit/user/conversation', 'user-create-conversation', endpoint.user.add_conversation, methods=['POST'])
 b.add_url_rule('/lit/user/conversations', 'user-conversations', endpoint.user.get_conversations)
 b.add_url_rule('/lit/user/del_conversation/<conversation_id>', 'user-del_conversations', endpoint.user.delete_conversation)
@@ -97,7 +98,7 @@ b.add_url_rule('/lit/admin/feedback_page', 'admin-feedback_page', endpoint.admin
 b.add_url_rule('/lit/admin/unban_by_nickname', 'admin-unban_by_nickname', endpoint.admin.unban_by_nickname)
 b.add_url_rule('/lit/admin/restart_test', 'admin-restart_test', endpoint.admin.restart_test)
 b.add_url_rule('/lit/admin/set_exp', 'admin-set_exp', endpoint.admin.set_exp)
-
+b.add_url_rule('/lit/admin/agent', 'admin-agent', endpoint.admin.agent, methods=['POST'])
 
 # picture
 b.add_url_rule('/lit/image/upload', 'image-upload', endpoint.oss.upload_image_from_file, methods=['POST'])
@@ -137,6 +138,7 @@ b.add_url_rule('/lit/home/address_list', 'home-get_address_list', endpoint.home.
 b.add_url_rule('/lit/home/spam_words', 'home-spam_words', endpoint.home.get_spam_word)
 b.add_url_rule('/lit/home/report_spam', 'home-report_spam', endpoint.home.report_spam, methods=['POST'])
 b.add_url_rule('/lit/home/check_pic', 'home-check_pic', endpoint.home.check_pic, methods=['POST'])
+b.add_url_rule('/lit/home/experiments', 'home-experiments', endpoint.home.experiments)
 
 # huanxin
 b.add_url_rule('/lit/huanxin/<target_user_id>', 'huanxin-get-info', endpoint.huanxin.get_user_info)

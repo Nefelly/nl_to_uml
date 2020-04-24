@@ -2,6 +2,7 @@
 import json
 import time
 import datetime
+import gc
 import traceback
 import logging
 from ..model import (
@@ -105,6 +106,7 @@ class MaintainService(object):
         except:
             ids = UserService.get_all_ids()
         clear_cnt = 0
+        print 'load ids succ'
 
         for _ in ids:
             try:
@@ -114,6 +116,7 @@ class MaintainService(object):
                     clear_cnt += 1
                     if clear_cnt % 100 == 0:
                         print clear_cnt
+                        gc.collect()
             except:
                 continue
 

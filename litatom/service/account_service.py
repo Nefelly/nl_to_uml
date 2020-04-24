@@ -97,8 +97,8 @@ class AccountService(object):
 
     @classmethod
     def unban_by_diamonds(cls, user_id):
-        if UserService.device_blocked():
-            return UserService.ERROR_DEVICE_FORBIDDEN, False
+        # if UserService.device_blocked():
+        #     return UserService.ERROR_DEVICE_FORBIDDEN, False
         if not UserService.is_forbbiden(user_id):
             ''' 不用重新登陆'''
             # from ..model import User

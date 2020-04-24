@@ -43,6 +43,7 @@ class Feed(Document):
     like_num = IntField(required=True, default=0)
     dislike_num = IntField(required=True, default=0)
     comment_num = IntField(required=True, default=0)
+    not_shown = BooleanField(default=False)
     content = StringField()
     pics = ListField(default=[])
     audios = ListField(default=[])
@@ -51,6 +52,10 @@ class Feed(Document):
     @classmethod
     def feed_num(cls, user_id):
         return cls.objects(user_id=user_id).count()
+
+    def change_to_not_shown(self):
+        self.not_shown = True
+        self.save()
 
     @classmethod
     def get_by_user_id(cls, user_id):
@@ -66,7 +71,7 @@ class Feed(Document):
 
     @property
     def should_remove_from_follow(self):
-        return self.dislike_num >= self.SELF_HIGH_NUM
+        return self.dislike_num >= self.SELF_HIGH_NUM or self.not_shown
 
     def save(self, *args, **kwargs):
         if getattr(self, 'id', ''):
@@ -260,6 +265,8 @@ class FeedLike(Document):
         2. 如果feed_like_num已经大于等于LIKE_NUM_THRESHOLD,必须清除缓存
         3. 如果feed_like_num介于(LIKE_NUM_THRESHOLD-PROTECT,LIKE_NUM_THRESHOLD)，暂不清除缓存，但是用db检索数据
         """
+        if not uid:
+            return False
         key = cls.get_redis_key(feed_id)
         if feed_like_num > cls.LIKE_NUM_THRESHOLD - cls.PROTECT:  # PROTECT 用来保护缓存不会因为like num 一上一下不断刷缓存
             if feed_like_num >= cls.LIKE_NUM_THRESHOLD:
@@ -373,6 +380,8 @@ class FeedDislike(Document):
         2. 如果feed_dislike_num已经大于等于DISLIKE_NUM_THRESHOLD,必须清除缓存
         3. 如果feed_dislike_num介于(DISLIKE_NUM_THRESHOLD-PROTECT,DISLIKE_NUM_THRESHOLD)，暂不清除缓存，但是用db检索数据
         """
+        if not uid:
+            return False
         key = cls.get_redis_key(feed_id)
         if feed_dislike_num > cls.DISLIKE_NUM_THRESHOLD - cls.PROTECT:  # PROTECT 用来保护缓存不会因为dislike num 一上一下不断刷缓存
             if feed_dislike_num >= cls.DISLIKE_NUM_THRESHOLD:

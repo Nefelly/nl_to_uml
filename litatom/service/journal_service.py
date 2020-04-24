@@ -2,6 +2,8 @@
 import datetime
 import logging
 import bson
+import gc
+import sys
 from ..model import *
 from ..util import (
     get_zero_today,
@@ -40,25 +42,30 @@ class JournalService(object):
     def load_user_loc(cls):
         """类的预装载函数，把现有的LOC_STATED，加上new_，和count_前缀,同时准备USER_LOC,NEW_USER_LOC"""
         if not cls.IS_TESTING:
-            objs = UserSetting.objects()
+            objs = UserSetting.objects().only('user_id', 'lang')
         else:
             objs = UserSetting.objects().limit(1000)
         for obj in objs:
             cls.USER_LOC[obj.user_id] = obj.lang
+        del objs
         new_users = eval('UserSetting.objects(%s)' % cls._get_time_str('UserSetting', 'create_time'))
         for obj in new_users:
             cls.NEW_USER_LOC[obj.user_id] = obj.lang
+        del new_users
+        # gc.collect()
 
     @classmethod
     def load_user_gen(cls):
         """预装载函数，将用户性别信息写入USER_GEN"""
         if not cls.IS_TESTING:
-            objs = User.objects()
+            objs = User.objects().only('id', 'gender')
         else:
             objs = User.objects().limit(1000)
         for obj in objs:
             if obj.gender in cls.GENDERS:
                 cls.USER_GEN[str(obj.id)] = obj.gender
+        del objs
+        # gc.collect()
 
     @classmethod
     def load_ali_log(cls, date):

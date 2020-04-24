@@ -22,7 +22,8 @@ from ..const import (
     ONE_DAY,
     REMOVE_EXCHANGE,
     ADD_EXCHANGE,
-    ONE_HOUR
+    ONE_HOUR,
+    ONE_MIN
 )
 
 from ..service import (
@@ -57,7 +58,7 @@ class FeedService(object):
     def should_add_to_square(cls, feed):
         # return True
         user_id = feed.user_id
-        judge_time = int(time.time()) - ONE_HOUR
+        judge_time = int(time.time()) - 5 * ONE_MIN
         if feed.self_high:
             return False
         status = Feed.objects(user_id=user_id, create_time__gte=judge_time).count() <= 3
@@ -218,7 +219,8 @@ class FeedService(object):
         cls._del_from_feed_hq(feed)
         request.region = back_region
         if feed.should_remove_from_follow:
-            FollowingFeedService.remove_feed(feed)
+            MqService.push(REMOVE_EXCHANGE, {"feed_id": str(feed.id)})
+            # FollowingFeedService.remove_feed(feed)
 
     @classmethod
     def move_up_feed(cls, feed_id, ts):
@@ -336,7 +338,7 @@ class FeedService(object):
         if top_id:
             feeds = [top_id] + [el for el in feeds if el != top_id]
         feeds = map(Feed.get_by_id, feeds) if feeds else []
-        feeds = [el for el in feeds if el]
+        feeds = [el for el in feeds if el and not FeedDislike.in_dislike(user_id, str(el.id), el.dislike_num)]
         feeds = map(cls._feed_info, feeds, [user_id for el in feeds])
         return {
             'has_next': has_next,

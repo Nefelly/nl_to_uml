@@ -45,7 +45,8 @@ from ....service import (
     UserService,
     QiniuService,
     ForbiddenService,
-    AliOssService
+    AliOssService,
+    ExperimentService
 )
 
 logger = logging.getLogger(__name__)
@@ -150,6 +151,8 @@ def get_spam_word():
 @session_required
 def report_spam():
     data = request.json
+    if not data:
+        return success()
     word = data.get('word')
     data, status = ForbiddenService.report_spam(request.user_id, word)
     if not status:
@@ -311,6 +314,10 @@ def rules():
     f_name = 'rules_%s.html' % GlobalizationService.get_region()
     return render_template(f_name), 200, {'Content-Type': 'text/html; charset=utf-8'}
 
+
+def experiments():
+    data = ExperimentService.get_conf()
+    return success(data)
 
 @session_required
 def action_by_user_id():

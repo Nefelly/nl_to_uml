@@ -24,6 +24,31 @@ class ExperimentService(object):
     '''
 
     @classmethod
+    def get_conf(cls):
+        exp_key = 'exp_name'
+        paths_key = 'paths'
+        res = {
+            "experiments": [
+                {
+                    paths_key:[
+                        "anoy_match/get_fake_id",
+                        "anoy_match/anoy_match"
+                    ],
+                    exp_key: "match_strategy"
+                },
+                {
+                    paths_key: ["user/accost"],
+                    exp_key: "accost"
+                },
+                {
+                    paths_key: ["anoy_match/times_left"],
+                    exp_key:  "times_left_exp"
+                }
+            ]
+        }
+        return res
+
+    @classmethod
     def _get_key(cls, key, exp_name):
         key_exp = '%s_%s' % (key, exp_name)
         return REDIS_EXP.format(key_exp=key_exp)
@@ -38,7 +63,7 @@ class ExperimentService(object):
         if not exp_name:
             return
         exp_value = request.experiment_value
-        if exp_value == 'default':
+        if exp_value == 'reset':
             '''测试环境可以重新设置值'''
             if setting.IS_DEV:
                 redis_client.delete(cls._get_key(key, exp_name))
