@@ -48,6 +48,7 @@ class JournalService(object):
         new_users = eval('UserSetting.objects(%s)' % cls._get_time_str('UserSetting', 'create_time'))
         for obj in new_users:
             cls.NEW_USER_LOC[obj.user_id] = obj.lang
+        del objs
 
     @classmethod
     def load_user_gen(cls):
