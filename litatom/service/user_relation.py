@@ -122,11 +122,12 @@ class FollowService(object):
             objs = objs[:-1]
 
         follow_uids = [obj.followed for obj in objs]
-        users = map(User.get_by_id, follow_uids)
+        from ..service import UserService
+        # users = map(User.get_by_id, follow_uids)
         res = {
             'has_next': has_next,
             'next_start': next_start,
-            'users': [u.basic_info() for u in users if u]
+            'users': UserService.ordered_user_infos(follow_uids)
         }
         return res, True
 
@@ -141,11 +142,12 @@ class FollowService(object):
             next_start = objs[-1].create_time
             objs = objs[:-1]
         follow_uids = [obj.uid for obj in objs]
+        from ..service import UserService
         users = map(User.get_by_id, follow_uids)
         res = {
             'has_next': has_next,
             'next_start': next_start,
-            'users': [u.basic_info() for u in users if u]
+            'users': UserService.ordered_user_infos(follow_uids)
         }
         return res, True
 
