@@ -241,6 +241,8 @@ def firebase_push():
 
 @session_finished_required
 def query_online():
+    if not request.json:
+        return success()
     uids = request.json.get('user_ids', [])
     uids = uids[:100] + uids[-40:] if len(uids) > 140 else uids
     uids = list(set([_ for _ in uids if _]))

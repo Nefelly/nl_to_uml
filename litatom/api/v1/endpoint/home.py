@@ -151,6 +151,8 @@ def get_spam_word():
 @session_required
 def report_spam():
     data = request.json
+    if not data:
+        return success()
     word = data.get('word')
     data, status = ForbiddenService.report_spam(request.user_id, word)
     if not status:

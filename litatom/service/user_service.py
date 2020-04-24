@@ -80,7 +80,7 @@ class UserService(object):
 
     @classmethod
     def get_all_ids(cls):
-        return [el.user_id for el in UserSetting.objects()]
+        return [el.user_id for el in UserSetting.objects().only('user_id')]
 
     @classmethod
     def _trans_session_2_forbidden(cls, user):
