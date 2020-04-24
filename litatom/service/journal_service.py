@@ -57,7 +57,7 @@ class JournalService(object):
     def load_user_gen(cls):
         """预装载函数，将用户性别信息写入USER_GEN"""
         if not cls.IS_TESTING:
-            objs = User.objects()
+            objs = User.objects().only('id', 'gender')
         else:
             objs = User.objects().limit(1000)
         for obj in objs:
