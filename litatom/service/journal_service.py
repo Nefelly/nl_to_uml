@@ -2,6 +2,7 @@
 import datetime
 import logging
 import bson
+import gc
 from ..model import *
 from ..util import (
     get_zero_today,
@@ -46,10 +47,12 @@ class JournalService(object):
         for obj in objs:
             cls.USER_LOC[obj.user_id] = obj.lang
         del objs
+        gc.collect()
         new_users = eval('UserSetting.objects(%s)' % cls._get_time_str('UserSetting', 'create_time'))
         for obj in new_users:
             cls.NEW_USER_LOC[obj.user_id] = obj.lang
         del new_users
+        gc.collect()
 
     @classmethod
     def load_user_gen(cls):
@@ -62,6 +65,7 @@ class JournalService(object):
             if obj.gender in cls.GENDERS:
                 cls.USER_GEN[str(obj.id)] = obj.gender
         del objs
+        gc.collect()
 
     @classmethod
     def load_ali_log(cls, date):
