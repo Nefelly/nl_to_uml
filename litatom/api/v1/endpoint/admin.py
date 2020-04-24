@@ -332,10 +332,6 @@ def agent():
 
 
 def replace_image():
-    """
-    直接上传图片到云盘
-    目前只用来传实名认证图片
-    """
     # import time
     # t_start = time.time()
     image = request.files.get('image')
