@@ -2,6 +2,7 @@
 import json
 import time
 import datetime
+import gc
 import traceback
 import logging
 from ..model import (
@@ -114,6 +115,7 @@ class MaintainService(object):
                     clear_cnt += 1
                     if clear_cnt % 100 == 0:
                         print clear_cnt
+                        gc.collect()
             except:
                 continue
 
