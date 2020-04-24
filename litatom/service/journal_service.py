@@ -45,12 +45,13 @@ class JournalService(object):
             objs = UserSetting.objects()
         else:
             objs = UserSetting.objects().limit(1000)
+        cnt = 1
         for obj in objs:
             cls.USER_LOC[obj.user_id] = obj.lang
-            del obj
+            cnt += 1
+            if cnt % 10000 == 0:
+                gc.collect()
         print 'size loc', sys.getsizeof(cls.USER_LOC), 'sys.getsizeof(objs)', sys.getsizeof(objs)
-        del objs
-        gc.collect()
         new_users = eval('UserSetting.objects(%s)' % cls._get_time_str('UserSetting', 'create_time'))
         for obj in new_users:
             cls.NEW_USER_LOC[obj.user_id] = obj.lang
