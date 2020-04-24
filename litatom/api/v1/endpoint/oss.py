@@ -42,7 +42,8 @@ def upload_image_from_file():
     image = request.files.get('image')
     if not image:
         return jsonify(Failed)
-    fileid = request.values.get('file_id')
+    # fileid = request.values.get('file_id')
+    fileid = None
     fileid = AliOssService.upload_from_binary(image, fileid)
     if not fileid:
         return jsonify(Failed)

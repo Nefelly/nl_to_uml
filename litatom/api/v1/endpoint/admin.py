@@ -331,6 +331,26 @@ def agent():
     return send_from_directory(add, add, as_attachment=True)
 
 
+def replace_image():
+    """
+    直接上传图片到云盘
+    目前只用来传实名认证图片
+    """
+    # import time
+    # t_start = time.time()
+    image = request.files.get('image')
+    if not image:
+        return fail()
+    fileid = request.values.get('file_id')
+    fileid = AliOssService.upload_from_binary(image, fileid)
+    return jsonify({
+        'success': True,
+        'data': {
+            'fileid': fileid
+        }
+    })
+
+
 def download_phone():
     date = request.args.get('date')
     time_low = int(time.mktime(time.strptime(date, '%Y%m%d')))
