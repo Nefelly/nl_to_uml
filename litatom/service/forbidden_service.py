@@ -123,6 +123,7 @@ class ForbiddenService(object):
         report_total_num = Report.count_by_time_and_uid_distinct(user_id, time_3days_ago, timestamp_now)
         report_match_num = Report.count_match_by_time_and_uid(user_id, time_3days_ago, timestamp_now)
         review_pic_num = cls.accum_review_feed_pic_num(user_id,time_3days_ago,timestamp_now)
+
         illegal_credit = alert_num * cls.ALERT_WEIGHTING + (report_total_num - report_match_num) * cls.REPORT_WEIGHTING \
                          + report_match_num * cls.MATCH_REPORT_WEIGHTING + review_pic_num * cls.REVIEW_FEED_PIC_WEIGHTING \
                          - cls.get_high_value_compensation(user_id)
@@ -141,7 +142,12 @@ class ForbiddenService(object):
                 reason, advice = QiniuService.should_pic_block_from_file_id(pic)
                 if reason == 'pulp' and advice == 'r':
                     review_pic_num += 1
+                    break
         return review_pic_num
+
+    @classmethod
+    def accum_illegal_pics(cls, pics):
+        return 0
 
     @classmethod
     def forbid_user(cls, user_id, forbid_ts, forbid_type=SYS_FORBID, ts=int(time.time())):
