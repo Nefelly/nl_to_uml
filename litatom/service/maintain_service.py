@@ -106,6 +106,7 @@ class MaintainService(object):
         except:
             ids = UserService.get_all_ids()
         clear_cnt = 0
+        print 'load ids succ'
 
         for _ in ids:
             try:
