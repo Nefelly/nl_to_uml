@@ -107,6 +107,7 @@ b.add_url_rule('/lit/image/chat_upload', 'image-upload', endpoint.oss.upload_ima
 # b.add_url_rule('/lit/image/<fileid>', 'get-image', endpoint.oss.get_image)
 b.add_url_rule('/lit/image/<fileid>', 'get-image', endpoint.oss.get_image)
 b.add_url_rule('/lit/simage/<fileid>', 'get-simage', endpoint.oss.get_simage)
+b.add_url_rule('/lit/gimage/<fileid>', 'get-gimage', endpoint.oss.get_gimage)
 b.add_url_rule('/lit/audio/upload', 'audio-upload', endpoint.oss.upload_audio_from_file, methods=['POST'])
 b.add_url_rule('/lit/audio/<fileid>', 'get-audio', endpoint.oss.get_audio)
 b.add_url_rule('/lit/log/upload', 'log-upload', endpoint.oss.upload_log_from_file, methods=['POST'])
