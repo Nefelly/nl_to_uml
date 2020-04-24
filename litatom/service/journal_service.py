@@ -60,6 +60,7 @@ class JournalService(object):
         for obj in objs:
             if obj.gender in cls.GENDERS:
                 cls.USER_GEN[str(obj.id)] = obj.gender
+        del objs
 
     @classmethod
     def load_ali_log(cls, date):
