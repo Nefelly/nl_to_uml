@@ -700,7 +700,8 @@ class UserService(object):
         return True
 
     @classmethod
-    def user_infos_order
+    def user_infos_order(cls, uids, visit_user_id):
+        pass
 
     @classmethod
     def uids_online(cls, uids):
