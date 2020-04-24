@@ -722,8 +722,7 @@ class UserService(object):
         for uid, online_time in sorted_lst:
             u = User.get_by_id(uid)
             if u:
-                info = u.basic_info()
-                info['bio'] = cls.get_bio(u)
+                info = cls.get_basic_info()
                 info['online'] = True if online_time >= judge_time else False
                 res.append(info)
         return res
