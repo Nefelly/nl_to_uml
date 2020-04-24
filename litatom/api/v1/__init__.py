@@ -128,6 +128,7 @@ b.add_url_rule('/lit/home/track_network', 'home-track-network', endpoint.home.tr
 b.add_url_rule('/lit/home/track_action', 'home-action-info', endpoint.home.action_by_user_id)
 b.add_url_rule('/lit/home/privacy', 'home-privacy', endpoint.home.privacy)
 b.add_url_rule('/lit/home/rules', 'home-rules', endpoint.home.rules)
+b.add_url_rule('/lit/home/community_rule', 'home-community_rule', endpoint.home.community_rule)
 b.add_url_rule('/lit/home/index', 'home-index', endpoint.home.index)
 b.add_url_rule('/lit/home/check_version', 'home-check-version', endpoint.home.check_version)
 b.add_url_rule('/lit/home/settings', 'home-setting', endpoint.home.settings)

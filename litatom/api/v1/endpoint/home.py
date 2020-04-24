@@ -315,6 +315,11 @@ def rules():
     return render_template(f_name), 200, {'Content-Type': 'text/html; charset=utf-8'}
 
 
+def community_rule():
+    f_name = 'community_rules_%s.html' % GlobalizationService.get_region()
+    return render_template(f_name), 200, {'Content-Type': 'text/html; charset=utf-8'}
+
+
 def experiments():
     data = ExperimentService.get_conf()
     return success(data)
