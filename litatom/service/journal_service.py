@@ -25,7 +25,7 @@ redis_client = RedisClient()['lit']
 
 
 class JournalService(object):
-    IS_TESTING = True
+    IS_TESTING = False
     DATE_DIS = datetime.timedelta(hours=0)
 
     USER_LOC = {}  # user_id:loc
@@ -44,7 +44,7 @@ class JournalService(object):
         if not cls.IS_TESTING:
             objs = UserSetting.objects()
         else:
-            objs = UserSetting.objects().limit(500000)
+            objs = UserSetting.objects().limit(1000)
         for obj in objs:
             cls.USER_LOC[obj.user_id] = obj.lang
             del obj
