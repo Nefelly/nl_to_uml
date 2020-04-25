@@ -339,8 +339,8 @@ def action_by_user_id():
 
 @forbidden_session_required
 def report_acted():
-    data = request.json
-    data, status = ActedService.report_acted(request.user_id, )
+    acts = request.json.get('acts', [])
+    data, status = ActedService.report_acted(request.user_id, acts)
     if status:
         return success(data)
     return fail(data)
