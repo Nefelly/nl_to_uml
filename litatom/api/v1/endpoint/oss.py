@@ -31,6 +31,7 @@ from ....service import (
 
 logger = logging.getLogger(__name__)
 
+
 @session_required
 def upload_image_from_file():
     """
@@ -61,6 +62,7 @@ def upload_image_from_file():
         }
     })
 
+
 def get_image(fileid):
     if fileid == 'null':
         return jsonify(Failed)
@@ -69,6 +71,7 @@ def get_image(fileid):
         return Response('', mimetype='image/jpeg')   # 返回空图片流, 兼容错误
         #return jsonify(Failed)
     return Response(content, mimetype='image/jpeg')
+
 
 def get_simage(fileid):
     if fileid == 'null':
@@ -80,13 +83,13 @@ def get_simage(fileid):
         #return jsonify(Failed)
     return Response(content, mimetype='image/jpeg')
 
+
 def get_gimage(fileid):
     if fileid == 'null':
         return jsonify(Failed)
     content = AliOssService.rgba_resize(fileid)
     if not content:
         return Response('', mimetype='image/jpeg')   # 返回空图片流, 兼容错误
-        #return jsonify(Failed)
     return Response(content, mimetype='image/jpeg')
 
 @session_required
