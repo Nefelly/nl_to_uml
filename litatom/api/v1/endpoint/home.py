@@ -208,6 +208,7 @@ def report():
     data = request.json
     print data, '!' * 100
     chat_record = data.get('chat_record', {})
+    print chat_record
     form = ReportForm(data=request.json)
     reason = form.reason.data
     pics = form.pics.data
