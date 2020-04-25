@@ -263,7 +263,7 @@ class AntiSpamRateService(object):
         '''
         if related_protcted:
             if other_id:
-                if cls.protected_visit_before(user_id, activity, other_id):
+                if cls.set_protected_visit_before(user_id, activity, other_id):
                     return None, True
 
 
