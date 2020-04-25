@@ -146,6 +146,15 @@ class AntiSpamRateService(object):
             res.update({'diamonds': diamonds})
         return res
 
+    @classmethod
+    def _get_protected_error_message(cls, word, activity, other_id, diamonds=None):
+        res = cls._get_error_message(word, activity, diamonds)
+        if isinstance(res, dict):
+            other_info = {
+                'other_id': other_id
+            }
+            res['other_info'] = other_info
+        return res
 
     @classmethod
     def get_key(cls, user_id, activity, level, is_protected=False):
@@ -191,10 +200,6 @@ class AntiSpamRateService(object):
         key = cls._visit_before_key(user_id, activity, other_id)
         redis_client.incr(key)
         redis_client.expire(key, cls.TIME_TO_LIVE)
-
-    @classmethod
-    def get_before_status(cls, user_id, activity, other_id, protected):
-        pass
 
     @classmethod
     def should_not_be_protected(cls, other_id, activity):

@@ -27,5 +27,4 @@ class ActedService(object):
         raw = {}
         for _ in ActedRecord.get_by_user_id(user_id):
             raw[_.content] = True
-        res = {'acted': raw}
-        return res, True
+        return raw, True
