@@ -179,7 +179,7 @@ def accost():
 @session_required
 def accost_other():
     other_user_id = request.values.get('targetId', '')
-    data, status = AntiSpamRateService.judge_stop(request.user_id, AntiSpamRateService.ACCOST, other_user_id, related_protcted=True)
+    data, status = AntiSpamRateService.judge_stop(request.user_id, AntiSpamRateService.ACCOST, other_user_id, related_protcted=True, other_protected=True)
     if not status:
         return fail(data)
     return success(data)

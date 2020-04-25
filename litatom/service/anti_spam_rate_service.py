@@ -22,6 +22,7 @@ from ..service import (
 from ..key import (
     REDIS_SPAMED,
     REDIS_SPAM_RATE_CONTROL,
+    REDIS_PROTECT_RATE_CONTROL,
     REDIS_SPAMED_INFORMED,
     REDIS_RATE_VISITED
 )
@@ -75,6 +76,17 @@ class AntiSpamRateService(object):
                 [ONE_DAY, 100]
             ],
             WORD_KEY: ['rate_comment_diamonds', 'rate_comment_stop']
+        }
+    }
+
+    PROTECTED_D = {
+        ACCOST: {
+            RATE_KEY: [
+                          [5 * ONE_MIN, 5, 5],
+                          [ONE_DAY, 100, 5],
+                          [ONE_DAY, 100]
+                      ],
+                      WORD_KEY: 'protected_conversation_diamonds'
         }
     }
 
@@ -134,10 +146,12 @@ class AntiSpamRateService(object):
             res.update({'diamonds': diamonds})
         return res
 
+
     @classmethod
-    def get_key(cls, user_id, activity, level):
+    def get_key(cls, user_id, activity, level, is_protected=False):
         user_interval_type_stop = '%s_%s_%d' % (user_id, activity, level)
-        return REDIS_SPAM_RATE_CONTROL.format(user_interval_type=user_interval_type_stop)
+        raw_key = REDIS_SPAM_RATE_CONTROL if not is_protected else REDIS_PROTECT_RATE_CONTROL
+        return raw_key.format(user_interval_type=user_interval_type_stop)
 
     @classmethod
     def out_of_times(cls, key, num):
@@ -167,24 +181,96 @@ class AntiSpamRateService(object):
 
     @classmethod
     def set_protected_visit_before(cls, user_id, activity, other_id):
+        '''
+        被保护用户的多次搭讪仅记做一次
+        :param user_id:
+        :param activity:
+        :param other_id:
+        :return:
+        '''
         key = cls._visit_before_key(user_id, activity, other_id)
         redis_client.incr(key)
         redis_client.expire(key, cls.TIME_TO_LIVE)
 
     @classmethod
-    def judge_stop(cls, user_id, activity, other_id=None, related_protcted=False):
+    def get_before_status(cls, user_id, activity, other_id, protected):
+        pass
+
+    @classmethod
+    def should_not_be_protected(cls, other_id, activity):
+        '''
+        判断这个id对应的活动是否应该被限流以保护
+        :param other_id:
+        :param avtivity:
+        :return:
+        '''
+
+        info_m = cls.PROTECTED_D.get(activity)
+        if not info_m:
+            return None, True
+
+        first, second, final = info_m.get(cls.RATE_KEY)
+        first_interval, first_stop, first_diamonds = first
+        second_interval, second_stop, second_diamonds = second
+        stop_interval, stop_num = final
+        diamond_word, stop_word = info_m.get(cls.WORD_KEY)
+
+        '''判断是否过期'''
+        stop_key = cls.get_key(other_id, activity, cls.LEVEL_STOP, True)
+        if cls.out_of_times(stop_key, stop_num):
+            '''多次尝试 只记录一次'''
+            if cls.just_out_times(stop_key, stop_num):
+                cls.record_over(other_id, activity, cls.LEVEL_FIRST)
+                cls.incr_key(stop_key, stop_interval)
+            return cls._get_error_message(stop_word, activity), False
+
+        second_key = cls.get_key(other_id, activity, cls.LEVEL_SECCOND, True)
+        if cls.out_of_times(second_key, second_stop):
+            if cls.just_out_times(second_key, second_stop):
+                cls.record_over(other_id, activity, cls.LEVEL_SECCOND)
+                cls.incr_key(second_key, second_interval)
+            return cls._get_error_message(diamond_word, activity, second_diamonds), False
+
+        first_key = cls.get_key(other_id, activity, cls.LEVEL_FIRST, True)
+        if cls.out_of_times(first_key, first_stop):
+            if cls.just_out_times(first_key, first_stop):
+                cls.record_over(other_id, activity, cls.LEVEL_FIRST)
+                cls.incr_key(first_key, first_interval)
+            return cls._get_error_message(diamond_word, activity, first_diamonds), False
+
+        '''增加次数'''
+        cls.incr_key(first_key, first_interval)
+        cls.incr_key(second_key, second_interval)
+        cls.incr_key(stop_key, stop_interval)
+        return None, True
+
+    @classmethod
+    def incr_key(cls, key, interval):
+        v = redis_client.incr(key)
+        if v == 1:
+            redis_client.expire(key, interval)
+
+    @classmethod
+    def judge_stop(cls, user_id, activity, other_id=None, related_protcted=False, other_protected=False):
+        '''
+        判断用户是否要被频控，
+        :param user_id:
+        :param activity:
+        :param other_id:
+        :param related_protcted: 用来防止对一个id进行多次频控
+        :param other_protected:  另外的id所代表的是否要被频控；
+        :return:
+        '''
         if related_protcted:
             if other_id:
                 if cls.protected_visit_before(user_id, activity, other_id):
                     return None, True
-        def incr_key(key, interval):
-            v = redis_client.incr(key)
-            if v == 1:
-                redis_client.expire(key, interval)
+
 
         info_m = cls.RATE_D.get(activity)
         if not info_m:
             return None, True
+
         first, second, final = info_m.get(cls.RATE_KEY)
         first_interval, first_stop, first_diamonds = first
         second_interval, second_stop, second_diamonds = second
@@ -198,7 +284,7 @@ class AntiSpamRateService(object):
             '''多次尝试 只记录一次'''
             if cls.just_out_times(stop_key, stop_num):
                 cls.record_over(user_id, activity, cls.LEVEL_FIRST)
-                incr_key(stop_key, first_interval)
+                cls.incr_key(stop_key, stop_interval)
             return cls._get_error_message(stop_word, activity), False
 
         second_key = cls.get_key(user_id, activity, cls.LEVEL_SECCOND)
@@ -206,7 +292,7 @@ class AntiSpamRateService(object):
             cls.inform_spam(user_id)
             if cls.just_out_times(second_key, second_stop):
                 cls.record_over(user_id, activity, cls.LEVEL_SECCOND)
-                incr_key(second_key, second_interval)
+                cls.incr_key(second_key, second_interval)
             return cls._get_error_message(diamond_word, activity, second_diamonds), False
 
         first_key = cls.get_key(user_id, activity, cls.LEVEL_FIRST)
@@ -214,13 +300,13 @@ class AntiSpamRateService(object):
             cls.inform_spam(user_id)
             if cls.just_out_times(first_key, first_stop):
                 cls.record_over(user_id, activity, cls.LEVEL_FIRST)
-                incr_key(first_key, first_interval)
+                cls.incr_key(first_key, first_interval)
             return cls._get_error_message(diamond_word, activity, first_diamonds), False
 
         '''增加次数'''
-        incr_key(first_key, first_interval)
-        incr_key(second_key, second_interval)
-        incr_key(stop_key, stop_interval)
+        cls.incr_key(first_key, first_interval)
+        cls.incr_key(second_key, second_interval)
+        cls.incr_key(stop_key, stop_interval)
         if related_protcted:
             cls.set_protected_visit_before(user_id, activity, other_id)
         return None, True

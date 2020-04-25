@@ -11,8 +11,7 @@ from ..key import (
     REDIS_FEED_SQUARE_REGION,
     REDIS_FEED_HQ_REGION,
     REDIS_FEED_ID_AGE,
-    REDIS_REGION_FEED_TOP,
-    REDIS_USER_FEED_COMMENT
+    REDIS_REGION_FEED_TOP
 )
 from ..util import (
     get_time_info,
