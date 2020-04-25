@@ -216,7 +216,8 @@ class AccountService(object):
         return None, True
 
     @classmethod
-    def reset_by_diamonds(cls, user_id, activity):
+    def reset_by_diamonds(cls, user_id, activity, other_info):
+
         diamonds = AntiSpamRateService.how_much_should_pay(user_id, activity)
         if diamonds == MAX_DIAMONDS:
             return u'you can\'t reset now', False

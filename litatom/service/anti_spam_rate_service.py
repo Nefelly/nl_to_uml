@@ -330,7 +330,11 @@ class AntiSpamRateService(object):
                 redis_client.delete(cls.get_key(user_id, _, cls.LEVEL_FIRST))
 
     @classmethod
-    def reset_spam_type(cls, user_id, activity, diamonds=0):
+    def reset_spam_type(cls, user_id, activity, other_id=None):
+        if other_id:
+            ''' 针对他人的频控保护'''
+            cls.set_protected_visit_before(user_id, activity, other_id)
+            return None, True
         forbid_level = cls.get_forbid_level(user_id, activity)
         if forbid_level == cls.LEVEL_STOP:
             word = cls.RATE_D.get(activity)[cls.WORD_KEY][1]
