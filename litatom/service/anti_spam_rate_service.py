@@ -84,7 +84,7 @@ class AntiSpamRateService(object):
             RATE_KEY: [
                           [5 * ONE_MIN, 5, 5],
                           [ONE_DAY, 100, 5],
-                          [ONE_DAY, 100]
+                          [ONE_DAY, 10000]
                       ],
                       WORD_KEY: 'protected_conversation_diamonds'
         }
@@ -212,36 +212,19 @@ class AntiSpamRateService(object):
         first, second, final = info_m.get(cls.RATE_KEY)
         first_interval, first_stop, first_diamonds = first
         second_interval, second_stop, second_diamonds = second
-        stop_interval, stop_num = final
-        diamond_word, stop_word = info_m.get(cls.WORD_KEY)
-
-        '''判断是否过期'''
-        stop_key = cls.get_key(other_id, activity, cls.LEVEL_STOP, True)
-        if cls.out_of_times(stop_key, stop_num):
-            '''多次尝试 只记录一次'''
-            if cls.just_out_times(stop_key, stop_num):
-                cls.record_over(other_id, activity, cls.LEVEL_FIRST)
-                cls.incr_key(stop_key, stop_interval)
-            return cls._get_error_message(stop_word, activity), False
+        diamond_word = info_m.get(cls.WORD_KEY)
 
         second_key = cls.get_key(other_id, activity, cls.LEVEL_SECCOND, True)
         if cls.out_of_times(second_key, second_stop):
-            if cls.just_out_times(second_key, second_stop):
-                cls.record_over(other_id, activity, cls.LEVEL_SECCOND)
-                cls.incr_key(second_key, second_interval)
             return cls._get_error_message(diamond_word, activity, second_diamonds), False
 
         first_key = cls.get_key(other_id, activity, cls.LEVEL_FIRST, True)
         if cls.out_of_times(first_key, first_stop):
-            if cls.just_out_times(first_key, first_stop):
-                cls.record_over(other_id, activity, cls.LEVEL_FIRST)
-                cls.incr_key(first_key, first_interval)
             return cls._get_error_message(diamond_word, activity, first_diamonds), False
 
         '''增加次数'''
         cls.incr_key(first_key, first_interval)
         cls.incr_key(second_key, second_interval)
-        cls.incr_key(stop_key, stop_interval)
         return None, True
 
     @classmethod
@@ -265,7 +248,6 @@ class AntiSpamRateService(object):
             if other_id:
                 if cls.set_protected_visit_before(user_id, activity, other_id):
                     return None, True
-
 
         info_m = cls.RATE_D.get(activity)
         if not info_m:
@@ -309,6 +291,8 @@ class AntiSpamRateService(object):
         cls.incr_key(stop_key, stop_interval)
         if related_protcted:
             cls.set_protected_visit_before(user_id, activity, other_id)
+            if other_protected:
+                data, status = cls.should_not_be_protected(other_id, activity)
         return None, True
 
     @classmethod
