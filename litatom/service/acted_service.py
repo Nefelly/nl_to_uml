@@ -20,7 +20,7 @@ class ActedService(object):
     def report_acted(cls, user_id, actions):
         for _ in actions:
             ActedRecord.create(user_id, _)
-        return True
+        return None, True
 
     @classmethod
     def acted_actions(cls, user_id):
