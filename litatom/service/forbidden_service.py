@@ -84,15 +84,21 @@ class ForbiddenService(object):
         report_id = ReportService.save_report(user_id, reason, pics, target_user_id, related_feed_id, match_type,
                                               chat_record)
         if related_feed_id:
-            feed = Feed.get_by_id(related_feed_id)
-            pic = cls.check_review_pics(feed.pics)
-            TrackSpamRecord.create(user_id, pic=pic)
-            cls.alert_to_user(user_id,
-                              msg=u'Your post have been deleted due to reason: %s. Please keep your feed positive.' % reason)
+            cls.resolve_feed_report(related_feed_id,target_user_id,user_id)
         res = cls.check_forbid(target_user_id, ts_now)
         if res:
             return {"report_id": str(report_id), SYS_FORBID: True}, True
         return {"report_id": str(report_id), SYS_FORBID: False}, True
+
+    @classmethod
+    def resolve_feed_report(cls, feed_id, target_user_id,user_id):
+        feed = Feed.get_by_id(feed_id)
+        pic, reason = cls.check_review_pics(feed.pics)
+        if pic:
+            TrackSpamRecord.create(target_user_id, pic=pic)
+            cls.alert_to_user(target_user_id,
+                              msg=u'Your post have been deleted due to reason: %s. Please keep your feed positive.' % reason)
+            cls.feedback_to_reporters(target_user_id,[user_id],is_warn=True)
 
     @classmethod
     def report_spam(cls, user_id, word):
@@ -139,6 +145,7 @@ class ForbiddenService(object):
 
     @classmethod
     def accum_review_feed_pic_num(cls, user_id, from_time, to_time):
+        """计算用户一段时间内有多少feed是被七牛云检测为review的"""
         reported_feed = Report.get_report_with_pic_by_time(user_id, from_time, to_time)
         review_pic_num = 0
         for feed_id in reported_feed:
@@ -152,6 +159,7 @@ class ForbiddenService(object):
 
     @classmethod
     def accum_illegal_pics(cls, pics):
+        """计算一组pics中有多少是被七牛云返回为review,多少是block的"""
         review_num = 0
         block_num = 0
         for pic in pics:
@@ -165,8 +173,8 @@ class ForbiddenService(object):
     @classmethod
     def check_review_feed(cls, feed_id):
         feed = Feed.get_by_id(feed_id)
-        pic = cls.check_review_pics(feed.pics)
-        return pic
+        pic,reason = cls.check_review_pics(feed.pics)
+        return pic,reason
 
     @classmethod
     def check_illegal_pics(cls, pics):
@@ -181,8 +189,8 @@ class ForbiddenService(object):
         for pic in pics:
             reason, advice = QiniuService.should_pic_block_from_file_id(pic)
             if reason == 'pulp' and advice == 'r':
-                return pic
-        return None
+                return pic, 'sexual'
+        return None,None
 
     @classmethod
     def forbid_user(cls, user_id, forbid_ts, forbid_type=SYS_FORBID, ts=int(time.time())):
@@ -222,9 +230,13 @@ class ForbiddenService(object):
         UserModel.add_alert_num(user_id)
 
     @classmethod
-    def feedback_to_reporters(cls, reported_uid, report_user_ids):
+    def feedback_to_reporters(cls, reported_uid, report_user_ids, is_warn=False):
         target_user_nickname = UserService.nickname_by_uid(reported_uid)
-        to_user_info = u"Your report on the user %s  has been settled. %s's account is disabled. Thank you for your support of the Lit community." \
+        if is_warn:
+            to_user_info = u"Your report on the user %s  has been settled. %s's account is warned. Thank you for your support of the Litmatch community." \
+                           % (target_user_nickname, target_user_nickname)
+        else:
+            to_user_info = u"Your report on the user %s  has been settled. %s's account is disabled. Thank you for your support of the Litmatch community." \
                        % (target_user_nickname, target_user_nickname)
         for _ in report_user_ids:
             UserService.msg_to_user(to_user_info, _)
