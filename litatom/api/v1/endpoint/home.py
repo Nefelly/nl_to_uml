@@ -206,9 +206,7 @@ def check_version():
 def report():
     user_id = request.user_id
     data = request.json
-    print data, '!' * 100
     chat_record = data.get('chat_record', {})
-    print chat_record
     form = ReportForm(data=request.json)
     reason = form.reason.data
     pics = form.pics.data
@@ -229,7 +227,7 @@ def report():
         pics = feed_info['pics']
         data, status = ForbiddenService.resolve_report(user_id, reason, pics, target_user_id, feed_id)
     elif chat_record:
-        data, status = ForbiddenService.resolve_report(user_id, reason, pics, target_user_id, None,
+        data, status = ForbiddenService.resolve_report(user_id, reason, pics, target_user_id, None, None,
                                                        json.dumps(chat_record))
     else:
         data, status = ForbiddenService.resolve_report(user_id, reason, pics, target_user_id)
