@@ -303,7 +303,7 @@ class AntiSpamRateService(object):
         return None, True
 
     @classmethod
-    def get_forbid_level(cls, user_id, activity, other_id):
+    def get_forbid_level(cls, user_id, activity, other_id=''):
         m = cls.PROTECTED_D if other_id else cls.RATE_D
         for el in [cls.LEVEL_STOP, cls.LEVEL_SECCOND, cls.LEVEL_FIRST]:
             key = cls.get_key(user_id, activity, el)
