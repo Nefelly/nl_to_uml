@@ -22,7 +22,8 @@ from ..service import (
 from ..key import (
     REDIS_SPAMED,
     REDIS_SPAM_RATE_CONTROL,
-    REDIS_SPAMED_INFORMED
+    REDIS_SPAMED_INFORMED,
+    REDIS_RATE_VISITED
 )
 
 from ..redis import RedisClient
@@ -153,7 +154,29 @@ class AntiSpamRateService(object):
         return stop_num == num
 
     @classmethod
-    def judge_stop(cls, user_id, activity):
+    def _visit_before_key(cls, user_id, activity, other_id):
+        return REDIS_RATE_VISITED.format(user_id_activity_other_id='%s_%s_%s' % (user_id, activity, other_id))
+
+
+    @classmethod
+    def is_protected_visit_before(cls, user_id, activity, other_id):
+        key = cls._visit_before_key(user_id, activity, other_id)
+        if redis_client.get(key):
+            return True
+        return False
+
+    @classmethod
+    def set_protected_visit_before(cls, user_id, activity, other_id):
+        key = cls._visit_before_key(user_id, activity, other_id)
+        redis_client.incr(key)
+        redis_client.expire(key, cls.TIME_TO_LIVE)
+
+    @classmethod
+    def judge_stop(cls, user_id, activity, other_id=None, related_protcted=False):
+        if related_protcted:
+            if other_id:
+                if cls.protected_visit_before(user_id, activity, other_id):
+                    return None, True
         def incr_key(key, interval):
             v = redis_client.incr(key)
             if v == 1:
@@ -198,6 +221,8 @@ class AntiSpamRateService(object):
         incr_key(first_key, first_interval)
         incr_key(second_key, second_interval)
         incr_key(stop_key, stop_interval)
+        if related_protcted:
+            cls.set_protected_visit_before(user_id, activity, other_id)
         return None, True
 
     @classmethod

@@ -35,6 +35,7 @@ REDIS_SPAMED = 'spam:{user_id}'
 REDIS_SPAM_RATE_CONTROL = 'spam:{user_interval_type}'
 REDIS_USER_FEED_COMMENT = 'feed_comment:{user_id_feed}'
 REDIS_SPAMED_INFORMED = 'spam_informed:{user_id_activity}'
+REDIS_RATE_VISITED = 'rate_visit:{user_id_activity_other_id}'
 
 # cache
 REDIS_USER_CACHE = 'user_cache:{user_id}'
