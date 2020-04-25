@@ -142,6 +142,8 @@ b.add_url_rule('/lit/home/spam_words', 'home-spam_words', endpoint.home.get_spam
 b.add_url_rule('/lit/home/report_spam', 'home-report_spam', endpoint.home.report_spam, methods=['POST'])
 b.add_url_rule('/lit/home/check_pic', 'home-check_pic', endpoint.home.check_pic, methods=['POST'])
 b.add_url_rule('/lit/home/experiments', 'home-experiments', endpoint.home.experiments)
+b.add_url_rule('/lit/home/report_acted', 'home-report_acted', endpoint.home.report_acted)
+b.add_url_rule('/lit/home/acted_actions', 'home-acted_actions', endpoint.home.acted_actions)
 
 # huanxin
 b.add_url_rule('/lit/huanxin/<target_user_id>', 'huanxin-get-info', endpoint.huanxin.get_user_info)

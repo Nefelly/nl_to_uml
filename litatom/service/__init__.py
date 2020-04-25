@@ -9,6 +9,7 @@ from .globalization_service import GlobalizationService
 from .anti_spam_rate_service import AntiSpamRateService
 from .mq_service import MqService
 from .experiment_service import ExperimentService
+from .acted_service import ActedService
 from .track_action_service import TrackActionService
 from .user_model_service import UserModelService
 from .async_service import AsyncCmdService

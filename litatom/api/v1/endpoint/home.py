@@ -22,7 +22,8 @@ from ..form import (
 )
 from ...decorator import (
     session_required,
-    session_finished_required
+    session_finished_required,
+    forbidden_session_required
 )
 
 from ....response import (
@@ -46,7 +47,8 @@ from ....service import (
     QiniuService,
     ForbiddenService,
     AliOssService,
-    ExperimentService
+    ExperimentService,
+    ActedService
 )
 
 logger = logging.getLogger(__name__)
@@ -326,9 +328,26 @@ def experiments():
     data = ExperimentService.get_conf()
     return success(data)
 
+
 @session_required
 def action_by_user_id():
     data, status = TrackActionService.action_by_uid(request.user_id)
+    if status:
+        return success(data)
+    return fail(data)
+
+
+@forbidden_session_required
+def report_acted():
+    data = request.json
+    data, status = ActedService.report_acted(request.user_id, )
+    if status:
+        return success(data)
+    return fail(data)
+
+@forbidden_session_required
+def acted_actions():
+    data, status = ActedService.acted_actions(request.user_id)
     if status:
         return success(data)
     return fail(data)
