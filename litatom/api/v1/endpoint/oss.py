@@ -92,6 +92,7 @@ def get_gimage(fileid):
         return Response('', mimetype='image/jpeg')   # 返回空图片流, 兼容错误
     return Response(content, mimetype='image/jpeg')
 
+
 @session_required
 def upload_audio_from_file():
     """
@@ -111,6 +112,7 @@ def upload_audio_from_file():
             'fileid': fileid
         }
     })
+
 
 def get_audio(fileid):
     if fileid == 'null':
