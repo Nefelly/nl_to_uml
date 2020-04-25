@@ -216,18 +216,18 @@ class AccountService(object):
         return None, True
 
     @classmethod
-    def reset_by_diamonds(cls, user_id, activity, other_info):
-
-        diamonds = AntiSpamRateService.how_much_should_pay(user_id, activity)
+    def reset_by_diamonds(cls, user_id, activity, other_id=''):
+        diamonds = AntiSpamRateService.how_much_should_pay(user_id, activity, other_id)
         if diamonds == MAX_DIAMONDS:
             return u'you can\'t reset now', False
         if diamonds:
             if not cls.is_diamond_enough(user_id, diamonds):
                 return cls.ERR_DIAMONDS_NOT_ENOUGH, False
-            data, status = AntiSpamRateService.reset_spam_type(user_id, activity)
+            data, status = AntiSpamRateService.reset_spam_type(user_id, activity, other_id)
             if not status:
                 return data, False
-            err_msg = cls.change_diamonds(user_id, -diamonds, 'reset ' + activity)
+            name = 'unlock_' + activity if other_id else 'reset ' + activity
+            err_msg = cls.change_diamonds(user_id, -diamonds, name)
             if err_msg:
                 return err_msg, False
             return None, True
