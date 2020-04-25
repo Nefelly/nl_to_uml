@@ -318,10 +318,11 @@ def rules():
 
 
 def community_rule():
-    region = GlobalizationService.get_region()
-    region = region if region in ['th', 'vi', 'id'] else 'en'
-    f_name = 'community_rules_%s.html' % region
-    return render_template(f_name), 200, {'Content-Type': 'text/html; charset=utf-8'}
+    return success({'community_rule': GlobalizationService.get_region_word('coummunity_rule')})
+    # region = GlobalizationService.get_region()
+    # region = region if region in ['th', 'vi', 'id'] else 'en'
+    # f_name = 'community_rules_%s.html' % region
+    # return render_template(f_name), 200, {'Content-Type': 'text/html; charset=utf-8'}
 
 
 def experiments():
