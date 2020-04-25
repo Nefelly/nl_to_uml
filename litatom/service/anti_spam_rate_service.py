@@ -314,7 +314,8 @@ class AntiSpamRateService(object):
 
     @classmethod
     def how_much_should_pay(cls, user_id, activity, other_id):
-        forbid_level = cls.get_forbid_level(user_id, activity, other_id)
+        check_id = other_id if other_id else user_id
+        forbid_level = cls.get_forbid_level(check_id, activity, other_id)
         print forbid_level, 'aaaa'
         if forbid_level:
             if forbid_level == cls.LEVEL_STOP:
