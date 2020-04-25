@@ -221,11 +221,11 @@ class AntiSpamRateService(object):
 
         second_key = cls.get_key(other_id, activity, cls.LEVEL_SECCOND, True)
         if cls.out_of_times(second_key, second_stop):
-            return cls._get_error_message(diamond_word, activity, second_diamonds), False
+            return cls._get_protected_error_message(diamond_word, activity, other_id, second_diamonds), False
 
         first_key = cls.get_key(other_id, activity, cls.LEVEL_FIRST, True)
         if cls.out_of_times(first_key, first_stop):
-            return cls._get_error_message(diamond_word, activity, first_diamonds), False
+            return cls._get_protected_error_message(diamond_word, activity, other_id, first_diamonds), False
 
         '''增加次数'''
         cls.incr_key(first_key, first_interval)
