@@ -25,7 +25,6 @@ class ActedService(object):
     @classmethod
     def acted_actions(cls, user_id):
         raw = {}
-        ActedRecord.
         for _ in ActedRecord.get_by_user_id(user_id):
             raw[_.content] = True
         res = {'acted': raw}
