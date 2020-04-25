@@ -165,7 +165,8 @@ def search_user():
 @set_exp_arg()
 @session_required
 def accost():
-    status = AccostService.can_accost(request.user_id, request.session_id, request.loc, request.version)
+    other_user_id = request.values.get('targetId', '')
+    status = AccostService.can_accost(request.user_id, other_user_id, request.session_id, request.loc, request.version)
     if not status:
         return fail()
     res = {

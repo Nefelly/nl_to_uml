@@ -40,7 +40,7 @@ class AccostService(object):
     DAY_STOP_RATE = 100
 
     @classmethod
-    def can_accost(cls, user_id, session_id, loc, version):
+    def can_accost(cls, user_id, other_user_id, session_id, loc, version):
 
         def should_stop():
             day_stop = REDIS_ACCOST_DAY_STOP.format(now_date_key=now_date_key(), user_id=user_id)
@@ -89,7 +89,7 @@ class AccostService(object):
                 if should_stop():
                     return cls.ACCOST_BAN
                 redis_client.decr(key)
-                cls.record_accost(user_id, session_id, loc, version)
+                cls.record_accost(user_id, other_user_id, session_id, loc, version)
                 return cls.ACCOST_PASS
 
     @classmethod
@@ -101,8 +101,8 @@ class AccostService(object):
         return None, True
 
     @classmethod
-    def record_accost(cls, user_id, session_id, loc, version):
+    def record_accost(cls, user_id, other_user_id, session_id, loc, version):
         version = version if version else ''
-        contents = [('action', 'accost'), ('location', loc), ('remark', 'accost_pass'), ('session_id', str(session_id)),
+        contents = [('action', 'accost'), ('other_user_id', other_user_id), ('location', loc), ('remark', 'accost_pass'), ('session_id', str(session_id)),
                     ('user_id', str(user_id)), ('version', version)]
         AliLogService.put_logs(contents)
