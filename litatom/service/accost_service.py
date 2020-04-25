@@ -78,7 +78,7 @@ class AccostService(object):
             if should_stop():
                 return cls.ACCOST_BAN
             redis_client.set(key, rate, cls.ACCOST_INTER)
-            cls.record_accost(user_id, session_id, loc, version)
+            cls.record_accost(user_id, other_user_id, session_id, loc, version)
             return cls.ACCOST_PASS
         else:
             res = int(res)
