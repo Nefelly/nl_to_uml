@@ -150,10 +150,7 @@ class AntiSpamRateService(object):
     def _get_protected_error_message(cls, word, activity, other_id, diamonds=None):
         res = cls._get_error_message(word, activity, diamonds)
         if isinstance(res, dict):
-            other_info = {
-                'other_id': other_id
-            }
-            res['other_info'] = other_info
+            res['other_info'] = other_id
         return res
 
     @classmethod
