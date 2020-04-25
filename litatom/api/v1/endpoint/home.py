@@ -206,6 +206,7 @@ def check_version():
 def report():
     user_id = request.user_id
     data = request.json
+    print data, '!' * 100
     chat_record = data.get('chat_record', {})
     form = ReportForm(data=request.json)
     reason = form.reason.data
