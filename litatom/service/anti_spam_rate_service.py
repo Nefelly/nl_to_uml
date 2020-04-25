@@ -82,7 +82,7 @@ class AntiSpamRateService(object):
     PROTECTED_D = {
         ACCOST: {
             RATE_KEY: [
-                          [5 * ONE_MIN, 5, 5],
+                          [5 * ONE_MIN, 2, 5],
                           [ONE_DAY, 100, 5],
                           [ONE_DAY, 10000]
                       ],
@@ -293,6 +293,11 @@ class AntiSpamRateService(object):
             cls.set_protected_visit_before(user_id, activity, other_id)
             if other_protected:
                 data, status = cls.should_not_be_protected(other_id, activity)
+                if not status:
+                    redis_client.decr(first_key)
+                    redis_client.decr(second_key)
+                    redis_client.decr(stop_key)
+                    return data, False
         return None, True
 
     @classmethod

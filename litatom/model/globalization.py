@@ -217,6 +217,12 @@ class RegionWord(Document):
             'vi': u'Bạn bình luận quá nhiều lần trong hôm nay',
             'th': u'ววันนี้คุณคอมเม้นต์ให้คนอื่นมากเกินไป',
             'id': u'Anda berkomentar terlalu banyak hari ini'
+        },
+        'protected_conversation_diamonds': {
+            'en': u'Too many people have chatted with her today. To avoid disturbing her, please use diamond to unlock.',
+            'vi': u'Hôm nay có rất nhiều người đến tìm cô ấy nói chuyện, để không ai làm phiền, hãy dùng kim cương để mở cuộc trò chuyện !',
+            'th': u'วันนี้มีคนทักเขาหลายคนแล้ว เพื่อไม่ให้เป็นการรบกวนเขามากเกินไป โปรดใช้เพชรเพื่อปลดล็อกการแชท',
+            'id': u'Banyak orang yang chat dengannya hari ini, Agar tidak terlalu menganggu, silakan gunakan diamond untuk membuka kunci obrolan.'
         }
 
 
