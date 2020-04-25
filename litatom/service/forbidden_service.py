@@ -83,6 +83,12 @@ class ForbiddenService(object):
         Report.set_same_report_to_dealed(user_id, target_user_id)
         report_id = ReportService.save_report(user_id, reason, pics, target_user_id, related_feed_id, match_type,
                                               chat_record)
+        if related_feed_id:
+            feed = Feed.get_by_id(related_feed_id)
+            pic = cls.check_review_pics(feed.pics)
+            TrackSpamRecord.create(user_id, pic=pic)
+            cls.alert_to_user(user_id,
+                              msg=u'Your post have been deleted due to reason: %s. Please keep your feed positive.' % reason)
         res = cls.check_forbid(target_user_id, ts_now)
         if res:
             return {"report_id": str(report_id), SYS_FORBID: True}, True
@@ -100,7 +106,7 @@ class ForbiddenService(object):
 
     @classmethod
     def check_forbid(cls, target_user_id, ts_now=None):
-        """进行封号检查，封号返回Ture，未封号返回False"""
+        """进行封号检查，封号返回True，未封号返回False"""
         ts_now = int(time.time()) if not ts_now else ts_now
         # 官方账号不会被检查封号
         if not cls.accum_illegal_credit(target_user_id, ts_now) or UserService.is_official_account(target_user_id):
@@ -122,32 +128,61 @@ class ForbiddenService(object):
         alert_num = TrackSpamRecord.count_by_time_and_uid(user_id, time_3days_ago, timestamp_now)
         report_total_num = Report.count_by_time_and_uid_distinct(user_id, time_3days_ago, timestamp_now)
         report_match_num = Report.count_match_by_time_and_uid(user_id, time_3days_ago, timestamp_now)
-        review_pic_num = cls.accum_review_feed_pic_num(user_id,time_3days_ago,timestamp_now)
+        review_feed_pic_num = cls.accum_review_feed_pic_num(user_id, time_3days_ago, timestamp_now)
 
         illegal_credit = alert_num * cls.ALERT_WEIGHTING + (report_total_num - report_match_num) * cls.REPORT_WEIGHTING \
-                         + report_match_num * cls.MATCH_REPORT_WEIGHTING + review_pic_num * cls.REVIEW_FEED_PIC_WEIGHTING \
+                         + report_match_num * cls.MATCH_REPORT_WEIGHTING + review_feed_pic_num * cls.REVIEW_FEED_PIC_WEIGHTING \
                          - cls.get_high_value_compensation(user_id)
         if illegal_credit >= cls.FORBID_THRESHOLD:
             return True
         return False
 
     @classmethod
-    def accum_review_feed_pic_num(cls, user_id, time_3days_ago, timestamp_now):
-        reported_feed = Report.get_report_with_pic_by_time(user_id, time_3days_ago, timestamp_now)
+    def accum_review_feed_pic_num(cls, user_id, from_time, to_time):
+        reported_feed = Report.get_report_with_pic_by_time(user_id, from_time, to_time)
         review_pic_num = 0
         for feed_id in reported_feed:
             feed = Feed.get_by_id(feed_id)
             pics = feed.pics
-            for pic in pics:
-                reason, advice = QiniuService.should_pic_block_from_file_id(pic)
-                if reason == 'pulp' and advice == 'r':
-                    review_pic_num += 1
-                    break
+            review_num, block_num = cls.accum_illegal_pics(pics)
+            if review_num:
+                review_pic_num += 1
+
         return review_pic_num
 
     @classmethod
     def accum_illegal_pics(cls, pics):
-        return 0
+        review_num = 0
+        block_num = 0
+        for pic in pics:
+            reason, advice = QiniuService.should_pic_block_from_file_id(pic)
+            if reason == 'pulp' and advice == 'r':
+                review_num += 1
+            elif reason == 'pulp' and advice == 'b':
+                block_num += 1
+        return review_num, block_num
+
+    @classmethod
+    def check_review_feed(cls, feed_id):
+        feed = Feed.get_by_id(feed_id)
+        pic = cls.check_review_pics(feed.pics)
+        return pic
+
+    @classmethod
+    def check_illegal_pics(cls, pics):
+        for pic in pics:
+            reason, advice = QiniuService.should_pic_block_from_file_id(pic)
+            if reason == 'pulp' and advice == 'b':
+                return pic
+        return None
+
+    @classmethod
+    def check_review_pics(cls, pics):
+        for pic in pics:
+            reason, advice = QiniuService.should_pic_block_from_file_id(pic)
+            if reason == 'pulp' and advice == 'r':
+                return pic
+        return None
 
     @classmethod
     def forbid_user(cls, user_id, forbid_ts, forbid_type=SYS_FORBID, ts=int(time.time())):

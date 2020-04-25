@@ -166,8 +166,8 @@ def check_pic():
     url = data.get('url')
     if not url:
         return success()
-    reason = QiniuService.should_pic_block_from_url(url)
-    if reason:
+    reason, advice = QiniuService.should_pic_block_from_url(url)
+    if reason and advice == 'b':
         reason_m = {"pulp": "sexual"}
         reason = reason_m.get(reason, reason)
         data, status = ForbiddenService.report_illegal_pic(request.user_id, url, reason)
