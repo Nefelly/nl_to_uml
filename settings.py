@@ -17,6 +17,7 @@ _envvars = [
     'HENDRIX_THRIFT_PORT',
     'REDIS_LIT',
     'REDIS_ALI_LIT',
+    'REDIS_VOLATILE',
     'HUANXIN_ACCOUNT',
     'IS_DEV',
     'DEFAULT_MQ_PRODUCER',
@@ -67,6 +68,7 @@ DEFAULT_REDIS_SETTING = {
 REDIS_SETTINGS = {
     'lit_ali': r.get_json('REDIS_LIT', DEFAULT_REDIS_SETTING),
     'lit': r.get_json('REDIS_ALI_LIT', DEFAULT_REDIS_SETTING),
+    'volatile': r.get_json('REDIS_VOLATILE', DEFAULT_REDIS_SETTING),
 
 }
 IS_DEV = r.get_bool('IS_DEV', False)
