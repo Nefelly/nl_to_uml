@@ -22,7 +22,8 @@ from ..form import (
 )
 from ...decorator import (
     session_required,
-    session_finished_required
+    session_finished_required,
+    forbidden_session_required
 )
 
 from ....response import (
@@ -46,7 +47,8 @@ from ....service import (
     QiniuService,
     ForbiddenService,
     AliOssService,
-    ExperimentService
+    ExperimentService,
+    ActedService
 )
 
 logger = logging.getLogger(__name__)
@@ -225,7 +227,7 @@ def report():
         pics = feed_info['pics']
         data, status = ForbiddenService.resolve_report(user_id, reason, pics, target_user_id, feed_id)
     elif chat_record:
-        data, status = ForbiddenService.resolve_report(user_id, reason, pics, target_user_id, None,
+        data, status = ForbiddenService.resolve_report(user_id, reason, pics, target_user_id, None, None,
                                                        json.dumps(chat_record))
     else:
         data, status = ForbiddenService.resolve_report(user_id, reason, pics, target_user_id)
@@ -315,13 +317,38 @@ def rules():
     return render_template(f_name), 200, {'Content-Type': 'text/html; charset=utf-8'}
 
 
+def community_rule():
+    return success({'community_rule': GlobalizationService.get_region_word('coummunity_rule')})
+    # region = GlobalizationService.get_region()
+    # region = region if region in ['th', 'vi', 'id'] else 'en'
+    # f_name = 'community_rules_%s.html' % region
+    # return render_template(f_name), 200, {'Content-Type': 'text/html; charset=utf-8'}
+
+
 def experiments():
     data = ExperimentService.get_conf()
     return success(data)
 
+
 @session_required
 def action_by_user_id():
     data, status = TrackActionService.action_by_uid(request.user_id)
+    if status:
+        return success(data)
+    return fail(data)
+
+
+@forbidden_session_required
+def report_acted():
+    acts = request.json.get('acts', [])
+    data, status = ActedService.report_acted(request.user_id, acts)
+    if status:
+        return success(data)
+    return fail(data)
+
+@forbidden_session_required
+def acted_actions():
+    data, status = ActedService.acted_actions(request.user_id)
     if status:
         return success(data)
     return fail(data)

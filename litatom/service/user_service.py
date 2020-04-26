@@ -238,7 +238,8 @@ class UserService(object):
         if request.platform:
             user.platform = request.platform
         if loc:
-            UserSetting.create_setting(user_id, loc, request.uuid)
+            if user_id:
+                UserSetting.create_setting(user_id, loc, request.uuid)
         if not request.uuid:
             return u'your version is too low!', False
         if cls.device_blocked():
@@ -700,17 +701,42 @@ class UserService(object):
         return True
 
     @classmethod
-    def uids_online(cls, uids):
+    def _uids_score(cls, uids):
         if not isinstance(uids, list):
-            return u'wrong user_ids', False
+            return {}
         res = {}
-        judge_time = int(time.time()) - USER_ACTIVE
         key = GlobalizationService._online_key_by_region_gender()
         pp = redis_client.pipeline()
         for _ in uids:
             pp.zscore(key, _)
         for uid, score in zip(uids, pp.execute()):
-            if not score or int(score) < judge_time:
+            res[uid] = int(score) if score else 0
+        return res
+
+    @classmethod
+    def ordered_user_infos(cls, uids, visitor_user_id=None):
+        uids_score = cls._uids_score(uids)
+        score_lst = [[k, v] for k, v in uids_score.iteritems()]
+        sorted_lst = sorted(score_lst, key=lambda x: -x[1])
+        res = []
+        judge_time = int(time.time()) - USER_ACTIVE
+        for uid, online_time in sorted_lst:
+            u = User.get_by_id(uid)
+            if u:
+                info = cls.get_basic_info(u)
+                info['online'] = True if online_time >= judge_time else False
+                res.append(info)
+        return res
+
+    @classmethod
+    def uids_online(cls, uids):
+        if not isinstance(uids, list):
+            return u'wrong user_ids', False
+        res = {}
+        judge_time = int(time.time()) - USER_ACTIVE
+        uids_score = cls._uids_score(uids)
+        for uid, score in uids_score.iteritems():
+            if score < judge_time:
                 res[uid] = False
             else:
                 res[uid] = True
@@ -906,7 +932,7 @@ class UserService(object):
         block_num = UserModel.get_block_num_by_user_id(user_id)
         basic_info = cls.get_basic_info(target_user)
         basic_info.update({
-            # 'followed': Follow.in_follow(user_id, target_user_id),
+            'be_followed': FollowService.in_follow(target_user_id, user_id),
             'followed': FollowService.in_follow(user_id, target_user_id) if target_user.follower > 0 else False,
             'blocked': Blocked.in_block(user_id, target_user_id, block_num),
             # 'is_blocked': Blocked.in_block(target_user_id, user_id),

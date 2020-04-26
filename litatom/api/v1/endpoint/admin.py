@@ -331,6 +331,23 @@ def agent():
     return send_from_directory(add, add, as_attachment=True)
 
 
+@test_required
+def replace_image():
+    # import time
+    # t_start = time.time()
+    image = request.files.get('image')
+    if not image:
+        return fail()
+    fileid = request.values.get('file_id')
+    fileid = AliOssService.upload_from_binary(image, fileid)
+    return jsonify({
+        'success': True,
+        'data': {
+            'fileid': fileid
+        }
+    })
+
+
 def download_phone():
     date = request.args.get('date')
     time_low = int(time.mktime(time.strptime(date, '%Y%m%d')))

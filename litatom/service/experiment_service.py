@@ -31,7 +31,7 @@ class ExperimentService(object):
             "experiments": [
                 {
                     paths_key:[
-                        "anoy_match/get_fake_id",
+                        "anoy_match/get_fakeid",
                         "anoy_match/anoy_match"
                     ],
                     exp_key: "match_strategy"

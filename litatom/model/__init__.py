@@ -9,6 +9,9 @@ from .feed import (
     FeedComment,
     FollowingFeed
 )
+from .acted_record import (
+    ActedRecord
+)
 from .follow import (
     Follow
 )

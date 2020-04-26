@@ -31,6 +31,7 @@ from ....service import (
 
 logger = logging.getLogger(__name__)
 
+
 @session_required
 def upload_image_from_file():
     """
@@ -42,7 +43,8 @@ def upload_image_from_file():
     image = request.files.get('image')
     if not image:
         return jsonify(Failed)
-    fileid = request.values.get('file_id')
+    # fileid = request.values.get('file_id')
+    fileid = None
     fileid = AliOssService.upload_from_binary(image, fileid)
     if not fileid:
         return jsonify(Failed)
@@ -60,6 +62,7 @@ def upload_image_from_file():
         }
     })
 
+
 def get_image(fileid):
     if fileid == 'null':
         return jsonify(Failed)
@@ -69,14 +72,26 @@ def get_image(fileid):
         #return jsonify(Failed)
     return Response(content, mimetype='image/jpeg')
 
+
 def get_simage(fileid):
     if fileid == 'null':
         return jsonify(Failed)
     content = AliOssService.get_simage(fileid)
+    # content = AliOssService.rgba_resize(fileid)
     if not content:
         return Response('', mimetype='image/jpeg')   # 返回空图片流, 兼容错误
         #return jsonify(Failed)
     return Response(content, mimetype='image/jpeg')
+
+
+def get_gimage(fileid):
+    if fileid == 'null':
+        return jsonify(Failed)
+    content = AliOssService.rgba_resize(fileid)
+    if not content:
+        return Response('', mimetype='image/jpeg')   # 返回空图片流, 兼容错误
+    return Response(content, mimetype='image/jpeg')
+
 
 @session_required
 def upload_audio_from_file():
@@ -97,6 +112,7 @@ def upload_audio_from_file():
             'fileid': fileid
         }
     })
+
 
 def get_audio(fileid):
     if fileid == 'null':

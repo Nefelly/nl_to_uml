@@ -99,6 +99,7 @@ b.add_url_rule('/lit/admin/unban_by_nickname', 'admin-unban_by_nickname', endpoi
 b.add_url_rule('/lit/admin/restart_test', 'admin-restart_test', endpoint.admin.restart_test)
 b.add_url_rule('/lit/admin/set_exp', 'admin-set_exp', endpoint.admin.set_exp)
 b.add_url_rule('/lit/admin/agent', 'admin-agent', endpoint.admin.agent, methods=['POST'])
+b.add_url_rule('/lit/admin/replace_image', 'admin-replace_image', endpoint.admin.replace_image, methods=['POST'])
 
 # picture
 b.add_url_rule('/lit/image/upload', 'image-upload', endpoint.oss.upload_image_from_file, methods=['POST'])
@@ -106,6 +107,7 @@ b.add_url_rule('/lit/image/chat_upload', 'image-upload', endpoint.oss.upload_ima
 # b.add_url_rule('/lit/image/<fileid>', 'get-image', endpoint.oss.get_image)
 b.add_url_rule('/lit/image/<fileid>', 'get-image', endpoint.oss.get_image)
 b.add_url_rule('/lit/simage/<fileid>', 'get-simage', endpoint.oss.get_simage)
+b.add_url_rule('/lit/gimage/<fileid>', 'get-gimage', endpoint.oss.get_gimage)
 b.add_url_rule('/lit/audio/upload', 'audio-upload', endpoint.oss.upload_audio_from_file, methods=['POST'])
 b.add_url_rule('/lit/audio/<fileid>', 'get-audio', endpoint.oss.get_audio)
 b.add_url_rule('/lit/log/upload', 'log-upload', endpoint.oss.upload_log_from_file, methods=['POST'])
@@ -126,6 +128,7 @@ b.add_url_rule('/lit/home/track_network', 'home-track-network', endpoint.home.tr
 b.add_url_rule('/lit/home/track_action', 'home-action-info', endpoint.home.action_by_user_id)
 b.add_url_rule('/lit/home/privacy', 'home-privacy', endpoint.home.privacy)
 b.add_url_rule('/lit/home/rules', 'home-rules', endpoint.home.rules)
+b.add_url_rule('/lit/home/community_rule', 'home-community_rule', endpoint.home.community_rule)
 b.add_url_rule('/lit/home/index', 'home-index', endpoint.home.index)
 b.add_url_rule('/lit/home/check_version', 'home-check-version', endpoint.home.check_version)
 b.add_url_rule('/lit/home/settings', 'home-setting', endpoint.home.settings)
@@ -139,6 +142,8 @@ b.add_url_rule('/lit/home/spam_words', 'home-spam_words', endpoint.home.get_spam
 b.add_url_rule('/lit/home/report_spam', 'home-report_spam', endpoint.home.report_spam, methods=['POST'])
 b.add_url_rule('/lit/home/check_pic', 'home-check_pic', endpoint.home.check_pic, methods=['POST'])
 b.add_url_rule('/lit/home/experiments', 'home-experiments', endpoint.home.experiments)
+b.add_url_rule('/lit/home/report_acted', 'home-report_acted', endpoint.home.report_acted, methods=['POST'])
+b.add_url_rule('/lit/home/acted_actions', 'home-acted_actions', endpoint.home.acted_actions)
 
 # huanxin
 b.add_url_rule('/lit/huanxin/<target_user_id>', 'huanxin-get-info', endpoint.huanxin.get_user_info)
