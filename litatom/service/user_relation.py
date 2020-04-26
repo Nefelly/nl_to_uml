@@ -38,7 +38,7 @@ class FollowService(object):
         block_msg = BlockService.get_block_msg(user_id, followed_user_id)
         if block_msg:
             return block_msg, False
-        data, status = AntiSpamRateService.judge_stop(user_id, AntiSpamRateService.FOLLOW)
+        data, status = AntiSpamRateService.judge_stop(user_id, AntiSpamRateService.FOLLOW, followed_user_id)
         if not status:
             return data, False
         status = Follow.follow(user_id, followed_user_id)

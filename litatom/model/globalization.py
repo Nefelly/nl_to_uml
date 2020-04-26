@@ -217,6 +217,32 @@ class RegionWord(Document):
             'vi': u'Bạn bình luận quá nhiều lần trong hôm nay',
             'th': u'ววันนี้คุณคอมเม้นต์ให้คนอื่นมากเกินไป',
             'id': u'Anda berkomentar terlalu banyak hari ini'
+        },
+        'protected_conversation_diamonds': {
+            'en': u'Too many people have chatted with her today. To avoid disturbing her, please use diamond to unlock.',
+            'vi': u'Hôm nay có rất nhiều người đến tìm cô ấy nói chuyện, để không ai làm phiền, hãy dùng kim cương để mở cuộc trò chuyện !',
+            'th': u'วันนี้มีคนทักเขาหลายคนแล้ว เพื่อไม่ให้เป็นการรบกวนเขามากเกินไป โปรดใช้เพชรเพื่อปลดล็อกการแชท',
+            'id': u'Banyak orang yang chat dengannya hari ini, Agar tidak terlalu menganggu, silakan gunakan diamond untuk membuka kunci obrolan.'
+        },
+        'coummunity_rule': {
+            'en': u'"As in any community，there are rules to protect everyone and make sure to have the coolest and safest experience\n\n'
+                  u'• Be kind with your new friends 💛\n\n'
+                  u'• You can report any inappropriate profile or behavior: our review team will check 😮\n\n• Only use your personal pictures ✌️\n\n'
+                  u'• Pictures in underwear or shirtless are not allowed 👮"',
+            'vi': u'"Như trong bất kì các cộng đồng nào, các qui tắc này nhằm để người dùng có những trải nghiệm tuyệt vời và an toàn nhất '
+                  u'\n\n• Hãy trò chuyện lịch sự với người bạn mới 💛'
+                  u'\n\n• Bạn có thể báo cáo bất kỳ tài khoản nào có hành vi không phù hợp: Bộ phận đánh giá của chúng tôi sẽ kiểm tra 😮'
+                  u'\n\n• Chỉ có thể dùng hình ảnh của chính mình ✌️'
+                  u'\n\n• Hình ảnh trang phục bikini hoặc khoả thân đều không được chấp nhận 👮"',
+            'th': u'เช่นเดียวกับในชุมชนต่าง ๆ ที่มีกฎเพื่อคุ้มครองทุกคนและเพื่อให้แน่ใจว่าจะได้รับประสบการณ์ที่สะดวกสบายและปลอดภัยที่สุด •เป็นมิตรกับเพื่อนใหม่ของคุณ💛 '
+                  u'\n\n•คุณสามารถรายงานโปรไฟล์หรือพฤติกรรมใด ๆ ที่ไม่เหมาะสมได้ : ทีมตรวจสอบของเราจะทำการตรวจสอบ😮 '
+                  u'\n\n•โปรดใช้ภาพจริงของตัวคุณเท่านั้น ️ '
+                  u'\n\n•ไม่อนุญาตให้ใช้รูปที่สวมชุดชั้นในหรือโป๊เปลือย',
+            'id': u'"Seperti di komunitas mana pun, terdapat aturan-aturan untuk melindungi semua pengguna untuk memastikan pengguna memiliki pengalaman yang menyenangkan dan nyaman'
+                  u'\n\n• Bersikap baik pada teman baru Anda 💛'
+                  u'\n\n• Anda dapat melaporkan profil atau perilaku yang tidak pantas: tim peninjau kami akan memeriksa 😮'
+                  u'\n\n• Hanya gunakan gambar pribadi Anda ✌'
+                  u'\n\n• Gambar dengan pakaian dalam atau tanpa pakaian tidak diperbolehkan 👮 "'
         }
 
 

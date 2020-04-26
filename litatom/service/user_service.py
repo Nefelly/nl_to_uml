@@ -238,7 +238,8 @@ class UserService(object):
         if request.platform:
             user.platform = request.platform
         if loc:
-            UserSetting.create_setting(user_id, loc, request.uuid)
+            if user_id:
+                UserSetting.create_setting(user_id, loc, request.uuid)
         if not request.uuid:
             return u'your version is too low!', False
         if cls.device_blocked():

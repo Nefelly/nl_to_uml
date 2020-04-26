@@ -11,8 +11,7 @@ from ..key import (
     REDIS_FEED_SQUARE_REGION,
     REDIS_FEED_HQ_REGION,
     REDIS_FEED_ID_AGE,
-    REDIS_REGION_FEED_TOP,
-    REDIS_USER_FEED_COMMENT
+    REDIS_REGION_FEED_TOP
 )
 from ..util import (
     get_time_info,
@@ -455,12 +454,9 @@ class FeedService(object):
             return data, False
 
         if feed.user_id != user_id:
-            feed_comment_cache = REDIS_USER_FEED_COMMENT.format(user_id_feed=user_id+feed_id)
-            if not redis_client.get(feed_comment_cache):
-                data, status = AntiSpamRateService.judge_stop(user_id, AntiSpamRateService.COMMENT)
-                if not status:
-                    return data, False
-                redis_client.set(feed_comment_cache, 1, AntiSpamRateService.TIME_TO_LIVE)
+            data, status = AntiSpamRateService.judge_stop(user_id, AntiSpamRateService.COMMENT, feed_id, related_protcted=True)
+            if not status:
+                return data, False
 
         if tag:
             UserMessageService.add_message(father_comment.user_id, user_id, UserMessageService.MSG_COMMENT, feed_id,

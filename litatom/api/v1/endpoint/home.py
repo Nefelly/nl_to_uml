@@ -227,7 +227,7 @@ def report():
         pics = feed_info['pics']
         data, status = ForbiddenService.resolve_report(user_id, reason, pics, target_user_id, feed_id)
     elif chat_record:
-        data, status = ForbiddenService.resolve_report(user_id, reason, pics, target_user_id, None,
+        data, status = ForbiddenService.resolve_report(user_id, reason, pics, target_user_id, None, None,
                                                        json.dumps(chat_record))
     else:
         data, status = ForbiddenService.resolve_report(user_id, reason, pics, target_user_id)
@@ -318,10 +318,11 @@ def rules():
 
 
 def community_rule():
-    region = GlobalizationService.get_region()
-    region = region if region in ['th', 'vi', 'id'] else 'en'
-    f_name = 'community_rules_%s.html' % region
-    return render_template(f_name), 200, {'Content-Type': 'text/html; charset=utf-8'}
+    return success({'community_rule': GlobalizationService.get_region_word('coummunity_rule')})
+    # region = GlobalizationService.get_region()
+    # region = region if region in ['th', 'vi', 'id'] else 'en'
+    # f_name = 'community_rules_%s.html' % region
+    # return render_template(f_name), 200, {'Content-Type': 'text/html; charset=utf-8'}
 
 
 def experiments():
