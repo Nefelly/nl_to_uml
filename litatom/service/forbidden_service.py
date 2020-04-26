@@ -36,7 +36,7 @@ redis_client = RedisClient()['lit']
 class ForbiddenService(object):
     REPORT_WEIGHTING = 4
     ALERT_WEIGHTING = 2
-    MATCH_REPORT_WEIGHTING = 4
+    MATCH_REPORT_WEIGHTING = 2
     FORBID_THRESHOLD = 10
     DEFAULT_SYS_FORBID_TIME = 3 * ONE_DAY
     COMPENSATION_PER_TEN_FOLLOWER = 2
