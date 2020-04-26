@@ -78,6 +78,8 @@ class QiniuService(object):
                 if ('invalid URI' in err or 'fetch uri failed' in err) and i <= loop_tms - 1:
                     time.sleep(0.3)
                     continue
+                if 'result' not in test_res:
+                    return '',''
                 scenes = test_res['result']['scenes']
                 # print scenes
                 for r in scenes:
