@@ -131,15 +131,17 @@ class AdminService(object):
                }, True
 
     @classmethod
-    def query_reports(cls, start_ts, num=10, dealed=None):
+    def query_reports(cls, start_ts, num=10, dealed=None, show_match=None):
         if not start_ts:
             start_ts = MAX_TIME
         if not num:
             num = 10
         if dealed in [False, True]:
-            # objs = Report.objects(create_ts__lte=start_ts, dealed=dealed, duplicated=False, region=GlobalizationService.get_region()).filter((Q(reason__ne='match') & Q(reason__ne='video_match') & Q(reason__ne='voice_match')) | Q(chat_record__ne=None)).order_by('-create_ts').limit(num + 1)
-            objs = Report.objects(create_ts__lte=start_ts, dealed=dealed, duplicated=False,
-                                  region=GlobalizationService.get_region()).order_by('-create_ts').limit(num + 1)
+            if not show_match:
+                objs = Report.objects(create_ts__lte=start_ts, dealed=dealed, duplicated=False, region=GlobalizationService.get_region()).filter((Q(reason__ne='match') & Q(reason__ne='video_match') & Q(reason__ne='voice_match')) | Q(chat_record__ne=None)).order_by('-create_ts').limit(num + 1)
+            else:
+                objs = Report.objects(create_ts__lte=start_ts, dealed=dealed, duplicated=False,
+                                      region=GlobalizationService.get_region()).order_by('-create_ts').limit(num + 1)
         else:
             objs = Report.objects(create_ts__lte=start_ts).order_by('-create_ts').limit(num + 1)
         objs = list(objs)
