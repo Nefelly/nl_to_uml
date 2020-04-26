@@ -82,7 +82,7 @@ class AntiSpamRateService(object):
     PROTECTED_D = {
         ACCOST: {
             RATE_KEY: [
-                          [20 * ONE_MIN, 5, 5],
+                          [5 * ONE_MIN, 5, 5],
                           [ONE_DAY, 100, 5],
                           [ONE_DAY, 10000]
                       ],
