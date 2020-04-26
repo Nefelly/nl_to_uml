@@ -50,6 +50,7 @@ class TokenBucketService(object):
         if key in cls.WHITE_LIST:
             return True
         user_key = TOKEN_BUCKET_KEY.format(key=key)
+        print user_key
         lst_str = redis_client.get(user_key)
         now = int(time.time())
         if not lst_str:
