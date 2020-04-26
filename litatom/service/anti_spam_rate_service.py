@@ -319,9 +319,9 @@ class AntiSpamRateService(object):
     def get_forbid_level(cls, user_id, activity, other_id=''):
         m = cls.PROTECTED_D if other_id else cls.RATE_D
         check_id = other_id if other_id else user_id
-        is_other = True if other_id else False
+        is_protected = True if other_id else False
         for el in [cls.LEVEL_STOP, cls.LEVEL_SECCOND, cls.LEVEL_FIRST]:
-            key = cls.get_key(check_id, activity, el, is_other)
+            key = cls.get_key(check_id, activity, el, is_protected)
             num = m.get(activity).get(cls.RATE_KEY)[el - 1][1]
             if cls.out_of_times(key, num):
                 return el
@@ -342,7 +342,7 @@ class AntiSpamRateService(object):
     def remove_keys(cls, user_id):
         for _ in [cls.ACCOST, cls.COMMENT, cls.FOLLOW]:
             for l in [cls.LEVEL_STOP, cls.LEVEL_SECCOND, cls.LEVEL_FIRST]:
-                redis_client.delete(cls.get_key(user_id, _, cls.LEVEL_FIRST))
+                redis_client.delete(cls.get_key(user_id, _, l))
 
     @classmethod
     def reset_spam_type(cls, user_id, activity, other_id=None):
