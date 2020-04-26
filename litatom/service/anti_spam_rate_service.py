@@ -248,7 +248,7 @@ class AntiSpamRateService(object):
         '''
         if related_protcted:
             if other_id:
-                if cls.set_protected_visit_before(user_id, activity, other_id):
+                if cls.is_protected_visit_before(user_id, activity, other_id):
                     return None, True
 
         info_m = cls.RATE_D.get(activity)
@@ -316,7 +316,6 @@ class AntiSpamRateService(object):
     def how_much_should_pay(cls, user_id, activity, other_id):
         check_id = other_id if other_id else user_id
         forbid_level = cls.get_forbid_level(check_id, activity, other_id)
-        print forbid_level, 'aaaa'
         if forbid_level:
             if forbid_level == cls.LEVEL_STOP:
                 return MAX_DIAMONDS
