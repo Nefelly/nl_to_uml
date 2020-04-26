@@ -171,6 +171,8 @@ class ForbiddenService(object):
         review_pic_num = 0
         for feed_id in reported_feed:
             feed = Feed.get_by_id(feed_id)
+            if not feed:
+                continue
             pics = feed.pics
             review_num, block_num = cls.accum_illegal_pics(pics)
             if review_num:
