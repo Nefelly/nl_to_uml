@@ -31,7 +31,8 @@ from ....response import (
     success
 )
 from ....const import (
-    APP_PATH
+    APP_PATH,
+    BLOCK_PIC,
 )
 from ....service import (
     StatisticService,
@@ -169,7 +170,7 @@ def check_pic():
     if not url:
         return success()
     reason, advice = QiniuService.should_pic_block_from_url(url)
-    if reason and advice == 'b':
+    if reason and advice == BLOCK_PIC:
         reason_m = {"pulp": "sexual"}
         reason = reason_m.get(reason, reason)
         data, status = ForbiddenService.report_illegal_pic(request.user_id, url, reason)
