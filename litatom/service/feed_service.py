@@ -106,7 +106,7 @@ class FeedService(object):
         reason = None
         illegal_pic = None
         if pics:
-            illegal_pic = ForbiddenService.check_illegal_pics(pics)
+            illegal_pic,reason = ForbiddenService.check_block_pics(pics)
         feed = Feed.get_by_id(feed_id)
         if feed:
             if reason:

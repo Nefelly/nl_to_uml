@@ -8,6 +8,10 @@ from qiniu import Auth, QiniuMacAuth, http
 from ..service import (
     AliLogService
 )
+from ..const import (
+    REVIEW_PIC,
+    BLOCK_PIC
+)
 from ..redis import RedisClient
 
 logger = logging.getLogger(__name__)
@@ -87,9 +91,9 @@ class QiniuService(object):
                         cls.record_fail(out_url, scenes, r)
                     if details and details[0].get('suggestion') == 'block':
                         cls.record_fail(out_url, scenes, r)
-                        return r,'b'
+                        return r, BLOCK_PIC
                     if details and details[0].get('suggestion') == 'review':
-                        return r,'r'
+                        return r, REVIEW_PIC
                 return ''
             except Exception as e:
                 logger.error(traceback.format_exc())

@@ -28,7 +28,8 @@ from ..util import (
 from ..const import (
     ONE_DAY,
     SYS_FORBID,
-    MANUAL_FORBID,
+    REVIEW_PIC,
+    BLOCK_PIC,
 )
 
 redis_client = RedisClient()['lit']
@@ -181,9 +182,9 @@ class ForbiddenService(object):
         block_num = 0
         for pic in pics:
             reason, advice = QiniuService.should_pic_block_from_file_id(pic)
-            if reason == 'pulp' and advice == 'r':
+            if reason == 'pulp' and advice == REVIEW_PIC:
                 review_num += 1
-            elif reason == 'pulp' and advice == 'b':
+            elif reason == 'pulp' and advice == BLOCK_PIC:
                 block_num += 1
         return review_num, block_num
 
@@ -196,26 +197,26 @@ class ForbiddenService(object):
     @classmethod
     def resolve_pic(cls, pic, user_id):
         reason, advice = QiniuService.should_pic_block_from_file_id(pic)
-        if reason == 'pulp' and advice == 'b':
+        if reason == 'pulp' and advice == BLOCK_PIC:
             cls.forbid_user(user_id, cls.DEFAULT_SYS_FORBID_TIME)
             return True
-        elif reason == 'pulp' and advice == 'r':
+        elif reason == 'pulp' and advice == REVIEW_PIC:
             cls.report_illegal_pic(user_id, pic, 'sexual', False)
         return False
 
     @classmethod
-    def check_illegal_pics(cls, pics):
+    def check_block_pics(cls, pics):
         for pic in pics:
             reason, advice = QiniuService.should_pic_block_from_file_id(pic)
-            if reason == 'pulp' and advice == 'b':
-                return pic
-        return None
+            if reason == 'pulp' and advice == BLOCK_PIC:
+                return pic,'pulp'
+        return None,None
 
     @classmethod
     def check_review_pics(cls, pics):
         for pic in pics:
             reason, advice = QiniuService.should_pic_block_from_file_id(pic)
-            if reason == 'pulp' and advice == 'r':
+            if reason == 'pulp' and advice == REVIEW_PIC:
                 return pic, 'sexual'
         return None, None
 
@@ -260,15 +261,12 @@ class ForbiddenService(object):
     def feedback_to_reporters(cls, reported_uid, report_user_ids, is_warn=False):
         target_user_nickname = UserService.nickname_by_uid(reported_uid)
         if is_warn:
-            to_user_info = u"Your report on the user %s  has been settled. %s's account is warned. Thank you for your support of the Litmatch community." \
-                           % (target_user_nickname, target_user_nickname)
+            to_user_info = GlobalizationService.get_region_word('other_warn_inform') % (target_user_nickname, target_user_nickname)
         else:
-            to_user_info = u"Your report on the user %s  has been settled. %s's account is disabled. Thank you for your support of the Litmatch community." \
-                           % (target_user_nickname, target_user_nickname)
+            to_user_info = GlobalizationService.get_region_word('other_ban_inform') % (target_user_nickname, target_user_nickname)
         for _ in report_user_ids:
             UserService.msg_to_user(to_user_info, _)
             FirebaseService.send_to_user(_, u'your report succeed', to_user_info)
-
 
 class SpamWordService(object):
     KEYWORD_CHAINS = {}

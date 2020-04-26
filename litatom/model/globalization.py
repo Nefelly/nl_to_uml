@@ -123,7 +123,10 @@ class RegionWord(Document):
             'id': u'Laporan Anda terhadap akun %s telah selesai. Akun %s telah kami nonaktifkan. Terima kasih atas dukungan Anda terhadap Lit community.',
             'ko': u'사용자 %s에 대한 신고가 해결되었습니다. %s의 계정이 비활성화되었습니다.. 항상 lit 커뮤니티를 이용해주셔서 감사합니다. .',
             'ja': u'ユーザー%sに対するご報告は解決済みです。%sのアカウントを禁止しました。Litコミュニティーの維持にご協力いただきありがとうございます。',
-        }, 
+        },
+        'other_warn_inform':{
+            'en': u"Your report on the user %s  has been settled. %s's account is warned. Thank you for your support of the Lit community",
+        },
         'app_introduce': {
             'vi': u'Litmatch là ứng dụng kết bạn.', 
             'th': u'Litmatch แอพหรเพื่อนรูปแบบใหม่.', 
