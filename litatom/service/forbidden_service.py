@@ -10,6 +10,7 @@ from ..service import (
     GlobalizationService,
     UserService,
     FirebaseService,
+    QiniuService,
 )
 from ..model import (
     SpamWord,
@@ -27,7 +28,8 @@ from ..util import (
 from ..const import (
     ONE_DAY,
     SYS_FORBID,
-    MANUAL_FORBID,
+    REVIEW_PIC,
+    BLOCK_PIC,
 )
 
 redis_client = RedisClient()['lit']
@@ -36,30 +38,46 @@ redis_client = RedisClient()['lit']
 class ForbiddenService(object):
     REPORT_WEIGHTING = 4
     ALERT_WEIGHTING = 2
+    REVIEW_FEED_PIC_WEIGHTING = 2
     MATCH_REPORT_WEIGHTING = 2
     FORBID_THRESHOLD = 10
     DEFAULT_SYS_FORBID_TIME = 3 * ONE_DAY
     COMPENSATION_PER_TEN_FOLLOWER = 2
+    COMPENSATION_UPPER_THRESHOLD = 10
 
     @classmethod
-    def check_spam_word(cls, word, user_id):
+    def check_illegal_info(cls, user_id, infos):
+        """用于检测最近20条消息的处理服务"""
+        for text in infos:
+            cls.check_spam_word(text['content'], user_id, False)
+            res = cls.resolve_pic(text['content'], user_id)
+            if res:
+                return res
+        return False
+
+    @classmethod
+    def check_spam_word(cls, word, user_id, need_check_forbid=True):
         if not SpamWordService.is_spam_word(word, GlobalizationService.get_region()):
             return None, False
         dealed_tag = cls.check_spam_word_in_one_minute(user_id, int(time.time()))
         TrackSpamRecord.create(user_id, word=word, dealed_tag=dealed_tag)
         cls.alert_to_user(user_id)
-        res = cls.check_forbid(user_id)
+        res = False
+        if need_check_forbid:
+            res = cls.check_forbid(user_id)
         if not res:
             return GlobalizationService.get_region_word('alert_msg'), True
         return GlobalizationService.get_region_word('alert_msg'), True
 
     @classmethod
-    def report_illegal_pic(cls, user_id, pic, reason):
+    def report_illegal_pic(cls, user_id, pic, reason, need_check_forbid=True):
         """feed 中黄色图片处理接口服务函数"""
         TrackSpamRecord.create(user_id, pic=pic)
         cls.alert_to_user(user_id,
                           msg=u'Your post have been deleted due to reason: %s. Please keep your feed positive.' % reason)
-        res = cls.check_forbid(user_id)
+        res = False
+        if need_check_forbid:
+            res = cls.check_forbid(user_id)
         if not res:
             return u"spam words", True
         return u"spam words and forbidden", True
@@ -80,10 +98,25 @@ class ForbiddenService(object):
         Report.set_same_report_to_dealed(user_id, target_user_id)
         report_id = ReportService.save_report(user_id, reason, pics, target_user_id, related_feed_id, match_type,
                                               chat_record)
-        res = cls.check_forbid(target_user_id, ts_now)
+        if related_feed_id:
+            cls.resolve_feed_report(related_feed_id, target_user_id, user_id)
+        chat_record_res = False
+        if chat_record:
+            chat_record_res = cls.check_illegal_info(target_user_id, json.loads(chat_record))
+        res = cls.check_forbid(target_user_id, ts_now) if not chat_record_res else chat_record_res
         if res:
             return {"report_id": str(report_id), SYS_FORBID: True}, True
         return {"report_id": str(report_id), SYS_FORBID: False}, True
+
+    @classmethod
+    def resolve_feed_report(cls, feed_id, target_user_id, user_id):
+        feed = Feed.get_by_id(feed_id)
+        pic, reason = cls.check_review_pics(feed.pics)
+        if pic:
+            TrackSpamRecord.create(target_user_id, pic=pic)
+            cls.alert_to_user(target_user_id,
+                              msg=u'Your post have been deleted due to reason: %s. Please keep your feed positive.' % reason)
+            cls.feedback_to_reporters(target_user_id, [user_id], is_warn=True)
 
     @classmethod
     def report_spam(cls, user_id, word):
@@ -97,7 +130,7 @@ class ForbiddenService(object):
 
     @classmethod
     def check_forbid(cls, target_user_id, ts_now=None):
-        """进行封号检查，封号返回Ture，未封号返回False"""
+        """进行封号检查，封号返回True，未封号返回False"""
         ts_now = int(time.time()) if not ts_now else ts_now
         # 官方账号不会被检查封号
         if not cls.accum_illegal_credit(target_user_id, ts_now) or UserService.is_official_account(target_user_id):
@@ -119,11 +152,73 @@ class ForbiddenService(object):
         alert_num = TrackSpamRecord.count_by_time_and_uid(user_id, time_3days_ago, timestamp_now)
         report_total_num = Report.count_by_time_and_uid_distinct(user_id, time_3days_ago, timestamp_now)
         report_match_num = Report.count_match_by_time_and_uid(user_id, time_3days_ago, timestamp_now)
+        review_feed_pic_num = cls.accum_review_feed_pic_num(user_id, time_3days_ago, timestamp_now)
+
         illegal_credit = alert_num * cls.ALERT_WEIGHTING + (report_total_num - report_match_num) * cls.REPORT_WEIGHTING \
-                         + report_match_num * cls.MATCH_REPORT_WEIGHTING - cls.get_high_value_compensation(user_id)
+                         + report_match_num * cls.MATCH_REPORT_WEIGHTING + review_feed_pic_num * cls.REVIEW_FEED_PIC_WEIGHTING \
+                         - cls.get_high_value_compensation(user_id)
         if illegal_credit >= cls.FORBID_THRESHOLD:
             return True
         return False
+
+    @classmethod
+    def accum_review_feed_pic_num(cls, user_id, from_time, to_time):
+        """计算用户一段时间内有多少feed是被七牛云检测为review的"""
+        reported_feed = Report.get_report_with_pic_by_time(user_id, from_time, to_time)
+        review_pic_num = 0
+        for feed_id in reported_feed:
+            feed = Feed.get_by_id(feed_id)
+            pics = feed.pics
+            review_num, block_num = cls.accum_illegal_pics(pics)
+            if review_num:
+                review_pic_num += 1
+
+        return review_pic_num
+
+    @classmethod
+    def accum_illegal_pics(cls, pics):
+        """计算一组pics中有多少是被七牛云返回为review,多少是block的"""
+        review_num = 0
+        block_num = 0
+        for pic in pics:
+            reason, advice = QiniuService.should_pic_block_from_file_id(pic)
+            if reason == 'pulp' and advice == REVIEW_PIC:
+                review_num += 1
+            elif reason == 'pulp' and advice == BLOCK_PIC:
+                block_num += 1
+        return review_num, block_num
+
+    @classmethod
+    def check_review_feed(cls, feed_id):
+        feed = Feed.get_by_id(feed_id)
+        pic, reason = cls.check_review_pics(feed.pics)
+        return pic, reason
+
+    @classmethod
+    def resolve_pic(cls, pic, user_id):
+        reason, advice = QiniuService.should_pic_block_from_file_id(pic)
+        if reason == 'pulp' and advice == BLOCK_PIC:
+            cls.forbid_user(user_id, cls.DEFAULT_SYS_FORBID_TIME)
+            return True
+        elif reason == 'pulp' and advice == REVIEW_PIC:
+            cls.report_illegal_pic(user_id, pic, 'sexual', False)
+        return False
+
+    @classmethod
+    def check_block_pics(cls, pics):
+        for pic in pics:
+            reason, advice = QiniuService.should_pic_block_from_file_id(pic)
+            if reason == 'pulp' and advice == BLOCK_PIC:
+                return pic,'pulp'
+        return None,None
+
+    @classmethod
+    def check_review_pics(cls, pics):
+        for pic in pics:
+            reason, advice = QiniuService.should_pic_block_from_file_id(pic)
+            if reason == 'pulp' and advice == REVIEW_PIC:
+                return pic, 'sexual'
+        return None, None
 
     @classmethod
     def forbid_user(cls, user_id, forbid_ts, forbid_type=SYS_FORBID, ts=int(time.time())):
@@ -149,7 +244,8 @@ class ForbiddenService(object):
         """根据用户粉丝数量，获得一些补偿违规积分，避免高价值用户被举报封号"""
         followers = UserService.get_followers_by_uid(user_id)
         res = floor(followers / 10) * cls.COMPENSATION_PER_TEN_FOLLOWER
-        return res if res >= 0 else 0
+        res = res if res >= 0 else 0
+        return res if res <= cls.COMPENSATION_UPPER_THRESHOLD else cls.COMPENSATION_UPPER_THRESHOLD
 
     @classmethod
     def is_high_value_user(cls, user_id):
@@ -162,14 +258,15 @@ class ForbiddenService(object):
         UserModel.add_alert_num(user_id)
 
     @classmethod
-    def feedback_to_reporters(cls, reported_uid, report_user_ids):
+    def feedback_to_reporters(cls, reported_uid, report_user_ids, is_warn=False):
         target_user_nickname = UserService.nickname_by_uid(reported_uid)
-        to_user_info = u"Your report on the user %s  has been settled. %s's account is disabled. Thank you for your support of the Lit community." \
-                       % (target_user_nickname, target_user_nickname)
+        if is_warn:
+            to_user_info = GlobalizationService.get_region_word('other_warn_inform') % (target_user_nickname, target_user_nickname)
+        else:
+            to_user_info = GlobalizationService.get_region_word('other_ban_inform') % (target_user_nickname, target_user_nickname)
         for _ in report_user_ids:
             UserService.msg_to_user(to_user_info, _)
             FirebaseService.send_to_user(_, u'your report succeed', to_user_info)
-
 
 class SpamWordService(object):
     KEYWORD_CHAINS = {}

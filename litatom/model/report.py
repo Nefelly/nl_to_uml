@@ -103,6 +103,11 @@ class Report(Document):
         return cls.objects(create_ts__gte=from_ts, create_ts__lte=to_ts, dealed=dealed)
 
     @classmethod
+    def get_report_with_pic_by_time(cls, target_uid, from_ts, to_ts, dealed=False):
+        """找出带有feed的举报"""
+        return cls.objects(target_uid=target_uid, create_ts__gte=from_ts, create_ts__lte=to_ts, related_feed__ne='', dealed=dealed)
+
+    @classmethod
     def count_report_by_uid(cls, user_id, from_time, to_time):
         """返回用户一段时间内主动举报别人的次数"""
         return cls.objects(uid=user_id, create_ts__gte=from_time, create_ts__lte=to_time).count()

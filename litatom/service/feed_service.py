@@ -106,11 +106,7 @@ class FeedService(object):
         reason = None
         illegal_pic = None
         if pics:
-            for pic in pics:
-                reason = QiniuService.should_pic_block_from_file_id(pic)
-                if reason:
-                    illegal_pic = pic
-                    break
+            illegal_pic,reason = ForbiddenService.check_block_pics(pics)
         feed = Feed.get_by_id(feed_id)
         if feed:
             if reason:
