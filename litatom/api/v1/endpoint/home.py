@@ -127,7 +127,7 @@ def download_app():
             return fail('wrong version')
         f_name = '%s.apk' % version
         apk = AliOssService.get_binary_from_bucket(f_name)
-        with open(os.path.join(APP_PATH, f_name) ,'w') as f:
+        with open(os.path.join(APP_PATH, f_name), 'w') as f:
             f.write(apk)
             f.close()
         # apk.save(os.path.join(APP_PATH, f_name))
@@ -177,6 +177,18 @@ def check_pic():
             return fail(data)
         return success(data)
     return success()
+
+
+def check_info():
+    data = request.json
+    texts = data.get('texts')
+    pics = data.get('pics')
+    if not texts and not pics:
+        return success()
+    data, status = ForbiddenService.check_illegal_info(request.user_id, texts, pics)
+    if status:
+        return success(data)
+    return fail(data)
 
 
 def settings():
@@ -297,7 +309,7 @@ def track_network():
         return success()
     data = data.get("track", [])
     stream = base64.decodestring(data)
-    json_data = json.loads(zlib.decompress(stream, 16+zlib.MAX_WBITS))
+    json_data = json.loads(zlib.decompress(stream, 16 + zlib.MAX_WBITS))
     status = TrackActionService.batch_create_client_track(json_data)
     if status:
         return success()
@@ -345,6 +357,7 @@ def report_acted():
     if status:
         return success(data)
     return fail(data)
+
 
 @forbidden_session_required
 def acted_actions():
