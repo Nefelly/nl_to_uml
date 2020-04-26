@@ -116,11 +116,15 @@ def query_reports():
     if num:
         num = int(num)
     dealed = request.values.get('dealed', '')
-    show_match = request.values.get('show_match', False)
+    show_match = request.values.get('show_match', '')
     if dealed in ['True', 'true']:
         dealed = True
     elif dealed in ['False', 'false']:
         dealed = False
+    if show_match in ['True', 'true']:
+        show_match = True
+    elif show_match in ['False', 'false']:
+        show_match = False
     data, status = AdminService.query_reports(start_ts, num, dealed, show_match)
     if not status:
         return fail(data)
