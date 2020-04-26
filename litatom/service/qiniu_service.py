@@ -74,7 +74,7 @@ class QiniuService(object):
                 #print test_res
                 err = test_res.get('error', '')
                 if 'Rectangle invalid' in err:
-                    return ''
+                    return '', ''
                 if ('invalid URI' in err or 'fetch uri failed' in err) and i <= loop_tms - 1:
                     time.sleep(0.3)
                     continue
@@ -94,8 +94,8 @@ class QiniuService(object):
                         return r, BLOCK_PIC
                     if details and details[0].get('suggestion') == 'review':
                         return r, REVIEW_PIC
-                return ''
+                return '', ''
             except Exception as e:
                 logger.error(traceback.format_exc())
                 logger.error('Error verify Qiniu, url: %r, err: %r, test_res:%r', out_url, e, test_res)
-        return ''
+        return '', ''
