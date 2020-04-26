@@ -46,6 +46,7 @@ class ForbiddenService(object):
 
     @classmethod
     def check_illegal_info(cls, user_id, texts=None, pics=None):
+        """用于检测最近20条消息的处理服务"""
         for text in texts:
             cls.check_spam_word(text, user_id, False)
         cls.resolve_pics(pics, user_id)
