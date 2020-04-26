@@ -50,9 +50,12 @@ class ForbiddenService(object):
         """用于检测最近20条消息的处理服务"""
         for text in infos:
             cls.check_spam_word(text['content'], user_id, False)
-            res = cls.resolve_pic(text['content'], user_id)
-            if res:
-                return res
+            try:
+                res = cls.resolve_pic(text['content'], user_id)
+                if res:
+                    return res
+            except Exception as e:
+                pass
         return False
 
     @classmethod
