@@ -126,6 +126,10 @@ class RegionWord(Document):
         },
         'other_warn_inform':{
             'en': u"Your report on the user %s  has been settled. %s's account is warned. Thank you for your support of the Lit community",
+            'id':u"Laporan Anda pada pengguna% s telah diselesaikan. % telah kami peringatkan. Terima kasih atas dukungan Anda terhadap komunitas Litmatch.",
+            'vi':u"Báo cáo của bạn về tài khoản %s đã được xử lý. %s đã bị khoá. Cám ơn bạn đã báo cáo đến Litmatch",
+            'th':u"การรายงานผู้ใช้%sจากคุณได้รับการจัดการแล้ว s%ได้รับการเตือนแล้ว ขอบคุณสำหรับการรายงานและสนับสนุน litmatch ",
+
         },
         'app_introduce': {
             'vi': u'Litmatch là ứng dụng kết bạn.', 
