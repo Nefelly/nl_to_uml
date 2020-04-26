@@ -199,6 +199,18 @@ class AntiSpamRateService(object):
         redis_client.expire(key, cls.TIME_TO_LIVE)
 
     @classmethod
+    def del_protected_visit_before(cls, user_id, activity, other_id):
+        '''
+        被保护用户的多次搭讪仅记做一次
+        :param user_id:
+        :param activity:
+        :param other_id:
+        :return:
+        '''
+        key = cls._visit_before_key(user_id, activity, other_id)
+        redis_client.delete(key)
+
+    @classmethod
     def should_not_be_protected(cls, other_id, activity):
         '''
         判断这个id对应的活动是否应该被限流以保护
@@ -296,6 +308,7 @@ class AntiSpamRateService(object):
             if other_protected:
                 data, status = cls.should_not_be_protected(other_id, activity)
                 if not status:
+                    cls.del_protected_visit_before(user_id, activity, other_id)
                     redis_client.decr(first_key)
                     redis_client.decr(second_key)
                     redis_client.decr(stop_key)
