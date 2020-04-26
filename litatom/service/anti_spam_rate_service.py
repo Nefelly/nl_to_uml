@@ -63,7 +63,7 @@ class AntiSpamRateService(object):
         },
         FOLLOW:  {
             RATE_KEY: [
-                [2 * ONE_MIN, 10, 10],
+                [5 * ONE_MIN, 10, 10],
                 [ONE_DAY, 50, 500],
                 [ONE_DAY, 200]
             ],
@@ -94,8 +94,8 @@ class AntiSpamRateService(object):
         RATE_D = {
             ACCOST: {
                 RATE_KEY: [
-                    [ONE_MIN, 4, 10],
-                    [ONE_DAY, 8, 500],
+                    [5 * ONE_MIN, 2, 10],
+                    [ONE_DAY, 3, 500],
                     [ONE_DAY, 10]
                 ],
                 WORD_KEY: ['rate_conversation_diamonds', 'rate_conversation_stop']
@@ -149,7 +149,6 @@ class AntiSpamRateService(object):
     @classmethod
     def _get_protected_error_message(cls, word, activity, other_id, diamonds=None):
         res = cls._get_error_message(word, activity, diamonds)
-        print 'gettiiiiii'
         if isinstance(res, dict):
             res['other_info'] = other_id
         return res
