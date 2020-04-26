@@ -179,18 +179,6 @@ def check_pic():
     return success()
 
 
-def check_info():
-    data = request.json
-    texts = data.get('texts')
-    pics = data.get('pics')
-    if not texts and not pics:
-        return success()
-    data, status = ForbiddenService.check_illegal_info(request.user_id, texts, pics)
-    if status:
-        return success(data)
-    return fail(data)
-
-
 def settings():
     return success(UserSettingService.get_settings(request.user_id))
 

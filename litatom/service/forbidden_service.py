@@ -45,11 +45,11 @@ class ForbiddenService(object):
     COMPENSATION_UPPER_THRESHOLD = 10
 
     @classmethod
-    def check_illegal_info(cls, user_id, texts=None, pics=None):
+    def check_illegal_info(cls, user_id, infos):
         """用于检测最近20条消息的处理服务"""
-        for text in texts:
-            cls.check_spam_word(text, user_id, False)
-        cls.resolve_pics(pics, user_id)
+        for text in infos:
+            cls.check_spam_word(text['content'], user_id, False)
+            cls.resolve_pic(text['content'], user_id)
         res = cls.check_forbid(user_id)
         if res:
             return u'forbid user',True
@@ -100,6 +100,8 @@ class ForbiddenService(object):
                                               chat_record)
         if related_feed_id:
             cls.resolve_feed_report(related_feed_id, target_user_id, user_id)
+        if chat_record:
+            cls.check_illegal_info(target_user_id, json.loads(chat_record))
         res = cls.check_forbid(target_user_id, ts_now)
         if res:
             return {"report_id": str(report_id), SYS_FORBID: True}, True
@@ -192,13 +194,12 @@ class ForbiddenService(object):
         return pic, reason
 
     @classmethod
-    def resolve_pics(cls, pics, user_id):
-        for pic in pics:
-            reason, advice = QiniuService.should_pic_block_from_file_id(pic)
-            if reason == 'pulp' and advice == 'b':
-                cls.forbid_user(user_id, cls.DEFAULT_SYS_FORBID_TIME)
-            elif reason == 'pulp' and advice == 'r':
-                cls.report_illegal_pic(user_id, pic, 'sexual', False)
+    def resolve_pic(cls, pic, user_id):
+        reason, advice = QiniuService.should_pic_block_from_file_id(pic)
+        if reason == 'pulp' and advice == 'b':
+            cls.forbid_user(user_id, cls.DEFAULT_SYS_FORBID_TIME)
+        elif reason == 'pulp' and advice == 'r':
+            cls.report_illegal_pic(user_id, pic, 'sexual', False)
 
     @classmethod
     def check_illegal_pics(cls, pics):
