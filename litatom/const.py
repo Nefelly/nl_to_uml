@@ -5,6 +5,9 @@ WHOSYOURDADDY = 'IAMYOURDADDY'
 SYS_FORBID = 'sysForbid'
 MANUAL_FORBID = 'manualForbid'
 
+REVIEW_PIC = 'R'
+BLOCK_PIC = 'B'
+
 LOGGING_PRDLINE = 'sns'
 LOGGING_APP_NAME = 'sns-litatom'
 
