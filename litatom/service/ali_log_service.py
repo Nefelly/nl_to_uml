@@ -4,6 +4,9 @@ from time import time
 import datetime
 import traceback
 from aliyun.log import *
+from ..util import (
+    get_time_int_from_str
+)
 import logging
 from ..redis import RedisClient
 from hendrix.conf import setting
@@ -31,6 +34,7 @@ class AliLogService(object):
     ACCESS_KEY = 'n6ZOCqP28vfOJi3YbNETJynEG87sRo'  # 使用您的阿里云访问密钥AccessKeySecret
     DEFAULT_PROJECT = 'litatomaction'  # 上面步骤创建的项目名称
     DEFAULT_LOGSTORE = 'litatomactionstore'  # 上面步骤创建的日志库名称
+    ONE_LOG_MAX = 400000
 
     # 重要提示：创建的logstore请配置为4个shard以便于后面测试通过
     # 构建一个client
@@ -167,26 +171,37 @@ class AliLogService(object):
         res = cls.DEFAULT_CLIENT.get_log(project=project, logstore=logstore, from_time=from_time, to_time=to_time,
                                          size=1, query=query)
         for log in res.logs:
-            print log.get_contents()
-            return log.get_contents()['num']
+            return int(log.get_contents()['num'])
         return 0
 
 
     @classmethod
-    def get_loglst(cls, attributes=None, query='*', size=500, from_time=int(time() - 3600),
+    def get_loglst(cls, query='*', from_time=int(time() - 3600),
                      to_time=int(time()), project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE):
-        if size > 400000:
-            print 'too much, using other'
-        res = cls.DEFAULT_CLIENT.get_log(project=project, logstore=logstore, from_time=from_time, to_time=to_time,
-                             size=size, query=query)
-        real = []
-        for log in res.logs:
-            contents = log.get_contents()
-            contents['__time'] = log.get_time()
-            real.append(contents)
-        return real
-
-
+        if isinstance(from_time, str):
+            from_time = get_time_int_from_str(from_time)
+        if isinstance(to_time, str):
+            to_time = get_time_int_from_str(to_time)
+        size = cls.get_size(query, from_time, to_time, project, logstore)
+        print 'log size', size
+        querys = [(from_time, to_time)]
+        if size > cls.ONE_LOG_MAX:
+            querys = []
+            loops = size * 5 / cls.ONE_LOG_MAX
+            time_delta = (to_time - from_time) / 100.0
+            for i in range(loops):
+                start_time = from_time + i * time_delta
+                end_time = from_time + (i + 1) * time_delta
+                querys.append((round(start_time), round(end_time)))
+        res = []
+        for start_time, end_time in querys:
+            raw = cls.DEFAULT_CLIENT.get_log(project=project, logstore=logstore, from_time=start_time, to_time=end_time,
+                             size=cls.ONE_LOG_MAX, query=query)
+            for log in raw.logs:
+                contents = log.get_contents()
+                contents['__time'] = log.get_time()
+                res.append(contents)
+        return res
 
     @classmethod
     def get_log_atom(cls, project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE, from_time=int(time() - 3600),

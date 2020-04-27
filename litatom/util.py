@@ -101,6 +101,20 @@ def parse_standard_time(time_data_str):
     """str -> datetime"""
     return datetime.datetime.strptime(time_data_str, '%Y-%m-%d %H:%M:%S')
 
+
+def get_time_int_from_str(time_str):
+    time_str = time_str.strip()
+    len_ts = len(time_str)
+    form = ''
+    if len_ts == len('20200101'):
+        form = '%Y%m%d'
+    elif len_ts == len('2020-01-01') and '-' in time_str:
+        form = '%Y-%m-%d'
+    elif len_ts == len('2020-01-01 12:00:00') and ':' in time_str:
+        form = '%Y-%m-%d %H:%M:%S'
+    return time.mktime(time.strptime(time_str, form))
+
+
 def get_ts_from_str(time_str):
     """str -> timestamp(int)"""
     return time.mktime(time.strptime(time_str, "%Y-%m-%d %H:%M:%S"))
