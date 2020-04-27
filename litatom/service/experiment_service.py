@@ -82,9 +82,6 @@ class ExperimentService(object):
     @classmethod
     def get_user_experiment_from_logs(cls, query, from_time, to_time):
         from ..model import User
-        
-        User.get_user_id_by_session(sid)
 
-        res =
-        sid =
+        # User.get_user_id_by_session(sid)
         pass
