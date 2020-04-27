@@ -167,6 +167,10 @@ class AliLogService(object):
 
     @classmethod
     def get_size(cls, query='*', from_time=int(time() - 3600), to_time=int(time()), project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE):
+        if isinstance(from_time, str):
+            from_time = get_time_int_from_str(from_time)
+        if isinstance(to_time, str):
+            to_time = get_time_int_from_str(to_time)
         query = query + '|SELECT COUNT(*) as num'
         res = cls.DEFAULT_CLIENT.get_log(project=project, logstore=logstore, from_time=from_time, to_time=to_time,
                                          size=1, query=query)
@@ -201,6 +205,7 @@ class AliLogService(object):
                 contents = log.get_contents()
                 contents['__time'] = log.get_time()
                 res.append(contents)
+            print len(res)
         return res
 
     @classmethod
