@@ -81,3 +81,4 @@ class ExperimentService(object):
 
     @classmethod
     def get_user_experiment_from_logs(cls, query, from_time, to_time):
+        pass
