@@ -43,7 +43,9 @@ from ....model import (
 )
 from ....service import (
     AdminService,
+    QiniuService,
     UserMessageService,
+    ForbiddenService,
     FirebaseService,
     FeedService,
     GlobalizationService,
@@ -57,20 +59,22 @@ from ....service import (
     AliOssService,
     ExperimentService
 )
-from  ....const import (
+from ....const import (
     MAX_TIME,
     ONE_DAY,
     APP_PATH,
     ONE_WEEK
 )
+
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__, static_folder='static')
 # app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = timedelta(seconds=1)
 app.config['COMPRESS_MIN_SIZE'] = 100
-app.config['COMPRESS_MIMETYPES'] =['text/html', 'text/css', 'text/xml', 'application/json', 'application/javascript']
+app.config['COMPRESS_MIMETYPES'] = ['text/html', 'text/css', 'text/xml', 'application/json', 'application/javascript']
 Compress(app)
+
 
 def login():
     data = request.json
@@ -81,6 +85,7 @@ def login():
         return fail(data)
     return success(data)
 
+
 @admin_session_required
 def hello():
     return jsonify('hello')
@@ -89,11 +94,14 @@ def hello():
 def index():
     return current_app.send_static_file('admin.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
 
+
 def feeds_square_html():
     return current_app.send_static_file('feed_square.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
 
+
 def feeds_hq_html():
     return current_app.send_static_file('feed_hq.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
+
 
 def upload_apk():
     apk = request.files.get('apk')
@@ -107,7 +115,8 @@ def upload_apk():
     # apk.save(os.path.join(APP_PATH, f_name))
     return success()
 
-#@admin_session_required
+
+# @admin_session_required
 def query_reports():
     start_ts = request.values.get('start_ts', '')
     if start_ts:
@@ -131,7 +140,7 @@ def query_reports():
     return success(data)
 
 
-#@admin_session_required
+# @admin_session_required
 def ban_user(report_id):
     ban_time = request.values.get('ban_time', '')
     ban_time = int(ban_time) if ban_time else ONE_DAY
@@ -140,11 +149,13 @@ def ban_user(report_id):
         return fail(data)
     return success(data)
 
+
 def ban_device(report_id):
     data, status = AdminService.ban_device_by_report(report_id)
     if not status:
         return fail(data)
     return success(data)
+
 
 def ban_user_by_feed(feed_id):
     ban_time = request.values.get('ban_time', '')
@@ -172,6 +183,7 @@ def official_feed():
 
 def admin_words():
     return current_app.send_static_file('region_info.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
+
 
 def get_official_feed():
     start_ts = request.args.get('start_ts')
@@ -219,7 +231,8 @@ def delete_feed(feed_id):
         return success()
     return fail(data)
 
-#@admin_session_required
+
+# @admin_session_required
 def reject(report_id):
     data, status = AdminService.reject_report(report_id)
     if not status:
@@ -239,7 +252,9 @@ def restart_test():
     if not setting.IS_DEV:
         return fail(u'you are not on test')
     import subprocess
-    subprocess.Popen('git pull&&sv stop devlitatom&&lsof -i:8001|awk \'{print $2}\'|xargs kill -9&&sv restart devlitatom &', shell=True)
+    subprocess.Popen(
+        'git pull&&sv stop devlitatom&&lsof -i:8001|awk \'{print $2}\'|xargs kill -9&&sv restart devlitatom &',
+        shell=True)
     return success()
 
 
@@ -279,6 +294,7 @@ def add_diamonds():
                 return success(AccountService.get_user_account_info(user_id))
             return fail(msg)
     return fail('un aothorized')
+
 
 def set_diamonds():
     phone = request.args.get('phone')
@@ -331,7 +347,7 @@ def agent():
     tmp_name = request.json.get("name")
     add = "/tmp/tmp"
     os.system('wget \'%s\' -O %s' % (url, add))
-        # apk.save(os.path.join(APP_PATH, f_name))
+    # apk.save(os.path.join(APP_PATH, f_name))
     # return send_file(apk, attachment_filename=f_name, as_attachment=True)
     return send_from_directory(add, add, as_attachment=True)
 
@@ -349,6 +365,52 @@ def replace_image():
         'success': True,
         'data': {
             'fileid': fileid
+        }
+    })
+
+
+def forbid_score():
+    user_id = request.user_id
+    credit, res = ForbiddenService.accum_illegal_credit(user_id)
+    return jsonify({
+        'success': True,
+        'data': {
+            'forbid_credit': credit,
+            'forbid': res,
+        }
+    })
+
+
+def judge_pic():
+    data = request.json
+    url = data.get('url')
+    if not url:
+        return success()
+    reason, advice = QiniuService.should_pic_block_from_url(url)
+    if not reason:
+        return fail()
+    return jsonify({
+        'success': True,
+        'data': {
+            'reason': reason,
+            'advice': advice,
+        }
+    })
+
+
+def judge_lit_pic():
+    data = request.json
+    url = data.get('url')
+    if not url:
+        return success()
+    reason, advice = QiniuService.should_pic_block_from_file_id(url)
+    if not reason:
+        return fail()
+    return jsonify({
+        'success': True,
+        'data': {
+            'reason': reason,
+            'advice': advice,
         }
     })
 
@@ -389,7 +451,8 @@ def msg_to_region():
 
 
 def send_message_html():
-    return render_template('send.html', regions=GlobalizationService.REGIONS), 200, {'Content-Type': 'text/html; charset=utf-8'}
+    return render_template('send.html', regions=GlobalizationService.REGIONS), 200, {
+        'Content-Type': 'text/html; charset=utf-8'}
 
 
 def batch_insert_html():
@@ -460,8 +523,10 @@ def feedbacks():
         return success(data)
     return fail(data)
 
+
 def feedback_page():
     return current_app.send_static_file('feedback.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
+
 
 def deal_feedback(feedback_id):
     data, status = FeedbackService.deal_feedback(feedback_id)
