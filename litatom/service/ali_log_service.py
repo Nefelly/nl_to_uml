@@ -184,7 +184,7 @@ class AliLogService(object):
 
     @classmethod
     def get_loglst(cls, query='*', from_time=int(time() - 3600),
-                     to_time=int(time()), project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE):
+                     to_time=int(time()), project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE, save_add = None):
         if isinstance(from_time, str):
             from_time = get_time_int_from_str(from_time)
         if isinstance(to_time, str):
@@ -210,17 +210,32 @@ class AliLogService(object):
         fewer_fields = True if size > 10000 and logstore == 'litatomstore' else False
         if fewer_fields:
             print 'we are in fewer'
+        f = ''
+        if save_add:
+            f = open(save_add, 'w')
+        cnt = 1
+        tmp_contents = []
         for start_time, end_time in querys:
             raw = cls.DEFAULT_CLIENT.get_log(project=project, logstore=logstore, from_time=start_time, to_time=end_time,
                              size=cls.ONE_LOG_MAX, query=query)
-            for log in raw.logs:
-                contents = log.get_contents()
-                contents['__time'] = log.get_time()
-                if fewer_fields:
-                    res.append({'__time': contents['__time'], 'request_uri': contents['request_uri']})
-                else:
-                    res.append(contents)
+            if not save_add:
+                for log in raw.logs:
+                        contents = log.get_contents()
+                        contents['__time'] = log.get_time()
+                        if fewer_fields:
+                            res.append({'__time': contents['__time'], 'request_uri': contents['request_uri']})
+                        else:
+                            res.append(contents)
+            else:
+                for log in raw.logs:
+                    contents = log.get_contents()
+                    tmp_contents.append(contents['request_uri'])
+                    cnt += 1
+                    if cnt % 1000 == 0:
+                        f.write('\n'.join(tmp_contents))
+                        f.flush()
             print start_time, end_time, len(res)
+        f.write('\n'.join(tmp_contents))
         return res
 
     @classmethod
