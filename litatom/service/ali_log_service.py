@@ -207,7 +207,7 @@ class AliLogService(object):
                 querys.append((round(start_time), round(end_time)))
         res = []
         print querys
-        fewer_fields = True if size > 10000 and logstore == 'litatomlogstore' else False
+        fewer_fields = True if size > 10000 and logstore == 'litatomstore' else False
         if fewer_fields:
             print 'we are in fewer'
         for start_time, end_time in querys:
