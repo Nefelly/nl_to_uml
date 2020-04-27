@@ -75,7 +75,7 @@ def get_user_id():
             request.user_id = user_id
     return user_id
 
-def test_required(view):
+def Ftest_required(view):
     @functools.wraps(view)
     def wrapper(*args, **kwargs):
         if not setting.IS_DEV:

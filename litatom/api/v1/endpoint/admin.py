@@ -372,13 +372,7 @@ def replace_image():
 
 
 def forbid_score():
-    phone = request.args.get('phone')
-    user_id = request.user_id
-    if phone and phone.startswith('86'):
-        user = User.get_by_phone(phone)
-        if user:
-            user_id = str(user.id)
-            request.user_id = user_id
+    user_id = get_user_id()
     if not user_id:
         return fail({'reason': 'no such user'})
     credit, res = ForbiddenService.accum_illegal_credit(user_id)
