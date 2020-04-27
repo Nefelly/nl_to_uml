@@ -154,11 +154,28 @@ class AliLogService(object):
         for log in res.logs:
             contents = log.get_contents()
             res_contents = {}
+            res_contents['__time'] = log.get_time()
             for attribute in attributes:
                 if attribute in contents.keys():
                     res_contents[attribute] = contents[attribute]
             log.contents = res_contents.copy()
         return res
+
+    @classmethod
+    def get_loglst(cls, attributes=None, query='*', size=500, from_time=int(time() - 3600),
+                     to_time=int(time()), project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE):
+        if size > 400000:
+            print 'too much, using other'
+        res = cls.DEFAULT_CLIENT.get_log(project=project, logstore=logstore, from_time=from_time, to_time=to_time,
+                             size=size, query=query)
+        real = []
+        for log in res.logs:
+            contents = log.get_contents()
+            contents['__time'] = log.get_time()
+            real.append(contents)
+        return real
+
+
 
     @classmethod
     def get_log_atom(cls, project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE, from_time=int(time() - 3600),
