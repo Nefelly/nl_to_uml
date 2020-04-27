@@ -43,6 +43,7 @@ from ....model import (
 )
 from ....service import (
     AdminService,
+    QiniuService,
     UserMessageService,
     ForbiddenService,
     FirebaseService,
@@ -376,6 +377,36 @@ def forbid_score():
         'data': {
             'forbid_credit': credit,
             'forbid': res,
+        }
+    })
+
+
+def judge_pic():
+    data = request.json
+    url = data.get('url')
+    if not url:
+        return success()
+    reason, advice = QiniuService.should_pic_block_from_url(url)
+    return jsonify({
+        'success': True,
+        'data': {
+            'reason': reason,
+            'advice': advice,
+        }
+    })
+
+
+def judge_lit_pic():
+    data = request.json
+    url = data.get('url')
+    if not url:
+        return success()
+    reason, advice = QiniuService.should_pic_block_from_file_id(url)
+    return jsonify({
+        'success': True,
+        'data': {
+            'reason': reason,
+            'advice': advice,
         }
     })
 

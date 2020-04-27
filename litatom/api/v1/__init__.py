@@ -101,6 +101,8 @@ b.add_url_rule('/lit/admin/set_exp', 'admin-set_exp', endpoint.admin.set_exp)
 b.add_url_rule('/lit/admin/agent', 'admin-agent', endpoint.admin.agent, methods=['POST'])
 b.add_url_rule('/lit/admin/replace_image', 'admin-replace_image', endpoint.admin.replace_image, methods=['POST'])
 b.add_url_rule('/lit/admin/forbid_score','admin-forbid_score',endpoint.admin.forbid_score)
+b.add_url_rule('/lit/admin/judge_pic','admin-judge_pic',endpoint.admin.judge_pic,methods=['POST'])
+b.add_url_rule('/lit/admin/judge_lit_pic','admin-judge_lit_pic',endpoint.admin.judge_lit_pic,methods=['POST'])
 
 
 # picture
