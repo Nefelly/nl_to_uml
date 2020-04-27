@@ -234,6 +234,8 @@ class AliLogService(object):
                     if cnt % 1000 == 0:
                         f.write('\n'.join(tmp_contents))
                         f.flush()
+                    import gc
+                    gc.collect()
             print start_time, end_time, len(res)
         f.write('\n'.join(tmp_contents))
         return res
