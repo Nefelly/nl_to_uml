@@ -387,6 +387,8 @@ def judge_pic():
     if not url:
         return success()
     reason, advice = QiniuService.should_pic_block_from_url(url)
+    if not reason:
+        return fail()
     return jsonify({
         'success': True,
         'data': {
@@ -402,6 +404,8 @@ def judge_lit_pic():
     if not url:
         return success()
     reason, advice = QiniuService.should_pic_block_from_file_id(url)
+    if not reason:
+        return fail()
     return jsonify({
         'success': True,
         'data': {
