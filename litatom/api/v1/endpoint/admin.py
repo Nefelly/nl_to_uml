@@ -19,8 +19,8 @@ from flask import (
 from ...decorator import (
     admin_session_required,
     test_required,
-    get_user_id,
-    set_exp_arg
+    get_user_id_by_phone,
+    set_exp_arg,
 )
 
 from ....util import write_data_to_xls
@@ -267,14 +267,8 @@ def set_exp():
 
 
 def change_loc():
-    phone = request.args.get('phone')
     target_loc = request.loc
-    user_id = request.user_id
-    if phone and phone.startswith('86'):
-        user = User.get_by_phone(phone)
-        if user:
-            user_id = str(user.id)
-            request.user_id = user_id
+    user_id = get_user_id_by_phone()
     msg, status = GlobalizationService.change_loc(user_id, target_loc)
     if status:
         return success()
@@ -282,43 +276,36 @@ def change_loc():
 
 
 def add_diamonds():
-    phone = request.args.get('phone')
-    if phone and phone.startswith('86'):
-        user = User.get_by_phone(phone)
-        if user:
-            user_id = str(user.id)
-            request.user_id = user_id
-            payload = {
-                'diamonds': 50
-            }
-            msg, status = AccountService.deposit_diamonds(user_id, payload)
-            if status:
-                return success(AccountService.get_user_account_info(user_id))
-            return fail(msg)
-    return fail('un aothorized')
+    user_id = get_user_id_by_phone()
+    if not user_id:
+        return fail('unauthorized')
+    payload = {
+        'diamonds': 50
+    }
+    msg, status = AccountService.deposit_diamonds(user_id, payload)
+    if status:
+        return success(AccountService.get_user_account_info(user_id))
+    return fail(msg)
 
 
 def set_diamonds():
-    phone = request.args.get('phone')
+    user_id = get_user_id_by_phone()
+    if not user_id:
+        return fail('unauthorized')
     num = request.args.get('num')
     num = int(num)
-    if phone and phone.startswith('86'):
-        user = User.get_by_phone(phone)
-        if user:
-            user_id = str(user.id)
-            request.user_id = user_id
-            payload = {
-                'diamonds': 50
-            }
-            msg, status = AccountService.set_diamonds(user_id, num)
-            if status:
-                return success(AccountService.get_user_account_info(user_id))
-            return fail(msg)
-    return fail('un aothorized')
+    payload = {
+        'diamonds': 50
+    }
+    msg, status = AccountService.set_diamonds(user_id, num)
+    if status:
+        return success(AccountService.get_user_account_info(user_id))
+    return fail(msg)
+
 
 
 def unban():
-    UserService.unban_user(get_user_id())
+    UserService.unban_user(get_user_id_by_phone())
     return success()
 
 
@@ -371,7 +358,10 @@ def replace_image():
     })
 
 
-def forbid_score(user_id):
+def forbid_score():
+    user_id = get_user_id_by_phone()
+    if not user_id:
+        return fail({'reason': 'no such user'})
     credit, res = ForbiddenService.accum_illegal_credit(user_id)
     return jsonify({
         'success': True,
