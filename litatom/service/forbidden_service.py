@@ -136,7 +136,8 @@ class ForbiddenService(object):
         """进行封号检查，封号返回True，未封号返回False"""
         ts_now = int(time.time()) if not ts_now else ts_now
         # 官方账号不会被检查封号
-        if not cls.accum_illegal_credit(target_user_id, ts_now) or UserService.is_official_account(target_user_id):
+        credit, res = cls.accum_illegal_credit(target_user_id, ts_now)
+        if not res or UserService.is_official_account(target_user_id):
             return False
         # 违规积分达到上限，非高价值用户，要被封号
         cls.forbid_user(target_user_id, cls.DEFAULT_SYS_FORBID_TIME, SYS_FORBID, ts_now)
@@ -161,8 +162,8 @@ class ForbiddenService(object):
                          + report_match_num * cls.MATCH_REPORT_WEIGHTING + review_feed_pic_num * cls.REVIEW_FEED_PIC_WEIGHTING \
                          - cls.get_high_value_compensation(user_id)
         if illegal_credit >= cls.FORBID_THRESHOLD:
-            return True
-        return False
+            return illegal_credit, True
+        return illegal_credit, False
 
     @classmethod
     def accum_review_feed_pic_num(cls, user_id, from_time, to_time):
