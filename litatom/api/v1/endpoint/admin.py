@@ -369,8 +369,7 @@ def replace_image():
     })
 
 
-def forbid_score():
-    user_id = request.user_id
+def forbid_score(user_id):
     credit, res = ForbiddenService.accum_illegal_credit(user_id)
     return jsonify({
         'success': True,
