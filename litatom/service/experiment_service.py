@@ -54,7 +54,7 @@ class ExperimentService(object):
         return REDIS_EXP.format(key_exp=key_exp)
 
     @classmethod
-    def set_exp(cls, key=None, expire=ONE_DAY):
+    def set_exp(cls, key=None, expire=7 * ONE_DAY):
         if not key:
             key = request.user_id
         if key is None:
