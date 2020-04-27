@@ -8,6 +8,9 @@ from ..util import (
     get_time_int_from_str
 )
 import logging
+from ..const import (
+    ONE_DAY
+)
 from ..redis import RedisClient
 from hendrix.conf import setting
 from ..const import ALI_LOG_EXCHANGE
@@ -189,10 +192,15 @@ class AliLogService(object):
         size = cls.get_size(query, from_time, to_time, project, logstore)
         print 'log size', size
         querys = [(from_time, to_time)]
+        time_interval = to_time - from_time
         if size > cls.ONE_LOG_MAX:
             querys = []
-            loops = size * 5 / cls.ONE_LOG_MAX
-            time_delta = (to_time - from_time) / 100.0
+            loops = size / cls.ONE_LOG_MAX
+            if time_interval / ONE_DAY < loops: # 高峰期与低谷期的流量差异比较大
+                loops *= 5
+            else:
+                loops *= 2
+            time_delta = (to_time - from_time) / loops
             for i in range(loops):
                 start_time = from_time + i * time_delta
                 end_time = from_time + (i + 1) * time_delta
@@ -205,7 +213,7 @@ class AliLogService(object):
                 contents = log.get_contents()
                 contents['__time'] = log.get_time()
                 res.append(contents)
-            print len(res)
+            print start_time, end_time, len(res)
         return res
 
     @classmethod
