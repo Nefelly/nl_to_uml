@@ -83,7 +83,7 @@ def get_user_id_by_phone():
     return user_id
 
 
-def Ftest_required(view):
+def test_required(view):
     @functools.wraps(view)
     def wrapper(*args, **kwargs):
         if not setting.IS_DEV:
