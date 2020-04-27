@@ -72,7 +72,7 @@ def set_exp_arg(arg=ONE_DAY):
     return _deco
 
 
-def get_user_id():
+def get_user_id_by_phone():
     phone = request.args.get('phone')
     user_id = request.user_id
     if phone and phone.startswith('86'):
@@ -88,7 +88,7 @@ def Ftest_required(view):
     def wrapper(*args, **kwargs):
         if not setting.IS_DEV:
             return jsonify(error.FailedNotTest)
-        get_user_id()
+        get_user_id_by_phone()
         return view(*args, **kwargs)
 
     return wrapper

@@ -19,7 +19,7 @@ from flask import (
 from ...decorator import (
     admin_session_required,
     test_required,
-    get_user_id,
+    get_user_id_by_phone,
     set_exp_arg,
 )
 
@@ -268,7 +268,7 @@ def set_exp():
 
 def change_loc():
     target_loc = request.loc
-    user_id = get_user_id()
+    user_id = get_user_id_by_phone()
     msg, status = GlobalizationService.change_loc(user_id, target_loc)
     if status:
         return success()
@@ -276,7 +276,7 @@ def change_loc():
 
 
 def add_diamonds():
-    user_id = get_user_id()
+    user_id = get_user_id_by_phone()
     if not user_id:
         return fail('unauthorized')
     payload = {
@@ -289,7 +289,7 @@ def add_diamonds():
 
 
 def set_diamonds():
-    user_id = get_user_id()
+    user_id = get_user_id_by_phone()
     if not user_id:
         return fail('unauthorized')
     num = request.args.get('num')
@@ -305,7 +305,7 @@ def set_diamonds():
 
 
 def unban():
-    UserService.unban_user(get_user_id())
+    UserService.unban_user(get_user_id_by_phone())
     return success()
 
 
@@ -359,7 +359,7 @@ def replace_image():
 
 
 def forbid_score():
-    user_id = get_user_id()
+    user_id = get_user_id_by_phone()
     if not user_id:
         return fail({'reason': 'no such user'})
     credit, res = ForbiddenService.accum_illegal_credit(user_id)
