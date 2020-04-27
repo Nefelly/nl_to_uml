@@ -197,9 +197,9 @@ class AliLogService(object):
             querys = []
             loops = size / cls.ONE_LOG_MAX
             if time_interval / ONE_DAY < loops: # 天数少于循环数  高峰期与低谷期的流量差异比较大
-                loops *= 5
+                loops *= 10
             else:
-                loops *= 2
+                loops *= 5
             time_delta = (to_time - from_time) / loops
             for i in range(loops):
                 start_time = from_time + i * time_delta
