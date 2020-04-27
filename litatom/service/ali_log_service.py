@@ -196,7 +196,7 @@ class AliLogService(object):
         if size > cls.ONE_LOG_MAX:
             querys = []
             loops = size / cls.ONE_LOG_MAX
-            if time_interval / ONE_DAY < loops: # 高峰期与低谷期的流量差异比较大
+            if time_interval / ONE_DAY < loops: # 天数少于循环数  高峰期与低谷期的流量差异比较大
                 loops *= 5
             else:
                 loops *= 2
@@ -207,13 +207,19 @@ class AliLogService(object):
                 querys.append((round(start_time), round(end_time)))
         res = []
         print querys
+        fewer_fields = True if size > 10000 and logstore == 'litatomlogstore' else False
+        if fewer_fields:
+            print 'we are in fewer'
         for start_time, end_time in querys:
             raw = cls.DEFAULT_CLIENT.get_log(project=project, logstore=logstore, from_time=start_time, to_time=end_time,
                              size=cls.ONE_LOG_MAX, query=query)
             for log in raw.logs:
                 contents = log.get_contents()
                 contents['__time'] = log.get_time()
-                res.append(contents)
+                if fewer_fields:
+                    res.append({'__time': contents['__time'], 'request_uri': contents['request_uri']})
+                else:
+                    res.append(contents)
             print start_time, end_time, len(res)
         return res
 

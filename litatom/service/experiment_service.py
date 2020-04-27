@@ -78,3 +78,6 @@ class ExperimentService(object):
         if not key:
             key = request.user_id
         return redis_client.get(cls._get_key(key, exp_name))
+
+    @classmethod
+    def get_user_experiment_from_logs(cls, query, from_time, to_time):
