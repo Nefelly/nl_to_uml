@@ -63,7 +63,9 @@ from ....const import (
     MAX_TIME,
     ONE_DAY,
     APP_PATH,
-    ONE_WEEK
+    ONE_WEEK,
+    REVIEW_PIC,
+    BLOCK_PIC,
 )
 
 logger = logging.getLogger(__name__)
@@ -369,8 +371,7 @@ def replace_image():
     })
 
 
-def forbid_score():
-    user_id = request.user_id
+def forbid_score(user_id):
     credit, res = ForbiddenService.accum_illegal_credit(user_id)
     return jsonify({
         'success': True,
@@ -389,6 +390,10 @@ def judge_pic():
     reason, advice = QiniuService.should_pic_block_from_url(url)
     if not reason:
         return fail()
+    if advice == REVIEW_PIC:
+        advice = 'review'
+    elif advice == BLOCK_PIC:
+        advice = 'block'
     return jsonify({
         'success': True,
         'data': {
@@ -406,6 +411,10 @@ def judge_lit_pic():
     reason, advice = QiniuService.should_pic_block_from_file_id(url)
     if not reason:
         return fail()
+    if advice == REVIEW_PIC:
+        advice = 'review'
+    elif advice == BLOCK_PIC:
+        advice = 'block'
     return jsonify({
         'success': True,
         'data': {
