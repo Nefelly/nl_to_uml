@@ -2,15 +2,12 @@ import os
 import sys
 import fcntl
 from hendrix.conf import setting
-from litatom.service import AliLogService
+from litatom.service import AlertService
 import time
 
 
 def foo():
-    print time.time()
-    AliLogService.get_loglst('"get_fakeid" and "experiment_name"', '20200412', '20200428', 'litatom', 'litatomstore',
-                             save_add='/data/alilog/exp1.txt')
-    print time.time()
+    pass
 
 def run():
     mutex_f = '/var/run/%s.mutex' % __file__.split('/')[-1].replace('.py', '')

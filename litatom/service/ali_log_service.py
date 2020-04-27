@@ -229,7 +229,7 @@ class AliLogService(object):
             else:
                 for log in raw.logs:
                     contents = log.get_contents()
-                    tmp_contents.append(contents['request_uri'])
+                    tmp_contents.append(str(log.get_time()) + '\t' + contents['request_uri'])
                     cnt += 1
                     if cnt % 1000 == 0:
                         f.write('\n'.join(tmp_contents))
