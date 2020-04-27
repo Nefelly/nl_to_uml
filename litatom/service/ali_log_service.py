@@ -162,6 +162,17 @@ class AliLogService(object):
         return res
 
     @classmethod
+    def get_size(cls, query='*', from_time=int(time() - 3600), to_time=int(time()), project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE):
+        query = query + '|SELECT COUNT(*) as num'
+        res = cls.DEFAULT_CLIENT.get_log(project=project, logstore=logstore, from_time=from_time, to_time=to_time,
+                                         size=1, query=query)
+        for log in res.logs:
+            print log.get_contents()
+            return log.get_contents()['num']
+        return 0
+
+
+    @classmethod
     def get_loglst(cls, attributes=None, query='*', size=500, from_time=int(time() - 3600),
                      to_time=int(time()), project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE):
         if size > 400000:
