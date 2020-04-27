@@ -206,6 +206,7 @@ class AliLogService(object):
                 end_time = from_time + (i + 1) * time_delta
                 querys.append((round(start_time), round(end_time)))
         res = []
+        print querys
         for start_time, end_time in querys:
             raw = cls.DEFAULT_CLIENT.get_log(project=project, logstore=logstore, from_time=start_time, to_time=end_time,
                              size=cls.ONE_LOG_MAX, query=query)
