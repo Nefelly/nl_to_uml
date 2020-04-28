@@ -163,8 +163,9 @@ class ExperimentService(object):
             for value in need_adjust:
                 if need_adjust[value] < 0:
                     old_noset = release_old(value, need_adjust[value], old_noset, old_buckets)
+            return old_noset
 
-        def add_all_new():
+        def add_all_new(old_noset):
             for value in need_adjust:
                 if need_adjust[value] > 0:
                     old_noset = add_new(value, need_adjust[value], old_noset)
@@ -172,12 +173,12 @@ class ExperimentService(object):
 
         if old_noset_num > add_num:
             ''' 格子够  先从未实验的取 以减少以前的影响'''
-            add_all_new(old_noset)
-            release_all_old(old_noset)
+            old_noset = add_all_new(old_noset)
+            old_noset = release_all_old(old_noset)
         else:
             '''格子不够 得先释放 再取'''
-            release_all_old()
-            add_all_new()
+            old_noset = release_all_old(old_noset)
+            old_noset = add_all_new(old_noset)
         return cls.get_buckets(exp_name)
 
     @classmethod
