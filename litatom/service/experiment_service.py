@@ -159,7 +159,7 @@ class ExperimentService(object):
             old_buckets[value] = [el for el in old_buckets[value] if el not in buckets]
             return old_noset
 
-        def release_all_old():
+        def release_all_old(old_noset):
             for value in need_adjust:
                 if need_adjust[value] < 0:
                     old_noset = release_old(value, need_adjust[value], old_noset, old_buckets)
