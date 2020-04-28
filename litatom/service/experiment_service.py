@@ -210,6 +210,23 @@ class ExperimentService(object):
         return res
 
     @classmethod
+    def test_get_all_bucket(cls, exp_name):
+        s = time.time()
+        keys = volatile_redis.smembers('all_se')
+        m = time.time()
+        print 'getting keys using:', m - s
+        res = {}
+        for _ in keys:
+            bucket = cls._get_bucket(exp_name, _)
+            if res.get(bucket):
+                res[bucket].add(bucket)
+            else:
+                res[bucket] = {bucket}
+        print 'get bucket using:', time.time() - m
+        return res
+
+
+    @classmethod
     def set_or_disable_white_list(cls, exp_name):
         '''
         设置白名单
