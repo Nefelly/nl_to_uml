@@ -218,10 +218,10 @@ class ExperimentService(object):
         res = {}
         for _ in keys:
             bucket = cls._get_bucket(exp_name, _)
-            if res.get(bucket):
-                res[bucket].add(bucket)
+            if not res.get(bucket):
+                res[bucket].add(_)
             else:
-                res[bucket] = {bucket}
+                res[bucket] = {_}
         print 'get bucket using:', time.time() - m
         return res
 
