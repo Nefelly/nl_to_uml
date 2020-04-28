@@ -214,7 +214,7 @@ class ExperimentService(object):
         s = time.time()
         keys = volatile_redis.smembers('all_se')
         m = time.time()
-        print 'getting keys using:', m - s
+        print 'getting keys using:', m - s # 200w 12s 16w qps
         res = {}
         for _ in keys:
             bucket = cls._get_bucket(exp_name, _)
@@ -222,9 +222,34 @@ class ExperimentService(object):
                 res[bucket].add(_)
             else:
                 res[bucket] = set([_])
-        print 'get bucket using:', time.time() - m
+        print 'get bucket using:', time.time() - m # 200w 3s 60w qps
         return res
 
+    @classmethod
+    def testing_orthogonal(cls):
+        '''
+        检测分桶是否正常
+        :return:
+        '''
+        test15 = cls.test_get_all_bucket('test15')
+        test16 = ExperimentService.test_get_all_bucket('test16')
+
+        print '检测分布均匀： test15 各个桶大小'
+        for _ in test15:
+            print _, len(test15[_])
+
+        print '检测桶分配没有重合， test15[0] & test15[1]'
+        test15[0] & test15[1]
+
+        print '检测不同实验之间正交'
+        print 'len(test16[0] & test15[1])'
+        len(test16[0] & test15[1])
+
+        print 'len(test16[0] & test15[2])'
+        len(test16[0] & test15[2])
+
+        print 'len(test16[1] & test15[1])'
+        len(test16[1] & test15[1])
 
     @classmethod
     def set_or_disable_white_list(cls, exp_name):
