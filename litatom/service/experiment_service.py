@@ -163,7 +163,7 @@ class ExperimentService(object):
         def release_all_old(old_noset):
             for value in need_adjust:
                 if need_adjust[value] < 0:
-                    old_noset = release_old(value, need_adjust[value], old_noset, old_buckets)
+                    old_noset = release_old(value, need_adjust[value], old_noset)
             return old_noset
 
         def add_all_new(old_noset):
