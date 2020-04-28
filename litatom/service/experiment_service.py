@@ -221,7 +221,7 @@ class ExperimentService(object):
             if res.get(bucket):
                 res[bucket].add(_)
             else:
-                res[bucket] = set(_)
+                res[bucket] = set([_])
         print 'get bucket using:', time.time() - m
         return res
 
