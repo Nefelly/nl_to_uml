@@ -31,8 +31,8 @@ class ExpBucket(Document):
     DEFAULT = 'default'
 
 
-    exp_name = StringField(required=True, unique=True)
-    bucket_id = IntField(required=True, unique=True)
+    exp_name = StringField(required=True)
+    bucket_id = IntField(required=True)
     value = StringField()
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
 
