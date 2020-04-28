@@ -59,6 +59,9 @@ from .track import (
     TrackChat,
     TrackSpamRecord
 )
+from .experiment import (
+    ExpBucket
+)
 from .user_account import (
     UserAccount,
     AccountFlowRecord

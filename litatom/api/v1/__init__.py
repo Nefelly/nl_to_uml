@@ -176,6 +176,10 @@ b.add_url_rule('/lit/anoy_match/add_time_by_ad', 'anoy-match-add-time-by-ad', en
 b.add_url_rule('/lit/anoy_match/accelerate_by_ad', 'anoy-match-accelerate-by-ad', endpoint.anoy_match.accelerate_by_ad, methods=['POST'])
 b.add_url_rule('/lit/anoy_match/accelerate_info', 'anoy-match-accelerate-info', endpoint.anoy_match.get_accelerate_info)
 
+# experiments
+b.add_url_rule('/lit/experiment/set_experiments', 'experiment-set_experiments', endpoint.experiment.set_experiments, methods=['POST'])
+b.add_url_rule('/lit/experiment/get_experiments', 'experiment-get_experiments', endpoint.experiment.get_experiments)
+b.add_url_rule('/lit/experiment/get_exp_value', 'experiment-get_exp_value', endpoint.experiment.get_exp_value)
 
 # debug
 b.add_url_rule('/lit/debug/redis_status', 'debug-redis-status', endpoint.debug.redis_status)

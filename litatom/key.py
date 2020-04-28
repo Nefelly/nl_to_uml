@@ -138,6 +138,10 @@ REDIS_VIDEO_CHAT_WAIT = 'video_chat_wait:{user_id}'
 REDIS_VIDEO_CHAT_CALLED = 'video_chat_called:{user_id}'
 REDIS_VIDEO_CHAT_IN_CHAT = 'video_chat_in_chat:{user_id}'
 
+## volatile
+# experiment
+REDIS_EXP_BUCKET_VALUE = 'exp_bucket:{exp_bucket}'
+
 # dev owned
 REDIS_SETTINGS_KEYS = 'dev_settings'
 REDIS_SETTINGS_IOS = 'setting_ios'
