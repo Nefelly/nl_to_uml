@@ -2,11 +2,13 @@ import os
 import sys
 import fcntl
 from hendrix.conf import setting
-from litatom.service import AlertService
+from litatom.service import AliLogService
 import time
 
 
 def foo():
+    AliLogService.get_loglst('"get_fakeid" and "experiment_name"', '20200412', '20200428', 'litatom', 'litatomstore',
+                             save_add='/data/alilog/exp.txt')
     pass
 
 def run():
