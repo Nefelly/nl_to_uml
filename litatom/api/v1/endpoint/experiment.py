@@ -48,8 +48,8 @@ def set_experiments():
 
 def get_experiments():
     exp_name = request.values.get('exp_name')
-    data, status = ExperimentService.get_buckets(exp_name)
-    if status:
+    data = ExperimentService.get_buckets(exp_name)
+    if data:
         return success(data)
     return fail(data)
 
