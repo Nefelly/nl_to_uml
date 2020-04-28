@@ -146,6 +146,7 @@ class ExperimentService(object):
         def add_new(value, num, old_noset):
             buckets  = sys_rnd.sample(old_noset, num)
             for b in buckets:
+                print 'creating', exp_name, b, value
                 ExpBucket.create(exp_name, b, value)
             old_noset = [el for el in old_noset if el not in buckets]
             return old_noset
