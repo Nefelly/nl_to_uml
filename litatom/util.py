@@ -38,11 +38,12 @@ def get_args_from_db(db_name):
     ''''host': u'mongodb://ll:11@172.31.138.46/lit?authsource=lit','''
     port = db_m['port']
     conn_url = db_m['host']
+    auth_db = conn_url.strip().split('authsource=')[-1]
     user_pwd = conn_url.split('://')[1].split('@')[0]
     user, pwd = user_pwd.split(':')
     host = conn_url.split('@')[1].split('/')[0]
     db = conn_url.split("=")[-1]
-    return host, port, user, pwd, db
+    return host, port, user, pwd, db, auth_db
 
 
 def passwdhash(passwd):
