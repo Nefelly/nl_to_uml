@@ -140,6 +140,7 @@ class AliOssService(object):
             x = im.size().width()
             y = im.size().height()
             x_s, y_s = cls.get_resize_size(x, y, True)
+            x_s, y_s = x, y
             im.scale('%dx%d' % (x_s, y_s))
             im.sharpen(1.0)
             im.write(blob)
