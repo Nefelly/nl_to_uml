@@ -128,7 +128,7 @@ class AliOssService(object):
         f.close()
         print src_add
         im = Image(src_add)
-        im.quality(35)
+        im.quality(15)
         im.filterType(FilterTypes.SincFilter)
         x = im.size().width()
         y = im.size().height()
