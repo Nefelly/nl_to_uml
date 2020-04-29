@@ -381,13 +381,13 @@ class ReportService(object):
     def mark_report(cls, user_id, from_time, to_time):
         """
         将一段时间举报user_id的记录标位‘已处理’，参数时间都是时间戳(int)
-        :return: 一个列表，包含举报该user的举报者们
+        :return: 一个集合，包含举报该user的举报者们
         """
         objs = Report.objects(target_uid=user_id, create_ts__gte=from_time, create_ts__lte=to_time, dealed=False)
-        report_users = []
+        report_users = set()
         for obj in objs:
             obj.dealed = True
-            report_users.append(obj.uid)
+            report_users.add(obj.uid)
             obj.save()
         return report_users
 
