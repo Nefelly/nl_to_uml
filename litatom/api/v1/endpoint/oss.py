@@ -70,7 +70,9 @@ def get_image(fileid):
     if not content:
         return Response('', mimetype='image/jpeg')   # 返回空图片流, 兼容错误
         #return jsonify(Failed)
-    return Response(content, mimetype='image/jpeg')
+    response = Response(content, mimetype='image/jpeg')
+    response.headers['Cache-Control'] = 'max-age=%d' % 86400
+    return response
 
 
 def get_simage(fileid):
@@ -122,7 +124,9 @@ def get_audio(fileid):
     content = AliOssService.get_binary_from_bucket(fileid)
     if not content:
         return Response('', mimetype='audio/AMR')   # 返回空流, 兼容错误
-    return Response(content, mimetype='audio/AMR')
+    response = Response(content, mimetype='audio/AMR')
+    response.headers['Cache-Control'] = 'max-age=%d' % 86400
+    return response
 
 
 @session_required
@@ -173,4 +177,6 @@ def get_audio_mp3(fileid):
     with open(mp3_add, 'r') as f:
         content = f.read()
         f.close()
-    return Response(content, mimetype='audio/x-mpeg')
+    response = Response(content, mimetype='audio/x-mpeg')
+    response.headers['Cache-Control'] = 'max-age=%d' % 86400
+    return response

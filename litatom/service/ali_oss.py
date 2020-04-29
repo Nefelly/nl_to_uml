@@ -46,7 +46,7 @@ class AliOssService(object):
         :param bucket: 只支持：笔记图片、实名认证
         :param fileid
         :return 上传得到的图片fileid
-    """
+        """
         if not fileid:
             # 生成fileid，检查是否唯一
             while True:
