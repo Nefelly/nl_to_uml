@@ -98,7 +98,7 @@ def get_gimage(fileid):
     # content = AliOssService.rgba_resize(fileid)
     content = AliOssService.get_simage(fileid)
     # content = AliOssService.gm_resize(fileid)
-    # print '!' * 100, len(content)
+    print '!' * 100, len(content)
     if not content:
         return Response('', mimetype='image/jpeg')   # 返回空图片流, 兼容错误
     return Response(content, mimetype='image/jpeg')
