@@ -100,10 +100,12 @@ class AccountService(object):
     def get_unban_diamonds_by_user_id(cls, user_id):
         device_blocked = UserService.user_device_blocked(user_id)
         if device_blocked:
+            print 'get inn', request.uuid
             return 50 * cls.UNBAN_DIAMONDS
         forbid_times = UserRecord.get_forbidden_times_user_id(user_id)
         if forbid_times == 1:
             return cls.UNBAN_DIAMONDS
+        print forbid_times, '!' * 100
         return (forbid_times - 1) * 5 * cls.UNBAN_DIAMONDS
 
     @classmethod
