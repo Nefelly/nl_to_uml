@@ -122,7 +122,7 @@ class AliOssService(object):
         f = open(src_add, 'w')
         f.write(obj)
         f.close()
-        im = Image(BytesIO(obj))
+        im = Image.read(BytesIO(obj))
         im.quality(100)
         im.filterType(FilterTypes.SincFilter)
         x = im.size().width()
