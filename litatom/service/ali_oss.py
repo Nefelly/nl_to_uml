@@ -9,6 +9,7 @@ from urllib2 import urlopen
 from PIL import Image
 from io import BytesIO
 from PIL import ImageFile
+from pgmagick import Image, FilterTypes, Blob
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 import oss2
 
@@ -112,6 +113,18 @@ class AliOssService(object):
         return res
 
     @classmethod
+    def get_resize_size(cls, x, y):
+        judge_x = 300
+        if x < judge_x:
+            return x, y
+        if x < 600:
+            return judge_x, y * judge_x / x
+        if x < 3000:
+            return x / 2, y / 2
+        judge_x = 1000
+        return judge_x, y * judge_x / x
+
+    @classmethod
     def gm_resize(cls, fileid):
         '''
         https://www.iteye.com/blog/willvvv-1574883
@@ -119,32 +132,22 @@ class AliOssService(object):
         :param resize:
         :return:
         '''
-        from pgmagick import Image, FilterTypes, Blob
+
         obj = cls.get_binary_from_bucket(fileid)
-        # src_add = '/tmp/%s.jpeg' % fileid
-        # src_add = '/tmp/1.jpeg'
-        # f = open(src_add, 'w')
-        # f.write(obj)
-        # f.close()
-        # print src_add
-        blob = Blob(obj)
-        im = Image(blob)
-        im.quality(35)
-        im.filterType(FilterTypes.SincFilter)
-        x = im.size().width()
-        y = im.size().height()
-        x_s = 300  # define standard width
-        if x < x_s:
+        try:
+            blob = Blob(obj)
+            im = Image(blob)
+            im.quality(30)
+            im.filterType(FilterTypes.SincFilter)
+            x = im.size().width()
+            y = im.size().height()
+            x_s, y_s = cls.get_resize_size(x, y)
+            im.scale('%dx%d' % (x_s, y_s))
+            im.sharpen(1.0)
+            im.write(blob)
+            return blob.data
+        except:
             return obj
-        y_s = y * x_s / x
-        im.scale('%dx%d' % (x_s, y_s))
-        im.sharpen(1.0)
-        # dst_add = '/tmp/k%s.jpeg' % fileid
-        # dst_add = '/tmp/2.jpeg'
-        # im.write(dst_add)
-        # return open(dst_add).read()
-        im.write(blob)
-        return blob.data
 
     @classmethod
     def rgba_resize(cls, fileid):
