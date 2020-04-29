@@ -129,7 +129,7 @@ class AliOssService(object):
         # print src_add
         blob = Blob(obj)
         im = Image(blob)
-        im.quality(25)
+        im.quality(35)
         im.filterType(FilterTypes.SincFilter)
         x = im.size().width()
         y = im.size().height()
