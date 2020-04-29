@@ -101,6 +101,8 @@ class AliOssService(object):
                 return obj
             y_s = y * x_s / x  # calc height based on standard width
             # out = img.resize((x_s, y_s), Image.ANTIALIAS)
+            x_s = x/2
+            y_s = y/2
             out = img.resize((x_s, y_s), Image.ANTIALIAS)
             image_byte = BytesIO()
             out.convert('RGB').save(image_byte, format='JPEG')
@@ -134,7 +136,7 @@ class AliOssService(object):
         if x < x_s:
             return obj
         y_s = y * x_s / x
-        im.scale('%dx%d' % (x, y))
+        im.scale('%dx%d' % (x_s, y_s))
         im.sharpen(1.0)
         dst_add = '/tmp/k%s.jpeg' % fileid
         dst_add = '/tmp/2.jpeg'
