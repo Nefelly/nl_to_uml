@@ -6,7 +6,7 @@ import logging
 import time
 import uuid
 from urllib2 import urlopen
-from PIL import Image
+from PIL import Image as pImage
 from io import BytesIO
 from PIL import ImageFile
 from pgmagick import Image, FilterTypes, Blob
@@ -94,13 +94,14 @@ class AliOssService(object):
         if not obj:
             return None
         try:
-            img = Image.open(BytesIO(obj))
+            img = pImage.open(BytesIO(obj))
             (x, y) = img.size
             print x, y
             x_s = 300  # define standard width
             if x < x_s:
                 return obj
             y_s = y * x_s / x  # calc height based on standard width
+            print x_s, y_s
             # out = img.resize((x_s, y_s), Image.ANTIALIAS)
             # x_s = x/2
             # y_s = y/2
@@ -180,7 +181,7 @@ class AliOssService(object):
         obj = cls.get_binary_from_bucket(fileid)
         if not obj:
             return None
-        img = Image.open(BytesIO(obj))
+        img = pImage.open(BytesIO(obj))
         (x, y) = img.size
         if x < x_s:
             return obj
