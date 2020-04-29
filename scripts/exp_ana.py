@@ -56,12 +56,16 @@ def run():
     exp_uids = read_uids_from_file('/data/exp/4-28/exp_ids')
     exp_uids = deal_uids(exp_uids)
     len_exp_uids = float(len(exp_uids))
+    print(len_exp_uids)
     default_uids = read_uids_from_file('/data/exp/4-28/default_ids')
     default_uids = deal_uids(default_uids)
     len_default_uids = float(len(default_uids))
+    print(len_default_uids)
 
     exp_pay_sum, exp_pay_num = accum_pay_number(exp_uids)
+    print(exp_pay_num,exp_pay_sum)
     default_pay_sum, default_pay_num = accum_pay_number(default_uids)
+    print(default_pay_num,default_pay_sum)
 
     print('对照组付费平均值:', default_pay_sum / len_default_uids, '对照组付费用户比例:', default_pay_num / len_default_uids)
     print('实验组付费平均值:', exp_pay_sum / len_exp_uids, '实验组付费用户比例', exp_pay_num / len_exp_uids)
