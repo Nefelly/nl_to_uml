@@ -126,7 +126,7 @@ class AliOssService(object):
         f.close()
         print src_add
         im = Image(src_add)
-        im.quality(100)
+        im.quality(80)
         im.filterType(FilterTypes.SincFilter)
         x = im.size().width()
         y = im.size().height()
@@ -134,7 +134,7 @@ class AliOssService(object):
         if x < x_s:
             return obj
         y_s = y * x_s / x
-        im.scale('%dx%d' % (x_s, y_s))
+        im.scale('%dx%d' % (x, y))
         im.sharpen(1.0)
         dst_add = '/tmp/k%s.jpeg' % fileid
         dst_add = '/tmp/2.jpeg'
