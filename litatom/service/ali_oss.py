@@ -135,7 +135,7 @@ class AliOssService(object):
         try:
             blob = Blob(obj)
             im = Image(blob)
-            im.quality(50)
+            im.quality(40)
             im.filterType(FilterTypes.SincFilter)
             x = im.size().width()
             y = im.size().height()
