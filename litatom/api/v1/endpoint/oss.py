@@ -83,7 +83,7 @@ def get_simage(fileid):
         #return jsonify(Failed)
     response = Response(content, mimetype='image/jpeg')
     response.headers['Cache-control'] = 'max-age'
-    return Response(content, mimetype='image/jpeg')
+    return response
 
 
 def get_gimage(fileid):
