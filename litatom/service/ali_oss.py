@@ -105,7 +105,7 @@ class AliOssService(object):
             # out = img.resize((x_s, y_s), Image.ANTIALIAS)
             # x_s = x/2
             # y_s = y/2
-            out = img.resize((x_s, y_s), Image.ANTIALIAS)
+            out = img.resize((x_s, y_s), pImage.ANTIALIAS)
             image_byte = BytesIO()
             out.convert('RGB').save(image_byte, format='JPEG')
             res = image_byte.getvalue()
