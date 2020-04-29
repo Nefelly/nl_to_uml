@@ -8,6 +8,7 @@ exec 2>&1
 #source /data/lit/bin/activate&&pip install tls-sig-api-v2
 #source /data/lit/bin/activate&&pip install -U aliyun-log-python-sdk
 source /data/lit/bin/activate&&pip install flask-compress
+source /data/lit/bin/activate&&pip install mmh3
 #cd /data/litatom
 
 python <<EOF

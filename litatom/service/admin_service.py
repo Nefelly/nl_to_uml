@@ -243,9 +243,9 @@ class AdminService(object):
     def mongo_gen_csv(cls, table_name, query, fields):
         dir_name = '/tmp/'
         save_add = os.path.join(dir_name, '%s_%d.csv' % (table_name, int(time.time())))
-        host, port, user, pwd, db = get_args_from_db('DB_LIT')
-        sql = '''mongoexport -h %s --port %r -u %s -p %s --authenticationDatabase %s -d %s -c %s -f %s --type=csv -q '%s' --out %s''' % (
-        host, port, user, pwd, db, db, table_name, fields, query, save_add)
+        host, port, user, pwd, db, auth_db = get_args_from_db('DB_LIT')
+        sql = '''mongoexport -h {host} --port {port} -u {user} -p {pwd} --authenticationDatabase {auth_db} -d {db} -c {collection} -f {fileds} --type=csv -q '{query}' --out {save_add}''' .format(
+        host=host, port=port, user=user, pwd=pwd, auth_db=auth_db, db=db, collection=table_name, fields=fields, query=query, save_add=save_add)
         os.system(sql)
         return save_add, True
 

@@ -115,8 +115,6 @@ REDIS_VOICE_CHAT_CALLED = 'voice_chat_called:{user_id}'
 REDIS_VOICE_CHAT_IN_CHAT = 'voice_chat_in_chat:{user_id}'
 
 
-# experiment
-REDIS_EXP = 'exp:{key_exp}'
 
 
 # video match
@@ -138,8 +136,19 @@ REDIS_VIDEO_CHAT_WAIT = 'video_chat_wait:{user_id}'
 REDIS_VIDEO_CHAT_CALLED = 'video_chat_called:{user_id}'
 REDIS_VIDEO_CHAT_IN_CHAT = 'video_chat_in_chat:{user_id}'
 
+## volatile
+# experiment
+REDIS_EXP_BUCKET_VALUE = 'exp_bucket:{exp_bucket}'
+
 # dev owned
 REDIS_SETTINGS_KEYS = 'dev_settings'
 REDIS_SETTINGS_IOS = 'setting_ios'
 REDIS_SETTINGS_IOS_VERSION = 'setting_ios_v:{version}'
 REDIS_ACCESS_TOKEN = 'access_token'
+
+
+## volatile
+# experiment
+REDIS_EXP = 'exp:{key_exp}'
+REDIS_ALL_USER_ID_SET = 'all_user_ids'
+

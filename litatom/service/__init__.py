@@ -9,6 +9,7 @@ from .monitor_service import MonitorService
 from .globalization_service import GlobalizationService
 from .anti_spam_rate_service import AntiSpamRateService
 from .mq_service import MqService
+from .mongo_sync_service import MongoSyncService
 from .experiment_service import ExperimentService
 from .acted_service import ActedService
 from .track_action_service import TrackActionService

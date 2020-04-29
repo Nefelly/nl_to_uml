@@ -169,6 +169,10 @@ class BlockedDevices(Document):
         obj.save()
 
     @classmethod
+    def remove_device(cls, uuid):
+        cls.objects(uuid=uuid).delete()
+
+    @classmethod
     def get_by_device(cls, uuid):
         obj = cls.objects(uuid=uuid).first()
         return obj
