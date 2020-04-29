@@ -119,15 +119,16 @@ class AliOssService(object):
         :param resize:
         :return:
         '''
-        from pgmagick import Image, FilterTypes
+        from pgmagick import Image, FilterTypes, Blob
         obj = cls.get_binary_from_bucket(fileid)
-        src_add = '/tmp/%s.jpeg' % fileid
-        src_add = '/tmp/1.jpeg'
-        f = open(src_add, 'w')
-        f.write(obj)
-        f.close()
+        # src_add = '/tmp/%s.jpeg' % fileid
+        # src_add = '/tmp/1.jpeg'
+        # f = open(src_add, 'w')
+        # f.write(obj)
+        # f.close()
         # print src_add
-        im = Image(src_add)
+        blob = Blob(obj)
+        im = Image(blob)
         im.quality(25)
         im.filterType(FilterTypes.SincFilter)
         x = im.size().width()
@@ -138,13 +139,14 @@ class AliOssService(object):
         y_s = y * x_s / x
         im.scale('%dx%d' % (x, y))
         im.sharpen(1.0)
-        dst_add = '/tmp/k%s.jpeg' % fileid
-        dst_add = '/tmp/2.jpeg'
-        im.write(dst_add)
-        return open(dst_add).read()
+        # dst_add = '/tmp/k%s.jpeg' % fileid
+        # dst_add = '/tmp/2.jpeg'
+        # im.write(dst_add)
+        # return open(dst_add).read()
+        im.write(blob)
+        return blob.data
 
-
-    @classmethod
+     @classmethod
     def rgba_resize(cls, fileid):
         obj = cls.get_binary_from_bucket(fileid)
         if not obj:
