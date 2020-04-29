@@ -79,12 +79,13 @@ def get_image(fileid):
 def get_simage(fileid):
     if fileid == 'null':
         return jsonify(Failed)
-    # content = AliOssService.get_simage(fileid)
-    content = AliOssService.gm_resize(fileid)
+    content = AliOssService.get_simage(fileid)
+
     # content = AliOssService.rgba_resize(fileid)
     if not content:
         return Response('', mimetype='image/jpeg')   # 返回空图片流, 兼容错误
         #return jsonify(Failed)
+    print '*' * 100, content
     response = Response(content, mimetype='image/jpeg')
     response.headers['Cache-Control'] = 'max-age=%d' % 86400
     return response
@@ -93,7 +94,9 @@ def get_simage(fileid):
 def get_gimage(fileid):
     if fileid == 'null':
         return jsonify(Failed)
-    content = AliOssService.rgba_resize(fileid)
+    # content = AliOssService.rgba_resize(fileid)
+    content = AliOssService.gm_resize(fileid)
+    print '!' * 100, len(content)
     if not content:
         return Response('', mimetype='image/jpeg')   # 返回空图片流, 兼容错误
     return Response(content, mimetype='image/jpeg')
