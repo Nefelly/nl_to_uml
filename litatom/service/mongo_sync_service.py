@@ -21,7 +21,6 @@ volatile_redis = RedisClient()['volatile']
 class MongoSyncService(object):
     '''
     '''
-
     @classmethod
     def export_to_add(cls, db, table_name, db_name, fields=None):
         dir_name = '/tmp/'
@@ -36,7 +35,6 @@ class MongoSyncService(object):
         print sql
         os.system(sql)
         return save_add
-
 
     @classmethod
     def load_user_ids_to_redis(cls):
