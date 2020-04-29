@@ -136,7 +136,7 @@ class AliOssService(object):
         im.scale('%dx%d' % (x_s, y_s))
         im.sharpen(1.0)
         dst_add = '/tmp/k%s.jpeg' % fileid
-        dst_add = '/tmp/2.jpeg' % fileid
+        dst_add = '/tmp/2.jpeg'
         im.write(dst_add)
         return open(dst_add).read()
 
