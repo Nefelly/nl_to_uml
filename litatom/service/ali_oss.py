@@ -122,6 +122,7 @@ class AliOssService(object):
         f = open(src_add, 'w')
         f.write(obj)
         f.close()
+        print src_add
         im = Image(src_add)
         im.quality(100)
         im.filterType(FilterTypes.SincFilter)
