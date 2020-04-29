@@ -226,6 +226,8 @@ class UserService(object):
             if user.huanxin and user.huanxin.user_id:
                 HuanxinService.active_user(user.huanxin.user_id)
             cls._trans_forbidden_2_session(user)
+            if cls.user_device_blocked(user_id):
+                BlockedDevices.remove_device(request.uuid)
             return True
         return False
 
