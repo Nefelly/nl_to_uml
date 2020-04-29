@@ -96,7 +96,7 @@ class AliOssService(object):
         try:
             img = Image.open(BytesIO(obj))
             (x, y) = img.size
-            # print x, y
+            print x, y
             x_s = 300  # define standard width
             if x < x_s:
                 return obj
