@@ -3,7 +3,7 @@
 图片上传下载
 """
 import logging
-
+import time
 from flask import (
     jsonify,
     request,
@@ -82,7 +82,7 @@ def get_simage(fileid):
         return Response('', mimetype='image/jpeg')   # 返回空图片流, 兼容错误
         #return jsonify(Failed)
     response = Response(content, mimetype='image/jpeg')
-    response.headers['Cache-Control'] = 'max-age'
+    response.headers['Cache-Control'] = 'cache;max-age=%d' % (int(time.time()) + 86400)
     return response
 
 
