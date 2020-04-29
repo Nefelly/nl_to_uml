@@ -81,6 +81,8 @@ def get_simage(fileid):
     if not content:
         return Response('', mimetype='image/jpeg')   # 返回空图片流, 兼容错误
         #return jsonify(Failed)
+    response = Response(content, mimetype='image/jpeg')
+    response.headers['Cache-control'] = 'max-age'
     return Response(content, mimetype='image/jpeg')
 
 
