@@ -101,11 +101,16 @@ class UserService(object):
         return None
 
     @classmethod
-    def device_blocked(cls):
-        uuid = request.uuid
+    def device_blocked(cls, uuid):
         if BlockedDevices.get_by_device(uuid):
             return True
         return False
+
+    @classmethod
+    def user_device_blocked(cls, user_id):
+        user_setting = UserSetting.get_by_user_id(user_id)
+        uuid = user_setting.uuid
+        return cls.device_blocked(uuid)
 
     @classmethod
     def get_followers_by_uid(cls, user_id):
@@ -121,7 +126,7 @@ class UserService(object):
         error_info.update({
             'message': msg,
             'forbidden_session': request.session_id,
-            'unban_diamonds': AccountService.UNBAN_DIAMONDS
+            'unban_diamonds': AccountService.get_unban_diamonds_by_user_id(request.user_id)
         })
         return error_info
 
@@ -242,7 +247,7 @@ class UserService(object):
                 UserSetting.create_setting(user_id, loc, request.uuid)
         if not request.uuid:
             return u'your version is too low!', False
-        if cls.device_blocked():
+        if cls.device_blocked(request.uuid):
             return cls.ERROR_DEVICE_FORBIDDEN, False
         return None, True
 

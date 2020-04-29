@@ -7,7 +7,8 @@ from hendrix.conf import setting
 import logging
 from ..model import (
     UserAccount,
-    AccountFlowRecord
+    AccountFlowRecord,
+    UserRecord
 )
 from ..const import (
     ONE_WEEK,
@@ -96,6 +97,16 @@ class AccountService(object):
         return UserAccount.get_account_info(user_id)
 
     @classmethod
+    def get_unban_diamonds_by_user_id(cls, user_id):
+        device_blocked = UserService.user_device_blocked(user_id)
+        if device_blocked:
+            return 50 * cls.UNBAN_DIAMONDS
+        forbid_times = UserRecord.get_forbidden_times_user_id(user_id)
+        if forbid_times == 1:
+            return cls.UNBAN_DIAMONDS
+        return (forbid_times - 1) * 5 * cls.UNBAN_DIAMONDS
+
+    @classmethod
     def unban_by_diamonds(cls, user_id):
         # if UserService.device_blocked():
         #     return UserService.ERROR_DEVICE_FORBIDDEN, False
@@ -106,7 +117,7 @@ class AccountService(object):
             # UserService._trans_forbidden_2_session(user)
             UserService.clear_forbidden_session(request.session_id.replace('session.', ''))
             return u'you are not forbbiden', False
-        msg = cls.change_diamonds(user_id, - cls.UNBAN_DIAMONDS, 'unban_by_diamonds')
+        msg = cls.change_diamonds(user_id, - cls.get_unban_diamonds_by_user_id(user_id), 'unban_by_diamonds')
         if not msg:
             if UserService.unban_user(user_id):
                  return None, True
