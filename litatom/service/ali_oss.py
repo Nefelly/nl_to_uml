@@ -128,7 +128,7 @@ class AliOssService(object):
         im.quality(100)
         im.filterType(FilterTypes.SincFilter)
         x = im.size().width()
-        y = im.size().heigth()
+        y = im.size().height()
         x_s = 300  # define standard width
         if x < x_s:
             return obj
