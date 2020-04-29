@@ -96,15 +96,9 @@ class AliOssService(object):
         try:
             img = pImage.open(BytesIO(obj))
             (x, y) = img.size
-            print x, y
-            x_s = 300  # define standard width
-            if x < x_s:
+            x_s, y_s = cls.get_resize_size(x, y)
+            if x == x_s:
                 return obj
-            y_s = y * x_s / x  # calc height based on standard width
-            print x_s, y_s
-            # out = img.resize((x_s, y_s), Image.ANTIALIAS)
-            # x_s = x/2
-            # y_s = y/2
             out = img.resize((x_s, y_s), pImage.ANTIALIAS)
             image_byte = BytesIO()
             out.convert('RGB').save(image_byte, format='JPEG')
