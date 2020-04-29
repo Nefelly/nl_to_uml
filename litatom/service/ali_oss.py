@@ -95,7 +95,7 @@ class AliOssService(object):
         try:
             img = Image.open(BytesIO(obj))
             (x, y) = img.size
-            print x, y
+            # print x, y
             x_s = 300  # define standard width
             if x < x_s:
                 return obj
@@ -126,7 +126,7 @@ class AliOssService(object):
         f = open(src_add, 'w')
         f.write(obj)
         f.close()
-        print src_add
+        # print src_add
         im = Image(src_add)
         im.quality(25)
         im.filterType(FilterTypes.SincFilter)
