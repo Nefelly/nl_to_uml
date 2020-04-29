@@ -119,6 +119,7 @@ class AliOssService(object):
         from pgmagick import Image, FilterTypes
         obj = cls.get_binary_from_bucket(fileid)
         src_add = '/tmp/%s.jpeg' % fileid
+        src_add = '/tmp/1.jpeg'
         f = open(src_add, 'w')
         f.write(obj)
         f.close()
