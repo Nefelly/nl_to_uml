@@ -146,7 +146,7 @@ class AliOssService(object):
         im.write(blob)
         return blob.data
 
-     @classmethod
+    @classmethod
     def rgba_resize(cls, fileid):
         obj = cls.get_binary_from_bucket(fileid)
         if not obj:
