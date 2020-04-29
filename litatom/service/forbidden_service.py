@@ -1,6 +1,7 @@
 # coding: utf-8
 import datetime
 import time
+from hendrix.conf import setting
 import json
 from math import floor
 from ..redis import (
@@ -95,7 +96,7 @@ class ForbiddenService(object):
         ts_now = int(time.time())
 
         cnt = Report.count_report_by_uid(user_id, ts_now - ONE_DAY, ts_now)
-        if cnt >= 5:
+        if cnt >= 5 and not setting.IS_DEV:
             return 'You have report too many times today, please try later', False
         # 举报不过5次，均入库存档
         Report.set_same_report_to_dealed(user_id, target_user_id)
