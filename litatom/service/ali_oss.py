@@ -108,8 +108,10 @@ class AliOssService(object):
         return res
 
     @classmethod
-    def get_resize_size(cls, x, y):
+    def get_resize_size(cls, x, y, from_gm=True):
         judge_x = 300
+        if from_gm:
+            judge_x *= 2
         if x < judge_x:
             return x, y
         if x < 600:
@@ -136,7 +138,7 @@ class AliOssService(object):
             im.filterType(FilterTypes.SincFilter)
             x = im.size().width()
             y = im.size().height()
-            x_s, y_s = cls.get_resize_size(x, y)
+            x_s, y_s = cls.get_resize_size(x, y, True)
             im.scale('%dx%d' % (x_s, y_s))
             im.sharpen(1.0)
             im.write(blob)
