@@ -79,7 +79,8 @@ def get_image(fileid):
 def get_simage(fileid):
     if fileid == 'null':
         return jsonify(Failed)
-    content = AliOssService.get_simage(fileid)
+    # content = AliOssService.get_simage(fileid)
+    content = AliOssService.gm_resize(fileid)
     # content = AliOssService.rgba_resize(fileid)
     if not content:
         return Response('', mimetype='image/jpeg')   # 返回空图片流, 兼容错误

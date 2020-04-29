@@ -109,6 +109,36 @@ class AliOssService(object):
         return res
 
     @classmethod
+    def gm_resize(cls, fileid):
+        '''
+        https://www.iteye.com/blog/willvvv-1574883
+        https://pythonhosted.org/pgmagick/cookbook.html#scaling-a-jpeg-image
+        :param resize:
+        :return:
+        '''
+        from pgmagick import Image, FilterTypes
+        obj = cls.get_binary_from_bucket(fileid)
+        src_add = '/tmp/%s.jpeg' % fileid
+        f = open(src_add, 'w')
+        f.write(obj)
+        f.close()
+        im = Image(src_add)
+        im.quality(100)
+        im.filterType(FilterTypes.SincFilter)
+        x = im.size().width()
+        y = im.size().heigth()
+        x_s = 300  # define standard width
+        if x < x_s:
+            return obj
+        y_s = y * x_s / x
+        im.scale('%dx%d' % (x_s, y_s))
+        im.sharpen(1.0)
+        dst_add = '/tmp/k%s.jpeg' % fileid
+        im.write(dst_add)
+        return open(dst_add).read()
+
+
+    @classmethod
     def rgba_resize(cls, fileid):
         obj = cls.get_binary_from_bucket(fileid)
         if not obj:
