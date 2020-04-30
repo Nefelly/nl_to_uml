@@ -96,6 +96,7 @@ class AliOssService(object):
             img = pImage.open(BytesIO(obj))
             (x, y) = img.size
             x_s, y_s = cls.get_resize_size(x, y)
+            print x_s, y_s
             # print x, y , x_s, y_s
             if x == x_s:
                 return obj
