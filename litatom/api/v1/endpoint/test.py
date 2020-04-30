@@ -36,6 +36,11 @@ logger = logging.getLogger(__name__)
 def test():
     return jsonify(ExperimentService.get_exp_value('haha'))
 
+
+def ack():
+    return success()
+
+
 @session_required
 def test_anti():
     activity = request.values.get('activity')
