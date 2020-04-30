@@ -152,6 +152,8 @@ class AliOssService(object):
 
         obj = cls.get_binary_from_bucket(fileid)
         try:
+            k = pImage.open(BytesIO(obj))
+            print k.size
             blob = Blob(obj)
             im = Image(blob)
             x = im.size().width()
