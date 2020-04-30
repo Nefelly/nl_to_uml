@@ -118,7 +118,7 @@ class AliOssService(object):
         '''
         first_xs = 200
         seccond_xs = 800
-        max_width = 600
+        max_width = 800
         first_rate = 0.3
         seccond_rate = 0.1
         if x < first_xs:
@@ -161,7 +161,6 @@ class AliOssService(object):
             if x_s == x:
                 return obj
             im.quality(80)
-            print im.size().width(), im.size().height()
             im.filterType(FilterTypes.SincFilter)
             # # x_s, y_s = x, y
             im.scale('%dx%d' % (x_s, y_s))
