@@ -37,7 +37,7 @@ def test():
     return jsonify(ExperimentService.get_exp_value('haha'))
 
 
-def ack(filepath):
+def ack(filename):
     return success()
 
 
