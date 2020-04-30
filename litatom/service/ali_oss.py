@@ -116,11 +116,11 @@ class AliOssService(object):
         :param from_gm:
         :return:
         '''
-        first_xs = 200
-        seccond_xs = 800
-        max_width = 800
-        first_rate = 0.3
-        seccond_rate = 0.1
+        first_xs = 100
+        seccond_xs = 600
+        max_width = 1000
+        first_rate = 0.5
+        seccond_rate = 0.2
         if x < first_xs:
             x_s = x
         elif x < seccond_xs:
