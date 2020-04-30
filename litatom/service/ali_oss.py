@@ -96,7 +96,6 @@ class AliOssService(object):
             img = pImage.open(BytesIO(obj))
             (x, y) = img.size
             x_s, y_s = cls.get_resize_size(x, y)
-            print x_s, y_s
             # print x, y , x_s, y_s
             if x == x_s:
                 return obj
@@ -154,16 +153,14 @@ class AliOssService(object):
         obj = cls.get_binary_from_bucket(fileid)
         try:
             k = pImage.open(BytesIO(obj))
-            print k.size
             blob = Blob(obj)
             im = Image(blob)
             x = im.size().width()
             y = im.size().height()
             x_s, y_s = cls.get_resize_size(x, y, True)
-            print x, y, x_s, y_s
             if x_s == x:
                 return obj
-            im.quality(40)
+            im.quality(25)
             print im.size().width(), im.size().height()
             im.filterType(FilterTypes.SincFilter)
             # x_s, y_s = x, y
