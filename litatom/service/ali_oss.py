@@ -108,7 +108,7 @@ class AliOssService(object):
         return res
 
     @classmethod
-    def get_resize_size(cls, x, y, from_gm=True):
+    def get_resize_size(cls, x, y, from_gm=False):
         '''
         采用阶梯式压缩方式：
         :param x:
@@ -116,18 +116,21 @@ class AliOssService(object):
         :param from_gm:
         :return:
         '''
-        first_xs = 100
-        seccond_xs = 400
-        max_width = 350
-        first_rate = 0.5
-        seccond_rate = 0.2
-        if x < first_xs:
-            x_s = x
-        elif x < seccond_xs:
-            x_s = first_xs + (x - first_xs) * first_rate
+        if from_gm:
+            first_xs = 100
+            seccond_xs = 400
+            max_width = 350
+            first_rate = 0.5
+            seccond_rate = 0.2
+            if x < first_xs:
+                x_s = x
+            elif x < seccond_xs:
+                x_s = first_xs + (x - first_xs) * first_rate
+            else:
+                x_s = first_xs + (seccond_xs - first_xs) * first_rate + (x - seccond_xs) * seccond_rate
+                x_s = min(x_s, max_width)
         else:
-            x_s = first_xs + (seccond_xs - first_xs) * first_rate + (x - seccond_xs) * seccond_rate
-            x_s = min(x_s, max_width)
+            x_s = x if x < 300 else 300
         return x_s, y * x_s / x
         # judge_x = 300
         # if from_gm:
