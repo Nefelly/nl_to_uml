@@ -165,7 +165,7 @@ class AliOssService(object):
             im.filterType(FilterTypes.SincFilter)
             # # x_s, y_s = x, y
             # im.scale('%dx%d' % (x_s, y_s))
-            # im.sharpen(1.3)
+            im.sharpen(1.3)
             im.write(blob)
             return blob.data
         except:
