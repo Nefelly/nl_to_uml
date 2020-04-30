@@ -63,7 +63,6 @@ class AliOssService(object):
                 return fileid
         except Exception, e:
             logger.error('upload_from_binary failed,  %s',  e)
-
         return ''
 
     @classmethod
@@ -155,11 +154,13 @@ class AliOssService(object):
         try:
             blob = Blob(obj)
             im = Image(blob)
-            im.quality(40)
-            im.filterType(FilterTypes.SincFilter)
             x = im.size().width()
             y = im.size().height()
             x_s, y_s = cls.get_resize_size(x, y, True)
+            if x_s == x:
+                return obj
+            im.quality(40)
+            im.filterType(FilterTypes.SincFilter)
             # x_s, y_s = x, y
             im.scale('%dx%d' % (x_s, y_s))
             im.sharpen(1.3)
