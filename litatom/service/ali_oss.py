@@ -157,9 +157,11 @@ class AliOssService(object):
             x = im.size().width()
             y = im.size().height()
             x_s, y_s = cls.get_resize_size(x, y, True)
+            print x, y, x_s, y_s
             if x_s == x:
                 return obj
             im.quality(40)
+            print im.size().width(), im.size().height()
             im.filterType(FilterTypes.SincFilter)
             # x_s, y_s = x, y
             im.scale('%dx%d' % (x_s, y_s))
