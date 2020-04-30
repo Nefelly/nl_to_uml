@@ -103,10 +103,9 @@ class AccountService(object):
             print 'get inn', request.uuid
             return 50 * cls.UNBAN_DIAMONDS
         forbid_times = UserRecord.get_forbidden_times_user_id(user_id)
-        if forbid_times == 1:
+        if forbid_times <= 1:
             return cls.UNBAN_DIAMONDS
-        print forbid_times, '!' * 100
-        return (forbid_times - 1) * 5 * cls.UNBAN_DIAMONDS
+        return max((forbid_times - 1) * 5 * cls.UNBAN_DIAMONDS, 500)
 
     @classmethod
     def unban_by_diamonds(cls, user_id):
