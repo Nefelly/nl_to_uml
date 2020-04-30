@@ -110,17 +110,37 @@ class AliOssService(object):
 
     @classmethod
     def get_resize_size(cls, x, y, from_gm=True):
-        judge_x = 300
-        if from_gm:
-            judge_x *= 2
-        if x < judge_x:
-            return x, y
-        if x < 600:
-            return judge_x, y * judge_x / x
-        if x < 3000:
-            return x / 2, y / 2
-        judge_x = 1000
-        return judge_x, y * judge_x / x
+        '''
+        采用阶梯式压缩方式：
+        :param x:
+        :param y:
+        :param from_gm:
+        :return:
+        '''
+        first_xs = 200
+        seccond_xs = 800
+        max_width = 1300
+        first_rate = 0.5
+        seccond_rate = 0.2
+        if x < first_xs:
+            x_s = x
+        elif x < seccond_xs:
+            x_s = first_xs + (x - first_xs) * first_rate
+        else:
+            x_s = first_xs + (seccond_xs - first_xs) * first_rate + (x - seccond_xs) * seccond_rate
+            x_s = min(x_s, max_width)
+        return x_s, y * x_s / x
+        # judge_x = 300
+        # if from_gm:
+        #     judge_x *= 2
+        # if x < judge_x:
+        #     return x, y
+        # if x < 600:
+        #     return judge_x, y * judge_x / x
+        # if x < 3000:
+        #     return x / 2, y / 2
+        # judge_x = 1000
+        # return judge_x, y * judge_x / x
 
     @classmethod
     def gm_resize(cls, fileid):
