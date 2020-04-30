@@ -203,7 +203,7 @@ class MatchService(object):
         redis_client.set(cls.TYPE_MATCHED.format(fake_id=fake_id2), fake_id1, cls.MATCH_INT)
         redis_client.set(cls.TYPE_MATCHED.format(fake_id=fake_id1), fake_id2, cls.MATCH_INT)
         redis_client.set(cls.TYPE_MATCH_PAIR.format(low_high_fakeid=pair), time_now, cls.MATCH_INT)
-        redis_client.set(cls.TYPE_MATCH_BEFORE.format(low_high_fakeid=pair), 1, ONE_DAY)
+        redis_client.set(cls.TYPE_MATCH_BEFORE.format(low_high_fakeid=pair), 1, 3 * ONE_DAY)
         # 将其从正在匹配队列中删除
         cls._remove_from_match_pool(gender1, fake_id1)
         cls._remove_from_match_pool(cls.OTHER_GENDER_M.get(gender1), fake_id2)
