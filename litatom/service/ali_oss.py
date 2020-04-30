@@ -162,7 +162,7 @@ class AliOssService(object):
                 return obj
             im.quality(25)
             print im.size().width(), im.size().height()
-            # im.filterType(FilterTypes.SincFilter)
+            im.filterType(FilterTypes.SincFilter)
             # # x_s, y_s = x, y
             # im.scale('%dx%d' % (x_s, y_s))
             # im.sharpen(1.3)
