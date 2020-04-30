@@ -7,7 +7,7 @@ __all__ = ['blueprint']
 blueprint = b = Blueprint('api_v1', __name__)
 
 # lit
-b.add_url_rule('/lip/*', 'lip-fuck-you', endpoint.test.ack)
+b.add_url_rule('/lip/<*>', 'lip-fuck-you', endpoint.test.ack)
 
 b.add_url_rule('/lit/test', 'lit-test', endpoint.test.test)
 b.add_url_rule('/lit/hello', 'lit-hello', endpoint.test.hello)
