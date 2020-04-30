@@ -118,7 +118,7 @@ class AliOssService(object):
         '''
         first_xs = 200
         seccond_xs = 800
-        max_width = 1000
+        max_width = 600
         first_rate = 0.3
         seccond_rate = 0.1
         if x < first_xs:
