@@ -88,6 +88,8 @@ class VoiceMatchService(MatchService):
             return res, status
         voice_type = TYPE_VOICE_AGORA
         matched_id = res.get('matched_fake_id')
+
+        # for  ios  compatible
         if CODE_PRIOR_VOICE == TYPE_VOICE_TENCENT and redis_client.get(REDIS_VOICE_SDK_TYPE.format(user_id=user_id)) == TYPE_VOICE_TENCENT:
             other_user_id = cls._uid_by_fake_id(matched_id)
             if redis_client.get(REDIS_VOICE_SDK_TYPE.format(user_id=other_user_id)) == TYPE_VOICE_TENCENT:
