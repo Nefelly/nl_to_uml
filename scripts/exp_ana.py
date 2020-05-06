@@ -96,10 +96,12 @@ def run():
         new_len_exp_uids = len(exp_uids)
         exp_retain_rate = new_len_default_uids / len_exp_uids
         print(from_date, nextdate, 'retain rate of experiment group: ', new_len_exp_uids, '/', len_exp_uids, '=',
-              default_retain_rate,)
+              exp_retain_rate,)
         len_exp_uids = new_len_exp_uids
         sum_default_rate += default_retain_rate
         sum_exp_rate += exp_retain_rate
+
+        from_date = nextdate
 
     print('total ', i, 'days')
     print('average retain rate of default group:', sum_default_rate / i)
