@@ -22,9 +22,7 @@ def run():
     except:
         print 'program already in run'
         sys.exit(0)
-    while (True):
-        foo()
-        time.sleep(1)
+    foo()
 
 if __name__ == "__main__":
     run()
