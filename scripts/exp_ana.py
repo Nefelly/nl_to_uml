@@ -70,8 +70,8 @@ def run():
 
     default_pay_sum, exp_pay_sum, default_pay_num, exp_pay_num = load_uid_payment(default_uids, exp_uids)
 
-    print('对照组付费平均值:', default_pay_sum / len_default_uids, '对照组付费用户比例:', default_pay_num / len_default_uids)
-    print('实验组付费平均值:', exp_pay_sum / len_exp_uids, '实验组付费用户比例', exp_pay_num / len_exp_uids)
+    print('payment average of default group:', default_pay_sum / len_default_uids, 'payment user rate average of default group:', default_pay_num / len_default_uids)
+    print('payment average of experiment group:', exp_pay_sum / len_exp_uids, 'payment user rate average of experiment group:', exp_pay_num / len_exp_uids)
 
     from_date = parse_standard_time('2020-04-28 00:00:00')
     to_date = parse_standard_time('2020-05-04 00:00:00')
