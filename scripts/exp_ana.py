@@ -3,6 +3,11 @@ from litatom.service import (
     AliLogService,
 )
 
+from litatom.util import (
+    parse_standard_time,
+    next_date,
+)
+
 
 def read_uids_from_file(path):
     uids = []
@@ -17,9 +22,9 @@ def deal_uids(uids):
     return uids
 
 
-def get_active_uids():
-    resp_set = AliLogService.get_log_by_time_and_topic(from_time='2020-04-29 00:00:00+8:00',
-                                                       to_time='2020-04-30 00:00:00+8:00',
+def get_active_uids(from_date, to_date):
+    resp_set = AliLogService.get_log_by_time_and_topic(from_time=AliLogService.datetime_to_alitime(from_date),
+                                                       to_time=AliLogService.datetime_to_alitime(to_date),
                                                        query='*|select distinct user_id limit 500000')
     uids = set()
     for resp in resp_set:
@@ -33,7 +38,7 @@ def get_active_uids():
 def load_uid_payment(default_uids, exp_uids):
     resp = AliLogService.get_log_atom(project='litatom-account', logstore='account_flow',
                                       from_time='2020-04-28 00:00:00+8:00',
-                                      to_time='2020-04-30 00:00:00+8:00',
+                                      to_time='2020-05-07 00:00:00+8:00',
                                       query="name:deposit | SELECT user_id,sum(diamonds) as res GROUP by user_id limit 500000")
     default_pay_sum = 0
     exp_pay_sum = 0
@@ -68,10 +73,37 @@ def run():
     print('对照组付费平均值:', default_pay_sum / len_default_uids, '对照组付费用户比例:', default_pay_num / len_default_uids)
     print('实验组付费平均值:', exp_pay_sum / len_exp_uids, '实验组付费用户比例', exp_pay_num / len_exp_uids)
 
-    active_uids = get_active_uids()
+    from_date = parse_standard_time('2020-04-28 00:00:00')
+    to_date = parse_standard_time('2020-05-04 00:00:00')
 
-    print('对照组留存比例', len(active_uids & set(default_uids)) / len_default_uids)
-    print('实验组留存比例', len(active_uids & set(exp_uids)) / len_exp_uids)
+    i = 0
+
+    sum_default_rate = 0.0
+    sum_exp_rate = 0.0
+
+    while from_date <= to_date:
+        i += 1
+        nextdate = next_date(from_date)
+        active_uids = get_active_uids(from_date, nextdate)
+        default_uids = active_uids & set(default_uids)
+        new_len_default_uids = len(default_uids)
+        default_retain_rate = new_len_default_uids / len_default_uids
+        print(from_date, nextdate, 'retain rate of default group: ', new_len_default_uids, '/', len_default_uids, '=',
+              default_retain_rate,)
+        len_default_uids = new_len_default_uids
+
+        exp_uids = active_uids & set(exp_uids)
+        new_len_exp_uids = len(exp_uids)
+        exp_retain_rate = new_len_default_uids / len_exp_uids
+        print(from_date, nextdate, 'retain rate of experiment group: ', new_len_exp_uids, '/', len_exp_uids, '=',
+              default_retain_rate,)
+        len_exp_uids = new_len_exp_uids
+        sum_default_rate += default_retain_rate
+        sum_exp_rate += exp_retain_rate
+
+    print('total ', i, 'days')
+    print('average retain rate of default group:', sum_default_rate / i)
+    print('average retain rate of experiment group:', sum_exp_rate / i)
 
 
 if __name__ == '__main__':
