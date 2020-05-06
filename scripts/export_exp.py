@@ -21,9 +21,9 @@ def foo():
     exp_keys = [el for el in res if res[el] == 'delay']
     defalut_keys = [el for el in res if res[el] == 'default']
     with open(exp, 'w') as f:
-        f.write('/n'.join([el.replace('_match_strategy', '').replace('exp:', '') for el in exp_keys]))
+        f.write('\n'.join([el.replace('_match_strategy', '').replace('exp:', '') for el in exp_keys]))
     with open(default, 'w') as f:
-        f.write('/n'.join([el.replace('_match_strategy', '').replace('exp:', '') for el in defalut_keys]))
+        f.write('\n'.join([el.replace('_match_strategy', '').replace('exp:', '') for el in defalut_keys]))
 
 def run():
     mutex_f = '/var/run/%s.mutex' % __file__.split('/')[-1].replace('.py', '')
@@ -35,9 +35,7 @@ def run():
     except:
         print 'program already in run'
         sys.exit(0)
-    while (True):
-        foo()
-        time.sleep(1)
+    foo()
 
 if __name__ == "__main__":
     run()
