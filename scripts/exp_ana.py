@@ -90,14 +90,15 @@ def run():
         default_retain_rate = new_len_default_uids / len_default_uids
         print(from_date, nextdate, 'retain rate of default group: ', new_len_default_uids, '/', len_default_uids, '=',
               default_retain_rate,)
-        len_default_uids = new_len_default_uids
+        len_default_uids = float(new_len_default_uids)
 
         exp_uids = active_uids & set(exp_uids)
         new_len_exp_uids = len(exp_uids)
-        exp_retain_rate = new_len_default_uids / len_exp_uids
+        exp_retain_rate = new_len_exp_uids / len_exp_uids
         print(from_date, nextdate, 'retain rate of experiment group: ', new_len_exp_uids, '/', len_exp_uids, '=',
               exp_retain_rate,)
-        len_exp_uids = new_len_exp_uids
+        len_exp_uids = float(new_len_exp_uids)
+
         sum_default_rate += default_retain_rate
         sum_exp_rate += exp_retain_rate
 
