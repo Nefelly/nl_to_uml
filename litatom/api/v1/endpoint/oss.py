@@ -27,7 +27,7 @@ from ....response import (
 )
 from ....service import (
     AliOssService,
-    QiniuService
+    PicCheckService
 )
 
 logger = logging.getLogger(__name__)
@@ -51,7 +51,7 @@ def upload_image_from_file():
         return jsonify(Failed)
     # url = 'http://www.litatom.com/api/sns/v1/lit/image/' + fileid
     # t_before_qiniu = time.time()
-    # reason = QiniuService.should_pic_block_from_url(url)
+    # reason = PicCheckService.check_pic_by_url(url)
     # t_end = time.time()
     # print 'qiniu using:%r, upload using:%r, ratio:%r' % (t_end - t_before_qiniu, t_before_qiniu - t_start, (t_end - t_before_qiniu)/(t_before_qiniu - t_start))
     # if reason:

@@ -10,6 +10,8 @@ from mongoengine import (
     ListField,
     StringField,
 )
+
+from ..const import ONE_DAY
 from ..util import (
     date_from_unix_ts,
     format_standard_time
@@ -47,6 +49,12 @@ class Report(Document):
         for _ in cls.objects(uid=uid, target_uid=target_uid, dealed=False):
             _.duplicated = True
             _.save()
+
+    @classmethod
+    def is_dup_report(cls, uid, target_uid, ts_now):
+        if cls.objects(uid=uid,target_uid=target_uid,create_ts__gte=ts_now-3*ONE_DAY, create_ts__lte=ts_now,dealed=False):
+            return True
+        return False
 
     def to_json(self, *args, **kwargs):
         if not self:

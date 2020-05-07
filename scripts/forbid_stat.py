@@ -3,7 +3,7 @@ import os
 import datetime
 from litatom.service import (
     ForbidStatService,
-    AlertService
+    EmailService
 )
 from litatom.util import (
     ensure_path,
@@ -18,7 +18,7 @@ from litatom.util import (
 def run(from_time=parse_standard_date(now_date_key()), to_time=datetime.datetime.now()):
     dst_addr = '/data/tmp/forbid_history:%s.json' % (format_standard_time(from_time)+'-'+format_standard_time(to_time))
     ForbidStatService.get_forbid_history(dst_addr, date_to_int_time(from_time), date_to_int_time(to_time))
-    AlertService.send_file(["litatomwang@gmail.com", "op.shiyang.yu@gmail.com", "396408395@qq.com", "w326571@126.com", '382365209@qq.com','644513759@qq.com'], dst_addr)
+    EmailService.send_file(["litatomwang@gmail.com", "op.shiyang.yu@gmail.com", "396408395@qq.com", "w326571@126.com", '382365209@qq.com', '644513759@qq.com'], dst_addr)
 
 
 if __name__ == "__main__":

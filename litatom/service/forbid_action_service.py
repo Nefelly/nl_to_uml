@@ -1,0 +1,224 @@
+# coding: utf-8
+import datetime
+import time
+from hendrix.conf import setting
+import json
+from math import floor
+
+from . import SpamWordCheckService
+from .forbid_check_service import ForbidCheckService
+from .forbid_record_service import ReportService, ForbidRecordService, TrackSpamRecordService
+from ..redis import (
+    RedisClient,
+)
+from ..service import (
+    GlobalizationService,
+    UserService,
+    FirebaseService,
+    PicCheckService,
+)
+from ..model import (
+    SpamWord,
+    TrackSpamRecord,
+    Report,
+    UserModel,
+    Feed,
+    UserRecord,
+)
+from ..util import (
+    unix_ts_local,
+    format_standard_time,
+    date_from_unix_ts,
+)
+from ..const import (
+    ONE_DAY,
+    SYS_FORBID,
+    REVIEW_PIC,
+    BLOCK_PIC,
+)
+
+redis_client = RedisClient()['lit']
+
+
+class ForbidActionService(object):
+    REPORT_WEIGHTING = 4
+    ALERT_WEIGHTING = 2
+    REVIEW_FEED_PIC_WEIGHTING = 2
+    MATCH_REPORT_WEIGHTING = 2
+    FORBID_THRESHOLD = 10
+    DEFAULT_SYS_FORBID_TIME = 3 * ONE_DAY
+    COMPENSATION_PER_TEN_FOLLOWER = 2
+    COMPENSATION_UPPER_THRESHOLD = 10
+    SPAM_WORD_REASON = 'spam word existence'
+
+    @classmethod
+    def resolve_block_pic(cls, user_id, pic):
+        """已鉴定过的block图片处理接口服务函数"""
+        TrackSpamRecordService.save_record(user_id,pic=pic)
+        MsgService.alert_basic(user_id)
+        res = cls.check_forbid(user_id)
+        if not res:
+            return u"definitely sexual picture", True
+        cls.forbid_user(user_id,cls.DEFAULT_SYS_FORBID_TIME)
+        return u"definitely sexual picture and have forbidden user", True
+
+    @classmethod
+    def resolve_report(cls, user_id, reason, pics=[], target_user_id=None, related_feed_id=None, match_type=None,
+                       chat_record=None):
+        """举报接口服务函数"""
+        if not target_user_id:
+            return None, False
+        # 一日内举报不可超过五次,三日内不可重复举报一人
+        ts_now = int(time.time())
+        if Report.is_dup_report(user_id,target_user_id,ts_now) and not setting.IS_DEV:
+            return 'You have reported the same person in last 3 days, please try later', False
+        cnt = Report.count_report_by_uid(user_id, ts_now - ONE_DAY, ts_now)
+        if cnt >= 5 and not setting.IS_DEV:
+            return 'You have reported too many times today, please try later', False
+        # 举报不过5次，均入库存档
+        Report.set_same_report_to_dealed(user_id, target_user_id)
+        report_id = ReportService.save_report(user_id, reason, pics, target_user_id, related_feed_id, match_type,
+                                              chat_record)
+        feed_additional_score = 0
+        if related_feed_id:
+            feed_additional_score = cls.resolve_feed_report(related_feed_id, target_user_id, user_id)
+
+        chat_record_additional_score = 0
+        if chat_record:
+            chat_record_additional_score = cls.resolve_chat_record_report(chat_record,target_user_id,user_id)
+        res = cls.check_forbid(target_user_id, ts_now, chat_record_additional_score+feed_additional_score)
+        if res:
+            cls.forbid_user(target_user_id, cls.DEFAULT_SYS_FORBID_TIME, SYS_FORBID, ts_now)
+            return {"report_id": str(report_id), SYS_FORBID: True}, True
+        return {"report_id": str(report_id), SYS_FORBID: False}, True
+
+    @classmethod
+    def resolve_feed_report(cls, feed_id, target_user_id, user_id):
+        """由于举报feed中，无论文字命中还是图片命中"""
+        word_res, pic_res = ForbidCheckService.check_feed(feed_id)
+        if not word_res and not pic_res:
+            return 0
+        if word_res or pic_res:
+            MsgService.feedback_to_reporters(target_user_id, [user_id], is_warn=True)
+        if word_res:
+            TrackSpamRecordService.save_record(target_user_id, word=word_res.keys()[0])
+            MsgService.alert_feed_delete(target_user_id, cls.SPAM_WORD_REASON)
+            return 2
+        if pic_res:
+            pic = pic_res.keys()[0]
+            TrackSpamRecordService.save_record(target_user_id,pic=pic)
+            MsgService.alert_feed_delete(target_user_id,pic_res[pic][0])
+            return 2
+
+    @classmethod
+    def resolve_chat_record_report(cls, chat_record, target_user_id, user_id):
+        word_res, pic_res = ForbidCheckService.check_chat_record(chat_record)
+        if not word_res and not pic_res:
+            return 0
+        if word_res or pic_res:
+            MsgService.feedback_to_reporters(target_user_id, [user_id], is_warn=True)
+        if word_res:
+            TrackSpamRecordService.save_record(target_user_id, word=word_res.keys()[0])
+            MsgService.alert_basic(target_user_id)
+            return 2
+        if pic_res:
+            pic = pic_res.keys()[0]
+            TrackSpamRecordService.save_record(target_user_id,pic=pic)
+            MsgService.alert_basic(target_user_id)
+            return 2
+
+    @classmethod
+    def resolve_spam_word(cls, user_id, word):
+        """IM中已知spam word处理"""
+        TrackSpamRecordService.save_record(user_id, word=word)
+        MsgService.alert_basic(user_id)
+        res = cls.check_forbid(user_id)
+        if res:
+            cls.forbid_user(user_id,cls.DEFAULT_SYS_FORBID_TIME)
+            return {SYS_FORBID: True}, True
+        return {SYS_FORBID: False}, True
+
+    @classmethod
+    def check_forbid(cls, target_user_id, ts_now=None,additional_score=0):
+        """进行封号检查，应该封号返回True，未达到封号阈值返回False"""
+        ts_now = int(time.time()) if not ts_now else ts_now
+        # 官方账号不会被检查封号
+        credit, res = cls.accum_illegal_credit(target_user_id, ts_now, additional_score)
+        if not res or UserService.is_official_account(target_user_id):
+            return False
+        # 违规积分达到上限，非高价值用户，要被封号
+        return True
+
+    @classmethod
+    def accum_illegal_credit(cls, user_id, timestamp_now=None, additional_score=0):
+        """计算违规积分，查看user_id是否应该被封号"""
+        if not timestamp_now:
+            time_now = datetime.datetime.now()
+            timestamp_now = unix_ts_local(time_now)
+            time_3days_ago = unix_ts_local(time_now - datetime.timedelta(days=3))
+        else:
+            time_3days_ago = timestamp_now - 3 * ONE_DAY
+
+        alert_num = TrackSpamRecord.count_by_time_and_uid(user_id, time_3days_ago, timestamp_now)
+        report_total_num = Report.count_by_time_and_uid_distinct(user_id, time_3days_ago, timestamp_now)
+        report_match_num = Report.count_match_by_time_and_uid(user_id, time_3days_ago, timestamp_now)
+
+        illegal_credit = alert_num * cls.ALERT_WEIGHTING + (report_total_num - report_match_num) * cls.REPORT_WEIGHTING \
+                         + report_match_num * cls.MATCH_REPORT_WEIGHTING + additional_score - cls.get_high_value_compensation(user_id)
+        if illegal_credit >= cls.FORBID_THRESHOLD:
+            return illegal_credit, True
+        return illegal_credit, False
+
+    @classmethod
+    def forbid_user(cls, user_id, forbid_ts, forbid_type=SYS_FORBID, ts=int(time.time())):
+        """封号服务统一接口"""
+        if not UserService.is_forbbiden(user_id):
+            UserService.forbid_action(user_id, forbid_ts)
+            UserRecord.add_forbidden(user_id, forbid_type)
+        reporters = ForbidRecordService.mark_record(user_id,ts - 3 * ONE_DAY,ts)
+        MsgService.feedback_to_reporters(user_id, reporters)
+        return True
+
+    @classmethod
+    def get_high_value_compensation(cls, user_id):
+        """根据用户粉丝数量，获得一些补偿违规积分，避免高价值用户被举报封号"""
+        followers = UserService.get_followers_by_uid(user_id)
+        res = floor(followers / 10) * cls.COMPENSATION_PER_TEN_FOLLOWER
+        res = res if res >= 0 else 0
+        return res if res <= cls.COMPENSATION_UPPER_THRESHOLD else cls.COMPENSATION_UPPER_THRESHOLD
+
+    @classmethod
+    def is_high_value_user(cls, user_id):
+        return UserService.get_followers_by_uid(user_id) >= 20
+
+
+class MsgService(object):
+    WARN_FEEDBACK_WORDS = GlobalizationService.get_region_word('other_warn_inform')
+    BAN_FEEDBACK_WORDS = GlobalizationService.get_region_word('other_ban_inform')
+    FIREBASE_FEEDBACK_WORDS = u'your report succeed'
+    DEFAULT_ALERT_WORDS = GlobalizationService.get_region_word('alert_word')
+    FEED_DELETE_ALERT_WORDS = u'Your post have been deleted due to reason: %s. Please keep your feed positive.'
+
+    @classmethod
+    def alert_atom(cls, user_id, msg):
+        UserService.msg_to_user(msg, user_id)
+        UserModel.add_alert_num(user_id)
+
+    @classmethod
+    def alert_basic(cls, user_id):
+        cls.alert_atom(user_id, cls.DEFAULT_ALERT_WORDS)
+
+    @classmethod
+    def alert_feed_delete(cls, user_id, reason):
+        cls.alert_atom(user_id, cls.FEED_DELETE_ALERT_WORDS % reason)
+
+    @classmethod
+    def feedback_to_reporters(cls, reported_uid, report_user_ids, is_warn=False):
+        target_user_nickname = UserService.nickname_by_uid(reported_uid)
+        if is_warn:
+            to_user_info = cls.WARN_FEEDBACK_WORDS % (target_user_nickname, target_user_nickname)
+        else:
+            to_user_info = cls.BAN_FEEDBACK_WORDS % (target_user_nickname, target_user_nickname)
+        for reporter in report_user_ids:
+            UserService.msg_to_user(to_user_info, reporter)
+            FirebaseService.send_to_user(reporter, cls.FIREBASE_FEEDBACK_WORDS, to_user_info)

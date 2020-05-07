@@ -1,10 +1,9 @@
 # flake8: noqa
-from .alert_service import AlertService
+from .email_service import EmailService
 from .token_bucket_service import TokenBucketService
 from .ip2address_service import Ip2AddressService
 from .youtube_service import YoutubeService
 from .ali_log_service import AliLogService
-from .qiniu_service import QiniuService
 from .monitor_service import MonitorService
 from .globalization_service import GlobalizationService
 from .anti_spam_rate_service import AntiSpamRateService
@@ -36,7 +35,9 @@ from .ad_service import (
 )
 from .user_filter_service import UserFilterService
 from .user_service import UserService
-from .forbidden_service import ForbiddenService, SpamWordService
+from .forbid_record_service import ForbidRecordService
+from .forbid_action_service import ForbidActionService
+from .forbid_check_service import SpamWordCheckService, PicCheckService, ForbidCheckService
 from .statistic_service import DiamStatService
 from .voice_chat_service import VoiceChatService
 from .message_service import UserMessageService
@@ -49,7 +50,7 @@ from .voice_match_service import VoiceMatchService
 from .video_match_service import VideoMatchService
 from .feed_service import FeedService
 from .debug_helper_service import DebugHelperService
-from .forbidden_service import ReportService
+from .forbid_action_service import ReportService
 from .feedback_service import FeedbackService
 from .admin_service import AdminService
 from .palm_service import PalmService
