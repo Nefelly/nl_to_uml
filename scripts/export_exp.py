@@ -8,22 +8,22 @@ import time
 
 
 def foo():
-    # AliLogService.get_loglst('"get_fakeid" and "experiment_name"', '20200412', '20200428', 'litatom', 'litatomstore',
-    #                          save_add='/data/alilog/exp.txt')
+    AliLogService.get_loglst('"get_fakeid" and "experiment_name"', '20200501', '20200507', 'litatom', 'litatomstore',
+                             save_add='/data/alilog/exp.txt')
     # pass
-    redis_client = RedisClient()['lit']
-    res = {}
-    for _ in redis_client.keys('exp:*'):
-        v = redis_client.get(_)
-        res[_] = v
-    exp = '/tmp/exp'
-    default = '/tmp/default'
-    exp_keys = [el for el in res if res[el] == 'delay']
-    defalut_keys = [el for el in res if res[el] == 'default']
-    with open(exp, 'w') as f:
-        f.write('\n'.join([el.replace('_match_strategy', '').replace('exp:', '') for el in exp_keys]))
-    with open(default, 'w') as f:
-        f.write('\n'.join([el.replace('_match_strategy', '').replace('exp:', '') for el in defalut_keys]))
+    # redis_client = RedisClient()['lit']
+    # res = {}
+    # for _ in redis_client.keys('exp:*'):
+    #     v = redis_client.get(_)
+    #     res[_] = v
+    # exp = '/tmp/exp'
+    # default = '/tmp/default'
+    # exp_keys = [el for el in res if res[el] == 'delay']
+    # defalut_keys = [el for el in res if res[el] == 'default']
+    # with open(exp, 'w') as f:
+    #     f.write('\n'.join([el.replace('_match_strategy', '').replace('exp:', '') for el in exp_keys]))
+    # with open(default, 'w') as f:
+    #     f.write('\n'.join([el.replace('_match_strategy', '').replace('exp:', '') for el in defalut_keys]))
 
 def run():
     mutex_f = '/var/run/%s.mutex' % __file__.split('/')[-1].replace('.py', '')
