@@ -10,7 +10,7 @@ import logging
 from qiniu import Auth, QiniuMacAuth, http
 from . import GlobalizationService, AliLogService
 from ..const import BLOCK_PIC, REVIEW_PIC
-from ..model import SpamWord, TrackSpamRecord, Feed
+from ..model import SpamWord, Feed
 from ..redis import (
     RedisClient,
 )

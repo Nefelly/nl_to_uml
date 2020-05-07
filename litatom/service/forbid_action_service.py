@@ -4,8 +4,6 @@ import time
 from hendrix.conf import setting
 import json
 from math import floor
-
-from . import SpamWordCheckService
 from .forbid_check_service import ForbidCheckService
 from .forbid_record_service import ReportService, ForbidRecordService, TrackSpamRecordService
 from ..redis import (
