@@ -397,7 +397,9 @@ class ReportService(object):
         res = {
             'reason': report.reason,
             'report_id': str(report.id),
-            'user_id': report.uid,
+            'user_id': '%s\n%s' % (
+                      report.uid, UserService.nickname_by_uid(report.uid)) if report.uid else '',
+            # 'user_id': report.uid,
             'pics': report.pics,
             'region': report.region,
             'deal_result': report.deal_res if report.deal_res else '',
