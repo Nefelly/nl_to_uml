@@ -29,9 +29,11 @@ no pictures
 </td>
     <td><audio v-if="item.audio_url" audio id="audio1" controls="controls" :src="item.audio_url" type="audio/x-mpeg">
 </audio> </td>
-<td><button name='ban'  style="width:200px;height:50px; background:red" @click='ban(item.report_id)'>ban</button><br /> <br /><br /> <button name='reject' style="width:200px;height:60px; background:green" @click='reject(item.report_id)'>reject</button>
-    <br /><br />  <button name='ban_reporter' style="background:green" @click='ban_reporter(item.user_id)'>ban_reporter</button><br /><br />
-    <button name='ban_device'  style="background:darkred" @click='ban_device(item.report_id)'>ban_device</button></td>
+<td><button name='ban'  style="width:150px;height:50px; background:red" @click='ban(item.report_id)'>ban</button><br /> <br /><br />
+    <button name='reject' style="width:150px;height:60px; background:lightgreen" @click='reject(item.report_id)'>reject</button>
+    <button name='ban_device'  style="width:150px;height:20px; background:darkred" @click='ban_device(item.report_id)'>ban_device</button>
+    <br /><br />  <button name='ban_reporter' style="width:150px;height:20px; background:yellow" @click='ban_reporter(item.user_id)'>ban_reporter</button><br /><br />
+    </td>
 </tr>
 </table>
 <!-- <button v-if="previous_start >= 0" name="previous_page" @click="previous_page()">previous page</button> -->
