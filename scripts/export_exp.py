@@ -8,7 +8,7 @@ import time
 
 
 def foo():
-    AliLogService.get_loglst('"get_fakeid" and "experiment_name"', '20200501', '20200507', 'litatom', 'litatomstore',
+    AliLogService.get_loglst('"get_fakeid" and "delay"', '20200501', '20200507', 'litatom', 'litatomstore',
                              save_add='/data/alilog/exp.txt')
     # pass
     # redis_client = RedisClient()['lit']
