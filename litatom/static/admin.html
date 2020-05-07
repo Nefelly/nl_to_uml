@@ -17,7 +17,6 @@
 <tr v-for="item in items1">
 <td>{{item.user_id}}<hr /> {{item.create_time}} </td>
 <td><pre>{{item.target_user_id}}</pre>
-
 </td>
     <td>reason: {{item.reason}}<hr /> content:<pre>{{item.content}}</pre><hr />chat:<pre>{{item.chat_record}}</pre> <hr />picture_from_feed: <pre style="background:lightpink" >{{item.pic_from_feed}}</pre></td>
 <td
@@ -31,10 +30,11 @@ no pictures
 </td>
     <td><audio v-if="item.audio_url" audio id="audio1" controls="controls" :src="item.audio_url" type="audio/x-mpeg">
 </audio> </td>
-<button name='ban'  style="width:150px;height:50px; border-radius:15px; background:red" @click='ban(item.report_id)'>ban</button><br /> <br />
-    <button name='reject' style="width:150px;height:60px; background:lightgreen" @click='reject(item.report_id)'>reject</button><br /><br />
-    <button name='ban_device'  style="width:150px;height:30px; background:darkred" @click='ban_device(item.report_id)'>ban_device</button>
-    <br /><br />  <button name='ban_reporter' style="width:150px;height:20px; background:yellow" @click='ban_reporter(item.user_id)'>ban_reporter</button>
+<td><button name='ban'  style="width:150px;height:50px;border-radius:15px; background:red" @click='ban(item.report_id)'>ban</button><br /> <br />
+    <button name='reject' style="width:150px;height:60px;border-radius:15px; background:lightgreen" @click='reject(item.report_id)'>reject</button><br /><br />
+    <button name='ban_device'  style="width:150px;height:30px;border-radius:15px; background:darkred" @click='ban_device(item.report_id)'>ban_device</button>
+    <br /><br />  <button name='ban_reporter' style="width:150px;height:20px;border-radius:15px; background:yellow" @click='ban_reporter(item.user_id)'>ban_reporter</button><br /><br />
+    </td>
 </tr>
 </table>
 <!-- <button v-if="previous_start >= 0" name="previous_page" @click="previous_page()">previous page</button> -->
