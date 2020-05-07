@@ -6,6 +6,7 @@ from .youtube_service import YoutubeService
 from .ali_log_service import AliLogService
 from .monitor_service import MonitorService
 from .globalization_service import GlobalizationService
+from .forbid_check_service import SpamWordCheckService, PicCheckService, ForbidCheckService
 from .anti_spam_rate_service import AntiSpamRateService
 from .mq_service import MqService
 from .mongo_sync_service import MongoSyncService
@@ -35,9 +36,8 @@ from .ad_service import (
 )
 from .user_filter_service import UserFilterService
 from .user_service import UserService
-from .forbid_record_service import ForbidRecordService
+from .forbid_record_service import ForbidRecordService,ReportService,TrackSpamRecordService
 from .forbid_action_service import ForbidActionService
-from .forbid_check_service import SpamWordCheckService, PicCheckService, ForbidCheckService
 from .statistic_service import DiamStatService
 from .voice_chat_service import VoiceChatService
 from .message_service import UserMessageService
@@ -50,7 +50,6 @@ from .voice_match_service import VoiceMatchService
 from .video_match_service import VideoMatchService
 from .feed_service import FeedService
 from .debug_helper_service import DebugHelperService
-from .forbid_action_service import ReportService
 from .feedback_service import FeedbackService
 from .admin_service import AdminService
 from .palm_service import PalmService

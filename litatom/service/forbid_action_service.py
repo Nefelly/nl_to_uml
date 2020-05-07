@@ -4,19 +4,19 @@ import time
 from hendrix.conf import setting
 import json
 from math import floor
-from .forbid_check_service import ForbidCheckService
-from .forbid_record_service import ReportService, ForbidRecordService, TrackSpamRecordService
-from ..redis import (
-    RedisClient,
-)
 from ..service import (
+    ForbidCheckService,
+    ReportService,
+    ForbidRecordService,
+    TrackSpamRecordService,
     GlobalizationService,
     UserService,
     FirebaseService,
-    PicCheckService,
+)
+from ..redis import (
+    RedisClient,
 )
 from ..model import (
-    SpamWord,
     TrackSpamRecord,
     Report,
     UserModel,
@@ -25,14 +25,10 @@ from ..model import (
 )
 from ..util import (
     unix_ts_local,
-    format_standard_time,
-    date_from_unix_ts,
 )
 from ..const import (
     ONE_DAY,
     SYS_FORBID,
-    REVIEW_PIC,
-    BLOCK_PIC,
 )
 
 redis_client = RedisClient()['lit']
@@ -52,12 +48,12 @@ class ForbidActionService(object):
     @classmethod
     def resolve_block_pic(cls, user_id, pic):
         """已鉴定过的block图片处理接口服务函数"""
-        TrackSpamRecordService.save_record(user_id,pic=pic)
+        TrackSpamRecordService.save_record(user_id, pic=pic)
         MsgService.alert_basic(user_id)
         res = cls.check_forbid(user_id)
         if not res:
             return u"definitely sexual picture", True
-        cls.forbid_user(user_id,cls.DEFAULT_SYS_FORBID_TIME)
+        cls.forbid_user(user_id, cls.DEFAULT_SYS_FORBID_TIME)
         return u"definitely sexual picture and have forbidden user", True
 
     @classmethod
@@ -68,7 +64,7 @@ class ForbidActionService(object):
             return None, False
         # 一日内举报不可超过五次,三日内不可重复举报一人
         ts_now = int(time.time())
-        if Report.is_dup_report(user_id,target_user_id,ts_now) and not setting.IS_DEV:
+        if Report.is_dup_report(user_id, target_user_id, ts_now) and not setting.IS_DEV:
             return 'You have reported the same person in last 3 days, please try later', False
         cnt = Report.count_report_by_uid(user_id, ts_now - ONE_DAY, ts_now)
         if cnt >= 5 and not setting.IS_DEV:
@@ -83,8 +79,8 @@ class ForbidActionService(object):
 
         chat_record_additional_score = 0
         if chat_record:
-            chat_record_additional_score = cls.resolve_chat_record_report(chat_record,target_user_id,user_id)
-        res = cls.check_forbid(target_user_id, ts_now, chat_record_additional_score+feed_additional_score)
+            chat_record_additional_score = cls.resolve_chat_record_report(chat_record, target_user_id, user_id)
+        res = cls.check_forbid(target_user_id, ts_now, chat_record_additional_score + feed_additional_score)
         if res:
             cls.forbid_user(target_user_id, cls.DEFAULT_SYS_FORBID_TIME, SYS_FORBID, ts_now)
             return {"report_id": str(report_id), SYS_FORBID: True}, True
@@ -104,8 +100,8 @@ class ForbidActionService(object):
             return 2
         if pic_res:
             pic = pic_res.keys()[0]
-            TrackSpamRecordService.save_record(target_user_id,pic=pic)
-            MsgService.alert_feed_delete(target_user_id,pic_res[pic][0])
+            TrackSpamRecordService.save_record(target_user_id, pic=pic)
+            MsgService.alert_feed_delete(target_user_id, pic_res[pic][0])
             return 2
 
     @classmethod
@@ -121,7 +117,7 @@ class ForbidActionService(object):
             return 2
         if pic_res:
             pic = pic_res.keys()[0]
-            TrackSpamRecordService.save_record(target_user_id,pic=pic)
+            TrackSpamRecordService.save_record(target_user_id, pic=pic)
             MsgService.alert_basic(target_user_id)
             return 2
 
@@ -132,12 +128,12 @@ class ForbidActionService(object):
         MsgService.alert_basic(user_id)
         res = cls.check_forbid(user_id)
         if res:
-            cls.forbid_user(user_id,cls.DEFAULT_SYS_FORBID_TIME)
+            cls.forbid_user(user_id, cls.DEFAULT_SYS_FORBID_TIME)
             return {SYS_FORBID: True}, True
         return {SYS_FORBID: False}, True
 
     @classmethod
-    def check_forbid(cls, target_user_id, ts_now=None,additional_score=0):
+    def check_forbid(cls, target_user_id, ts_now=None, additional_score=0):
         """进行封号检查，应该封号返回True，未达到封号阈值返回False"""
         ts_now = int(time.time()) if not ts_now else ts_now
         # 官方账号不会被检查封号
@@ -173,7 +169,7 @@ class ForbidActionService(object):
         if not UserService.is_forbbiden(user_id):
             UserService.forbid_action(user_id, forbid_ts)
             UserRecord.add_forbidden(user_id, forbid_type)
-        reporters = ForbidRecordService.mark_record(user_id,ts - 3 * ONE_DAY,ts)
+        reporters = ForbidRecordService.mark_record(user_id, ts - 3 * ONE_DAY, ts)
         MsgService.feedback_to_reporters(user_id, reporters)
         return True
 
