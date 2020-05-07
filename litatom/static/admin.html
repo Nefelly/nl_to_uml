@@ -99,7 +99,8 @@ methods: {
                 newItem1.push(item)
             }
         })
-            this.items1 = newItem1
+            this.items1 = newItem1;
+            judge_and_next();
         }
         else{alert('failed');}
       })
@@ -119,7 +120,7 @@ methods: {
         })
 
         this.items1 = newItem1
-
+        judge_and_next();
       })
     },
     ban_device: function(report_id){
@@ -136,6 +137,7 @@ methods: {
         })
 
         this.items1 = newItem1
+          judge_and_next();
       })
     },
     ban_reporter: function(user_id){
@@ -151,10 +153,11 @@ methods: {
           }
         })
 
-        this.items1 = newItem1
-
+        this.items1 = newItem1;
+        judge_and_next();
       })
     },
+
     next_page: function() {
         this.$http.get(BASE_URL + 'admin/query_reports', {params:{start_ts: this.next_start, loc:Loc, dealed:Dealed, show_match:Showmatch}}).then(function(result){
             var data = result.data.data;
@@ -166,7 +169,11 @@ methods: {
             }
         })
     },
-
+    judge_and_next: function() {
+          if (this.items1.length ===0){
+              next_page();
+          }
+    },
     previous_page: function() {
         this.$http.get(BASE_URL + 'admin/query_reports', {params:{start_pos: this.previous_start, loc:Loc, show_match: Showmatch}}).then(function(result){
             var data = result.data.data;
