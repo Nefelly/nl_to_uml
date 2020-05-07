@@ -9,11 +9,13 @@ import logging.handlers
 import exceptions
 import pymongo
 import bson
+import cPickle
 from pymongo import ReplaceOne
 import traceback
 import logging
 from ..util import (
-    get_args_from_db
+    get_args_from_db,
+    ensure_path
 )
 from ..key import (
     REDIS_ALL_USER_ID_SET
@@ -64,7 +66,18 @@ class MongoSyncService(object):
 
     @classmethod
     def real_time_sync_userids(cls):
-        pass
+        timestamp_save_add = '/data/tmp/userid_sync.time'
+        ensure_path(timestamp_save_add)
+        time_stamp = bson.timestamp.Timestamp(int(time.time()), 0)
+        if os.path.exists(timestamp_save_add):
+            time_str = open(timestamp_save_add).read()
+            time_stamp = cPickle.loads(time_str)
+
+
+
+class MainTainAllUserIds(object):
+    pass
+
 
 class MongoSynchronizer(object):
     """ MongoDB multi-source synchronizer.
