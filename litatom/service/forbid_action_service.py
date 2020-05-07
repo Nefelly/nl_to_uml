@@ -158,7 +158,8 @@ class ForbidActionService(object):
         report_match_num = Report.count_match_by_time_and_uid(user_id, time_3days_ago, timestamp_now)
 
         illegal_credit = alert_num * cls.ALERT_WEIGHTING + (report_total_num - report_match_num) * cls.REPORT_WEIGHTING \
-                         + report_match_num * cls.MATCH_REPORT_WEIGHTING + additional_score - cls.get_high_value_compensation(user_id)
+                         + report_match_num * cls.MATCH_REPORT_WEIGHTING + additional_score - cls.get_high_value_compensation(
+            user_id)
         if illegal_credit >= cls.FORBID_THRESHOLD:
             return illegal_credit, True
         return illegal_credit, False
@@ -187,10 +188,10 @@ class ForbidActionService(object):
 
 
 class MsgService(object):
-    WARN_FEEDBACK_WORDS = GlobalizationService.get_region_word('other_warn_inform')
-    BAN_FEEDBACK_WORDS = GlobalizationService.get_region_word('other_ban_inform')
+    WARN_FEEDBACK_WORDS = 'other_warn_inform'
+    BAN_FEEDBACK_WORDS = 'other_ban_inform'
     FIREBASE_FEEDBACK_WORDS = u'your report succeed'
-    DEFAULT_ALERT_WORDS = GlobalizationService.get_region_word('alert_word')
+    DEFAULT_ALERT_WORDS = 'alert_word'
     FEED_DELETE_ALERT_WORDS = u'Your post have been deleted due to reason: %s. Please keep your feed positive.'
 
     @classmethod
@@ -200,7 +201,7 @@ class MsgService(object):
 
     @classmethod
     def alert_basic(cls, user_id):
-        cls.alert_atom(user_id, cls.DEFAULT_ALERT_WORDS)
+        cls.alert_atom(user_id, GlobalizationService.get_region_word(cls.DEFAULT_ALERT_WORDS))
 
     @classmethod
     def alert_feed_delete(cls, user_id, reason):
@@ -210,9 +211,10 @@ class MsgService(object):
     def feedback_to_reporters(cls, reported_uid, report_user_ids, is_warn=False):
         target_user_nickname = UserService.nickname_by_uid(reported_uid)
         if is_warn:
-            to_user_info = cls.WARN_FEEDBACK_WORDS % (target_user_nickname, target_user_nickname)
+            to_user_info = GlobalizationService.get_region_word(cls.WARN_FEEDBACK_WORDS) % (
+                target_user_nickname, target_user_nickname)
         else:
-            to_user_info = cls.BAN_FEEDBACK_WORDS % (target_user_nickname, target_user_nickname)
+            to_user_info = GlobalizationService.get_region_word(cls.BAN_FEEDBACK_WORDS) % (target_user_nickname, target_user_nickname)
         for reporter in report_user_ids:
             UserService.msg_to_user(to_user_info, reporter)
             FirebaseService.send_to_user(reporter, cls.FIREBASE_FEEDBACK_WORDS, to_user_info)
