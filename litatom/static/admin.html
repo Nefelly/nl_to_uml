@@ -16,12 +16,13 @@
  </tr>
 <tr v-for="item in items1">
 <td>{{item.user_id}}<hr /> {{item.create_time}} </td>
-<td><pre>{{item.target_user_id}}</pre></td>
+<td><pre>{{item.target_user_id}}</pre>
+</td>
     <td>reason: {{item.reason}}<hr /> content:<pre>{{item.content}}</pre><hr />chat:<pre>{{item.chat_record}}</pre> <hr />picture_from_feed: <pre style="background:lightpink" >{{item.pic_from_feed}}</pre></td>
 <td
   v-if="item.pics.length > 0"
    >
-  <img v-for="pic in item.pics" width= "300" height="533" :src="base_url +'simage/' + pic">
+  <img v-for="pic in item.pics" width=100% height="533" :src="base_url +'simage/' + pic">
 </td>
 
 <td v-if="item.pics.length === 0">
@@ -29,13 +30,15 @@ no pictures
 </td>
     <td><audio v-if="item.audio_url" audio id="audio1" controls="controls" :src="item.audio_url" type="audio/x-mpeg">
 </audio> </td>
-<td><button name='ban'  style="background:red" @click='ban(item.report_id)'>ban</button><br /> <br /><br /> <button name='reject' @click='reject(item.report_id)'>reject</button>
-    <br /><br />  <button name='ban_reporter' style="background:green" @click='ban_reporter(item.user_id)'>ban_reporter</button><br /><br />
-    <button name='ban_device'  style="background:powderblue" @click='ban_device(item.report_id)'>ban_device</button></td>
+<td align="center"><button name='ban'  style="width:150px;height:50px;border-radius:15px; background:red" @click='ban(item.report_id)'>ban</button><br /> <br />
+    <button name='reject' style="width:150px;height:60px;border-radius:15px; background:lightgreen" @click='reject(item.report_id)'>reject</button><br /><br />
+    <button name='ban_device'  style="width:150px;height:30px;border-radius:5px; background:darkred" @click='ban_device(item.report_id)'>ban_device</button>
+    <br /><br />  <button name='ban_reporter' style="width:150px;height:20px;border-radius:5px; background:yellow" @click='ban_reporter(item.user_id)'>ban_reporter</button><br /><br />
+    </td>
 </tr>
 </table>
 <!-- <button v-if="previous_start >= 0" name="previous_page" @click="previous_page()">previous page</button> -->
-<button v-if="next_start >= 0" name="next_page" @click="next_page()">next page</button>
+<button v-if="next_start >= 0" style="width:300px;height:60px; border-radius:15px; background:greenyellow"  name="next_page" @click="next_page()">next page >>></button>
 </div>
 <script>
     function GetRequest() {
@@ -85,6 +88,22 @@ methods: {
                     this.next_start = data.next_start;
 	      })
       },
+    next_page: function() {
+        this.$http.get(BASE_URL + 'admin/query_reports', {params:{start_ts: this.next_start, loc:Loc, dealed:Dealed, show_match:Showmatch}}).then(function(result){
+            var data = result.data.data;
+            this.objs = data.objs;
+            this.items1 = this.objs;
+            this.next_start = data.next_start;
+            if(this.next_start===0){
+                this.previous_start = -1;
+            }
+        })
+    },
+    judge_and_next: function() {
+          if (this.items1.length ===0){
+              this.next_page();
+          }
+    },
     reject: function(report_id){
       var url = BASE_URL + 'admin/reject/' + report_id;
       this.$http.get(url).then(function(result){
@@ -96,7 +115,8 @@ methods: {
                 newItem1.push(item)
             }
         })
-            this.items1 = newItem1
+            this.items1 = newItem1;
+            this.judge_and_next();
         }
         else{alert('failed');}
       })
@@ -116,7 +136,7 @@ methods: {
         })
 
         this.items1 = newItem1
-
+        this.judge_and_next();
       })
     },
     ban_device: function(report_id){
@@ -133,6 +153,7 @@ methods: {
         })
 
         this.items1 = newItem1
+          this.judge_and_next();
       })
     },
     ban_reporter: function(user_id){
@@ -148,21 +169,11 @@ methods: {
           }
         })
 
-        this.items1 = newItem1
-
+        this.items1 = newItem1;
+        this.judge_and_next();
       })
     },
-    next_page: function() {
-        this.$http.get(BASE_URL + 'admin/query_reports', {params:{start_ts: this.next_start, loc:Loc, dealed:Dealed, show_match:Showmatch}}).then(function(result){
-            var data = result.data.data;
-            this.objs = data.objs;
-            this.items1 = this.objs;
-            this.next_start = data.next_start;
-            if(this.next_start===0){
-                this.previous_start = -1;
-            }
-        })
-    },
+
 
     previous_page: function() {
         this.$http.get(BASE_URL + 'admin/query_reports', {params:{start_pos: this.previous_start, loc:Loc, show_match: Showmatch}}).then(function(result){
