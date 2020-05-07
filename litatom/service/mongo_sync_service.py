@@ -10,6 +10,7 @@ import exceptions
 import pymongo
 import bson
 import cPickle
+from hendrix.conf import setting
 from pymongo import ReplaceOne
 import traceback
 import logging
@@ -72,7 +73,8 @@ class MongoSyncService(object):
         if os.path.exists(timestamp_save_add):
             time_str = open(timestamp_save_add).read()
             time_stamp = cPickle.loads(time_str)
-
+        setting.DB_SETTINGS.get('DB_LIT')
+        _src_mc = pymongo.MongoClient()
 
 
 class MainTainAllUserIds(object):
