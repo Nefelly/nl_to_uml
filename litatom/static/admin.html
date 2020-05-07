@@ -88,6 +88,22 @@ methods: {
                     this.next_start = data.next_start;
 	      })
       },
+    next_page: function() {
+        this.$http.get(BASE_URL + 'admin/query_reports', {params:{start_ts: this.next_start, loc:Loc, dealed:Dealed, show_match:Showmatch}}).then(function(result){
+            var data = result.data.data;
+            this.objs = data.objs;
+            this.items1 = this.objs;
+            this.next_start = data.next_start;
+            if(this.next_start===0){
+                this.previous_start = -1;
+            }
+        })
+    },
+    judge_and_next: function() {
+          if (this.items1.length ===0){
+              this.next_page();
+          }
+    },
     reject: function(report_id){
       var url = BASE_URL + 'admin/reject/' + report_id;
       this.$http.get(url).then(function(result){
@@ -100,7 +116,7 @@ methods: {
             }
         })
             this.items1 = newItem1;
-            judge_and_next();
+            this.judge_and_next();
         }
         else{alert('failed');}
       })
@@ -120,7 +136,7 @@ methods: {
         })
 
         this.items1 = newItem1
-        judge_and_next();
+        this.judge_and_next();
       })
     },
     ban_device: function(report_id){
@@ -137,7 +153,7 @@ methods: {
         })
 
         this.items1 = newItem1
-          judge_and_next();
+          this.judge_and_next();
       })
     },
     ban_reporter: function(user_id){
@@ -154,26 +170,11 @@ methods: {
         })
 
         this.items1 = newItem1;
-        judge_and_next();
+        this.judge_and_next();
       })
     },
 
-    next_page: function() {
-        this.$http.get(BASE_URL + 'admin/query_reports', {params:{start_ts: this.next_start, loc:Loc, dealed:Dealed, show_match:Showmatch}}).then(function(result){
-            var data = result.data.data;
-            this.objs = data.objs;
-            this.items1 = this.objs;
-            this.next_start = data.next_start;
-            if(this.next_start===0){
-                this.previous_start = -1;
-            }
-        })
-    },
-    judge_and_next: function() {
-          if (this.items1.length ===0){
-              next_page();
-          }
-    },
+
     previous_page: function() {
         this.$http.get(BASE_URL + 'admin/query_reports', {params:{start_pos: this.previous_start, loc:Loc, show_match: Showmatch}}).then(function(result){
             var data = result.data.data;
