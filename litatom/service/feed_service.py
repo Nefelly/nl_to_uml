@@ -108,9 +108,9 @@ class FeedService(object):
         reason = None
         illegal_pic = None
         if pics:
-            no_use,pic_res = ForbidCheckService.check_content(pics=pics)
+            no_use, pic_res = ForbidCheckService.check_content(pics=pics)
             for pic in pic_res:
-                if pic_res[pic][1]=='block':
+                if pic_res[pic][1] == 'block':
                     reason = pic_res[pic][0]
                     illegal_pic = pic
         feed = Feed.get_by_id(feed_id)
@@ -235,9 +235,9 @@ class FeedService(object):
     @classmethod
     def create_feed(cls, user_id, content, pics=None, audios=None):
         if content:
-            data, status = ForbidActionService.check_spam_word(content, user_id)
-            if status:
-                return data, False
+            if SpamWordCheckService.is_spam_word(content):
+                ForbidActionService.resolve_spam_word(user_id,content)
+                return None,False
         feed = Feed.create_feed(user_id, content, pics, audios)
         cls._on_add_feed(feed)
         UserModelService.add_comments_by_uid(user_id)
@@ -293,10 +293,10 @@ class FeedService(object):
             next_start = feeds[-1].create_time
             feeds = feeds[:-1]
         res = {
-                   'feeds': map(cls._feed_info, feeds, [visitor_user_id for el in feeds]),
-                   'has_next': has_next,
-                   'next_start': next_start
-               }
+            'feeds': map(cls._feed_info, feeds, [visitor_user_id for el in feeds]),
+            'has_next': has_next,
+            'next_start': next_start
+        }
         if start_ts >= MAX_TIME:
             pinned_feed_info = {}
             pinned_feed = cls.get_pinned_feed(user_id)
@@ -311,10 +311,10 @@ class FeedService(object):
     def _feeds_by_pool(cls, redis_key, user_id, start_p, num, pool_type=None):
         if request.ip_should_filter:
             return {
-                       'feeds': [],
-                       'has_next': False,
-                       'next_start': -1
-                   }
+                'feeds': [],
+                'has_next': False,
+                'next_start': -1
+            }
 
         feeds = []
         max_loop_tms = 5
@@ -447,15 +447,16 @@ class FeedService(object):
                 UserModelService.add_comments_replies_by_uid(father_comment.user_id)
             comment.comment_id = comment_id
             comment.content_user_id = father_comment.user_id
-            tag =True
+            tag = True
         # spam word comment will be stopped
         res = SpamWordCheckService.is_spam_word(content)
         if res:
-            data, status = ForbidActionService.resolve_spam_word(user_id,content)
+            data, status = ForbidActionService.resolve_spam_word(user_id, content)
             return data, False
 
         if feed.user_id != user_id:
-            data, status = AntiSpamRateService.judge_stop(user_id, AntiSpamRateService.COMMENT, feed_id, related_protcted=True)
+            data, status = AntiSpamRateService.judge_stop(user_id, AntiSpamRateService.COMMENT, feed_id,
+                                                          related_protcted=True)
             if not status:
                 return data, False
 

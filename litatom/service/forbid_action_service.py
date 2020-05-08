@@ -46,17 +46,6 @@ class ForbidActionService(object):
     SPAM_WORD_REASON = 'spam word existence'
 
     @classmethod
-    def resolve_block_pic(cls, user_id, pic):
-        """已鉴定过的block图片处理接口服务函数"""
-        TrackSpamRecordService.save_record(user_id, pic=pic)
-        MsgService.alert_basic(user_id)
-        res = cls.check_forbid(user_id)
-        if not res:
-            return u"definitely sexual picture", True
-        cls.forbid_user(user_id, cls.DEFAULT_SYS_FORBID_TIME)
-        return u"definitely sexual picture and have forbidden user", True
-
-    @classmethod
     def resolve_report(cls, user_id, reason, pics=[], target_user_id=None, related_feed_id=None, match_type=None,
                        chat_record=None):
         """举报接口服务函数"""
@@ -88,7 +77,7 @@ class ForbidActionService(object):
 
     @classmethod
     def resolve_feed_report(cls, feed_id, target_user_id, user_id):
-        """由于举报feed中，无论文字命中还是图片命中"""
+        """由于举报feed中，无论文字命中还是图片命中，只入库第一个"""
         word_res, pic_res = ForbidCheckService.check_feed(feed_id)
         if not word_res and not pic_res:
             return 0
@@ -131,6 +120,17 @@ class ForbidActionService(object):
             cls.forbid_user(user_id, cls.DEFAULT_SYS_FORBID_TIME)
             return {SYS_FORBID: True}, True
         return {SYS_FORBID: False}, True
+
+    @classmethod
+    def resolve_block_pic(cls, user_id, pic):
+        """已鉴定过的block图片处理接口服务函数"""
+        TrackSpamRecordService.save_record(user_id, pic=pic)
+        MsgService.alert_basic(user_id)
+        res = cls.check_forbid(user_id)
+        if not res:
+            return u"definitely sexual picture", True
+        cls.forbid_user(user_id, cls.DEFAULT_SYS_FORBID_TIME)
+        return u"definitely sexual picture and have forbidden user", True
 
     @classmethod
     def check_forbid(cls, target_user_id, ts_now=None, additional_score=0):
