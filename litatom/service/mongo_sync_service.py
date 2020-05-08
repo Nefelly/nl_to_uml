@@ -49,8 +49,11 @@ class MongoSyncService(object):
         return save_add
 
     @classmethod
-    def load_table_map(cls, db, db_name, table_name, key_filed, wanted_fields=[]):
-        fields = key_filed + ',' + ','.join(wanted_fields)
+    def load_table_map(cls, db, db_name, table_name, key_field, wanted_fields=[]):
+        if wanted_fields:
+            fields = key_field + ',' + ','.join(wanted_fields)
+        else:
+            fields = key_field
         save_add = cls.export_to_add(db, table_name, db_name, fields)
         res_is_lst = False
         if len(wanted_fields) > 1:
@@ -60,6 +63,7 @@ class MongoSyncService(object):
         else:
             res = []
         for l in open(save_add).readlines():
+            l = l.strip()
             if not wanted_fields:
                 res.append(l)
             else:
