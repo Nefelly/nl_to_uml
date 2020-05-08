@@ -15,7 +15,8 @@ from mongoengine import (
     IntField,
 )
 from ..service import (
-    AliLogService
+    AliLogService,
+    MongoSyncService
 )
 from ..redis import RedisClient
 
@@ -41,13 +42,14 @@ class JournalService(object):
     @classmethod
     def load_user_loc(cls):
         """类的预装载函数，把现有的LOC_STATED，加上new_，和count_前缀,同时准备USER_LOC,NEW_USER_LOC"""
-        if not cls.IS_TESTING:
-            objs = UserSetting.objects().only('user_id', 'lang')
-        else:
-            objs = UserSetting.objects().limit(1000)
-        for obj in objs:
-            cls.USER_LOC[obj.user_id] = obj.lang
-        del objs
+        # if not cls.IS_TESTING:
+        #     objs = UserSetting.objects().only('user_id', 'lang')
+        # else:
+        #     objs = UserSetting.objects().limit(1000)
+        # for obj in objs:
+        #     cls.USER_LOC[obj.user_id] = obj.lang
+        # del objs
+        cls.USER_LOC = MongoSyncService.load_table_map('DB_LIT', 'lit', 'user_setting', 'user_id', ['lang'])
         new_users = eval('UserSetting.objects(%s)' % cls._get_time_str('UserSetting', 'create_time'))
         for obj in new_users:
             cls.NEW_USER_LOC[obj.user_id] = obj.lang
@@ -57,14 +59,15 @@ class JournalService(object):
     @classmethod
     def load_user_gen(cls):
         """预装载函数，将用户性别信息写入USER_GEN"""
-        if not cls.IS_TESTING:
-            objs = User.objects().only('id', 'gender')
-        else:
-            objs = User.objects().limit(1000)
-        for obj in objs:
-            if obj.gender in cls.GENDERS:
-                cls.USER_GEN[str(obj.id)] = obj.gender
-        del objs
+        # if not cls.IS_TESTING:
+        #     objs = User.objects().only('id', 'gender')
+        # else:
+        #     objs = User.objects().limit(1000)
+        # for obj in objs:
+        #     if obj.gender in cls.GENDERS:
+        #         cls.USER_GEN[str(obj.id)] = obj.gender
+        # del objs
+        cls.USER_GEN = MongoSyncService.load_table_map('DB_LIT', 'lit', 'user', '_id', ['gender'])
         # gc.collect()
 
     @classmethod

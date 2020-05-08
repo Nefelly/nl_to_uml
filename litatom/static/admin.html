@@ -15,14 +15,14 @@
  <th>ban/reject/ban_device</th>
  </tr>
 <tr v-for="item in items1">
-<td>{{item.user_id}}<hr /> {{item.create_time}} </td>
+<td><pre>{{item.user_id}}</pre><hr /> {{item.create_time}} </td>
 <td><pre>{{item.target_user_id}}</pre>
 </td>
     <td>reason: {{item.reason}}<hr /> content:<pre>{{item.content}}</pre><hr />chat:<pre>{{item.chat_record}}</pre> <hr />picture_from_feed: <pre style="background:lightpink" >{{item.pic_from_feed}}</pre></td>
 <td
-  v-if="item.pics.length > 0"
+  v-if="item.pics.length > 0" width="900"
    >
-  <img v-for="pic in item.pics" width=100% height="533" :src="base_url +'simage/' + pic">
+  <img v-for="pic in item.pics" width=300 height="533" :src="base_url +'simage/' + pic">
 </td>
 
 <td v-if="item.pics.length === 0">

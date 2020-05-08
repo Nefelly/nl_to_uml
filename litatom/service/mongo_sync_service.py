@@ -9,11 +9,14 @@ import logging.handlers
 import exceptions
 import pymongo
 import bson
+import cPickle
+from hendrix.conf import setting
 from pymongo import ReplaceOne
 import traceback
 import logging
 from ..util import (
-    get_args_from_db
+    get_args_from_db,
+    ensure_path
 )
 from ..key import (
     REDIS_ALL_USER_ID_SET
@@ -37,13 +40,76 @@ class MongoSyncService(object):
         host, port, user, pwd, db, auth_db = get_args_from_db(db)
         if not fields:
             fields = 'user_id'
-        else:
-            fields = ','.join(fields)
+        # else:
+        #     fields = ','.join(fields)
         sql = '''mongoexport -h {host} --port {port} -u {user} -p {pwd} --authenticationDatabase {auth_db} -d {db_name} -c {collection} -f {fields} --type=csv --out {save_add}'''.format(
             host=host, port=port, user=user, pwd=pwd, auth_db=auth_db, db_name=db_name, collection=table_name, fields=fields, save_add=save_add)
         print sql
         os.system(sql)
         return save_add
+
+    @classmethod
+    def load_table_map(cls, db, db_name, table_name, key_field, wanted_fields=[]):
+        if wanted_fields:
+            fields = key_field + ',' + ','.join(wanted_fields)
+        else:
+            fields = key_field
+        save_add = cls.export_to_add(db, table_name, db_name, fields)
+        res_is_lst = False
+        if len(wanted_fields) > 1:
+            res_is_lst = True
+        if wanted_fields:
+            res = {}
+        else:
+            res = []
+        read_head = False
+        is_key_object = False if key_field != '_id' else True
+        for l in open(save_add).readlines():
+            if not read_head:
+                read_head = True
+                continue
+            l = l.strip()
+            tmp_fields = l.split(',')
+            parse_len = len('ObjectId(')
+            'ObjectId(5ca2b5013fff224462b40965)'
+            if is_key_object:
+                tmp_fields[0] = tmp_fields[0][parse_len:-1]
+            if not wanted_fields:
+                res.append(tmp_fields[0])
+            else:
+                if res_is_lst:
+                    res[tmp_fields[0]] = tmp_fields[1:]
+                else:
+                    res[tmp_fields[0]] = tmp_fields[1]
+        # os.remove(save_add)
+        return res
+
+    # @classmethod
+    # def load_user_setting_map(cls, wanted_fileds=[]):
+    #     db = 'DB_LIT'
+    #     table_name = 'user_setting'
+    #     db_name = 'lit'
+    #     fields = 'user_id,' + ','.join(wanted_fileds)
+    #     save_add = cls.export_to_add(db, table_name, db_name, fields)
+    #     res_is_lst = False
+    #     if len(wanted_fileds) > 1:
+    #         res_is_lst = True
+    #     if wanted_fileds:
+    #         res = {}
+    #     else:
+    #         res = []
+    #     for l in open(save_add).readlines():
+    #         if not wanted_fileds:
+    #             res.append(l)
+    #         else:
+    #             tmp_fields = l.split(',')
+    #             if res_is_lst:
+    #                 res[tmp_fields[0]] = tmp_fields[1:]
+    #             else:
+    #                 res[tmp_fields[0]] = tmp_fields[1]
+    #     # os.remove(save_add)
+    #     return res
+
 
     @classmethod
     def load_user_ids_to_redis(cls):
@@ -64,7 +130,19 @@ class MongoSyncService(object):
 
     @classmethod
     def real_time_sync_userids(cls):
-        pass
+        timestamp_save_add = '/data/tmp/userid_sync.time'
+        ensure_path(timestamp_save_add)
+        time_stamp = bson.timestamp.Timestamp(int(time.time()), 0)
+        if os.path.exists(timestamp_save_add):
+            time_str = open(timestamp_save_add).read()
+            time_stamp = cPickle.loads(time_str)
+        setting.DB_SETTINGS.get('DB_LIT')
+        _src_mc = pymongo.MongoClient()
+
+
+class MainTainAllUserIds(object):
+    pass
+
 
 class MongoSynchronizer(object):
     """ MongoDB multi-source synchronizer.
