@@ -41,7 +41,7 @@ class ForbidCheckService(object):
         res_pics = {}
         if words:
             for word in words:
-                if SpamWordCheckService.is_spam_word(word):
+                if SpamWordCheckService.is_spam_word(word, GlobalizationService.get_region()):
                     res_words[word] = True
         if not pics:
             return res_words, None
