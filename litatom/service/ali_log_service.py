@@ -348,8 +348,6 @@ class AliLogService(object):
             cnt += 1
             if cnt % 1000 == 0:
                print cnt, len(res)
-            if cnt % 10000 == 0:
-                return res
             if not l:
                 continue
             result = urlparse.urlparse(l)
