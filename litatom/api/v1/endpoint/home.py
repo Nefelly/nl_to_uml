@@ -22,7 +22,8 @@ from ..form import (
 )
 from ...decorator import (
     session_required,
-    session_finished_required
+    session_finished_required,
+    forbidden_session_required
 )
 
 from ....response import (
@@ -30,7 +31,8 @@ from ....response import (
     success
 )
 from ....const import (
-    APP_PATH
+    APP_PATH,
+    BLOCK_PIC,
 )
 from ....service import (
     StatisticService,
@@ -45,7 +47,9 @@ from ....service import (
     UserService,
     QiniuService,
     ForbiddenService,
-    AliOssService
+    AliOssService,
+    ExperimentService,
+    ActedService
 )
 
 logger = logging.getLogger(__name__)
@@ -124,7 +128,7 @@ def download_app():
             return fail('wrong version')
         f_name = '%s.apk' % version
         apk = AliOssService.get_binary_from_bucket(f_name)
-        with open(os.path.join(APP_PATH, f_name) ,'w') as f:
+        with open(os.path.join(APP_PATH, f_name), 'w') as f:
             f.write(apk)
             f.close()
         # apk.save(os.path.join(APP_PATH, f_name))
@@ -150,6 +154,8 @@ def get_spam_word():
 @session_required
 def report_spam():
     data = request.json
+    if not data:
+        return success()
     word = data.get('word')
     data, status = ForbiddenService.report_spam(request.user_id, word)
     if not status:
@@ -163,8 +169,8 @@ def check_pic():
     url = data.get('url')
     if not url:
         return success()
-    reason = QiniuService.should_pic_block_from_url(url)
-    if reason:
+    reason, advice = QiniuService.should_pic_block_from_url(url)
+    if reason and advice == BLOCK_PIC:
         reason_m = {"pulp": "sexual"}
         reason = reason_m.get(reason, reason)
         data, status = ForbiddenService.report_illegal_pic(request.user_id, url, reason)
@@ -179,7 +185,7 @@ def settings():
 
 
 def check_version():
-    version_now = '3.1.3'
+    version_now = '3.2.4'
     version = request.args.get('version', None)
     if 0 and GlobalizationService.get_region() == GlobalizationService.REGION_TH:
         message = u'กรุณาอัพเดทเวอร์ชั่น เราได้ทำการแก้ไขปัญหาส่งข้อความเรียบร้อยแล้ว ขอบคุณค่ะ'
@@ -218,10 +224,11 @@ def report():
         feed_info, status_feed = FeedService.get_feed_info(None, feed_id)
         if not status_feed:
             return fail(feed_info)
+        FeedService.dislike_feed(user_id, feed_id, False)
         pics = feed_info['pics']
         data, status = ForbiddenService.resolve_report(user_id, reason, pics, target_user_id, feed_id)
     elif chat_record:
-        data, status = ForbiddenService.resolve_report(user_id, reason, pics, target_user_id, None,
+        data, status = ForbiddenService.resolve_report(user_id, reason, pics, target_user_id, None, None,
                                                        json.dumps(chat_record))
     else:
         data, status = ForbiddenService.resolve_report(user_id, reason, pics, target_user_id)
@@ -287,9 +294,11 @@ def track_action():
 
 def track_network():
     data = request.json
-    data = data.get("track")
+    if not data or not data.get("track"):
+        return success()
+    data = data.get("track", [])
     stream = base64.decodestring(data)
-    json_data = json.loads(zlib.decompress(stream, 16+zlib.MAX_WBITS))
+    json_data = json.loads(zlib.decompress(stream, 16 + zlib.MAX_WBITS))
     status = TrackActionService.batch_create_client_track(json_data)
     if status:
         return success()
@@ -309,9 +318,39 @@ def rules():
     return render_template(f_name), 200, {'Content-Type': 'text/html; charset=utf-8'}
 
 
+def community_rule():
+    return success({'community_rule': GlobalizationService.get_region_word('coummunity_rule')})
+    # region = GlobalizationService.get_region()
+    # region = region if region in ['th', 'vi', 'id'] else 'en'
+    # f_name = 'community_rules_%s.html' % region
+    # return render_template(f_name), 200, {'Content-Type': 'text/html; charset=utf-8'}
+
+
+def experiments():
+    data = ExperimentService.get_conf()
+    return success(data)
+
+
 @session_required
 def action_by_user_id():
     data, status = TrackActionService.action_by_uid(request.user_id)
+    if status:
+        return success(data)
+    return fail(data)
+
+
+@forbidden_session_required
+def report_acted():
+    acts = request.json.get('acts', [])
+    data, status = ActedService.report_acted(request.user_id, acts)
+    if status:
+        return success(data)
+    return fail(data)
+
+
+@forbidden_session_required
+def acted_actions():
+    data, status = ActedService.acted_actions(request.user_id)
     if status:
         return success(data)
     return fail(data)

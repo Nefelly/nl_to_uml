@@ -30,8 +30,8 @@ class ShareStatService(object):
     """
     CACHED_TIME = ONE_WEEK
     CACHED_RECORD_TIME = ONE_MONTH
-    CLICK_EXPIRE_TIME = ONE_DAY
-    MAX_CLICKER_NUM = 3
+    CLICK_EXPIRE_TIME = ONE_WEEK
+    MAX_CLICKER_NUM = 1
     ERR_SHARE_NOT_ENOUGH = 'not enough shared members'
 
     @classmethod

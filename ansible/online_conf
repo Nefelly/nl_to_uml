@@ -77,6 +77,11 @@ litatom_envvars_json:
       db: 0
       host: r-j6c33y9er7kpcznriq.redis.rds.aliyuncs.com
       port: 6379
+  REDIS_VOLATILE:
+      password: sdfg@673
+      db: 0
+      host: r-j6cdmvllgexvfo7rk8.redis.rds.aliyuncs.com
+      port: 6379
   HUANXIN_ACCOUNT:
     org_name: "1102190223222824"
     app_name: lit

@@ -8,3 +8,4 @@ blueprint = b = Blueprint('api_home', __name__)
 
 # lit
 b.add_url_rule('/', 'lit-home', endpoint.home.index)
+b.add_url_rule('/favicon.ico', 'lit-home-favicon', endpoint.home.favicon)

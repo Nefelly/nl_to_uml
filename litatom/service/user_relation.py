@@ -11,7 +11,8 @@ from ..const import (
 )
 from ..service import (
     HuanxinService,
-    FollowingFeedService
+    FollowingFeedService,
+    AntiSpamRateService
 )
 from ..model import (
     UserModel
@@ -37,6 +38,9 @@ class FollowService(object):
         block_msg = BlockService.get_block_msg(user_id, followed_user_id)
         if block_msg:
             return block_msg, False
+        data, status = AntiSpamRateService.judge_stop(user_id, AntiSpamRateService.FOLLOW, followed_user_id)
+        if not status:
+            return data, False
         status = Follow.follow(user_id, followed_user_id)
         if status:
             cls._on_follow(user_id, followed_user_id)
@@ -103,6 +107,10 @@ class FollowService(object):
         return None, True
 
     @classmethod
+    def order_by_online(cls, uids):
+        return
+
+    @classmethod
     def following(cls, user_id, start_ts=0, num=10):
         objs = Follow.objects(uid=user_id, create_time__gte=start_ts).order_by('create_time').limit(num + 1)
         objs = list(objs)
@@ -112,12 +120,14 @@ class FollowService(object):
             has_next = True
             next_start = objs[-1].create_time
             objs = objs[:-1]
+
         follow_uids = [obj.followed for obj in objs]
-        users = map(User.get_by_id, follow_uids)
+        from ..service import UserService
+        # users = map(User.get_by_id, follow_uids)
         res = {
             'has_next': has_next,
             'next_start': next_start,
-            'users': [u.basic_info() for u in users if u]
+            'users': UserService.ordered_user_infos(follow_uids)
         }
         return res, True
 
@@ -132,11 +142,12 @@ class FollowService(object):
             next_start = objs[-1].create_time
             objs = objs[:-1]
         follow_uids = [obj.uid for obj in objs]
-        users = map(User.get_by_id, follow_uids)
+        from ..service import UserService
+        # users = map(User.get_by_id, follow_uids)
         res = {
             'has_next': has_next,
             'next_start': next_start,
-            'users': [u.basic_info() for u in users if u]
+            'users': UserService.ordered_user_infos(follow_uids)
         }
         return res, True
 

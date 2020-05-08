@@ -25,9 +25,18 @@ REDIS_CLICK_SHARE = 'share_clicker:{ip}'
 # rate control
 REDIS_VISIT_RATE = 'visit_rate:{user_id}'
 REDIS_ACCOST_RATE = 'accost_rate:{user_id}'
+REDIS_EXP_ACCOST = 'exp_accost:{user_id}'
 REDIS_ACCOST_STOP_RATE = 'accost_stop_rate:{user_id}'
 REDIS_ACCOST_DAY_STOP = 'accost_day_stop:{now_date_key}{user_id}'
 REDIS_SHARE_LIMIT = 'share_limit:{user_id}'
+
+# spam rate
+REDIS_SPAMED = 'spam:{user_id}'
+REDIS_SPAM_RATE_CONTROL = 'spam:{user_interval_type}'
+REDIS_PROTECT_RATE_CONTROL = 'protect:{user_interval_type}'
+REDIS_USER_FEED_COMMENT = 'feed_comment:{user_id_feed}'
+REDIS_SPAMED_INFORMED = 'spam_informed:{user_id_activity}'
+REDIS_RATE_VISITED = 'rate_visit:{user_id_activity_other_id}'
 
 # cache
 REDIS_USER_CACHE = 'user_cache:{user_id}'
@@ -39,6 +48,7 @@ REDIS_AVATAR_CACHE = 'avatar_cache'
 REDIS_YOUTUBE_VIDEO_CACHE = 'youtube_video_cache:{region}'
 REDIS_SPAM_WORD_CACHE = 'spam_word:{region}'
 REDIS_FEED_LIKE_CACHE = 'feed_like_cache:{feed_id}'
+REDIS_FEED_DISLIKE_CACHE = 'feed_dislike_cache:{feed_id}'
 REDIS_BLOCK_CACHE = 'user_block_cache:{user_id}'
 REDIS_USER_NOT_MESSAGE_CACHE = 'user_nomsg_cache:{user_id}'
 REDIS_ACCELERATE_CACHE = 'acclerate_cache:{user_id}'
@@ -105,8 +115,6 @@ REDIS_VOICE_CHAT_CALLED = 'voice_chat_called:{user_id}'
 REDIS_VOICE_CHAT_IN_CHAT = 'voice_chat_in_chat:{user_id}'
 
 
-# experiment
-REDIS_EXP = 'exp:{key_exp}'
 
 
 # video match
@@ -128,8 +136,19 @@ REDIS_VIDEO_CHAT_WAIT = 'video_chat_wait:{user_id}'
 REDIS_VIDEO_CHAT_CALLED = 'video_chat_called:{user_id}'
 REDIS_VIDEO_CHAT_IN_CHAT = 'video_chat_in_chat:{user_id}'
 
+## volatile
+# experiment
+REDIS_EXP_BUCKET_VALUE = 'exp_bucket:{exp_bucket}'
+
 # dev owned
 REDIS_SETTINGS_KEYS = 'dev_settings'
 REDIS_SETTINGS_IOS = 'setting_ios'
 REDIS_SETTINGS_IOS_VERSION = 'setting_ios_v:{version}'
 REDIS_ACCESS_TOKEN = 'access_token'
+
+
+## volatile
+# experiment
+REDIS_EXP = 'exp:{key_exp}'
+REDIS_ALL_USER_ID_SET = 'all_user_ids'
+

@@ -5,8 +5,12 @@ from .block import (
 from .feed import (
     Feed,
     FeedLike,
+    FeedDislike,
     FeedComment,
     FollowingFeed
+)
+from .acted_record import (
+    ActedRecord
 )
 from .follow import (
     Follow
@@ -54,6 +58,9 @@ from .journal import StatItems
 from .track import (
     TrackChat,
     TrackSpamRecord
+)
+from .experiment import (
+    ExpBucket
 )
 from .user_account import (
     UserAccount,

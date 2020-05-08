@@ -28,6 +28,7 @@ class Report(Document):
     chat_record = StringField()
     deal_res = StringField()
     dealed = BooleanField(required=True, default=False)
+    duplicated = BooleanField(default=False)
     deal_user = StringField()
     related_feed = StringField()
     region = StringField()
@@ -40,6 +41,12 @@ class Report(Document):
         if not bson.ObjectId.is_valid(report_id):
             return None
         return cls.objects(id=report_id).first()
+
+    @classmethod
+    def set_same_report_to_dealed(cls, uid, target_uid):
+        for _ in cls.objects(uid=uid, target_uid=target_uid, dealed=False):
+            _.duplicated = True
+            _.save()
 
     def to_json(self, *args, **kwargs):
         if not self:
@@ -94,6 +101,11 @@ class Report(Document):
     def get_report_by_time(cls, from_ts, to_ts, dealed=True):
         """返回一段时间内的举报情况"""
         return cls.objects(create_ts__gte=from_ts, create_ts__lte=to_ts, dealed=dealed)
+
+    @classmethod
+    def get_report_with_pic_by_time(cls, target_uid, from_ts, to_ts, dealed=False):
+        """找出带有feed的举报"""
+        return cls.objects(target_uid=target_uid, create_ts__gte=from_ts, create_ts__lte=to_ts, related_feed__ne='', dealed=dealed)
 
     @classmethod
     def count_report_by_uid(cls, user_id, from_time, to_time):

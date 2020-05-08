@@ -169,6 +169,10 @@ class BlockedDevices(Document):
         obj.save()
 
     @classmethod
+    def remove_device(cls, uuid):
+        cls.objects(uuid=uuid).delete()
+
+    @classmethod
     def get_by_device(cls, uuid):
         obj = cls.objects(uuid=uuid).first()
         return obj
@@ -581,8 +585,8 @@ class UserSetting(Document):
     user_id = StringField(required=True, unique=True)
     lang = StringField(required=True, default='')
     uuid = StringField()
+    pinned_feed = StringField()
     loc_change_times = IntField(default=0)
-
     good_rate_times = IntField(default=0)
     online_limit = EmbeddedDocumentField(OnlineLimit)
     create_time = DateTimeField(required=True, default=datetime.datetime.now)

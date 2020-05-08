@@ -2,6 +2,8 @@
 import datetime
 import logging
 import bson
+import gc
+import sys
 from ..model import *
 from ..util import (
     get_zero_today,
@@ -13,7 +15,8 @@ from mongoengine import (
     IntField,
 )
 from ..service import (
-    AliLogService
+    AliLogService,
+    MongoSyncService
 )
 from ..redis import RedisClient
 
@@ -39,26 +42,33 @@ class JournalService(object):
     @classmethod
     def load_user_loc(cls):
         """类的预装载函数，把现有的LOC_STATED，加上new_，和count_前缀,同时准备USER_LOC,NEW_USER_LOC"""
-        if not cls.IS_TESTING:
-            objs = UserSetting.objects()
-        else:
-            objs = UserSetting.objects().limit(1000)
-        for obj in objs:
-            cls.USER_LOC[obj.user_id] = obj.lang
+        # if not cls.IS_TESTING:
+        #     objs = UserSetting.objects().only('user_id', 'lang')
+        # else:
+        #     objs = UserSetting.objects().limit(1000)
+        # for obj in objs:
+        #     cls.USER_LOC[obj.user_id] = obj.lang
+        # del objs
+        cls.USER_LOC = MongoSyncService.load_table_map('DB_LIT', 'lit', 'user_setting', 'user_id', ['lang'])
         new_users = eval('UserSetting.objects(%s)' % cls._get_time_str('UserSetting', 'create_time'))
         for obj in new_users:
             cls.NEW_USER_LOC[obj.user_id] = obj.lang
+        del new_users
+        # gc.collect()
 
     @classmethod
     def load_user_gen(cls):
         """预装载函数，将用户性别信息写入USER_GEN"""
-        if not cls.IS_TESTING:
-            objs = User.objects()
-        else:
-            objs = User.objects().limit(1000)
-        for obj in objs:
-            if obj.gender in cls.GENDERS:
-                cls.USER_GEN[str(obj.id)] = obj.gender
+        # if not cls.IS_TESTING:
+        #     objs = User.objects().only('id', 'gender')
+        # else:
+        #     objs = User.objects().limit(1000)
+        # for obj in objs:
+        #     if obj.gender in cls.GENDERS:
+        #         cls.USER_GEN[str(obj.id)] = obj.gender
+        # del objs
+        cls.USER_GEN = MongoSyncService.load_table_map('DB_LIT', 'lit', 'user', '_id', ['gender'])
+        # gc.collect()
 
     @classmethod
     def load_ali_log(cls, date):
@@ -171,7 +181,7 @@ class JournalService(object):
         for loc_index in range(len(res)):
             for item in res[loc_index]:
                 # item 即计数,boy,girl,新用户等
-                if item in ('name','id'):
+                if item in ('name', 'id'):
                     continue
                 tmp_exp = expression
                 for stat_item in res_stat_set:
@@ -353,9 +363,14 @@ class JournalService(object):
                 "Report": "target_uid",
                 "Feedback": "uid"
             }
+            if item.name in [u'警告数']:
+                eval_str = 'TrackSpamRecord.objects(%s,%s).distinct(\'user_id\')' % (time_str, expression)
+                new_user_acted = set()
+                for user_id in eval(eval_str):
+                    cls.cal_res_by_uid(user_id, res, new_user_acted)
             # 对每个location，在loc_cnts这个dict中，存三个字段，loc,new_loc,count_loc
             # 只对有count且不大于1000000的才进行分location统计
-            if cnt and cnt < 1000000:
+            elif cnt and cnt < 1000000:
                 eval_str = '%s.objects(%s,%s)' % (table_name, time_str, expression)
                 if cls.IS_TESTING:
                     eval_str += '.limit(1000)'

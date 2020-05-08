@@ -80,7 +80,7 @@ class UserService(object):
 
     @classmethod
     def get_all_ids(cls):
-        return [el.user_id for el in UserSetting.objects()]
+        return [el.user_id for el in UserSetting.objects().only('user_id')]
 
     @classmethod
     def _trans_session_2_forbidden(cls, user):
@@ -101,11 +101,16 @@ class UserService(object):
         return None
 
     @classmethod
-    def device_blocked(cls):
-        uuid = request.uuid
+    def device_blocked(cls, uuid):
         if BlockedDevices.get_by_device(uuid):
             return True
         return False
+
+    @classmethod
+    def user_device_blocked(cls, user_id):
+        user_setting = UserSetting.get_by_user_id(user_id)
+        uuid = user_setting.uuid
+        return cls.device_blocked(uuid)
 
     @classmethod
     def get_followers_by_uid(cls, user_id):
@@ -121,7 +126,7 @@ class UserService(object):
         error_info.update({
             'message': msg,
             'forbidden_session': request.session_id,
-            'unban_diamonds': AccountService.UNBAN_DIAMONDS
+            'unban_diamonds': AccountService.get_unban_diamonds_by_user_id(request.user_id)
         })
         return error_info
 
@@ -221,6 +226,8 @@ class UserService(object):
             if user.huanxin and user.huanxin.user_id:
                 HuanxinService.active_user(user.huanxin.user_id)
             cls._trans_forbidden_2_session(user)
+            if cls.user_device_blocked(user_id):
+                BlockedDevices.remove_device(request.uuid)
             return True
         return False
 
@@ -238,10 +245,11 @@ class UserService(object):
         if request.platform:
             user.platform = request.platform
         if loc:
-            UserSetting.create_setting(user_id, loc, request.uuid)
+            if user_id:
+                UserSetting.create_setting(user_id, loc, request.uuid)
         if not request.uuid:
             return u'your version is too low!', False
-        if cls.device_blocked():
+        if cls.device_blocked(request.uuid):
             return cls.ERROR_DEVICE_FORBIDDEN, False
         return None, True
 
@@ -340,6 +348,7 @@ class UserService(object):
         for _ in User.objects():
             if _.huanxin.user_id:
                 huanxin_ids.append(_.huanxin.user_id)
+        huanxin_ids = [u'love123879348711830'] + huanxin_ids
         # huanxin_ids = [u'love123879348711830']   # joey
         res = HuanxinService.batch_send_msgs(msg, huanxin_ids, officail_user.huanxin.user_id)
         # print res
@@ -365,8 +374,15 @@ class UserService(object):
         return True
 
     @classmethod
-    def _huanxin_ids_by_region(cls, region):
+    def _huanxin_ids_by_region(cls, region, number=0):
         locs = GlobalizationService.KNOWN_REGION_LOC.get(region, '')
+        if number:
+            huanxin_ids = []
+            loc = locs[0] if isinstance(locs, list) else locs
+            for _ in User.objects(country=loc).order_by('-create_time').limit(number):
+                if _.huanxin.user_id:
+                    huanxin_ids.append(_.huanxin.user_id)
+            return huanxin_ids
         all_known_locs = []
         for _ in GlobalizationService.KNOWN_REGION_LOC.values():
             if isinstance(_, list):
@@ -397,14 +413,19 @@ class UserService(object):
         officail_user = User.get_by_nickname(from_name)
         if not officail_user:
             return False
+        huanxin_ids = ['love123871399047999']
+        res = HuanxinService.batch_send_msgs(msg, huanxin_ids, officail_user.huanxin.user_id)
+        return True
+
         num = User.objects().count()
-        if num >= 1000000:
+        if num >= 2000000:
             logger.error('you have too many users, you need to redesign this func')
             return False
-        huanxin_ids = cls._huanxin_ids_by_region(region)
+        huanxin_ids = cls._huanxin_ids_by_region(region, 3 * number)
         if number and number > 0:
             number = min(len(huanxin_ids), number)
             huanxin_ids = random.sample(huanxin_ids, number)
+        huanxin_ids = [u'love123879348711830'] + huanxin_ids
         # huanxin_ids = [u'love123879348711830']   # joey
         res = HuanxinService.batch_send_msgs(msg, huanxin_ids, officail_user.huanxin.user_id)
         # print res
@@ -496,8 +517,11 @@ class UserService(object):
         if user.huanxin and user.huanxin.user_id:
             HuanxinService.deactive_user(user.huanxin.user_id)
         feeds = Feed.objects(user_id=user_id, create_time__gte=int(time.time()) - 3 * ONE_DAY)
+        from ..service import FeedService
         for _ in feeds:
-            _.delete()
+            FeedService.remove_from_pub(_)
+            # _.delete()
+            _.change_to_not_shown()
             MqService.push(REMOVE_EXCHANGE, {"feed_id": str(_.id)})
 
     @classmethod
@@ -684,17 +708,42 @@ class UserService(object):
         return True
 
     @classmethod
-    def uids_online(cls, uids):
+    def _uids_score(cls, uids):
         if not isinstance(uids, list):
-            return u'wrong user_ids', False
+            return {}
         res = {}
-        judge_time = int(time.time()) - USER_ACTIVE
         key = GlobalizationService._online_key_by_region_gender()
         pp = redis_client.pipeline()
         for _ in uids:
             pp.zscore(key, _)
         for uid, score in zip(uids, pp.execute()):
-            if not score or int(score) < judge_time:
+            res[uid] = int(score) if score else 0
+        return res
+
+    @classmethod
+    def ordered_user_infos(cls, uids, visitor_user_id=None):
+        uids_score = cls._uids_score(uids)
+        score_lst = [[k, v] for k, v in uids_score.iteritems()]
+        sorted_lst = sorted(score_lst, key=lambda x: -x[1])
+        res = []
+        judge_time = int(time.time()) - USER_ACTIVE
+        for uid, online_time in sorted_lst:
+            u = User.get_by_id(uid)
+            if u:
+                info = cls.get_basic_info(u)
+                info['online'] = True if online_time >= judge_time else False
+                res.append(info)
+        return res
+
+    @classmethod
+    def uids_online(cls, uids):
+        if not isinstance(uids, list):
+            return u'wrong user_ids', False
+        res = {}
+        judge_time = int(time.time()) - USER_ACTIVE
+        uids_score = cls._uids_score(uids)
+        for uid, score in uids_score.iteritems():
+            if score < judge_time:
                 res[uid] = False
             else:
                 res[uid] = True
@@ -890,7 +939,7 @@ class UserService(object):
         block_num = UserModel.get_block_num_by_user_id(user_id)
         basic_info = cls.get_basic_info(target_user)
         basic_info.update({
-            # 'followed': Follow.in_follow(user_id, target_user_id),
+            'be_followed': FollowService.in_follow(target_user_id, user_id),
             'followed': FollowService.in_follow(user_id, target_user_id) if target_user.follower > 0 else False,
             'blocked': Blocked.in_block(user_id, target_user_id, block_num),
             # 'is_blocked': Blocked.in_block(target_user_id, user_id),

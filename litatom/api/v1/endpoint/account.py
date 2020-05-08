@@ -97,6 +97,17 @@ def deposit_by_activity():
     return success(data)
 
 
+@session_required
+def reset_rate_by_diamonds():
+    data = request.json
+    activity = data.get('activity')
+    other_info = data.get('other_info', '')
+    data, status = AccountService.reset_by_diamonds(request.user_id, activity, other_info)
+    if not status:
+        return fail(data)
+    return success(data)
+
+
 @forbidden_session_required
 def unban_by_diamonds():
     data, status = AccountService.unban_by_diamonds(request.forbidden_user_id)

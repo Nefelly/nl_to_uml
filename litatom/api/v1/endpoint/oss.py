@@ -3,7 +3,8 @@
 图片上传下载
 """
 import logging
-
+import os
+import time
 from flask import (
     jsonify,
     request,
@@ -31,6 +32,7 @@ from ....service import (
 
 logger = logging.getLogger(__name__)
 
+
 @session_required
 def upload_image_from_file():
     """
@@ -42,7 +44,8 @@ def upload_image_from_file():
     image = request.files.get('image')
     if not image:
         return jsonify(Failed)
-    fileid = request.values.get('file_id')
+    # fileid = request.values.get('file_id')
+    fileid = None
     fileid = AliOssService.upload_from_binary(image, fileid)
     if not fileid:
         return jsonify(Failed)
@@ -60,23 +63,46 @@ def upload_image_from_file():
         }
     })
 
+
 def get_image(fileid):
     if fileid == 'null':
         return jsonify(Failed)
     content = AliOssService.get_binary_from_bucket(fileid)
+    # print '-' * 100, len(content), fileid
     if not content:
         return Response('', mimetype='image/jpeg')   # 返回空图片流, 兼容错误
         #return jsonify(Failed)
-    return Response(content, mimetype='image/jpeg')
+    response = Response(content, mimetype='image/jpeg')
+    response.headers['Cache-Control'] = 'max-age=%d' % 86400
+    return response
+
 
 def get_simage(fileid):
     if fileid == 'null':
         return jsonify(Failed)
     content = AliOssService.get_simage(fileid)
+    # content = AliOssService.gm_resize(fileid)
+    # content = AliOssService.rgba_resize(fileid)
     if not content:
         return Response('', mimetype='image/jpeg')   # 返回空图片流, 兼容错误
         #return jsonify(Failed)
+    # print '*' * 100, len(content)
+    response = Response(content, mimetype='image/jpeg')
+    response.headers['Cache-Control'] = 'max-age=%d' % 86400
+    return response
+
+
+def get_gimage(fileid):
+    if fileid == 'null':
+        return jsonify(Failed)
+    # content = AliOssService.rgba_resize(fileid)
+    content = AliOssService.get_simage(fileid)
+    # content = AliOssService.gm_resize(fileid)
+    # print '!' * 100, len(content)
+    if not content:
+        return Response('', mimetype='image/jpeg')   # 返回空图片流, 兼容错误
     return Response(content, mimetype='image/jpeg')
+
 
 @session_required
 def upload_audio_from_file():
@@ -98,13 +124,16 @@ def upload_audio_from_file():
         }
     })
 
+
 def get_audio(fileid):
     if fileid == 'null':
         return jsonify(Failed)
     content = AliOssService.get_binary_from_bucket(fileid)
     if not content:
         return Response('', mimetype='audio/AMR')   # 返回空流, 兼容错误
-    return Response(content, mimetype='audio/AMR')
+    response = Response(content, mimetype='audio/AMR')
+    response.headers['Cache-Control'] = 'max-age=%d' % 86400
+    return response
 
 
 @session_required
@@ -155,4 +184,8 @@ def get_audio_mp3(fileid):
     with open(mp3_add, 'r') as f:
         content = f.read()
         f.close()
-    return Response(content, mimetype='audio/x-mpeg')
+    os.remove(amr_add)
+    os.remove(mp3_add)
+    response = Response(content, mimetype='audio/x-mpeg')
+    response.headers['Cache-Control'] = 'max-age=%d' % 86400
+    return response

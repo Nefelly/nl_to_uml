@@ -7,12 +7,14 @@ from hendrix.conf import setting
 import logging
 from ..model import (
     UserAccount,
-    AccountFlowRecord
+    AccountFlowRecord,
+    UserRecord
 )
 from ..const import (
     ONE_WEEK,
     ONE_MIN,
-    ONE_DAY
+    ONE_DAY,
+    MAX_DIAMONDS
 )
 from ..util import (
     now_date_key
@@ -26,7 +28,8 @@ from ..service import (
     PalmService,
     UserService,
     AdService,
-    AliLogService
+    AliLogService,
+    AntiSpamRateService
 )
 from ..key import (
     REDIS_ACCOUNT_ACTION,
@@ -51,21 +54,21 @@ class AccountService(object):
     ACCOST_RESET = 'accost_reset'
     PALM_RESULT = 'palm_result'
     PRODUCT_INFOS = {
-        WEEK_MEMBER: 20 if not setting.IS_DEV else 1,
-        ONE_MORE_TIME: 1,
-        ACCELERATE: 1,
-        ACCOST_RESET: 1,
+        WEEK_MEMBER: 30 if not setting.IS_DEV else 1,
+        ONE_MORE_TIME: 5,
+        ACCELERATE: 2,
+        ACCOST_RESET: 3,
         PALM_RESULT: 10
     }
     SHARE = 'share'
     WATCH_AD = 'watch_video'
     SHARE_5 = 'share_5'     # 链接分享，被5个人点开
     PAY_ACTIVITIES = {
-        SHARE: 10,
+        SHARE: 1,
         WATCH_AD: 1,
         SHARE_5: 100,
     }
-    UNBAN_DIAMONDS = 1000
+    UNBAN_DIAMONDS = 100
     DAY_ACTIVITY_LIMIT = 500 if not setting.IS_DEV else 200
     MEMBER_SHIPS = [WEEK_MEMBER]
     ERR_DIAMONDS_NOT_ENOUGH = 'not enough diamonds, please deposit first.'
@@ -94,18 +97,28 @@ class AccountService(object):
         return UserAccount.get_account_info(user_id)
 
     @classmethod
+    def get_unban_diamonds_by_user_id(cls, user_id):
+        device_blocked = UserService.user_device_blocked(user_id)
+        if device_blocked:
+            print 'get inn', request.uuid
+            return 50 * cls.UNBAN_DIAMONDS
+        forbid_times = UserRecord.get_forbidden_times_user_id(user_id)
+        if forbid_times <= 1:
+            return cls.UNBAN_DIAMONDS
+        return max((forbid_times - 1) * 5 * cls.UNBAN_DIAMONDS, 500)
+
+    @classmethod
     def unban_by_diamonds(cls, user_id):
-        if UserService.device_blocked():
-            return UserService.ERROR_DEVICE_FORBIDDEN, False
+        # if UserService.device_blocked():
+        #     return UserService.ERROR_DEVICE_FORBIDDEN, False
         if not UserService.is_forbbiden(user_id):
             ''' 不用重新登陆'''
             # from ..model import User
             # user = User.get_by_id(user_id)
             # UserService._trans_forbidden_2_session(user)
-
             UserService.clear_forbidden_session(request.session_id.replace('session.', ''))
             return u'you are not forbbiden', False
-        msg = cls.change_diamonds(user_id, -cls.UNBAN_DIAMONDS, 'unban_by_diamonds')
+        msg = cls.change_diamonds(user_id, - cls.get_unban_diamonds_by_user_id(user_id), 'unban_by_diamonds')
         if not msg:
             if UserService.unban_user(user_id):
                  return None, True
@@ -115,6 +128,13 @@ class AccountService(object):
     def record_to_ali(cls, user_id, name, diamonds):
         content = [('user_id', user_id), ('name', name), ('diamonds', str(diamonds)), ('loc', request.loc)]
         AliLogService.put_logs(content, '', '', 'litatom-account', 'account_flow')
+
+    @classmethod
+    def is_diamond_enough(cls, user_id, diamonds):
+        user_account = UserAccount.get_by_user_id(user_id)
+        if not user_account:
+            user_account = UserAccount.create_account(user_id)
+        return user_account.diamonds >= diamonds
 
     @classmethod
     def change_diamonds(cls, user_id, diamonds, name='unknown'):
@@ -174,6 +194,11 @@ class AccountService(object):
         if product not in cls.PRODUCT_INFOS:
             return u'product must be one of: %s' % (','.join(cls.PRODUCT_INFOS.keys())), False
         diamonds = cls.PRODUCT_INFOS.get(product)
+
+        '''先检查钻石够不够'''
+        if not cls.is_diamond_enough(user_id, diamonds):
+            return cls.ERR_DIAMONDS_NOT_ENOUGH, False
+
         if product in cls.MEMBER_SHIPS:
             err_msg = cls.buy_member_ship(user_id, product)
             if err_msg:
@@ -201,6 +226,24 @@ class AccountService(object):
             return err_msg, False
         AccountFlowRecord.create(user_id, AccountFlowRecord.CONSUME, diamonds)
         return None, True
+
+    @classmethod
+    def reset_by_diamonds(cls, user_id, activity, other_id=''):
+        diamonds = AntiSpamRateService.how_much_should_pay(user_id, activity, other_id)
+        if diamonds == MAX_DIAMONDS:
+            return u'you can\'t reset now', False
+        if diamonds:
+            if not cls.is_diamond_enough(user_id, diamonds):
+                return cls.ERR_DIAMONDS_NOT_ENOUGH, False
+            data, status = AntiSpamRateService.reset_spam_type(user_id, activity, other_id)
+            if not status:
+                return data, False
+            name = 'unlock_' + activity if other_id else 'reset ' + activity
+            err_msg = cls.change_diamonds(user_id, -diamonds, name)
+            if err_msg:
+                return err_msg, False
+            return None, True
+        return u'you are not forbid ~', False
 
     @classmethod
     def deposit_diamonds(cls, user_id, payload):

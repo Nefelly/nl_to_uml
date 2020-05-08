@@ -148,6 +148,7 @@ class DebugHelperService(object):
 
     @classmethod
     def debug_all_keys(cls, key=None):
+        # redis_client.keys('session_user*')   # 模糊搜索key
         res = {'time_now': int(time.time())}
 
         for k in redis_client.keys():

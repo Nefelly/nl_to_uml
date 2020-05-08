@@ -123,7 +123,14 @@ class RegionWord(Document):
             'id': u'Laporan Anda terhadap akun %s telah selesai. Akun %s telah kami nonaktifkan. Terima kasih atas dukungan Anda terhadap Lit community.',
             'ko': u'사용자 %s에 대한 신고가 해결되었습니다. %s의 계정이 비활성화되었습니다.. 항상 lit 커뮤니티를 이용해주셔서 감사합니다. .',
             'ja': u'ユーザー%sに対するご報告は解決済みです。%sのアカウントを禁止しました。Litコミュニティーの維持にご協力いただきありがとうございます。',
-        }, 
+        },
+        'other_warn_inform':{
+            'en': u"Your report on the user %s  has been settled. %s's account is warned. Thank you for your support of the Lit community",
+            'id': u"Laporan Anda pada pengguna %s telah diselesaikan. %s telah kami peringatkan. Terima kasih atas dukungan Anda terhadap komunitas Litmatch.",
+            'vi': u"Báo cáo của bạn về tài khoản %s đã được xử lý. %s đã bị khoá. Cám ơn bạn đã báo cáo đến Litmatch",
+            'th': u"การรายงานผู้ใช้%sจากคุณได้รับการจัดการแล้ว %sได้รับการเตือนแล้ว ขอบคุณสำหรับการรายงานและสนับสนุน litmatch ",
+
+        },
         'app_introduce': {
             'vi': u'Litmatch là ứng dụng kết bạn.', 
             'th': u'Litmatch แอพหรเพื่อนรูปแบบใหม่.', 
@@ -138,7 +145,7 @@ class RegionWord(Document):
             'th': ['ZwcmNkzm7m0', 'fhbxpm8yZWA', 'ReXNvQUURdI', 'ZJNI3vBZvqc', 'ILU9NbWn4t0', 'B8Hu35Qyw5w', 'tBGHuRhU_yk', 'SecLbWBvDP8', 'oHSlO4UQ16o', 'n32PxBLrut4'], 
             'en': ['b-7qGd5jM2s', 'pWAP7fIwGnI', 'XOBGHAQB-wI', 'kJQP7kiw5Fk', 'cBVGlBWQzuc', 'PMhWCD6u4fA', 'lBiRs4wzIhI', 'SecLbWBvDP8', '250rS-RvwlU', 'Y0viP67wNqk'],
             'india': ['b-7qGd5jM2s', 'pWAP7fIwGnI', 'XOBGHAQB-wI', 'kJQP7kiw5Fk', 'cBVGlBWQzuc', 'PMhWCD6u4fA', 'lBiRs4wzIhI', 'SecLbWBvDP8', '250rS-RvwlU', 'Y0viP67wNqk'],
-            'id': ['b-7qGd5jM2s', 'pWAP7fIwGnI', 'XOBGHAQB-wI', 'kJQP7kiw5Fk', 'cBVGlBWQzuc', 'PMhWCD6u4fA', 'lBiRs4wzIhI', 'SecLbWBvDP8', '250rS-RvwlU', 'Y0viP67wNqk'],
+            'id': ['wVH2iWZ1oyU', '9We3pS6aqvA', 'HTj2n52jz94', 'cwrCz2Yl5bw', '_khNMobLZns', 'HBWC9wTk4tQ', 'nQpYHiB0k6k', 'WhVyGGenmQw', 'RHgVhC8ow00', 'PWA5w0Yxco', 'VWH3GDikM9M', 'bo_efYhYU2A']
         },
         'bio': {
             'en': {'newcomer': ['He is a newcomer', 'She is a newcomer'], 'mystierious': ['He is mysterious', 'She is mysterious']},
@@ -181,7 +188,71 @@ class RegionWord(Document):
             'th': u'การเลือกตัวกรองมีผลต่อการจับคู่และรายชื่อผู้ใช้แนะนำ',
             'ja': u'フィルターはマッチングとおすすめのユーザーリストにある',
             'id': u'Pemfilteran dapat berefek pada rekomendasi user yang diberikan dan match'
+        },
+        'rate_conversation_diamonds': {
+            'en': u'You initiate the conversation too much，Use diamonds to unlock',
+            'vi': u'Bạn gửi tin nhắn cho quá nhiều người, dùng kim cương mở',
+            'th': u'คุณเริ่มสนทนามากเกินไป ใช้เพชรเพื่อปลดล็อก',
+            'id': u'Anda terlalu banyak memulai pembicaraan, gunakan diamond untuk membuka kunci'
+        },
+        'rate_conversation_stop': {
+            'en': u'You initiate the conversation too much today',
+            'vi': u'Bạn đã trò chuyện quá nhiều lần trong hôm nay',
+            'th': u'วันนี้คุณเริ่มสนทนามากเกินไป',
+            'id': u'Anda terlalu banyak memulai pembicaraan hari ini'
+        },
+        'rate_follow_diamonds': {
+            'en': u'You follow too many people，Use diamonds to unlock',
+            'vi': u'Bạn đã theo dõi quá nhiều người, dùng kim cương mở khoá',
+            'th': u'คุณติดตามคนเยอะเกินไป ใช้เพชรเพื่อปลดล็อก',
+            'id': u'Anda mengikuti terlalu banyak orang， gunakan diamond untuk membuka kunci'
+        },
+        'rate_follow_stop': {
+            'en': u'You follow too many people today',
+            'vi': u'Bạn theo dõi quá nhiều người trong hôm nay',
+            'th': u'วันนี้คุณติดตามคนเยอะเกินไป',
+            'id': u'Anda mengikuti terlalu banyak orang hari ini'
+        },
+        'rate_comment_diamonds': {
+            'en': u'You comment too many people，Use diamonds to unlock',
+            'vi': u'Bạn bình luận quá nhiều lần, dùng kim cương mở khoá',
+            'th': u'คุณคอมเม้นต์ให้คนอื่นมากเกินไป ใช้เพชรเพื่อปลดล็อก',
+            'id': u'Anda berkomentar terlalu banyak, gunakan diamond untuk membuka kunci'
+        },
+        'rate_comment_stop': {
+            'en': u'You comment too many people today',
+            'vi': u'Bạn bình luận quá nhiều lần trong hôm nay',
+            'th': u'ววันนี้คุณคอมเม้นต์ให้คนอื่นมากเกินไป',
+            'id': u'Anda berkomentar terlalu banyak hari ini'
+        },
+        'protected_conversation_diamonds': {
+            'en': u'Too many people have chatted with her today. To avoid disturbing her, please use diamond to unlock.',
+            'vi': u'Hôm nay có rất nhiều người đến tìm cô ấy nói chuyện, để không ai làm phiền, hãy dùng kim cương để mở cuộc trò chuyện !',
+            'th': u'วันนี้มีคนทักเขาหลายคนแล้ว เพื่อไม่ให้เป็นการรบกวนเขามากเกินไป โปรดใช้เพชรเพื่อปลดล็อกการแชท',
+            'id': u'Banyak orang yang chat dengannya hari ini, Agar tidak terlalu menganggu, silakan gunakan diamond untuk membuka kunci obrolan.'
+        },
+        'coummunity_rule': {
+            'en': u'"As in any community，there are rules to protect everyone and make sure to have the coolest and safest experience\n\n'
+                  u'• Be kind with your new friends 💛\n\n'
+                  u'• You can report any inappropriate profile or behavior: our review team will check 😮\n\n• Only use your personal pictures ✌️\n\n'
+                  u'• Pictures in underwear or shirtless are not allowed 👮"',
+            'vi': u'"Như trong bất kì các cộng đồng nào, các qui tắc này nhằm để người dùng có những trải nghiệm tuyệt vời và an toàn nhất '
+                  u'\n\n• Hãy trò chuyện lịch sự với người bạn mới 💛'
+                  u'\n\n• Bạn có thể báo cáo bất kỳ tài khoản nào có hành vi không phù hợp: Bộ phận đánh giá của chúng tôi sẽ kiểm tra 😮'
+                  u'\n\n• Chỉ có thể dùng hình ảnh của chính mình ✌️'
+                  u'\n\n• Hình ảnh trang phục bikini hoặc khoả thân đều không được chấp nhận 👮"',
+            'th': u'"เช่นเดียวกับในชุมชนต่าง ๆ ที่มีกฎเพื่อคุ้มครองทุกคนและเพื่อให้แน่ใจว่าจะได้รับประสบการณ์ที่สะดวกสบายและปลอดภัยที่สุด '
+                  u'\n\n•เป็นมิตรกับเพื่อนใหม่ของคุณ💛'
+                  u'\n\n•คุณสามารถรายงานโปรไฟล์หรือพฤติกรรมใด ๆ ที่ไม่เหมาะสมได้ : ทีมตรวจสอบของเราจะทำการตรวจสอบ😮 '
+                  u'\n\n•โปรดใช้ภาพจริงของตัวคุณเท่านั้น✌️'
+                  u'\n\n•ไม่อนุญาตให้ใช้รูปที่สวมชุดชั้นในหรือโป๊เปลือย👮"',
+            'id': u'"Seperti di komunitas mana pun, terdapat aturan-aturan untuk melindungi semua pengguna untuk memastikan pengguna memiliki pengalaman yang menyenangkan dan nyaman'
+                  u'\n\n• Bersikap baik pada teman baru Anda 💛'
+                  u'\n\n• Anda dapat melaporkan profil atau perilaku yang tidak pantas: tim peninjau kami akan memeriksa 😮'
+                  u'\n\n• Hanya gunakan gambar pribadi Anda ✌'
+                  u'\n\n• Gambar dengan pakaian dalam atau tanpa pakaian tidak diperbolehkan 👮 "'
         }
+
 
     }
 

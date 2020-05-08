@@ -131,13 +131,20 @@ class AdminService(object):
                }, True
 
     @classmethod
-    def query_reports(cls, start_ts, num=10, dealed=None):
+    def query_reports(cls, start_ts, num=10, dealed=None, show_match=None):
         if not start_ts:
             start_ts = MAX_TIME
         if not num:
             num = 10
         if dealed in [False, True]:
-            objs = Report.objects(create_ts__lte=start_ts, dealed=dealed, region=GlobalizationService.get_region()).filter((Q(reason__ne='match') & Q(reason__ne='video_match') & Q(reason__ne='voice_match')) | Q(chat_record__ne=None)).order_by('-create_ts').limit(num + 1)
+            if not show_match:
+                # objs = Report.objects(create_ts__lte=start_ts, dealed=dealed, duplicated=False, region=GlobalizationService.get_region()).filter((Q(reason__ne='match') & Q(reason__ne='video_match') & Q(reason__ne='voice_match')) | Q(chat_record__ne=None)).order_by('-create_ts').limit(num + 1)
+                objs = Report.objects(create_ts__lte=start_ts, dealed=dealed, duplicated=False,
+                                      region=GlobalizationService.get_region()).filter(
+                    Q(reason__ne='match') & Q(reason__ne='video_match') & Q(reason__ne='voice_match')).order_by('-create_ts').limit(num + 1)
+            else:
+                objs = Report.objects(create_ts__lte=start_ts, dealed=dealed, duplicated=False,
+                                      region=GlobalizationService.get_region()).order_by('-create_ts').limit(num + 1)
         else:
             objs = Report.objects(create_ts__lte=start_ts).order_by('-create_ts').limit(num + 1)
         objs = list(objs)
@@ -239,9 +246,9 @@ class AdminService(object):
     def mongo_gen_csv(cls, table_name, query, fields):
         dir_name = '/tmp/'
         save_add = os.path.join(dir_name, '%s_%d.csv' % (table_name, int(time.time())))
-        host, port, user, pwd, db = get_args_from_db('DB_LIT')
-        sql = '''mongoexport -h %s --port %r -u %s -p %s --authenticationDatabase %s -d %s -c %s -f %s --type=csv -q '%s' --out %s''' % (
-        host, port, user, pwd, db, db, table_name, fields, query, save_add)
+        host, port, user, pwd, db, auth_db = get_args_from_db('DB_LIT')
+        sql = '''mongoexport -h {host} --port {port} -u {user} -p {pwd} --authenticationDatabase {auth_db} -d {db} -c {collection} -f {fileds} --type=csv -q '{query}' --out {save_add}''' .format(
+        host=host, port=port, user=user, pwd=pwd, auth_db=auth_db, db=db, collection=table_name, fields=fields, query=query, save_add=save_add)
         os.system(sql)
         return save_add, True
 

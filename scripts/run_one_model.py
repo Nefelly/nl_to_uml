@@ -2,12 +2,15 @@ import os
 import sys
 import fcntl
 from hendrix.conf import setting
-from litatom.service import AlertService
+from litatom.service import AliLogService
 import time
 
 
 def foo():
-    pass
+    print time.time()
+    AliLogService.get_loglst('"get_fakeid" and "experiment_name"', '20200412', '20200428', 'litatom', 'litatomstore',
+                             save_add='/data/alilog/exp1.txt')
+    print time.time()
 
 def run():
     mutex_f = '/var/run/%s.mutex' % __file__.split('/')[-1].replace('.py', '')
@@ -19,9 +22,7 @@ def run():
     except:
         print 'program already in run'
         sys.exit(0)
-    while (True):
-        foo()
-        time.sleep(1)
+    foo()
 
 if __name__ == "__main__":
     run()

@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 def is_json(myjson):
     try:
         json_object = json.loads(myjson)
-    except ValueError, e:
+    except ValueError as e:
         return False
     return True
 
@@ -38,11 +38,34 @@ def get_args_from_db(db_name):
     ''''host': u'mongodb://ll:11@172.31.138.46/lit?authsource=lit','''
     port = db_m['port']
     conn_url = db_m['host']
+    auth_db = conn_url.strip().split('authsource=')[-1]
     user_pwd = conn_url.split('://')[1].split('@')[0]
     user, pwd = user_pwd.split(':')
     host = conn_url.split('@')[1].split('/')[0]
     db = conn_url.split("=")[-1]
-    return host, port, user, pwd, db
+    return host, port, user, pwd, db, auth_db
+
+
+def camel_to_underline(camel_format):
+    '''
+        驼峰命名格式转下划线命名格式
+    '''
+    underline_format = ''
+    if isinstance(camel_format, str):
+        for _s_ in camel_format:
+            underline_format += _s_ if _s_.islower() else '_' + _s_.lower()
+    return underline_format
+
+
+def underline_to_camel(underline_format):
+    '''
+        下划线命名格式驼峰命名格式
+    '''
+    camel_format = ''
+    if isinstance(underline_format, str):
+        for _s_ in underline_format.split('_'):
+            camel_format += _s_.capitalize()
+    return camel_format
 
 
 def passwdhash(passwd):
@@ -100,6 +123,20 @@ def trans_secs_to_time(secs):
 def parse_standard_time(time_data_str):
     """str -> datetime"""
     return datetime.datetime.strptime(time_data_str, '%Y-%m-%d %H:%M:%S')
+
+
+def get_time_int_from_str(time_str):
+    time_str = time_str.strip()
+    len_ts = len(time_str)
+    form = ''
+    if len_ts == len('20200101'):
+        form = '%Y%m%d'
+    elif len_ts == len('2020-01-01') and '-' in time_str:
+        form = '%Y-%m-%d'
+    elif len_ts == len('2020-01-01 12:00:00') and ':' in time_str:
+        form = '%Y-%m-%d %H:%M:%S'
+    return time.mktime(time.strptime(time_str, form))
+
 
 def get_ts_from_str(time_str):
     """str -> timestamp(int)"""

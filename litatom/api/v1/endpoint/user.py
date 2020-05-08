@@ -7,7 +7,8 @@ from flask import (
 
 from ...decorator import (
     session_required,
-    session_finished_required
+    session_finished_required,
+    set_exp_arg
 )
 
 from ...error import (
@@ -33,7 +34,8 @@ from ....service import (
     AccountService,
     AccostService,
     ConversationService,
-    TokenBucketService
+    TokenBucketService,
+    AntiSpamRateService
 )
 from ....const import (
     MAX_TIME
@@ -160,15 +162,27 @@ def search_user():
     return success(data)
 
 
+@set_exp_arg()
 @session_required
 def accost():
-    status = AccostService.can_accost(request.user_id, request.session_id, request.loc, request.version)
+    other_user_id = request.values.get('targetId', '')
+    status = AccostService.can_accost(request.user_id, other_user_id, request.session_id, request.loc, request.version)
     if not status:
         return fail()
     res = {
         'status': status
     }
     return success(res)
+
+
+@set_exp_arg()
+@session_required
+def accost_other():
+    other_user_id = request.values.get('targetId', '')
+    data, status = AntiSpamRateService.judge_stop(request.user_id, AntiSpamRateService.ACCOST, other_user_id, related_protcted=True, other_protected=True)
+    if not status:
+        return fail(data)
+    return success(data)
 
 
 def get_avatars():
@@ -229,6 +243,8 @@ def firebase_push():
 
 @session_finished_required
 def query_online():
+    if not request.json:
+        return success()
     uids = request.json.get('user_ids', [])
     uids = uids[:100] + uids[-40:] if len(uids) > 140 else uids
     uids = list(set([_ for _ in uids if _]))

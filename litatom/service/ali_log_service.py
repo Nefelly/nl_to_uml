@@ -4,10 +4,17 @@ from time import time
 import datetime
 import traceback
 from aliyun.log import *
+from ..util import (
+    get_time_int_from_str
+)
 import logging
+from ..const import (
+    ONE_DAY
+)
 from ..redis import RedisClient
 from hendrix.conf import setting
 from ..const import ALI_LOG_EXCHANGE
+from ..mq import MQProducer
 from flask import request
 
 from ..util import (
@@ -24,11 +31,13 @@ class AliLogService(object):
     https://help.aliyun.com/document_detail/29077.html?spm=5176.2020520112.0.0.734834c0eZ4Hb2
     '''
 
-    ENDPOINT = 'cn-hongkong.log.aliyuncs.com'  # 选择与上面步骤创建Project所属区域匹配的Endpoint
+    # ENDPOINT = 'cn-hongkong.log.aliyuncs.com'  # 选择与上面步骤创建Project所属区域匹配的Endpoint
+    ENDPOINT = 'cn-hongkong-intranet.log.aliyuncs.com'  # 真内网
     ACCESS_KEY_ID = 'LTAI4FmgXZDqyFsLxf6Rez3e'  # 使用您的阿里云访问密钥AccessKeyId
     ACCESS_KEY = 'n6ZOCqP28vfOJi3YbNETJynEG87sRo'  # 使用您的阿里云访问密钥AccessKeySecret
     DEFAULT_PROJECT = 'litatomaction'  # 上面步骤创建的项目名称
     DEFAULT_LOGSTORE = 'litatomactionstore'  # 上面步骤创建的日志库名称
+    ONE_LOG_MAX = 400000
 
     # 重要提示：创建的logstore请配置为4个shard以便于后面测试通过
     # 构建一个client
@@ -67,10 +76,6 @@ class AliLogService(object):
         if setting.IS_DEV:
             logstore = 'test-lit'
             project = 'test-lit'
-        request = PutLogsRequest(project, logstore, topic, source, logitemList)
-        response = client.put_logs(request)
-        return response.get_all_headers()
-        from ..mq import MQProducer
         try:
             request = PutLogsRequest(project, logstore, topic, source, logitemList)
             response = client.put_logs(request)
@@ -105,8 +110,11 @@ class AliLogService(object):
         logitemList = []  # LogItem list
         logItem = LogItem()
         logItem.set_time(int(time()))
-        if request.platform:
-            contents.append(('platform', request.platform))
+        try:
+            if request.platform:
+                contents.append(('platform', request.platform))
+        except:
+            pass
         logItem.set_contents(contents)
         logitemList.append(logItem)
         cls._put_logs_atom(logitemList, project, logstore, topic, source, client)
@@ -153,10 +161,83 @@ class AliLogService(object):
         for log in res.logs:
             contents = log.get_contents()
             res_contents = {}
+            res_contents['__time'] = log.get_time()
             for attribute in attributes:
                 if attribute in contents.keys():
                     res_contents[attribute] = contents[attribute]
             log.contents = res_contents.copy()
+        return res
+
+    @classmethod
+    def get_size(cls, query='*', from_time=int(time() - 3600), to_time=int(time()), project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE):
+        if isinstance(from_time, str):
+            from_time = get_time_int_from_str(from_time)
+        if isinstance(to_time, str):
+            to_time = get_time_int_from_str(to_time)
+        query = query + '|SELECT COUNT(*) as num'
+        res = cls.DEFAULT_CLIENT.get_log(project=project, logstore=logstore, from_time=from_time, to_time=to_time,
+                                         size=1, query=query)
+        for log in res.logs:
+            return int(log.get_contents()['num'])
+        return 0
+
+
+    @classmethod
+    def get_loglst(cls, query='*', from_time=int(time() - 3600),
+                     to_time=int(time()), project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE, save_add = None):
+        if isinstance(from_time, str):
+            from_time = get_time_int_from_str(from_time)
+        if isinstance(to_time, str):
+            to_time = get_time_int_from_str(to_time)
+        size = cls.get_size(query, from_time, to_time, project, logstore)
+        print 'log size', size
+        querys = [(from_time, to_time)]
+        time_interval = to_time - from_time
+        if size > cls.ONE_LOG_MAX:
+            querys = []
+            loops = size / cls.ONE_LOG_MAX
+            if time_interval / ONE_DAY < loops: # 天数少于循环数  高峰期与低谷期的流量差异比较大
+                loops *= 10
+            else:
+                loops *= 5
+            time_delta = (to_time - from_time) / loops
+            for i in range(loops):
+                start_time = from_time + i * time_delta
+                end_time = from_time + (i + 1) * time_delta
+                querys.append((round(start_time), round(end_time)))
+        res = []
+        print querys
+        fewer_fields = True if size > 10000 and logstore == 'litatomstore' else False
+        if fewer_fields:
+            print 'we are in fewer'
+        f = ''
+        if save_add:
+            f = open(save_add, 'w')
+        cnt = 1
+        tmp_contents = []
+        for start_time, end_time in querys:
+            raw = cls.DEFAULT_CLIENT.get_log(project=project, logstore=logstore, from_time=start_time, to_time=end_time,
+                             size=cls.ONE_LOG_MAX, query=query)
+            if not save_add:
+                for log in raw.logs:
+                        contents = log.get_contents()
+                        contents['__time'] = log.get_time()
+                        if fewer_fields:
+                            res.append({'__time': contents['__time'], 'request_uri': contents['request_uri']})
+                        else:
+                            res.append(contents)
+            else:
+                for log in raw.logs:
+                    contents = log.get_contents()
+                    tmp_contents.append(str(log.get_time()) + '\t' + contents['request_uri'])
+                    cnt += 1
+                    if cnt % 1000 == 0:
+                        f.write('\n'.join(tmp_contents))
+                        f.flush()
+                    import gc
+                    gc.collect()
+            print start_time, end_time, len(res)
+        f.write('\n'.join(tmp_contents))
         return res
 
     @classmethod
@@ -255,4 +336,23 @@ class AliLogService(object):
         req = GetHistogramsRequest(project=project, logstore=logstore, fromTime=from_time, toTime=to_time, topic=topic,
                                    query=query)
         res = client.get_histograms(req)
+        return res
+
+    @classmethod
+    def track_user_ids(cls, add):
+        import urlparse
+        from ..model import User
+        res = set()
+        cnt = 0
+        for l in open(add).readlines():
+            cnt += 1
+            if cnt % 1000 == 0:
+               print cnt, len(res)
+            if not l:
+                continue
+            result = urlparse.urlparse(l)
+            sid = urlparse.parse_qs(result.query)['sid'][0]
+            user_id = User.get_user_id_by_session(sid)
+            if user_id:
+                res.add(user_id)
         return res

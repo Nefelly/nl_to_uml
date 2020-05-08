@@ -21,7 +21,8 @@ from ..const import (
     ONE_DAY,
     REMOVE_EXCHANGE,
     ADD_EXCHANGE,
-    ONE_HOUR
+    ONE_HOUR,
+    ONE_MIN
 )
 
 from ..service import (
@@ -36,11 +37,14 @@ from ..service import (
     MqService,
     QiniuService,
     ForbiddenService,
+    AntiSpamRateService
 )
 from ..model import (
     Feed,
     FeedLike,
+    FeedDislike,
     FeedComment,
+    UserSetting
 )
 
 redis_client = RedisClient()['lit']
@@ -53,11 +57,37 @@ class FeedService(object):
     def should_add_to_square(cls, feed):
         # return True
         user_id = feed.user_id
-        judge_time = int(time.time()) - ONE_HOUR
+        judge_time = int(time.time()) - 5 * ONE_MIN
+        if feed.self_high:
+            return False
         status = Feed.objects(user_id=user_id, create_time__gte=judge_time).count() <= 3
-        if not status and setting.IS_DEV:
+        # if not status and setting.IS_DEV:
+        if status:
             return True
+        AntiSpamRateService.inform_spam(user_id, 'feed_over')
         return status
+
+    @classmethod
+    def pin_feed(cls, user_id, feed_id):
+        user_setting = UserSetting.get_by_user_id(user_id)
+        user_setting.pinned_feed = feed_id
+        user_setting.save()
+        feed = Feed.get_by_id(feed_id)
+        if not feed:
+            return u'you should pin your own feed', False
+        return None, True
+
+    @classmethod
+    def unpin_feed(cls, user_id, feed_id=None):
+        user_setting = UserSetting.get_by_user_id(user_id)
+        if not user_setting:
+            return None, True
+        if feed_id:
+            if user_setting.pinned_feed != feed_id:
+                return u'your unpin feed_id is not right', False
+        user_setting.pinned_feed = ''
+        user_setting.save()
+        return None, True
 
     @classmethod
     def _on_add_feed(cls, feed):
@@ -76,11 +106,7 @@ class FeedService(object):
         reason = None
         illegal_pic = None
         if pics:
-            for pic in pics:
-                reason = QiniuService.should_pic_block_from_file_id(pic)
-                if reason:
-                    illegal_pic = pic
-                    break
+            illegal_pic,reason = ForbiddenService.check_block_pics(pics)
         feed = Feed.get_by_id(feed_id)
         if feed:
             if reason:
@@ -92,7 +118,7 @@ class FeedService(object):
                 feed.delete()
             else:
                 #  need region to send to this because of request env
-                if cls.should_add_to_square(feed):
+                if feed.pics and cls.should_add_to_square(feed):
                     redis_client.zadd(region_key,
                                       {str(feed.id): feed.create_time})
             FollowingFeedService.add_feed(feed)
@@ -128,6 +154,11 @@ class FeedService(object):
             if feed.like_num:
                 liked = FeedLike.in_like(visitor_user_id, str(feed.id), feed.like_num)
             res['liked'] = liked
+
+            disliked = False
+            if feed.dislike_num:
+                disliked = FeedDislike.in_dislike(visitor_user_id, str(feed.id), feed.dislike_num)
+            res['disliked'] = disliked
         return res
 
     @classmethod
@@ -172,7 +203,19 @@ class FeedService(object):
             time_now = int(time.time())
             if time_now - feed.create_time >= 2 * ONE_DAY:
                 return
-            cls._add_to_feed_hq(str(feed.id))
+            if not feed.self_high and not AntiSpamRateService.is_spamed_recent(feed.user_id):
+                cls._add_to_feed_hq(str(feed.id))
+
+    @classmethod
+    def remove_from_pub(cls, feed):
+        back_region = request.region
+        request.region = GlobalizationService.get_region_by_user_id(feed.user_id)
+        cls._del_from_feed_pool(feed)
+        cls._del_from_feed_hq(feed)
+        request.region = back_region
+        if feed.should_remove_from_follow:
+            MqService.push(REMOVE_EXCHANGE, {"feed_id": str(feed.id)})
+            # FollowingFeedService.remove_feed(feed)
 
     @classmethod
     def move_up_feed(cls, feed_id, ts):
@@ -208,10 +251,18 @@ class FeedService(object):
         cls._del_from_feed_pool(feed)
         cls._del_from_feed_hq(feed)
         FeedLike.del_by_feedid(feed_id)
+        FeedDislike.del_by_feedid(feed_id)
         FeedComment.objects(feed_id=feed_id).delete()
         feed.delete()
         MqService.push(REMOVE_EXCHANGE, {"feed_id": feed_id})
         return None, True
+
+    @classmethod
+    def get_pinned_feed(cls, user_id):
+        user_setting = UserSetting.get_by_user_id(user_id)
+        if user_setting and user_setting.pinned_feed:
+            return Feed.get_by_id(user_setting.pinned_feed)
+        return None
 
     @classmethod
     def feeds_by_userid(cls, visitor_user_id, user_id, start_ts=MAX_TIME, num=10):
@@ -229,17 +280,28 @@ class FeedService(object):
         next_start = -1
         feeds = Feed.objects(user_id=user_id, create_time__lte=start_ts).order_by('-create_time').limit(num + 1)
         feeds = list(feeds)
+        if visitor_user_id != user_id:
+            feeds = [el for el in feeds if not el.should_remove_from_follow]
         # feeds.reverse()   # 时间顺序错误
         has_next = False
         if len(feeds) == num + 1:
             has_next = True
             next_start = feeds[-1].create_time
             feeds = feeds[:-1]
-        return {
+        res = {
                    'feeds': map(cls._feed_info, feeds, [visitor_user_id for el in feeds]),
                    'has_next': has_next,
                    'next_start': next_start
-               }, True
+               }
+        if start_ts >= MAX_TIME:
+            pinned_feed_info = {}
+            pinned_feed = cls.get_pinned_feed(user_id)
+            ''' 自high的不能置顶'''
+            if pinned_feed and not pinned_feed.should_remove_from_follow:
+                pinned_feed_info = cls._feed_info(pinned_feed, visitor_user_id)
+            if pinned_feed_info:
+                res['pinned'] = pinned_feed_info
+        return res, True
 
     @classmethod
     def _feeds_by_pool(cls, redis_key, user_id, start_p, num, pool_type=None):
@@ -271,7 +333,7 @@ class FeedService(object):
         if top_id:
             feeds = [top_id] + [el for el in feeds if el != top_id]
         feeds = map(Feed.get_by_id, feeds) if feeds else []
-        feeds = [el for el in feeds if el]
+        feeds = [el for el in feeds if el and not FeedDislike.in_dislike(user_id, str(el.id), el.dislike_num)]
         feeds = map(cls._feed_info, feeds, [user_id for el in feeds])
         return {
             'has_next': has_next,
@@ -335,6 +397,29 @@ class FeedService(object):
         return {'like_now': like_now}, True
 
     @classmethod
+    def dislike_feed(cls, user_id, feed_id, reverse=True):
+        feed = Feed.get_by_id(feed_id)
+        if not feed:
+            return 'wrong feed id', False
+        if feed.user_id == user_id:
+            return u'you can\'t dislike yourself.', False
+        num = 1
+        if not reverse:
+            is_dislike = FeedDislike.in_dislike(user_id, feed_id, feed.dislike_num)
+            if is_dislike:
+                return None, True
+            is_dislike = FeedDislike.reverse(user_id, feed_id, feed.dislike_num)
+        else:
+            is_dislike = FeedDislike.reverse(user_id, feed_id, feed.dislike_num)
+            num = 1 if is_dislike else -1
+        feed.chg_dislike_num(num)
+        if feed.user_id != user_id:
+            if is_dislike:
+                if feed.self_high:
+                    cls.remove_from_pub(feed)
+        return {'dislike_now': is_dislike}, True
+
+    @classmethod
     def comment_feed(cls, user_id, feed_id, content, comment_id=None):
         feed = Feed.get_by_id(feed_id)
         if not feed:
@@ -360,9 +445,15 @@ class FeedService(object):
             comment.content_user_id = father_comment.user_id
             tag =True
         # spam word comment will be stopped
-        data, status = ForbiddenService.check_spam_word(content,user_id)
+        data, status = ForbiddenService.check_spam_word(content, user_id)
         if status:
             return data, False
+
+        if feed.user_id != user_id:
+            data, status = AntiSpamRateService.judge_stop(user_id, AntiSpamRateService.COMMENT, feed_id, related_protcted=True)
+            if not status:
+                return data, False
+
         if tag:
             UserMessageService.add_message(father_comment.user_id, user_id, UserMessageService.MSG_COMMENT, feed_id,
                                            content)

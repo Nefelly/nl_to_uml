@@ -235,115 +235,55 @@ class StatisticService(object):
         }
 
     @classmethod
-    def stat_register_rate(cls, date_str):
-        stat_date = datetime.datetime.strptime(date_str, '%Y-%m-%d')
-        end = next_date(stat_date, 1)
-        # ls = UserSetting.objects(create_time__gte=stat_date,
-        #                          create_time__lte=end).distinct('uuid')
+    def stat_register_rate(cls, date_str, num=1):
+        start_date = datetime.datetime.strptime(date_str, '%Y-%m-%d')
+        for _ in range(num):
+            stat_date = next_date(start_date, _)
+            print stat_date
+            end = next_date(stat_date, 1)
+            # ls = UserSetting.objects(create_time__gte=stat_date,
+            #                          create_time__lte=end).distinct('uuid')
 
-        # 安装设备数
-        ts = Uuids.objects(create_time__gte=stat_date,
-                           create_time__lte=end).distinct('uuid')
+            # 安装设备数
+            ts = Uuids.objects(create_time__gte=stat_date,
+                               create_time__lte=end).distinct('uuid')
 
-        # 以前注册用户的设备
-        # registered_cnt = 0
-        # for uuid in ts:
-        #     u  =  UserSetting.objects(uuid=uuid).first()
-        #     if u and User.get_by_id(u.user_id).create_time < stat_date:
-        #         registered_cnt += 1
+            # 以前注册用户的设备
+            # registered_cnt = 0
+            # for uuid in ts:
+            #     u  =  UserSetting.objects(uuid=uuid).first()
+            #     if u and User.get_by_id(u.user_id).create_time < stat_date:
+            #         registered_cnt += 1
 
-        m = {}
-        cnt = 0
-        for l in ts:
-            m[l] = 1
-            if l in m:
-                cnt += 1
+            m = {}
+            cnt = 0
+            for l in ts:
+                m[l] = 1
+                if l in m:
+                    cnt += 1
 
-        # 新增的注册用户
-        uids = [UserSetting.get_by_user_id(str(el.id)) for el in
-                User.objects(create_time__gte=stat_date, create_time__lte=end)]
+            # 新增的注册用户
+            uids = [UserSetting.get_by_user_id(str(el.id)) for el in
+                    User.objects(create_time__gte=stat_date, create_time__lte=end)]
 
 
 
-        ms = [el.uuid for el in uids if el]
-        print ms[:5]
+            ms = [el.uuid for el in uids if el]
 
-        # 新增设备已注册的
-        registered_uuid = 0
-        for el in ms:
-            if el in m:
-                registered_uuid +=1
+            # 新增设备已注册的
+            registered_uuid = 0
+            for el in ms:
+                if el in m:
+                    registered_uuid +=1
 
-        print "install", "register", "rate"
-        print len(ts), registered_uuid, registered_uuid * 1.0 / len(ts)
+            print "install", "register", "rate"
+            print len(ts), registered_uuid, registered_uuid * 1.0 / len(ts)
 
         # mm = []  #
         # for l in ms:
         #     if l not in m:
         #         mm.append(l)
         # kk = [UserSetting.objects(uuid=el).count() for el in mm]
-
-    # @classmethod
-    # def get_online_users(cls, gender=None, start_p=0, num=10):
-    #     key = GlobalizationService._online_key_by_region_gender(gender)
-    #     online_cnt = cls.get_online_cnt(gender)
-    #     has_next = False
-    #     next_start = -1
-    #     if False and start_p == 0 and request.user_id and gender and online_cnt >= num:
-    #         uids = cls.choose_first_frame(request.user_id, key, gender, num)
-    #         has_next = (len(uids) == num)
-    #     else:
-    #         girl_strategy_on = False
-    #         if gender == BOY and start_p == 0 and girl_strategy_on:
-    #             '''girls has to have some girl'''
-    #             b_ratio = 0.3
-    #             girl_num = int(num * b_ratio)
-    #             num = boy_num = int(num)   # set num to this for next get
-    #             girl_start_p = int(start_p * b_ratio) + 1
-    #             girl_uids = redis_client.zrevrange(GlobalizationService._online_key_by_region_gender(GIRL), girl_start_p, girl_start_p + girl_num)
-    #             boy_uids = redis_client.zrevrange(GlobalizationService._online_key_by_region_gender(BOY), start_p, start_p + boy_num)
-    #             uids = girl_uids + boy_uids
-    #         else:
-    #             uids = []
-    #             max_loop_tms = 5
-    #             temp_uid = request.user_id
-    #             if temp_uid:
-    #                 for i in range(max_loop_tms):
-    #                     temp_uids = redis_client.zrevrange(key, start_p, start_p + num)
-    #                     has_next = False
-    #                     if len(temp_uids) == num + 1:
-    #                         has_next = True
-    #                         temp_uids = temp_uids[:-1]
-    #                     next_start = start_p + num if has_next else -1
-    #                     uids += [el for el in temp_uids if UserFilterService.filter_by_age_gender(temp_uid, el)]
-    #                     if len(uids) >= max(num - 3, 1) or not has_next:
-    #                         break
-    #                     start_p = start_p + num
-    #             else:
-    #                 uids = redis_client.zrevrange(key, start_p, start_p + num)
-    #         temp_uid = request.user_id
-    #         if temp_uid and temp_uid in uids:
-    #             temp_num = num + 1
-    #             uids = redis_client.zrevrange(key, start_p, start_p + temp_num)
-    #             uids = [uid for uid in uids if uid != temp_uid]
-    #         uids = uids if uids else []
-    #         has_next = False
-    #         if gender == BOY and girl_strategy_on:
-    #             if len(boy_uids) == num + 1:
-    #                 has_next = True
-    #                 boy_uids = boy_uids[:-1]
-    #             uids = boy_uids[:-1] + girl_uids
-    #             random.shuffle(uids)
-    #         # else:
-    #         #     if len(uids) == num + 1:
-    #         #         has_next = True
-    #         #         uids = uids[:-1]
-    #     user_infos = cls._user_infos_by_uids(uids)
-    #     return {
-    #         'has_next': has_next,
-    #         'user_infos': user_infos,
-    #         'next_start': next_start
-    #     }
 
     @classmethod
     def track_chat(cls, user_id, target_user_id, content):
@@ -532,11 +472,15 @@ class DiamStatService(object):
             resp = AliLogService.get_log_atom(from_time=from_time, to_time=to_time, query=list[item],
                                               project=project, logstore=logstore)
             try:
-                for log in resp.logs:
-                    contents = log.get_contents()
-                    res = contents['res']
-                    if not res or res == 'null':
-                        res = 0
+                if resp:
+                    for log in resp.logs:
+                        '''因为logs只有一个'''
+                        contents = log.get_contents()
+                        res = contents['res']
+                        if not res or res == 'null':
+                            res = 0
+                else:
+                    res = 0
             except KeyError or AttributeError:
                 res = 0
             finally:

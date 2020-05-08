@@ -6,9 +6,10 @@ import logging
 import time
 import uuid
 from urllib2 import urlopen
-from PIL import Image
+from PIL import Image as pImage
 from io import BytesIO
 from PIL import ImageFile
+from pgmagick import Image, FilterTypes, Blob
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 import oss2
 
@@ -46,7 +47,7 @@ class AliOssService(object):
         :param bucket: 只支持：笔记图片、实名认证
         :param fileid
         :return 上传得到的图片fileid
-    """
+        """
         if not fileid:
             # 生成fileid，检查是否唯一
             while True:
@@ -62,7 +63,6 @@ class AliOssService(object):
                 return fileid
         except Exception, e:
             logger.error('upload_from_binary failed,  %s',  e)
-
         return ''
 
     @classmethod
@@ -93,14 +93,13 @@ class AliOssService(object):
         if not obj:
             return None
         try:
-            img = Image.open(BytesIO(obj))
+            img = pImage.open(BytesIO(obj))
             (x, y) = img.size
-            x_s = 300  # define standard width
-            if x < x_s:
+            x_s, y_s = cls.get_resize_size(x, y)
+            # print x, y , x_s, y_s
+            if x == x_s:
                 return obj
-            y_s = y * x_s / x  # calc height based on standard width
-            # out = img.resize((x_s, y_s), Image.ANTIALIAS)
-            out = img.resize((x_s, y_s), Image.ANTIALIAS)
+            out = img.resize((x_s, y_s), pImage.ANTIALIAS)
             image_byte = BytesIO()
             out.convert('RGB').save(image_byte, format='JPEG')
             res = image_byte.getvalue()
@@ -109,11 +108,102 @@ class AliOssService(object):
         return res
 
     @classmethod
+    def get_resize_size(cls, x, y, from_gm=False):
+        '''
+        采用阶梯式压缩方式：
+        :param x:
+        :param y:
+        :param from_gm:
+        :return:
+        '''
+        if from_gm:
+            first_xs = 100
+            seccond_xs = 400
+            max_width = 350
+            first_rate = 0.5
+            seccond_rate = 0.2
+            if x < first_xs:
+                x_s = x
+            elif x < seccond_xs:
+                x_s = first_xs + (x - first_xs) * first_rate
+            else:
+                x_s = first_xs + (seccond_xs - first_xs) * first_rate + (x - seccond_xs) * seccond_rate
+                x_s = min(x_s, max_width)
+        else:
+            x_s = x if x < 300 else 300
+        return x_s, y * x_s / x
+        # judge_x = 300
+        # if from_gm:
+        #     judge_x *= 2
+        # if x < judge_x:
+        #     return x, y
+        # if x < 600:
+        #     return judge_x, y * judge_x / x
+        # if x < 3000:
+        #     return x / 2, y / 2
+        # judge_x = 1000
+        # return judge_x, y * judge_x / x
+
+    @classmethod
+    def gm_resize(cls, fileid):
+        '''
+        https://www.iteye.com/blog/willvvv-1574883
+        https://pythonhosted.org/pgmagick/cookbook.html#scaling-a-jpeg-image
+        :param resize:
+        :return:
+        '''
+
+        obj = cls.get_binary_from_bucket(fileid)
+        try:
+            blob = Blob(obj)
+            im = Image(blob)
+            x = im.size().width()
+            y = im.size().height()
+            x_s, y_s = cls.get_resize_size(x, y, True)
+            if x_s == x:
+                return obj
+            im.quality(40)
+            im.filterType(FilterTypes.SincFilter)
+            # # x_s, y_s = x, y
+            im.scale('%dx%d' % (x_s, y_s))
+            im.sharpen(1.3)
+            im.write(blob)
+            return blob.data
+        except:
+            return obj
+
+    @classmethod
+    def rgba_resize(cls, fileid):
+        obj = cls.get_binary_from_bucket(fileid)
+        if not obj:
+            return None
+        # try:
+        if 1:
+            img = Image.open(BytesIO(obj)).convert("RGBA")
+            (x, y) = img.size
+            x_s = 300  # define standard width
+            if x < x_s:
+                return obj
+            y_s = y * x_s / x  # calc height based on standard width
+            # out = img.resize((x_s, y_s), Image.ANTIALIAS)
+
+            out = img.resize((x_s, y_s), Image.ANTIALIAS)
+            image_byte = BytesIO()
+            out.convert('RGB').save(image_byte, format='JPEG')
+            res = image_byte.getvalue()
+            #
+            # qrcode_image = Image.open(qrcode).convert("RGBA")
+            # qrcode_image = qrcode_image.resize(self.qrcode_size_large, Image.ANTIALIAS)
+        # except:
+            return res
+        return res
+
+    @classmethod
     def replace_to_small(cls, fileid, x_s=300):
         obj = cls.get_binary_from_bucket(fileid)
         if not obj:
             return None
-        img = Image.open(BytesIO(obj))
+        img = pImage.open(BytesIO(obj))
         (x, y) = img.size
         if x < x_s:
             return obj

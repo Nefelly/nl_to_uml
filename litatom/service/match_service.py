@@ -47,7 +47,8 @@ from ..service import (
     GlobalizationService,
     StatisticService,
     StatisticService,
-    MqService
+    MqService,
+    ExperimentService
 )
 from ..model import (
     User,
@@ -116,6 +117,10 @@ class MatchService(object):
         is_accelerate = cls._is_accelerate(user_id)
         if not is_accelerate:
             anoy_gender_key = cls.MATCH_KEY_BY_REGION_GENDER(cls.MATCH_TYPE, gender)
+            if cls._get_matched_times(user_id) >= 1:
+                ''' 延时进入池子'''
+                if ExperimentService.get_exp_value('match_strategy') == 'delay':
+                    int_time = int_time + 15
         else:
             anoy_gender_key = cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender)
         redis_client.zadd(anoy_gender_key, {fake_id: int_time})
@@ -198,7 +203,7 @@ class MatchService(object):
         redis_client.set(cls.TYPE_MATCHED.format(fake_id=fake_id2), fake_id1, cls.MATCH_INT)
         redis_client.set(cls.TYPE_MATCHED.format(fake_id=fake_id1), fake_id2, cls.MATCH_INT)
         redis_client.set(cls.TYPE_MATCH_PAIR.format(low_high_fakeid=pair), time_now, cls.MATCH_INT)
-        redis_client.set(cls.TYPE_MATCH_BEFORE.format(low_high_fakeid=pair), 1, ONE_DAY)
+        redis_client.set(cls.TYPE_MATCH_BEFORE.format(low_high_fakeid=pair), 1, 3 * ONE_DAY)
         # 将其从正在匹配队列中删除
         cls._remove_from_match_pool(gender1, fake_id1)
         cls._remove_from_match_pool(cls.OTHER_GENDER_M.get(gender1), fake_id2)
@@ -278,6 +283,7 @@ class MatchService(object):
         '''
         return matched fake_id, if this match info has been set up
         '''
+
         matched_key = cls.TYPE_MATCHED.format(fake_id=fake_id)
         fake_id2 = redis_client.get(matched_key)
         if fake_id2:
@@ -286,6 +292,9 @@ class MatchService(object):
                 return fake_id2, True
             redis_client.delete(matched_key)
         int_time = int(time.time())
+        if ExperimentService.get_exp_value('match_strategy') == 'delay':
+            if redis_client.zscore(cls.MATCH_KEY_BY_REGION_GENDER(cls.MATCH_TYPE, gender), fake_id) > int_time:
+                return None, False
         judge_time = int_time - cls.MATCH_WAIT
         if not request.is_homo:
             other_gender = cls.OTHER_GENDER_M.get(gender)
@@ -296,10 +305,10 @@ class MatchService(object):
             if other_cnt == 1:
                 if my_cnt > 1:
                     return None, False
-
         choose_gender = other_gender if not request.is_homo else gender
+        choose_max_time = int_time  # MAX_TIME
         accelerate_fakeids = redis_client.zrangebyscore(cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, choose_gender), judge_time + 3, MAX_TIME, 0, cls.MAX_CHOOSE_NUM)
-        other_fakeids = redis_client.zrangebyscore(cls.MATCH_KEY_BY_REGION_GENDER(cls.MATCH_TYPE, choose_gender), judge_time + 3, MAX_TIME, 0, cls.MAX_CHOOSE_NUM)
+        other_fakeids = redis_client.zrangebyscore(cls.MATCH_KEY_BY_REGION_GENDER(cls.MATCH_TYPE, choose_gender), judge_time + 3, choose_max_time, 0, cls.MAX_CHOOSE_NUM)
         if request.is_homo:
             accelerate_fakeids = [el for el in accelerate_fakeids if el != fake_id]
             other_fakeids = [el for el in other_fakeids if el != fake_id]
@@ -408,6 +417,8 @@ class MatchService(object):
         now_date = now_date_key()
         match_left_key = cls.TYPE_USER_MATCH_LEFT.format(user_date=user_id + now_date)
         default_match_times = cls.MATCH_TMS   #  if not cls._is_member(user_id) else cls.FAKE_MAX_TIME
+        if ExperimentService.get_exp_value('times_left_exp') == 'less':
+            default_match_times = 5
         redis_client.setnx(match_left_key, default_match_times)
         redis_client.expire(match_left_key, ONE_DAY)
         times_left = int(redis_client.get(match_left_key))
@@ -509,6 +520,7 @@ class MatchService(object):
 
         cls._add_to_match_pool(gender, fake_id, user_id)
 
+
         # 进入匹配过期
         redis_client.set(cls.TYPE_FAKE_START.format(fake_id=fake_id), int(time.time()), cls.MATCH_WAIT)
         return res, True
@@ -540,7 +552,7 @@ class MatchService(object):
             if cls._in_match(fake_id, fake_id2):
                 return fake_id2, True
             redis_client.delete(matched_key)
-        fake_id2 = cls.pure_get_fake_id(out_uid)
+        fake_id2, status = cls.pure_get_fake_id(out_uid)
         if redis_client.get(cls.TYPE_MATCH_BEFORE.format(low_high_fakeid=low_high_pair(fake_id, fake_id2))):
             return None, False
         if BlockService.get_block_msg(user_id, out_uid):
