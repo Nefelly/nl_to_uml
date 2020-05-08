@@ -49,7 +49,7 @@ class MongoSyncService(object):
         return save_add
 
     @classmethod
-    def load_table_map(cls, db, table_name, db_name, key_filed, wanted_fields=[]):
+    def load_table_map(cls, db, db_name, table_name, key_filed, wanted_fields=[]):
         fields = key_filed + ',' + ','.join(wanted_fields)
         save_add = cls.export_to_add(db, table_name, db_name, fields)
         res_is_lst = False
