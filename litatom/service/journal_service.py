@@ -15,7 +15,8 @@ from mongoengine import (
     IntField,
 )
 from ..service import (
-    AliLogService
+    AliLogService,
+    MongoSyncService
 )
 from ..redis import RedisClient
 
@@ -48,7 +49,7 @@ class JournalService(object):
         # for obj in objs:
         #     cls.USER_LOC[obj.user_id] = obj.lang
         # del objs
-        cls.USER_LOC =
+        cls.USER_LOC = MongoSyncService.load_table_map('DB_LIT', 'lit', 'user_setting', 'user_id', ['lang'])
         new_users = eval('UserSetting.objects(%s)' % cls._get_time_str('UserSetting', 'create_time'))
         for obj in new_users:
             cls.NEW_USER_LOC[obj.user_id] = obj.lang
