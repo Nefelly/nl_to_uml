@@ -64,6 +64,7 @@ def run():
     another_exp_uids = read_uids_from_file('/data/exp/match-428/exp')
     print('experiment group: first size', len(exp_uids), 'second size', len(another_exp_uids))
     exp_uids += another_exp_uids
+    exp_uids = set(exp_uids)
     len_exp_uids = float(len(exp_uids))
     print(len_exp_uids)
 
@@ -72,6 +73,7 @@ def run():
     another_default_uids = read_uids_from_file('/data/exp/match-428/default')
     print('default group:first size', len(default_uids), 'second size', len(another_default_uids))
     default_uids += another_default_uids
+    default_uids = set(default_uids)
     len_default_uids = float(len(default_uids))
     print(len_default_uids)
 
