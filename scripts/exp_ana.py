@@ -59,19 +59,28 @@ def load_uid_payment(default_uids, exp_uids):
 
 
 def run():
-    exp_uids = read_uids_from_file('/data/exp/match-428/exp_ids') + read_uids_from_file('/data/exp/match-428/exp')
+    exp_uids = read_uids_from_file('/data/exp/match-428/exp_ids')
     exp_uids = deal_uids(exp_uids)
+    another_exp_uids = read_uids_from_file('/data/exp/match-428/exp')
+    print('experiment group: first size', len(exp_uids), 'second size', len(another_exp_uids))
+    exp_uids += another_exp_uids
     len_exp_uids = float(len(exp_uids))
     print(len_exp_uids)
-    default_uids = read_uids_from_file('/data/exp/match-428/default_ids') + read_uids_from_file('/data/exp/match-428/default')
+
+    default_uids = read_uids_from_file('/data/exp/match-428/default_ids')
     default_uids = deal_uids(default_uids)
+    another_default_uids = read_uids_from_file('/data/exp/match-428/default')
+    print('default group:first size', len(default_uids), 'second size', len(another_default_uids))
+    default_uids += another_default_uids
     len_default_uids = float(len(default_uids))
     print(len_default_uids)
 
     default_pay_sum, exp_pay_sum, default_pay_num, exp_pay_num = load_uid_payment(default_uids, exp_uids)
 
-    print('payment average of default group:', default_pay_sum / len_default_uids, 'payment user rate average of default group:', default_pay_num / len_default_uids)
-    print('payment average of experiment group:', exp_pay_sum / len_exp_uids, 'payment user rate average of experiment group:', exp_pay_num / len_exp_uids)
+    print('payment average of default group:', default_pay_sum / len_default_uids,
+          'payment user rate average of default group:', default_pay_num / len_default_uids)
+    print('payment average of experiment group:', exp_pay_sum / len_exp_uids,
+          'payment user rate average of experiment group:', exp_pay_num / len_exp_uids)
 
     from_date = parse_standard_time('2020-04-28 00:00:00')
     to_date = parse_standard_time('2020-05-04 00:00:00')
