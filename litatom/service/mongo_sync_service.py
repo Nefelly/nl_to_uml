@@ -40,8 +40,8 @@ class MongoSyncService(object):
         host, port, user, pwd, db, auth_db = get_args_from_db(db)
         if not fields:
             fields = 'user_id'
-        else:
-            fields = ','.join(fields)
+        # else:
+        #     fields = ','.join(fields)
         sql = '''mongoexport -h {host} --port {port} -u {user} -p {pwd} --authenticationDatabase {auth_db} -d {db_name} -c {collection} -f {fields} --type=csv --out {save_add}'''.format(
             host=host, port=port, user=user, pwd=pwd, auth_db=auth_db, db_name=db_name, collection=table_name, fields=fields, save_add=save_add)
         print sql
