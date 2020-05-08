@@ -62,6 +62,8 @@ def run():
     exp_uids = read_uids_from_file('/data/exp/match-428/exp_ids')
     exp_uids = deal_uids(exp_uids)
     another_exp_uids = read_uids_from_file('/data/exp/match-428/exp')
+    print('exp_ids',exp_uids)
+    print('exp',another_exp_uids)
     print('experiment group: first size', len(exp_uids), 'second size', len(another_exp_uids))
     exp_uids += another_exp_uids
     exp_uids = set(exp_uids)
