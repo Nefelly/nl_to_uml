@@ -348,6 +348,8 @@ class AliLogService(object):
             cnt += 1
             if cnt % 1000 == 0:
                print cnt, len(res)
+            if cnt % 10000 == 0:
+                return res
             if not l:
                 continue
             result = urlparse.urlparse(l)
@@ -355,3 +357,4 @@ class AliLogService(object):
             user_id = User.get_user_id_by_session(sid)
             if user_id:
                 res.add(user_id)
+        return res
