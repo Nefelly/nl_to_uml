@@ -8,12 +8,17 @@ import datetime
 import logging.handlers
 import exceptions
 import pymongo
+import mongoengine
 import bson
 import cPickle
 from hendrix.conf import setting
-from pymongo import ReplaceOne
+from pymongo import (
+    ReplaceOne,
+    uri_parser
+)
 import traceback
 import logging
+from ..model import *
 from ..util import (
     get_args_from_db,
     ensure_path
@@ -33,11 +38,39 @@ class MongoSyncService(object):
     '''
     oplogs 同步  https://my.oschina.net/yagami1983/blog/807199
     '''
+
     @classmethod
-    def export_to_add(cls, db, table_name, db_name, fields=None):
+    def get_args_from_alias(cls, model):
+        '''
+        ！！！！！！针对如relations这样的分片集群
+        :param model:
+        :return:
+
+        '''
+        model_meta = model._meta
+        alias = model_meta['alias']
+        m = mongoengine.connection._connection_settings.get(alias)
+        if not m:
+            m = mongoengine.connection._connection_settings.get('default')
+        raw_host = m.get('host')[0]
+        host_info_m = uri_parser.parse_uri(raw_host)
+        host = host_info_m['nodelist'][0][0]
+        port = m.get('port')
+        user = m.get('username')
+        pwd = m.get('password')
+        db = m.get('name')
+        auth_db = m.get('authentication_source')
+        return host, port, user, pwd, db, auth_db
+
+
+    @classmethod
+    def export_to_add(cls, model, fields=None):
         dir_name = '/tmp/'
+        model_meta = model._meta
+        table_name = model_meta['collection']
         save_add = os.path.join(dir_name, '%s_%d.csv' % (table_name, int(time.time())))
-        host, port, user, pwd, db, auth_db = get_args_from_db(db)
+        host, port, user, pwd, db, auth_db = cls.get_args_from_alias(model)
+        # host, port, user, pwd, db, auth_db = get_args_from_db(db)
         if not fields:
             fields = 'user_id'
         # else:
@@ -49,12 +82,13 @@ class MongoSyncService(object):
         return save_add
 
     @classmethod
-    def load_table_map(cls, db, db_name, table_name, key_field, wanted_fields=[]):
+    def load_table_map(cls, model, key_field, wanted_fields=[]):
         if wanted_fields:
             fields = key_field + ',' + ','.join(wanted_fields)
         else:
             fields = key_field
-        save_add = cls.export_to_add(db, table_name, db_name, fields)
+        start = time.time()
+        save_add = cls.export_to_add(model, fields)
         res_is_lst = False
         if len(wanted_fields) > 1:
             res_is_lst = True
@@ -81,7 +115,8 @@ class MongoSyncService(object):
                     res[tmp_fields[0]] = tmp_fields[1:]
                 else:
                     res[tmp_fields[0]] = tmp_fields[1]
-        # os.remove(save_add)
+        os.remove(save_add)
+        print 'read succ using:', time.time() - start
         return res
 
     # @classmethod
@@ -110,17 +145,15 @@ class MongoSyncService(object):
     #     # os.remove(save_add)
     #     return res
 
-
     @classmethod
     def load_user_ids_to_redis(cls):
-        db = 'DB_LIT'
-        table_name = 'user_setting'
-        db_name = 'lit'
-        print time.time()
-        save_add = cls.export_to_add(db, table_name, db_name)
-        print 'loading succ', time.time()
-        user_ids = open(save_add, 'r').read().strip().split('\n')[1:]
-        print 'read succ', time.time()
+        # db = 'DB_LIT'
+        # table_name = 'user_setting'
+        # db_name = 'lit'
+        # save_add = cls.export_to_add(db, table_name, db_name)
+        # print 'loading succ', time.time()
+        # user_ids = open(save_add, 'r').read().strip().split('\n')[1:]
+        user_ids = cls.load_table_map(User, '_id')
         pp = volatile_redis.pipeline()
         for _ in user_ids:
             pp.sadd(REDIS_ALL_USER_ID_SET, _)
@@ -136,7 +169,7 @@ class MongoSyncService(object):
         if os.path.exists(timestamp_save_add):
             time_str = open(timestamp_save_add).read()
             time_stamp = cPickle.loads(time_str)
-        setting.DB_SETTINGS.get('DB_LIT')
+        db_setting = setting.DB_SETTINGS.get('DB_LIT')
         _src_mc = pymongo.MongoClient()
 
 
@@ -286,7 +319,7 @@ class MongoSynchronizer(object):
         if op == 'i': # insert
             collname = ns.split('.', 1)[1]
             self._dst_mc[dbname][collname].insert_one(oplog['o'])
-            #self._dst_mc[dbname][collname].replace_one({'_id': oplog['o']['_id']}, oplog['o'], upsert=True)
+            # self._dst_mc[dbname][collname].replace_one({'_id': oplog['o']['_id']}, oplog['o'], upsert=True)
         elif op == 'u': # update
             collname = ns.split('.', 1)[1]
             self._dst_mc[dbname][collname].update(oplog['o2'], oplog['o'])
