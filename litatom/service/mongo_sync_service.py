@@ -49,6 +49,56 @@ class MongoSyncService(object):
         return save_add
 
     @classmethod
+    def load_table_map(cls, db, table_name, db_name, key_filed, wanted_fields=[]):
+        fields = key_filed + ',' + ','.join(wanted_fields)
+        save_add = cls.export_to_add(db, table_name, db_name, fields)
+        res_is_lst = False
+        if len(wanted_fields) > 1:
+            res_is_lst = True
+        if wanted_fields:
+            res = {}
+        else:
+            res = []
+        for l in open(save_add).readlines():
+            if not wanted_fields:
+                res.append(l)
+            else:
+                tmp_fields = l.split(',')
+                if res_is_lst:
+                    res[tmp_fields[0]] = tmp_fields[1:]
+                else:
+                    res[tmp_fields[0]] = tmp_fields[1]
+        # os.remove(save_add)
+        return res
+
+    # @classmethod
+    # def load_user_setting_map(cls, wanted_fileds=[]):
+    #     db = 'DB_LIT'
+    #     table_name = 'user_setting'
+    #     db_name = 'lit'
+    #     fields = 'user_id,' + ','.join(wanted_fileds)
+    #     save_add = cls.export_to_add(db, table_name, db_name, fields)
+    #     res_is_lst = False
+    #     if len(wanted_fileds) > 1:
+    #         res_is_lst = True
+    #     if wanted_fileds:
+    #         res = {}
+    #     else:
+    #         res = []
+    #     for l in open(save_add).readlines():
+    #         if not wanted_fileds:
+    #             res.append(l)
+    #         else:
+    #             tmp_fields = l.split(',')
+    #             if res_is_lst:
+    #                 res[tmp_fields[0]] = tmp_fields[1:]
+    #             else:
+    #                 res[tmp_fields[0]] = tmp_fields[1]
+    #     # os.remove(save_add)
+    #     return res
+
+
+    @classmethod
     def load_user_ids_to_redis(cls):
         db = 'DB_LIT'
         table_name = 'user_setting'
