@@ -63,15 +63,20 @@ class MongoSyncService(object):
         else:
             res = []
         read_head = False
+        is_key_object = False if key_field != '_id' else True
         for l in open(save_add).readlines():
             if not read_head:
                 read_head = True
                 continue
             l = l.strip()
+            tmp_fields = l.split(',')
+            parse_len = len('ObjectId(')
+            'ObjectId(5ca2b5013fff224462b40965)'
+            if is_key_object:
+                tmp_fields[0] = tmp_fields[0][parse_len:-1]
             if not wanted_fields:
-                res.append(l)
+                res.append(tmp_fields[0])
             else:
-                tmp_fields = l.split(',')
                 if res_is_lst:
                     res[tmp_fields[0]] = tmp_fields[1:]
                 else:
