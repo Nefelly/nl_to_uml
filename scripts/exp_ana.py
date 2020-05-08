@@ -59,11 +59,11 @@ def load_uid_payment(default_uids, exp_uids):
 
 
 def run():
-    exp_uids = read_uids_from_file('/data/exp/4-28/exp_ids')
+    exp_uids = read_uids_from_file('/data/exp/4-28/exp_ids') + read_uids_from_file('/data/exp/4-28/exp')
     exp_uids = deal_uids(exp_uids)
     len_exp_uids = float(len(exp_uids))
     print(len_exp_uids)
-    default_uids = read_uids_from_file('/data/exp/4-28/default_ids')
+    default_uids = read_uids_from_file('/data/exp/4-28/default_ids') + read_uids_from_file('/data/exp/4-28/default')
     default_uids = deal_uids(default_uids)
     len_default_uids = float(len(default_uids))
     print(len_default_uids)
