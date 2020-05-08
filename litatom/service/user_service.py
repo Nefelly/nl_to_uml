@@ -272,10 +272,12 @@ class UserService(object):
             bio = data.get('bio', '')
             # nickname,bio spam word风险拦截
             res = SpamWordCheckService.is_spam_word(nickname)
+            print('nickname result',res)
             if res:
                 data, status = ForbidActionService.resolve_spam_word(uid,nickname)
                 return data, False
             res = SpamWordCheckService.is_spam_word(bio)
+            print('bio result', res)
             if res:
                 data, status = ForbidActionService.resolve_spam_word(uid,bio)
                 return data, False

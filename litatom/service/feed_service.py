@@ -450,6 +450,7 @@ class FeedService(object):
             tag = True
         # spam word comment will be stopped
         res = SpamWordCheckService.is_spam_word(content)
+        print('feed comment result',res)
         if res:
             data, status = ForbidActionService.resolve_spam_word(user_id, content)
             return data, False
