@@ -104,6 +104,8 @@ def share_num():
     data = ShareStatService.get_shown_num(request.user_id)
     return success(data)
 
+def admin_page():
+    return render_template("admin_index.html")
 
 def share_info():
     result_id = request.values.get('result_id')
