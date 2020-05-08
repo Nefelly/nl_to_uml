@@ -49,7 +49,7 @@ class JournalService(object):
         # for obj in objs:
         #     cls.USER_LOC[obj.user_id] = obj.lang
         # del objs
-        cls.USER_LOC = MongoSyncService.load_table_map('DB_LIT', 'lit', 'user_setting', 'user_id', ['lang'])
+        cls.USER_LOC = MongoSyncService.load_table_map(UserSetting, 'user_id', ['lang'])
         new_users = eval('UserSetting.objects(%s)' % cls._get_time_str('UserSetting', 'create_time'))
         for obj in new_users:
             cls.NEW_USER_LOC[obj.user_id] = obj.lang
@@ -67,7 +67,7 @@ class JournalService(object):
         #     if obj.gender in cls.GENDERS:
         #         cls.USER_GEN[str(obj.id)] = obj.gender
         # del objs
-        cls.USER_GEN = MongoSyncService.load_table_map('DB_LIT', 'lit', 'user', '_id', ['gender'])
+        cls.USER_GEN = MongoSyncService.load_table_map(User, '_id', ['gender'])
         # gc.collect()
 
     @classmethod
