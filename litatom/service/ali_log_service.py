@@ -337,3 +337,21 @@ class AliLogService(object):
                                    query=query)
         res = client.get_histograms(req)
         return res
+
+    @classmethod
+    def track_user_ids(cls, add):
+        import urlparse
+        from ..model import User
+        res = set()
+        cnt = 0
+        for l in open(add).readlines():
+            cnt += 1
+            if cnt % 1000 == 0:
+               print cnt, len(res)
+            if not l:
+                continue
+            result = urlparse.urlparse(l)
+            sid = urlparse.parse_qs(result.query)['sid'][0]
+            user_id = User.get_user_id_by_session(sid)
+            if user_id:
+                res.add(user_id)
