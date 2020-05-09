@@ -259,7 +259,7 @@ class OplogSyncService(object):
 
                 # get an oplog
                 oplog = cursor.next()
-                func(oplog, **args)
+                func(oplog, *args)
                 self._last_optime = oplog['ts']
                 n_replayed += 1
                 if n_replayed % 1000 == 0:
