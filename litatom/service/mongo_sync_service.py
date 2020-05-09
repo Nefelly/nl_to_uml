@@ -182,14 +182,14 @@ class MongoSyncService(object):
             #     print oplog
             if op == 'i':  # insert
                 user_id = str(oplog['o'].get('_id'))
-                print user_id, '!' * 50
+                # print user_id, '!' * 50
                 volatile_redis.sadd(REDIS_ALL_USER_ID_SET, user_id)
                 # self._dst_mc[dbname][collname].replace_one({'_id': oplog['o']['_id']}, oplog['o'], upsert=True)
             elif op == 'u':  # update
                 pass
             elif op == 'd':  # delete
                 user_id = str(oplog['o'].get('_id'))
-                print user_id, '!' * 50
+                # print user_id, '!' * 50
                 volatile_redis.srem(REDIS_ALL_USER_ID_SET, user_id)
             elif op == 'c':  # command
                 pass
