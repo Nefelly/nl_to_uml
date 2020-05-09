@@ -171,38 +171,24 @@ class MongoSyncService(object):
         def sync_oplog(oplog):
             op = oplog['op']  # 'n' or 'i' or 'u' or 'c' or 'd'
             ns = oplog['ns']
-            dbname = ns.split('.', 1)[0]
+            dbname, collname = ns.split('.', 1)
+            if dbname != db or collname != user_collection_name:
+                return
             if not res.get(op):
                 res[op] = 1
                 print oplog
-            dbname, collname = ns.split('.', 1)
-
         opsync_obj = OplogSyncService(host_url, port, timestamp_save_add=timestamp_save_add)
         opsync_obj.sync(sync_oplog)
 
-    @classmethod
-    def sync_oplog(cls, oplog):
-        op = oplog['op']  # 'n' or 'i' or 'u' or 'c' or 'd'
-        ns = oplog['ns']
-        dbname, collname = ns.split('.', 1)
-        print oplog
-        # if op == 'i':  # insert
-        #     volatile_redis.sadd(REDIS_ALL_USER_ID_SET, '1')
-        #     # self._dst_mc[dbname][collname].replace_one({'_id': oplog['o']['_id']}, oplog['o'], upsert=True)
-        # elif op == 'u':  # update
-        #     collname = ns.split('.', 1)[1]
-        #     self._dst_mc[dbname][collname].update(oplog['o2'], oplog['o'])
-        # elif op == 'd':  # delete
-        #     collname = ns.split('.', 1)[1]
-        #     self._dst_mc[dbname][collname].delete_one(oplog['o'])
-        # elif op == 'c':  # command
-        #     self._dst_mc[dbname].command(oplog['o'])
-        # elif op == 'n':  # no-op
-        #     pass
-        # else:
-        #     self._logger.error('unknown operation: %s' % oplog)
 
 class OplogSyncService(object):
+    '''
+    oplog 的样子
+    {u'h': 3887152545823678239L, u'ts': Timestamp(1588428334, 1), u'o': {u'$set': {u'total_match_inter': 56066.90000000002, u'match_times': 885}}, u't': 141L, u'v': 2, u'ns': u'lit.user_model', u'o2': {u'_id': ObjectId('5e2b880e3fff226a6e5e9fa8')}, u'op': u'u'}
+    {u'h': 1691073658577699620L, u'ts': Timestamp(1588428334, 5), u'o': {u'_id': ObjectId('5ead7e2b044e0857078b4690')}, u't': 141L, u'v': 2, u'ns': u'lit.follow', u'op': u'd'}
+    {u'h': 1530092034340961366L, u'ts': Timestamp(1588428334, 10), u'o': {u'user_id': u'5e47a73c3fff2264fe7ee816', u'money': 0.0, u'create_time': datetime.datetime(2020, 5, 2, 22, 5, 34, 126000), u'diamonds': 1, u'action': u'add_by_activity', u'_id': ObjectId('5ead7e2e3fff22584ef9ffe3')}, u't': 141L, u'v': 2, u'ns': u'lit.account_flow_record', u'op': u'i'}
+
+    '''
     def __init__(self, src_host, src_port, **kwargs):
         self._src_host = src_host
         self._src_port = src_port
