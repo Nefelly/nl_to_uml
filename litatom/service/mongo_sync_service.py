@@ -42,7 +42,7 @@ class MongoSyncService(object):
     @classmethod
     def get_args_from_alias(cls, model):
         '''
-        ！！！！！！针对如relations这样的分片集群
+        ！！！！！！针对如relations这样的分片集群 不适用
         :param model:
         :return:
 
@@ -173,9 +173,17 @@ class MongoSyncService(object):
         _src_mc = pymongo.MongoClient(host_url, port)
 
 
-
-class MainTainAllUserIds(object):
-    pass
+class OplogSync(object):
+    def __init__(self, src_host, src_port, *args):
+        self._src_host = src_host
+        self._src_port = src_port
+        self._src_mc = None
+        self._start_optime = None  # if true, only sync oplog
+        self._last_optime = None  # optime of the last oplog has been replayed
+        self._logger = logging.getLogger()
+        # self._start_optime = kwargs.get('start_optime')
+        # self._src_mc = pymongo.MongoClient(src_hostportstr)
+        # self._dst_mc = pymongo.MongoClient(dst_hostportstr)
 
 
 class MongoSynchronizer(object):
