@@ -171,8 +171,8 @@ class MongoSyncService(object):
         def sync_oplog(oplog):
             op = oplog['op']  # 'n' or 'i' or 'u' or 'c' or 'd'
             ns = oplog['ns']
-            dbname, collname = ns.split('.', 1)
-
+            dbname, collname = ns.split('.', 2)
+            print dbname, collname
             if dbname != db or collname != user_collection_name:
                 return
             if not res.get(op):
