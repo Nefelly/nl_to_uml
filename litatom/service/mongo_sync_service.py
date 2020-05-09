@@ -60,7 +60,7 @@ class MongoSyncService(object):
         pwd = m.get('password')
         db = m.get('name')
         auth_db = m.get('authentication_source')
-        return host, port, user, pwd, db, auth_db
+        return host, port, user, pwd, db, auth_db, raw_host
 
 
     @classmethod
@@ -69,7 +69,7 @@ class MongoSyncService(object):
         model_meta = model._meta
         table_name = model_meta['collection']
         save_add = os.path.join(dir_name, '%s_%d.csv' % (table_name, int(time.time())))
-        host, port, user, pwd, db, auth_db = cls.get_args_from_alias(model)
+        host, port, user, pwd, db, auth_db, host_url = cls.get_args_from_alias(model)
         # host, port, user, pwd, db, auth_db = get_args_from_db(db)
         if not fields:
             fields = 'user_id'
@@ -169,8 +169,9 @@ class MongoSyncService(object):
         if os.path.exists(timestamp_save_add):
             time_str = open(timestamp_save_add).read()
             time_stamp = cPickle.loads(time_str)
-        db_setting = setting.DB_SETTINGS.get('DB_LIT')
-        _src_mc = pymongo.MongoClient()
+        host, port, user, pwd, db, auth_db, host_url = cls.get_args_from_alias(User)
+        _src_mc = pymongo.MongoClient(host_url, port)
+
 
 
 class MainTainAllUserIds(object):
@@ -362,11 +363,11 @@ def logger_init(filepath):
         logger.addHandler(handler_stdout)
 
 def main():
-    logger_init(config.cf.get('conf','log'))
+    logger_init(config.cf.get('conf', 'log'))
     syncer = MongoSynchronizer(
-            config.cf.get('db','mongo_f_uri'),
-            config.cf.get('db','mongo_t_uri'),
-            start_optime=config.cf.get('conf','start_time'))
+            config.cf.get('db', 'mongo_f_uri'),
+            config.cf.get('db', 'mongo_t_uri'),
+            start_optime=config.cf.get('conf', 'start_time'))
     syncer.run()
 
 if __name__ == '__main__':

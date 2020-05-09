@@ -54,6 +54,13 @@ def get_experiments():
     return fail(data)
 
 
+def get_all_experiments():
+    data, status = ExperimentService.get_all_experiments()
+    if status:
+        return success(data)
+    return fail(data)
+
+
 @session_required
 def get_exp_value():
     exp_name = request.values.get('exp_name')

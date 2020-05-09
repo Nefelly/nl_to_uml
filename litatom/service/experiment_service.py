@@ -210,6 +210,10 @@ class ExperimentService(object):
         return res
 
     @classmethod
+    def get_all_experiments(cls):
+        return None, True
+
+    @classmethod
     def test_get_all_bucket(cls, exp_name):
         s = time.time()
         keys = volatile_redis.smembers('all_se')
