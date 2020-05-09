@@ -165,13 +165,40 @@ class MongoSyncService(object):
     def real_time_sync_userids(cls):
         timestamp_save_add = '/data/tmp/userid_sync.time'
         ensure_path(timestamp_save_add)
-        time_stamp = bson.timestamp.Timestamp(int(time.time()), 0)
-
         host, port, user, pwd, db, auth_db, host_url = cls.get_args_from_alias(User)
-        _src_mc = pymongo.MongoClient(host_url, port)
+        def sync_oplog(oplog):
+            op = oplog['op']  # 'n' or 'i' or 'u' or 'c' or 'd'
+            ns = oplog['ns']
+            dbname = ns.split('.', 1)[0]
+            print oplog
 
+        opsync_obj = OplogSyncService(host_url, port)
+        opsync_obj.sync(sync_oplog)
 
-class OplogSync(object):
+    @classmethod
+    def sync_oplog(cls, oplog):
+        op = oplog['op']  # 'n' or 'i' or 'u' or 'c' or 'd'
+        ns = oplog['ns']
+        dbname = ns.split('.', 1)[0]
+        print oplog
+        # if op == 'i':  # insert
+        #     collname = ns.split('.', 1)[1]
+        #     volatile_redis.sadd(REDIS_ALL_USER_ID_SET, '1')
+        #     # self._dst_mc[dbname][collname].replace_one({'_id': oplog['o']['_id']}, oplog['o'], upsert=True)
+        # elif op == 'u':  # update
+        #     collname = ns.split('.', 1)[1]
+        #     self._dst_mc[dbname][collname].update(oplog['o2'], oplog['o'])
+        # elif op == 'd':  # delete
+        #     collname = ns.split('.', 1)[1]
+        #     self._dst_mc[dbname][collname].delete_one(oplog['o'])
+        # elif op == 'c':  # command
+        #     self._dst_mc[dbname].command(oplog['o'])
+        # elif op == 'n':  # no-op
+        #     pass
+        # else:
+        #     self._logger.error('unknown operation: %s' % oplog)
+
+class OplogSyncService(object):
     def __init__(self, src_host, src_port, **kwargs):
         self._src_host = src_host
         self._src_port = src_port
@@ -198,7 +225,7 @@ class OplogSync(object):
     def sync(self, func, **args):
         if self._start_optime:
             self.print_msg("locating oplog, it will take a while")
-            self.print_msg('start timestamp is %s actually' % oplog_start)
+            self.print_msg('start timestamp is %s actually' % self._start_optime)
             self._last_optime = self._start_optime
             self._sync_oplog(func, *args)
 
@@ -211,69 +238,37 @@ class OplogSync(object):
             cursor = self._src_mc['local']['oplog.rs'].find({'ts': {'$gte': self._start_optime}}, cursor_type=pymongo.cursor.CursorType.TAILABLE, no_cursor_timeout=True)
             #Tailable cursors are only for use with capped collections.
             if cursor[0]['ts'] != self._start_optime:
-                self._logger.error('%s is stale, terminate' % self._start_optime)
+                self.print_msg('%s is stale, terminate' % self._start_optime)
                 return
         except IndexError as e:
-            self._logger.error(e)
-            self._logger.error('%s not found, terminate' % oplog_start)
+            self.print_msg(e)
+            self.print_msg('%s not found, terminate' % self._start_optime)
             return
         except Exception as e:
-            self._logger.error(e)
+            self.print_msg(e)
             raise e
 
-        self._logger.info('replaying oplog')
+        self.print_msg('replaying oplog')
         n_replayed = 0
         while True:
             try:
                 if not cursor.alive:
-                    self._logger.error('cursor is dead')
+                    self.print_msg('cursor is dead')
                     raise pymongo.errors.AutoReconnect
 
                 # get an oplog
                 oplog = cursor.next()
-
-                # guarantee that replay oplog successfully
-                recovered = False
-                while True:
-                    try:
-                        if recovered:
-                            self._logger.info('recovered at %s' % oplog['ts'])
-                            recovered = False
-                        self._replay_oplog(oplog)
-                        n_replayed += 1
-                        if n_replayed % 1000 == 0:
-                            self._print_progress(oplog)
-                        break
-                    except pymongo.errors.DuplicateKeyError as e:
-                        # TODO
-                        # through unique index, delete old, insert new
-                        #self._logger.error(oplog)
-                        #self._logger.error(e)
-                        break
-                    except pymongo.errors.OperationFailure as e:
-                        # TODO
-                        # through unique index, delete old, insert new
-                        #self._logger.error(oplog)
-                        #self._logger.error(e)
-                        break
-                    except pymongo.errors.AutoReconnect as e:
-                        self._logger.error(e)
-                        self._logger.error('interrupted at %s' % oplog['ts'])
-                        self._dst_mc = pymongo.MongoClient(self._dst_hostportstr)
-                        if self._dst_mc:
-                            recovered = True
-                    except pymongo.errors.WriteError as e:
-                        self._logger.error(e)
-                        self._logger.error('interrupted at %s' % oplog['ts'])
-                        self._dst_mc = pymongo.MongoClient(self._dst_hostportstr)
-                        if self._dst_mc:
-                            recovered = True
+                func(oplog, **args)
+                self._last_optime = oplog['ts']
+                n_replayed += 1
+                if n_replayed % 1000 == 0:
+                    self._print_progress(oplog)
             except StopIteration as e:
                 # there is no oplog to replay now, wait a moment
                 time.sleep(0.1)
             except pymongo.errors.AutoReconnect:
                 self._src_mc.close()
-                self._src_mc = pymongo.MongoClient(self._src_hostportstr)
+                self._src_mc = pymongo.MongoClient(self._src_host, self._src_port)
                 cursor = self._src_mc['local']['oplog.rs'].find({'ts': {'$gte': self._last_optime}}, cursor_type=pymongo.cursor.CursorType.TAILABLE, no_cursor_timeout=True)
                 if cursor[0]['ts'] != self._last_optime:
                     self._logger.error('%s is stale, terminate' % self._last_optime)
