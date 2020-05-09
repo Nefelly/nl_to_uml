@@ -211,7 +211,8 @@ class ExperimentService(object):
 
     @classmethod
     def get_all_experiments(cls):
-        return None, True
+        exp_names = ExpBucket.objects().distinct('exp_name')
+        return exp_names, True
 
     @classmethod
     def test_get_all_bucket(cls, exp_name):

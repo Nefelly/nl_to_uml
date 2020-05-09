@@ -95,3 +95,16 @@ class ExpBucket(Document):
             else:
                 res[value].append(_.bucket_id)
         return res
+
+
+class Experiments(Document):
+    meta = {
+        'strict': False,
+        'alias': 'db_alias'
+    }
+    BUCKET_KEY_TTL = TWO_WEEKS
+    NOSET = 'noset'
+    DEFAULT = 'default'
+
+    exp_name = StringField(required=True)
+    create_time = DateTimeField(required=True, default=datetime.datetime.now)
