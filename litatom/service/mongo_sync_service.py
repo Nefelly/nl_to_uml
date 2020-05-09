@@ -237,6 +237,7 @@ class OplogSyncService(object):
             self.print_msg('try to sync oplog from %s on %s:%d' % (self._start_optime, host, port))
             cursor = self._src_mc['local']['oplog.rs'].find({'ts': {'$gte': self._start_optime}}, cursor_type=pymongo.cursor.CursorType.TAILABLE, no_cursor_timeout=True)
             #Tailable cursors are only for use with capped collections.
+            print cursor[0]['ts']
             if cursor[0]['ts'] != self._start_optime:
                 self.print_msg('%s is stale, terminate' % self._start_optime)
                 return
