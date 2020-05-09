@@ -115,6 +115,12 @@ class ExperimentService(object):
         return ExpBucket.get_by_exp_name_bucket_id(exp_name, bucket)
 
     @classmethod
+    def delete_exp(cls, exp_name):
+        ExpBucket.objects(exp_name=exp_name).delete()
+        return None, True
+
+
+    @classmethod
     def adjust_buckets(cls, exp_name, value_bucket_num_dict):
         '''
         :param exp_name:

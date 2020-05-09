@@ -166,11 +166,13 @@ class MongoSyncService(object):
         timestamp_save_add = '/data/tmp/userid_sync.time'
         ensure_path(timestamp_save_add)
         host, port, user, pwd, db, auth_db, host_url = cls.get_args_from_alias(User)
+        user_collection_name = User._meta['collection']
         def sync_oplog(oplog):
             op = oplog['op']  # 'n' or 'i' or 'u' or 'c' or 'd'
             ns = oplog['ns']
             dbname = ns.split('.', 1)[0]
             print oplog
+            dbname, collname = ns.split('.', 1)
 
         opsync_obj = OplogSyncService(host_url, port, timestamp_save_add=timestamp_save_add)
         opsync_obj.sync(sync_oplog)
@@ -179,10 +181,9 @@ class MongoSyncService(object):
     def sync_oplog(cls, oplog):
         op = oplog['op']  # 'n' or 'i' or 'u' or 'c' or 'd'
         ns = oplog['ns']
-        dbname = ns.split('.', 1)[0]
+        dbname, collname = ns.split('.', 1)
         print oplog
         # if op == 'i':  # insert
-        #     collname = ns.split('.', 1)[1]
         #     volatile_redis.sadd(REDIS_ALL_USER_ID_SET, '1')
         #     # self._dst_mc[dbname][collname].replace_one({'_id': oplog['o']['_id']}, oplog['o'], upsert=True)
         # elif op == 'u':  # update

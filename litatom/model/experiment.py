@@ -65,6 +65,12 @@ class ExpBucket(Document):
         self.disable_cache(exp_name, bucket_id)
         return super(ExpBucket, self).save(*args, **kwargs)
 
+    def delete(self,*args, **kwargs ):
+        exp_name = getattr(self, 'exp_name', '')
+        bucket_id = getattr(self, 'bucket_id', -1)
+        self.disable_cache(exp_name, bucket_id)
+        return super(ExpBucket, self).delete(*args, **kwargs)
+
     @classmethod
     def create(cls, exp_name, bucket_id, value):
         obj = cls._get_by_exp_name_bucket(exp_name, bucket_id)

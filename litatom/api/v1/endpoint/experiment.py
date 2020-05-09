@@ -53,6 +53,13 @@ def get_experiments():
         return success(data)
     return fail(data)
 
+def delete_experiment():
+    exp_name = request.values.get('exp_name')
+    data, status = ExperimentService.delete_exp(exp_name)
+    if status:
+        return success(data)
+    return fail(data)
+
 
 def get_all_experiments():
     data, status = ExperimentService.get_all_experiments()
