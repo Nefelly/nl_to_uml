@@ -183,6 +183,7 @@ b.add_url_rule('/lit/anoy_match/accelerate_info', 'anoy-match-accelerate-info', 
 b.add_url_rule('/lit/experiment/set_experiments', 'experiment-set_experiments', endpoint.experiment.set_experiments, methods=['POST'])
 b.add_url_rule('/lit/experiment/get_experiments', 'experiment-get_experiments', endpoint.experiment.get_experiments)
 b.add_url_rule('/lit/experiment/get_exp_value', 'experiment-get_exp_value', endpoint.experiment.get_exp_value)
+b.add_url_rule('/lit/experiment/all_experiments', 'experiment-all_experiments', endpoint.experiment.get_all_experiments)
 
 # debug
 b.add_url_rule('/lit/debug/redis_status', 'debug-redis-status', endpoint.debug.redis_status)

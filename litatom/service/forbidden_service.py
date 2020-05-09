@@ -275,7 +275,11 @@ class ForbiddenService(object):
             UserService.msg_to_user(to_user_info, _)
             FirebaseService.send_to_user(_, u'your report succeed', to_user_info)
 
+
 class SpamWordService(object):
+    '''
+    https://www.jianshu.com/p/c124b0d6ebb0
+    '''
     KEYWORD_CHAINS = {}
     DEFAULT_KEYWORD_CHAIN = {}
     DELIMIT = '\x00'
@@ -342,6 +346,35 @@ class SpamWordService(object):
                         level = level[char]
                     else:
                         return True
+                else:
+                    ret.append(word[start])
+                    break
+            else:
+                ret.append(word[start])
+            start += 1
+        return False
+
+    @classmethod
+    def get_spam_word(cls, word, region=None):
+        """从word的某个位置开始连续匹配到了一个keyword，则判定为spam_word"""
+        if not word:
+            return False
+        word = word.lower()
+        ret = []
+        start = 0
+        while start < len(word):
+            level = cls.KEYWORD_CHAINS.get(region, {}) if not cls.NOT_REGION else cls.DEFAULT_KEYWORD_CHAIN
+            step_ins = 0
+            hit = ''
+            for char in word[start:]:
+                if char in level:
+                    hit += char
+                    step_ins += 1
+                    if cls.DELIMIT not in level[char]:
+                        level = level[char]
+                    else:
+                        return hit
+                        # return True
                 else:
                     ret.append(word[start])
                     break

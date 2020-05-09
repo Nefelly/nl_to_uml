@@ -183,6 +183,16 @@ class ExperimentService(object):
         return cls.get_buckets(exp_name)
 
     @classmethod
+    def buckets_for_admin(cls, exp_name):
+        buckets, status = cls.get_buckets(exp_name)
+        if not status:
+            return buckets, status
+        res = []
+        for el in buckets:
+            res.append([el, len(buckets[el])])
+        return res, status
+
+    @classmethod
     def get_buckets(cls, exp_name):
         buckets = ExpBucket.load_buckets(exp_name)
         used_bucket = {}
@@ -208,6 +218,16 @@ class ExperimentService(object):
             for bucket in buckets[value]:
                 res[bucket] = value
         return res
+
+    @classmethod
+    def get_all_experiments(cls):
+        exp_names = ExpBucket.objects().distinct('exp_name')
+        total_num = len(exp_names)
+        res = {
+            'total_num': total_num,
+            'exp_names': exp_names
+        }
+        return res, True
 
     @classmethod
     def test_get_all_bucket(cls, exp_name):
