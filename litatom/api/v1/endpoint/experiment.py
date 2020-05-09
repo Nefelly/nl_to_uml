@@ -48,7 +48,7 @@ def set_experiments():
 
 def get_experiments():
     exp_name = request.values.get('exp_name')
-    data, status = ExperimentService.get_buckets(exp_name)
+    data, status = ExperimentService.buckets_for_admin(exp_name)
     if status:
         return success(data)
     return fail(data)
