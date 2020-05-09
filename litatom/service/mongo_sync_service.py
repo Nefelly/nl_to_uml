@@ -178,6 +178,23 @@ class MongoSyncService(object):
             if not res.get(op):
                 res[op] = 1
                 print oplog
+            if op == 'i':  # insert
+                user_id = str(oplog['o'].get('_id'))
+                print user_id, '!' * 50
+                volatile_redis.sadd(REDIS_ALL_USER_ID_SET, user_id)
+                # self._dst_mc[dbname][collname].replace_one({'_id': oplog['o']['_id']}, oplog['o'], upsert=True)
+            elif op == 'u':  # update
+                pass
+            elif op == 'd':  # delete
+                user_id = str(oplog['o'].get('_id'))
+                print user_id, '!' * 50
+                volatile_redis.srem(REDIS_ALL_USER_ID_SET, user_id)
+            elif op == 'c':  # command
+                pass
+            elif op == 'n':  # no-op
+                pass
+            else:
+               print('unknown operation: %s' % oplog)
         opsync_obj = OplogSyncService(host_url, port, timestamp_save_add=timestamp_save_add)
         opsync_obj.sync(sync_oplog)
 
