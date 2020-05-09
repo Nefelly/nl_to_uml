@@ -167,11 +167,14 @@ class MongoSyncService(object):
         ensure_path(timestamp_save_add)
         host, port, user, pwd, db, auth_db, host_url = cls.get_args_from_alias(User)
         user_collection_name = User._meta['collection']
+        res = {}
         def sync_oplog(oplog):
             op = oplog['op']  # 'n' or 'i' or 'u' or 'c' or 'd'
             ns = oplog['ns']
             dbname = ns.split('.', 1)[0]
-            print oplog
+            if not res.get(op):
+                res[op] = 1
+                print oplog
             dbname, collname = ns.split('.', 1)
 
         opsync_obj = OplogSyncService(host_url, port, timestamp_save_add=timestamp_save_add)
@@ -238,7 +241,6 @@ class OplogSyncService(object):
             self.print_msg('try to sync oplog from %s on %s:%d' % (self._start_optime, host, port))
             cursor = self._src_mc['local']['oplog.rs'].find({'ts': {'$gte': self._start_optime}}, cursor_type=pymongo.cursor.CursorType.TAILABLE, no_cursor_timeout=True)
             #Tailable cursors are only for use with capped collections.
-            print cursor[0]['ts']
             if cursor[0]['ts'].time != self._start_optime.time:
                 self.print_msg('%s is stale, terminate' % self._start_optime)
                 return
@@ -263,8 +265,8 @@ class OplogSyncService(object):
                 func(oplog, *args)
                 self._last_optime = oplog['ts']
                 n_replayed += 1
-                if n_replayed % 1000 == 0:
-                    self._print_progress(oplog)
+                # if n_replayed % 1000 == 0:
+                #     self._print_progress(oplog)
             except StopIteration as e:
                 # there is no oplog to replay now, wait a moment
                 time.sleep(0.1)
