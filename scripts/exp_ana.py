@@ -16,11 +16,16 @@ def read_uids_from_file(path):
     return uids
 
 
-def deal_uids(uids):
+def deal_uids_pos(uids):
     for i in range(len(uids)):
         uids[i] = uids[i][4:-16]
     return uids
 
+
+def deal_uids_tail(uids):
+    for i in range(len(uids)):
+        uids[i] = uids[i][:-1]
+    return uids
 
 def get_active_uids(from_date, to_date):
     resp_set = AliLogService.get_log_by_time_and_topic(from_time=AliLogService.datetime_to_alitime(from_date),
@@ -60,10 +65,9 @@ def load_uid_payment(default_uids, exp_uids):
 
 def run():
     exp_uids = read_uids_from_file('/data/exp/match-428/exp_ids')
-    exp_uids = deal_uids(exp_uids)
+    exp_uids = deal_uids_pos(exp_uids)
     another_exp_uids = read_uids_from_file('/data/exp/match-428/exp')
-    print('exp_ids',exp_uids)
-    print('exp',another_exp_uids)
+    another_exp_uids = deal_uids_tail(another_exp_uids)
     print('experiment group: first size', len(exp_uids), 'second size', len(another_exp_uids))
     exp_uids += another_exp_uids
     exp_uids = set(exp_uids)
@@ -71,8 +75,9 @@ def run():
     print(len_exp_uids)
 
     default_uids = read_uids_from_file('/data/exp/match-428/default_ids')
-    default_uids = deal_uids(default_uids)
+    default_uids = deal_uids_pos(default_uids)
     another_default_uids = read_uids_from_file('/data/exp/match-428/default')
+    another_default_uids = deal_uids_tail(another_default_uids)
     print('default group:first size', len(default_uids), 'second size', len(another_default_uids))
     default_uids += another_default_uids
     default_uids = set(default_uids)
