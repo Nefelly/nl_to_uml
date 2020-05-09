@@ -157,12 +157,14 @@ class MongoSyncService(object):
         pp = volatile_redis.pipeline()
         for _ in user_ids:
             pp.sadd(REDIS_ALL_USER_ID_SET, _)
+        volatile_redis.delete(REDIS_ALL_USER_ID_SET)
         pp.execute()
         print 'upload succ', time.time()
         print volatile_redis.scard(REDIS_ALL_USER_ID_SET)
 
     @classmethod
     def real_time_sync_userids(cls):
+        cls.load_user_ids_to_redis()
         timestamp_save_add = '/data/tmp/userid_sync.time'
         ensure_path(timestamp_save_add)
         host, port, user, pwd, db, auth_db, host_url = cls.get_args_from_alias(User)
@@ -175,9 +177,9 @@ class MongoSyncService(object):
             db = 'lit'
             if dbname != db or collname != user_collection_name:
                 return
-            if not res.get(op):
-                res[op] = 1
-                print oplog
+            # if not res.get(op):
+            #     res[op] = 1
+            #     print oplog
             if op == 'i':  # insert
                 user_id = str(oplog['o'].get('_id'))
                 print user_id, '!' * 50
