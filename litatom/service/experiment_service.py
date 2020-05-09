@@ -217,7 +217,7 @@ class ExperimentService(object):
             'total_num': total_num,
             'exp_names': exp_names
         }
-        return exp_names, True
+        return res, True
 
     @classmethod
     def test_get_all_bucket(cls, exp_name):
