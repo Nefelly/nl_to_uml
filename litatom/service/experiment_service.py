@@ -115,6 +115,12 @@ class ExperimentService(object):
         return ExpBucket.get_by_exp_name_bucket_id(exp_name, bucket)
 
     @classmethod
+    def delete_exp(cls, exp_name):
+        ExpBucket.objects(exp_name=exp_name).delete()
+        return None, True
+
+
+    @classmethod
     def adjust_buckets(cls, exp_name, value_bucket_num_dict):
         '''
         :param exp_name:
@@ -137,6 +143,9 @@ class ExperimentService(object):
             new_num = value_bucket_num_dict[value]
             old_num = len(old_buckets.get(value, []))
             need_adjust[value] = new_num - old_num
+        for _ in old_buckets:
+            if _ not in value_bucket_num_dict:
+                need_adjust[_] = -old_buckets[_]
         # release_num = -sum([el for el in need_adjust.values() if el < 0])
         add_num = sum([el for el in need_adjust.values() if el > 0])
         old_noset = []
