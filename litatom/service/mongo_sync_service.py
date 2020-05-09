@@ -172,7 +172,7 @@ class MongoSyncService(object):
             dbname = ns.split('.', 1)[0]
             print oplog
 
-        opsync_obj = OplogSyncService(host_url, port, timestamp_save_add)
+        opsync_obj = OplogSyncService(host_url, port, timestamp_save_add=timestamp_save_add)
         opsync_obj.sync(sync_oplog)
 
     @classmethod
