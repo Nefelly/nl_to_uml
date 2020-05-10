@@ -217,7 +217,8 @@ class AdminService(object):
     @classmethod
     def ban_reporter(cls, user_id):
         num = Report.objects(uid=user_id).delete()
-        res = ForbidActionService.forbid_user(user_id, 20 * ONE_DAY, MANUAL_FORBID)
+        ForbidActionService.forbid_user(user_id, 20 * ONE_DAY, MANUAL_FORBID)
+        # Report.set_user_report_unwork(user_id)
         return None, True
 
     @classmethod
@@ -253,7 +254,7 @@ class AdminService(object):
         return save_add, True
 
     @classmethod
-    def batch_insert(cls, table_name, fields, main_key, insert_data):
+    def batch_insert_or_delete(cls, table_name, fields, main_key, insert_data, is_delete=False):
         def check_valid_string(word):
             chars = string.ascii_letters + '_' + string.digits
             for chr in word:
@@ -277,9 +278,43 @@ class AdminService(object):
                 return u'len(line) != len(fields), line:%r' % line, False
             conn = ','.join(['%s=\'%s\'' % (fields[i], line[i]) for i in range(len(line))])
             get = eval('%s.objects(%s).first()' % (table_name, conn))
-            if not get:
-                eval('%s(%s).save()' % (table_name, conn))
+            if is_delete:
+                if not conn:
+                    return 'not condition error', False
+                get.delete()
+            else:
+                if not get:
+                    eval('%s(%s).save()' % (table_name, conn))
         return None, True
+
+    @classmethod
+    def load_table_data(cls, table_name, fields, query):
+        def check_valid_string(word):
+            chars = string.ascii_letters + '_' + string.digits + '=\'\"'
+            for chr in word:
+                if chr not in chars:
+                    return False
+            return True
+
+        NOT_ALLOWED = []
+        table_name = table_name.strip()
+        fields = fields.strip().split("|")
+        for el in fields + [table_name]:
+            if not check_valid_string(el):
+                return u'word: %s is invalid' % el, False
+        for el in ['\\', 'update', 'delete', 'insert', 'drop']:
+            if el in query:
+                return u'word: %s is invalid' % el, False
+        if table_name in NOT_ALLOWED:
+            return u'Insert into table:%s is not allowed' % table_name, False
+        res = []
+        real_query = '%s.objects(%s).limit(10000)' % (table_name, query)
+        for el in eval(real_query):
+            tmp = []
+            for _ in fields:
+                tmp.append(str(getattr(el, _)))
+            res.append('\t'.join(tmp))
+        return '\n'.join(res), True
 
     @classmethod
     def change_avatar_to_small(cls, width=300):

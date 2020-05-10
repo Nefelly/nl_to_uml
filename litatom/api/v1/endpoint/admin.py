@@ -455,19 +455,47 @@ def send_message_html():
 
 
 def batch_insert_html():
-    return render_template('batch_insert.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
+    table_name = request.values.get('table_name', '')
+    fields = request.values.get('fields', '')
+    return render_template('batch_insert.html', table_name=table_name, fields=fields), 200, {'Content-Type': 'text/html; charset=utf-8'}
 
 
-def batch_insert():
+def check_batch(table_name, fields):
+    if not table_name or not fields:
+        return False
+    return True
+
+
+def batch_act():
     data = request.json
     fields = data.get("fields")
     table_name = data.get("table_name")
     main_key = data.get("main_key", "")
     insert_data = data.get("data")
-    msg, status = AdminService.batch_insert(table_name, fields, main_key, insert_data)
+    is_delete = request.values.get('is_delete', '')
+    if not check_batch(table_name, fields):
+        return fail()
+    if is_delete in ['True', 'true']:
+        is_delete = True
+    else:
+        is_delete = False
+    msg, status = AdminService.batch_insert_or_delete(table_name, fields, main_key, insert_data, is_delete)
     if status:
         return success()
     return fail(msg)
+
+
+def load_table_data():
+    data = request.json
+    fields = data.get("fields")
+    table_name = data.get("table_name")
+    query = data.get("query")
+    if not check_batch(table_name, fields):
+        return fail()
+    data, status = AdminService.load_table_data(table_name, fields, query)
+    if status:
+        return success(data)
+    return fail(data)
 
 
 def stat_items():

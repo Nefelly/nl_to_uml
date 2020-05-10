@@ -119,7 +119,8 @@ class Feed(Document):
     @classmethod
     def create_feed(cls, user_id, content, pics, audios):
         last = cls.last_feed_by_user_id(user_id)
-        if last and last.is_same(content, pics, audios) and (int(time.time()) - last.create_time < 10):
+        # if last and last.is_same(content, pics, audios) and (int(time.time()) - last.create_time < 10):
+        if last and last.is_same(content, pics, audios):
             return last
         obj = cls()
         obj.user_id = user_id

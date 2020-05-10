@@ -604,6 +604,13 @@ class UserSetting(Document):
         return obj
 
     @classmethod
+    def uuid_by_user_id(cls, user_id):
+        obj = cls.get_by_user_id(user_id)
+        if obj:
+            return obj.uuid
+        return ''
+
+    @classmethod
     def batch_get_by_user_ids(cls, user_ids):
         user_ids = [_ for _ in user_ids if _]
         keys = [REDIS_USER_SETTING_CACHE.format(user_id=_) for _ in user_ids]
