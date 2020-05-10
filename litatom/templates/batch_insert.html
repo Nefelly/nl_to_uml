@@ -68,7 +68,6 @@ methods: {
     load_data:function() {
         table_name = document.getElementById('table_name').value;
         fields = document.getElementById('fields').value;
-        console.log(table_name)
         this.$http.post(BASE_URL + 'admin/load_table_data', {"table_name":table_name, "fields":fields}).then(function(result) {
             var data = result.data.data;
             document.getElementById('insert_data').value = data;
