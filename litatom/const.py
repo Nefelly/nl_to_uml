@@ -8,6 +8,7 @@ ADMINISTRATORS = {
     '5da849e33fff225cb55d1e73',         # 王贤思,VN
     '5e1d822b3fff223633a2ba2d',         # 乐乐,VN
     '5cebd0763fff225dc7f2bba5',         # Alice 麦明芳,ID
+    '5e70414578e8443ea1ac48d2',         # 54, TH
 }
 
 SYS_FORBID = 'sysForbid'
