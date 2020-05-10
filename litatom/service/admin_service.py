@@ -302,11 +302,13 @@ class AdminService(object):
         for el in fields + [table_name]:
             if not check_valid_string(el):
                 return u'word: %s is invalid' % el, False
+        for el in ['\\', 'update', 'delete', 'insert', 'drop']:
+            if el in query:
+                return u'word: %s is invalid' % el, False
         if table_name in NOT_ALLOWED:
             return u'Insert into table:%s is not allowed' % table_name, False
         res = []
         real_query = '%s.objects(%s).limit(10000)' % (table_name, query)
-        print real_query
         for el in eval(real_query):
             tmp = []
             for _ in fields:
