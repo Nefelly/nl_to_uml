@@ -605,7 +605,7 @@ class UserSetting(Document):
 
     @classmethod
     def uuid_by_user_id(cls, user_id):
-        obj = cls.objects(user_id=user_id).first()
+        obj = cls.get_by_user_id(user_id)
         if obj:
             return obj.uuid
         return ''
