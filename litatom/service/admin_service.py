@@ -218,6 +218,7 @@ class AdminService(object):
     def ban_reporter(cls, user_id):
         num = Report.objects(uid=user_id).delete()
         res = ForbiddenService.forbid_user(user_id, 20 * ONE_DAY, MANUAL_FORBID)
+
         return None, True
 
     @classmethod
