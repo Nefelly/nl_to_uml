@@ -458,13 +458,18 @@ def batch_insert_html():
     return render_template('batch_insert.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
 
 
-def batch_insert():
+def batch_act():
     data = request.json
     fields = data.get("fields")
     table_name = data.get("table_name")
     main_key = data.get("main_key", "")
     insert_data = data.get("data")
-    msg, status = AdminService.batch_insert(table_name, fields, main_key, insert_data)
+    is_delete = request.values.get('is_delete', '')
+    if is_delete in ['True', 'true']:
+        is_delete = True
+    else:
+        is_delete = False
+    msg, status = AdminService.batch_insert(table_name, fields, main_key, insert_data, is_delete)
     if status:
         return success()
     return fail(msg)

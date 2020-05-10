@@ -254,7 +254,7 @@ class AdminService(object):
         return save_add, True
 
     @classmethod
-    def batch_insert(cls, table_name, fields, main_key, insert_data):
+    def batch_insert_or_delete(cls, table_name, fields, main_key, insert_data, is_delete=False):
         def check_valid_string(word):
             chars = string.ascii_letters + '_' + string.digits
             for chr in word:
@@ -278,8 +278,13 @@ class AdminService(object):
                 return u'len(line) != len(fields), line:%r' % line, False
             conn = ','.join(['%s=\'%s\'' % (fields[i], line[i]) for i in range(len(line))])
             get = eval('%s.objects(%s).first()' % (table_name, conn))
-            if not get:
-                eval('%s(%s).save()' % (table_name, conn))
+            if is_delete:
+                if not conn:
+                    return 'not condition error', False
+                get.delete()
+            else:
+                if not get:
+                    eval('%s(%s).save()' % (table_name, conn))
         return None, True
 
     @classmethod
