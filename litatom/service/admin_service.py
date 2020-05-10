@@ -288,7 +288,7 @@ class AdminService(object):
         return None, True
 
     @classmethod
-    def load_table_data(cls, table_name, fields):
+    def load_table_data(cls, table_name, fields, query):
         def check_valid_string(word):
             chars = string.ascii_letters + '_' + string.digits
             for chr in word:
@@ -299,13 +299,14 @@ class AdminService(object):
         NOT_ALLOWED = ["User", "Feed"]
         table_name = table_name.strip()
         fields = fields.strip().split("|")
-        for el in fields + [table_name]:
+        for el in fields + [table_name] + [query]:
             if not check_valid_string(el):
                 return u'word: %s is invalid' % el, False
         if table_name in NOT_ALLOWED:
             return u'Insert into table:%s is not allowed' % table_name, False
         res = []
-        for el in eval('%s.objects()' % table_name):
+        real_query = '%s.objects(%s).limit(10000)' % (table_name, query)
+        for el in eval(real_query):
             tmp = []
             for _ in fields:
                 tmp.append(str(getattr(el, _)))
