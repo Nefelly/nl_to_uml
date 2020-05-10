@@ -306,6 +306,7 @@ class AdminService(object):
             return u'Insert into table:%s is not allowed' % table_name, False
         res = []
         real_query = '%s.objects(%s).limit(10000)' % (table_name, query)
+        print real_query
         for el in eval(real_query):
             tmp = []
             for _ in fields:
