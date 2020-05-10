@@ -458,6 +458,11 @@ def batch_insert_html():
     return render_template('batch_insert.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
 
 
+def check_batch(table_name, fields):
+    if not table_name or not fields:
+        return False
+
+
 def batch_act():
     data = request.json
     fields = data.get("fields")
@@ -465,6 +470,8 @@ def batch_act():
     main_key = data.get("main_key", "")
     insert_data = data.get("data")
     is_delete = request.values.get('is_delete', '')
+    if not check_batch(table_name, fields):
+        return fail()
     if is_delete in ['True', 'true']:
         is_delete = True
     else:
@@ -474,10 +481,13 @@ def batch_act():
         return success()
     return fail(msg)
 
+
 def load_table_data():
     data = request.json
     fields = data.get("fields")
     table_name = data.get("table_name")
+    if not check_batch(table_name, fields):
+        return fail()
     data, status = AdminService.load_table_data(table_name, fields)
     if status:
         return success(data)

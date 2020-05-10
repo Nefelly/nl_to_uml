@@ -12,6 +12,31 @@
     </div>
 <script>
   const BASE_URL = 'http://' + document.domain + '/api/sns/v1/lit/';
+  function GetRequest() {
+        var url = location.search; //获取url中"?"符后的字串
+        var theRequest = new Object();
+        if (url.indexOf("?") != -1) {
+            var str = url.substr(1);
+            strs = str.split("&");
+            for(var i = 0; i < strs.length; i ++) {
+                theRequest[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
+            }
+        }
+        return theRequest;
+    }
+    var Request = new Object();
+    Request = GetRequest();
+    var tablename = Request['tablename'];
+    console.log(tablename);
+    if(tablename){
+        document.getElementById('table_name').value = tablename;
+    }
+    var fields = Request['fields'];
+    console.log(fields);
+    if(fields){
+        document.getElementById('fields').value = fields;
+    }
+
 var app7 = new Vue({
   el: '#app-7',
   data: {
