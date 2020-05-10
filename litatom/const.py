@@ -2,6 +2,14 @@
 
 WHOSYOURDADDY = 'IAMYOURDADDY'
 
+ADMINISTRATORS = {
+    '5e357b07f142533fff0049c2',         # 绿杨
+    '5e651b6dad85ef6fb4664815',         # Norman,ID
+    '5da849e33fff225cb55d1e73',         # 王贤思,VN
+    '5e1d822b3fff223633a2ba2d',         # 乐乐,VN
+    '5cebd0763fff225dc7f2bba5',         # Alice 麦明芳,ID
+}
+
 SYS_FORBID = 'sysForbid'
 MANUAL_FORBID = 'manualForbid'
 

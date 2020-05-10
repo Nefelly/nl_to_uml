@@ -236,7 +236,6 @@ class FeedService(object):
     def create_feed(cls, user_id, content, pics=None, audios=None):
         if content:
             if SpamWordCheckService.is_spam_word(content):
-                print('is spam word')
                 ForbidActionService.resolve_spam_word(user_id,content)
                 return MsgService.alert_spam_word(user_id),False
         feed = Feed.create_feed(user_id, content, pics, audios)

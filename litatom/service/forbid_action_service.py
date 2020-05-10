@@ -29,6 +29,8 @@ from ..util import (
 from ..const import (
     ONE_DAY,
     SYS_FORBID,
+    ADMINISTRATORS,
+    MANUAL_FORBID,
 )
 
 redis_client = RedisClient()['lit']
@@ -44,6 +46,21 @@ class ForbidActionService(object):
     COMPENSATION_PER_TEN_FOLLOWER = 2
     COMPENSATION_UPPER_THRESHOLD = 10
     SPAM_WORD_REASON = 'spam word existence'
+    ADMINISTRATOR_REPORT = 'administrator report'
+
+    @classmethod
+    def _authenticate_reporter(cls, reporter, target_user_id, ts_now=int(time.time())):
+        """返回None表示举报检查继续进行，否则不再继续，将返回结果返回上层"""
+        if reporter in ADMINISTRATORS:
+            cls.forbid_user(reporter, target_user_id, cls.DEFAULT_SYS_FORBID_TIME, MANUAL_FORBID)
+            return False, {'report_id': cls.ADMINISTRATOR_REPORT, MANUAL_FORBID: True}, True
+        if setting.IS_DEV:
+            return True, None, None
+        if Report.is_dup_report(reporter, target_user_id, ts_now):
+            return False, 'You have reported the same person in last 3 days, please try later', False
+        cnt = Report.count_report_by_uid(reporter, ts_now - ONE_DAY, ts_now)
+        if cnt >= 5:
+            return False, 'You have reported too many times today, please try later', False
 
     @classmethod
     def resolve_report(cls, user_id, reason, pics=[], target_user_id=None, related_feed_id=None, match_type=None,
@@ -53,11 +70,9 @@ class ForbidActionService(object):
             return None, False
         # 一日内举报不可超过五次,三日内不可重复举报一人
         ts_now = int(time.time())
-        if Report.is_dup_report(user_id, target_user_id, ts_now) and not setting.IS_DEV:
-            return 'You have reported the same person in last 3 days, please try later', False
-        cnt = Report.count_report_by_uid(user_id, ts_now - ONE_DAY, ts_now)
-        if cnt >= 5 and not setting.IS_DEV:
-            return 'You have reported too many times today, please try later', False
+        go_ahead, msg, res = cls._authenticate_reporter(user_id, target_user_id, ts_now)
+        if not go_ahead:
+            return msg, res
         # 举报不过5次，均入库存档
         Report.set_same_report_to_dealed(user_id, target_user_id)
         report_id = ReportService.save_report(user_id, reason, pics, target_user_id, related_feed_id, match_type,
@@ -216,9 +231,11 @@ class MsgService(object):
     def feedback_to_reporters(cls, reported_uid, report_user_ids, is_warn=False):
         target_user_nickname = UserService.nickname_by_uid(reported_uid)
         if is_warn:
-            to_user_info = GlobalizationService.get_region_word(cls.WARN_FEEDBACK_WORDS) % (target_user_nickname, target_user_nickname)
+            to_user_info = GlobalizationService.get_region_word(cls.WARN_FEEDBACK_WORDS) % (
+                target_user_nickname, target_user_nickname)
         else:
-            to_user_info = GlobalizationService.get_region_word(cls.BAN_FEEDBACK_WORDS) % (target_user_nickname, target_user_nickname)
+            to_user_info = GlobalizationService.get_region_word(cls.BAN_FEEDBACK_WORDS) % (
+                target_user_nickname, target_user_nickname)
         for reporter in report_user_ids:
             UserService.msg_to_user(to_user_info, reporter)
             FirebaseService.send_to_user(reporter, cls.FIREBASE_FEEDBACK_WORDS, to_user_info)
