@@ -255,7 +255,7 @@ class UserService(object):
 
     @classmethod
     def _on_update_info(cls, user, data):
-        from ..service import ForbidActionService,SpamWordCheckService
+        from ..service import ForbidActionService,SpamWordCheckService,MsgService
         cls.update_info_finished_cache(user)
         gender = data.get('gender', '')
         if gender:
@@ -272,15 +272,13 @@ class UserService(object):
             bio = data.get('bio', '')
             # nickname,bio spam word风险拦截
             res = SpamWordCheckService.is_spam_word(nickname)
-            print('nickname result',res)
             if res:
-                data, status = ForbidActionService.resolve_spam_word(uid,nickname)
-                return data, False
+                ForbidActionService.resolve_spam_word(uid,nickname)
+                return MsgService.alert_spam_word(uid), False
             res = SpamWordCheckService.is_spam_word(bio)
-            print('bio result', res)
             if res:
-                data, status = ForbidActionService.resolve_spam_word(uid,bio)
-                return data, False
+                ForbidActionService.resolve_spam_word(uid,bio)
+                return MsgService.alert_spam_word(uid), False
             # if (bio or nickname) and GlobalizationService.get_region() == GlobalizationService.DEFAULT_REGION:
             if (bio or nickname) and GlobalizationService.get_region() not in GlobalizationService.BIG_REGIONS:
                 loc = cls._get_words_loc([nickname, bio])

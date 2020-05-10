@@ -192,6 +192,7 @@ class MsgService(object):
     BAN_FEEDBACK_WORDS = 'other_ban_inform'
     FIREBASE_FEEDBACK_WORDS = u'your report succeed'
     DEFAULT_ALERT_WORDS = 'alert_word'
+    SPAM_WORD_ALERT_WORDS = 'alert_msg'
     FEED_DELETE_ALERT_WORDS = u'Your post have been deleted due to reason: %s. Please keep your feed positive.'
 
     @classmethod
@@ -202,6 +203,10 @@ class MsgService(object):
     @classmethod
     def alert_basic(cls, user_id):
         cls.alert_atom(user_id, GlobalizationService.get_region_word(cls.DEFAULT_ALERT_WORDS))
+
+    @classmethod
+    def alert_spam_word(cls, user_id):
+        cls.alert_atom(user_id, GlobalizationService.get_region_word(cls.SPAM_WORD_ALERT_WORDS))
 
     @classmethod
     def alert_feed_delete(cls, user_id, reason):

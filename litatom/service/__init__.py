@@ -40,7 +40,7 @@ from .ad_service import (
 from .user_filter_service import UserFilterService
 from .user_service import UserService
 from .forbid_record_service import ForbidRecordService,ReportService,TrackSpamRecordService
-from .forbid_action_service import ForbidActionService
+from .forbid_action_service import ForbidActionService,MsgService
 from .statistic_service import DiamStatService
 from .voice_chat_service import VoiceChatService
 from .message_service import UserMessageService
