@@ -58,8 +58,8 @@ class AliOssService(object):
                     # 出错表示该fileid不存在
                     break
         try:
-            old_binary = cls.get_binary_from_bucket(fileid)
-            img_bucket.put_object(fileid+'b', old_binary)
+            # old_binary = cls.get_binary_from_bucket(fileid)
+            # img_bucket.put_object(fileid+'b', old_binary)
             result = img_bucket.put_object(fileid, binary)
             if result:
                 return fileid
