@@ -237,7 +237,7 @@ class FeedService(object):
         if content:
             if SpamWordCheckService.is_spam_word(content):
                 ForbidActionService.resolve_spam_word(user_id,content)
-                return None,False
+                return MsgService.alert_spam_word(user_id),False
         feed = Feed.create_feed(user_id, content, pics, audios)
         cls._on_add_feed(feed)
         UserModelService.add_comments_by_uid(user_id)
