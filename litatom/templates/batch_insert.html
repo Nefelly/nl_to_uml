@@ -5,7 +5,7 @@
     <div id="app-7">
     <div>table_name:<input id="table_name" name="table_name"> fields split by |:<input id="fields" name="fields"> main key<input id="main_key" name="main_key"></div>
     <div><button name='insert' @click='insert()'>insert</button></div>
-        <div><button name='delete' @click='delete()'>insert</button></div>
+        <div><button name='delete' @click='delete_mul()'>insert</button></div>
         <div><button name='load_data' @click='load_data()'>insert</button></div>
     <div>data:<textarea id="insert_data" name="data" style="width:1700px; height:700px;"></textarea></div>
 
@@ -32,7 +32,7 @@ methods: {
         })
     },
 
-    delete: function() {
+    delete_mul: function() {
         table_name = document.getElementById('table_name').value;
         fields = document.getElementById('fields').value;
         main_key = document.getElementById('main_key').value;
