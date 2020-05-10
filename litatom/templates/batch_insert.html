@@ -72,8 +72,10 @@ methods: {
         fields = document.getElementById('fields').value;
         query = document.getElementById('query').value;
         this.$http.post(BASE_URL + 'admin/load_table_data', {"table_name":table_name, "fields":fields, "query":query}).then(function(result) {
-            var data = result.data.data;
-            document.getElementById('insert_data').value = data;
+            if (result.data.result === 0){var data = result.data.data;
+            document.getElementById('insert_data').value = data;}
+            else{alert('failed');}
+
         })
     }
 
