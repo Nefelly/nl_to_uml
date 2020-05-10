@@ -469,7 +469,16 @@ def batch_act():
         is_delete = True
     else:
         is_delete = False
-    msg, status = AdminService.batch_insert(table_name, fields, main_key, insert_data, is_delete)
+    msg, status = AdminService.batch_insert_or_delete(table_name, fields, main_key, insert_data, is_delete)
+    if status:
+        return success()
+    return fail(msg)
+
+def load_table_data():
+    data = request.json
+    fields = data.get("fields")
+    table_name = data.get("table_name")
+    msg, status = AdminService.load_table_data(table_name, fields)
     if status:
         return success()
     return fail(msg)

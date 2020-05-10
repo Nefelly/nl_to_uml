@@ -288,6 +288,31 @@ class AdminService(object):
         return None, True
 
     @classmethod
+    def load_table_data(cls, table_name, fields):
+        def check_valid_string(word):
+            chars = string.ascii_letters + '_' + string.digits
+            for chr in word:
+                if chr not in chars:
+                    return False
+            return True
+
+        NOT_ALLOWED = ["User", "Feed"]
+        table_name = table_name.strip()
+        fields = fields.strip().split("|")
+        for el in fields + [table_name]:
+            if not check_valid_string(el):
+                return u'word: %s is invalid' % el, False
+        if table_name in NOT_ALLOWED:
+            return u'Insert into table:%s is not allowed' % table_name, False
+        res = []
+        for el in eval('%s.objects()' % table_name):
+            tmp = []
+            for _ in fields:
+                tmp.append(str(getattr(el, _)))
+            res.append('\t'.join(tmp))
+        return '\n'.join(res), True
+
+    @classmethod
     def change_avatar_to_small(cls, width=300):
         j = Avatar.get_avatars()
         res = []
