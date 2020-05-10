@@ -478,10 +478,10 @@ def load_table_data():
     data = request.json
     fields = data.get("fields")
     table_name = data.get("table_name")
-    msg, status = AdminService.load_table_data(table_name, fields)
+    data, status = AdminService.load_table_data(table_name, fields)
     if status:
-        return success()
-    return fail(msg)
+        return success(data)
+    return fail(data)
 
 
 def stat_items():
