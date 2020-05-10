@@ -117,7 +117,6 @@ class SpamWordCheckService(object):
             return False
         if online:
             region = GlobalizationService.get_region()
-            print(region)
         word = word.lower()
         ret = []
         start = 0
