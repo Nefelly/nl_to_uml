@@ -296,7 +296,7 @@ class AdminService(object):
                     return False
             return True
 
-        NOT_ALLOWED = ["User", "Feed"]
+        NOT_ALLOWED = []
         table_name = table_name.strip()
         fields = fields.strip().split("|")
         for el in fields + [table_name] + [query]:
