@@ -463,6 +463,7 @@ def batch_insert_html():
 def check_batch(table_name, fields):
     if not table_name or not fields:
         return False
+    return True
 
 
 def batch_act():
