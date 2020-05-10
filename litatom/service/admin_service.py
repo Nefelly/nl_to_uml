@@ -290,7 +290,7 @@ class AdminService(object):
     @classmethod
     def load_table_data(cls, table_name, fields, query):
         def check_valid_string(word):
-            chars = string.ascii_letters + '_' + string.digits
+            chars = string.ascii_letters + '_' + string.digits + '='
             for chr in word:
                 if chr not in chars:
                     return False
