@@ -299,7 +299,7 @@ class AdminService(object):
         NOT_ALLOWED = []
         table_name = table_name.strip()
         fields = fields.strip().split("|")
-        for el in fields + [table_name] + [query]:
+        for el in fields + [table_name]:
             if not check_valid_string(el):
                 return u'word: %s is invalid' % el, False
         if table_name in NOT_ALLOWED:
