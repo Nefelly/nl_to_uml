@@ -37,8 +37,8 @@ from ..service import (
     GlobalizationService,
     UserMessageService,
     MqService,
-    PicCheckService,
     ForbidActionService,
+    MsgService,
     AntiSpamRateService
 )
 from ..model import (
@@ -451,8 +451,8 @@ class FeedService(object):
         # spam word comment will be stopped
         res = SpamWordCheckService.is_spam_word(content)
         if res:
-            data, status = ForbidActionService.resolve_spam_word(user_id, content)
-            return data, False
+            ForbidActionService.resolve_spam_word(user_id, content)
+            return MsgService.alert_spam_word(user_id), False
 
         if feed.user_id != user_id:
             data, status = AntiSpamRateService.judge_stop(user_id, AntiSpamRateService.COMMENT, feed_id,
