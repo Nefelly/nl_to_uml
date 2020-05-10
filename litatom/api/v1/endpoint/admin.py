@@ -455,7 +455,9 @@ def send_message_html():
 
 
 def batch_insert_html():
-    return render_template('batch_insert.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
+    table_name = request.values.get('table_name', '')
+    fields = request.values.get('fields', '')
+    return render_template('batch_insert.html', table_name=table_name, fields=fields), 200, {'Content-Type': 'text/html; charset=utf-8'}
 
 
 def check_batch(table_name, fields):
