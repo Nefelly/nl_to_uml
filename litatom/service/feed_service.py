@@ -235,7 +235,7 @@ class FeedService(object):
     @classmethod
     def create_feed(cls, user_id, content, pics=None, audios=None):
         if content:
-            if SpamWordCheckService.is_spam_word(content, GlobalizationService.get_region()):
+            if SpamWordCheckService.is_spam_word(content):
                 ForbidActionService.resolve_spam_word(user_id,content)
                 return None,False
         feed = Feed.create_feed(user_id, content, pics, audios)
@@ -449,7 +449,7 @@ class FeedService(object):
             comment.content_user_id = father_comment.user_id
             tag = True
         # spam word comment will be stopped
-        res = SpamWordCheckService.is_spam_word(content, GlobalizationService.get_region())
+        res = SpamWordCheckService.is_spam_word(content)
         print('feed comment result',res)
         if res:
             data, status = ForbidActionService.resolve_spam_word(user_id, content)

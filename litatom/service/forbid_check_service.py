@@ -41,7 +41,7 @@ class ForbidCheckService(object):
         res_pics = {}
         if words:
             for word in words:
-                if SpamWordCheckService.is_spam_word(word, GlobalizationService.get_region()):
+                if SpamWordCheckService.is_spam_word(word):
                     res_words[word] = True
         if not pics:
             return res_words, None
@@ -111,10 +111,12 @@ class SpamWordCheckService(object):
                 cls.add(_.word, region)
 
     @classmethod
-    def is_spam_word(cls, word, region=None):
+    def is_spam_word(cls, word, region=None, online=True):
         """从word的某个位置开始连续匹配到了一个keyword，则判定为spam_word"""
         if not word:
             return False
+        if online:
+            region = GlobalizationService.get_region()
         word = word.lower()
         ret = []
         start = 0
