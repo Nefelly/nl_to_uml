@@ -211,8 +211,7 @@ class MsgService(object):
     def feedback_to_reporters(cls, reported_uid, report_user_ids, is_warn=False):
         target_user_nickname = UserService.nickname_by_uid(reported_uid)
         if is_warn:
-            to_user_info = GlobalizationService.get_region_word(cls.WARN_FEEDBACK_WORDS) % (
-                target_user_nickname, target_user_nickname)
+            to_user_info = GlobalizationService.get_region_word(cls.WARN_FEEDBACK_WORDS) % (target_user_nickname, target_user_nickname)
         else:
             to_user_info = GlobalizationService.get_region_word(cls.BAN_FEEDBACK_WORDS) % (target_user_nickname, target_user_nickname)
         for reporter in report_user_ids:
