@@ -9,7 +9,7 @@ from litatom.util import format_standard_time, date_from_unix_ts
 
 class ForbidRecordService(object):
     @classmethod
-    def mark_record(cls, user_id, from_ts, to_ts):
+    def mark_record(cls, user_id, from_ts=None, to_ts=None):
         TrackSpamRecordService.mark_spam_word(user_id, from_ts, to_ts)
         return ReportService.mark_report(user_id, from_ts, to_ts)
 
@@ -35,12 +35,15 @@ class ReportService(object):
         return report.id
 
     @classmethod
-    def mark_report(cls, user_id, from_time, to_time):
+    def mark_report(cls, user_id, from_time=None, to_time=None):
         """
         将一段时间举报user_id的记录标位‘已处理’，参数时间都是时间戳(int)
         :return: 一个集合，包含举报该user的举报者们
         """
-        objs = Report.objects(target_uid=user_id, create_ts__gte=from_time, create_ts__lte=to_time, dealed=False)
+        if from_time and to_time:
+            objs = Report.objects(target_uid=user_id, create_ts__gte=from_time, create_ts__lte=to_time, dealed=False)
+        else:
+            objs = Report.objects(target_uid=user_id, create_ts__lte=int(time.time()), dealed=False)
         report_users = set()
         for obj in objs:
             obj.dealed = True
@@ -104,9 +107,9 @@ class TrackSpamRecordService(object):
     def save_record(cls, user_id, word=None, pic=None):
         if not word and not pic:
             return False
-        if cls.check_spam_word_in_one_minute(user_id,int(time.time())):
+        if cls.check_spam_word_in_one_minute(user_id, int(time.time())):
             return False
-        return TrackSpamRecord.create(user_id,word,pic)
+        return TrackSpamRecord.create(user_id, word, pic)
 
     @classmethod
     def check_spam_word_in_one_minute(cls, user_id, ts):
@@ -116,10 +119,13 @@ class TrackSpamRecordService(object):
         return False
 
     @classmethod
-    def mark_spam_word(cls, user_id, from_time, to_time):
+    def mark_spam_word(cls, user_id, from_time=None, to_time=None):
         """将一段时间user_id的track_spam_record记录标位‘已处理’，参数时间都是时间戳(int)"""
-        objs = TrackSpamRecord.objects(user_id=user_id, create_time__gte=from_time, create_time__lte=to_time,
-                                       dealed=False)
+        if from_time and to_time:
+            objs = TrackSpamRecord.objects(user_id=user_id, create_time__gte=from_time, create_time__lte=to_time,
+                                           dealed=False)
+        else:
+            objs = TrackSpamRecord.objects(user_id=user_id, create_time__lte=int(time.time()),dealed=False)
         for obj in objs:
             obj.dealed = True
             obj.save()

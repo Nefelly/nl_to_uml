@@ -113,13 +113,9 @@ class ForbidActionService(object):
     @classmethod
     def resolve_spam_word(cls, user_id, word):
         """IM中已知spam word处理"""
-        print(1)
         TrackSpamRecordService.save_record(user_id, word=word)
-        print(2)
         MsgService.alert_basic(user_id)
-        print(3)
         res = cls.check_forbid(user_id)
-        print(4,res)
         if res:
             cls.forbid_user(user_id, cls.DEFAULT_SYS_FORBID_TIME)
             return {SYS_FORBID: True}, True
@@ -174,7 +170,7 @@ class ForbidActionService(object):
         if not UserService.is_forbbiden(user_id):
             UserService.forbid_action(user_id, forbid_ts)
             UserRecord.add_forbidden(user_id, forbid_type)
-        reporters = ForbidRecordService.mark_record(user_id, ts - 3 * ONE_DAY, ts)
+        reporters = ForbidRecordService.mark_record(user_id)
         MsgService.feedback_to_reporters(user_id, reporters)
         return True
 
