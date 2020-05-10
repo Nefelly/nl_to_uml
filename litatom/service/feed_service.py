@@ -7,7 +7,6 @@ from flask import (
     request
 )
 
-from . import SpamWordCheckService, ForbidCheckService
 from ..redis import RedisClient
 from ..key import (
     REDIS_FEED_SQUARE_REGION,
@@ -38,8 +37,9 @@ from ..service import (
     UserMessageService,
     MqService,
     ForbidActionService,
-    MsgService,
-    AntiSpamRateService
+    AntiSpamRateService,
+    SpamWordCheckService,
+    ForbidCheckService
 )
 from ..model import (
     Feed,
@@ -237,7 +237,7 @@ class FeedService(object):
         if content:
             if SpamWordCheckService.is_spam_word(content):
                 ForbidActionService.resolve_spam_word(user_id,content)
-                return MsgService.alert_spam_word(user_id),False
+                return GlobalizationService.get_region_word('alert_msg'),False
         feed = Feed.create_feed(user_id, content, pics, audios)
         cls._on_add_feed(feed)
         UserModelService.add_comments_by_uid(user_id)
@@ -452,7 +452,7 @@ class FeedService(object):
         res = SpamWordCheckService.is_spam_word(content)
         if res:
             ForbidActionService.resolve_spam_word(user_id, content)
-            return MsgService.alert_spam_word(user_id), False
+            return GlobalizationService.get_region_word('alert_msg'), False
 
         if feed.user_id != user_id:
             data, status = AntiSpamRateService.judge_stop(user_id, AntiSpamRateService.COMMENT, feed_id,
