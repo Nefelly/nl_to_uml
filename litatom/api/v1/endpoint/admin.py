@@ -488,6 +488,7 @@ def load_table_data():
     data = request.json
     fields = data.get("fields")
     table_name = data.get("table_name")
+    print table_name, fields
     if not check_batch(table_name, fields):
         return fail()
     data, status = AdminService.load_table_data(table_name, fields)
