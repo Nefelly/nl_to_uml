@@ -349,7 +349,7 @@ def replace_image():
     if not image:
         return fail()
     fileid = request.values.get('file_id')
-    fileid = AliOssService.upload_from_binary(image, fileid)
+    fileid = AliOssService.replace_from_binary(image, fileid)
     return jsonify({
         'success': True,
         'data': {
