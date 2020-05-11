@@ -56,6 +56,7 @@ class ForbidActionService(object):
     def _authenticate_reporter(cls, reporter, target_user_id, ts_now=int(time.time())):
         """返回None表示举报检查继续进行，否则不再继续，将返回结果返回上层"""
         if reporter in ADMINISTRATORS:
+            print(ADMINISTRATORS)
             cls.forbid_user(reporter, target_user_id, cls.DEFAULT_SYS_FORBID_TIME, MANUAL_FORBID)
             return False, {'report_id': cls.ADMINISTRATOR_REPORT, MANUAL_FORBID: True}, True
         if setting.IS_DEV:
