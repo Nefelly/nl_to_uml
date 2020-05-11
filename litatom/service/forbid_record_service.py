@@ -2,7 +2,7 @@
 import json
 import time
 
-from litatom.model import Report, Feed, TrackSpamRecord
+from litatom.model import Report, Feed, TrackSpamRecord, UserSetting, BlockedDevices
 from litatom.service import UserService, GlobalizationService
 from litatom.util import format_standard_time, date_from_unix_ts
 
@@ -12,6 +12,12 @@ class ForbidRecordService(object):
     def mark_record(cls, user_id, from_ts=None, to_ts=None):
         TrackSpamRecordService.mark_spam_word(user_id, from_ts, to_ts)
         return ReportService.mark_report(user_id, from_ts, to_ts)
+
+    @classmethod
+    def record_sensitive_device(cls, user_id):
+        user_setting = UserSetting.get_by_user_id(user_id)
+        if not BlockedDevices.get_by_device(user_setting.uuid):
+            BlockedDevices.add_sensitive_device(user_setting.uuid)
 
 
 class ReportService(object):

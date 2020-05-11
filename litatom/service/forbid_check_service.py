@@ -70,10 +70,10 @@ class ForbidCheckService(object):
         return words, pics
 
     @classmethod
-    def check_device_forbidden(cls, user_id):
-        """判断设备是否被封"""
+    def check_device_sensitive(cls, user_id):
+        """判断设备是否是敏感设备"""
         user_setting = UserSetting.get_by_user_id(user_id)
-        return BlockedDevices.is_device_forbidden(user_setting.uuid)
+        return BlockedDevices.is_device_sensitive(user_setting.uuid)
 
 
 class SpamWordCheckService(object):

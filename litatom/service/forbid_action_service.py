@@ -84,11 +84,6 @@ class ForbidActionService(object):
         if not target_user_id:
             return None, False
 
-        if ForbidCheckService.check_device_forbidden(target_user_id):
-            cls.forbid_user(user_id, cls.DEFAULT_SYS_FORBID_TIME)
-            report_id = ReportService.save_report(user_id, reason, pics, target_user_id, related_feed_id, match_type,
-                                                  chat_record, True)
-            return {"report_id": str(report_id), SYS_FORBID: True}, True
         ts_now = int(time.time())
         go_ahead, msg, res = cls._authenticate_reporter(user_id, target_user_id, ts_now)
         if not go_ahead:
@@ -97,6 +92,9 @@ class ForbidActionService(object):
         Report.set_same_report_to_dealed(user_id, target_user_id)
         report_id = ReportService.save_report(user_id, reason, pics, target_user_id, related_feed_id, match_type,
                                               chat_record)
+        if ForbidCheckService.check_device_sensitive(target_user_id):
+            cls.forbid_user(target_user_id,cls.DEFAULT_SYS_FORBID_TIME)
+            return {"report_id": str(report_id), SYS_FORBID: True}, True
         feed_additional_score = 0
         if related_feed_id:
             feed_additional_score = cls._resolve_feed_report(related_feed_id, target_user_id, user_id)
@@ -219,6 +217,8 @@ class ForbidActionService(object):
             UserRecord.add_forbidden(user_id, forbid_type)
         reporters = ForbidRecordService.mark_record(user_id)
         MsgService.feedback_to_reporters(user_id, reporters)
+        if not ForbidCheckService.check_device_sensitive(user_id):
+            ForbidRecordService.record_sensitive_device(user_id)
         return True
 
     @classmethod
