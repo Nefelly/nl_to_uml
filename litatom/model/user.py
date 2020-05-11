@@ -49,7 +49,7 @@ from ..const import (
     NO_SET,
     USER_ACTIVE,
     SYS_FORBID,
-    MANUAL_FORBID,
+    MANUAL_FORBID, FOREVER_FORBID_TS,
 )
 from ..redis import RedisClient
 from ..util import (
@@ -176,6 +176,12 @@ class BlockedDevices(Document):
     def get_by_device(cls, uuid):
         obj = cls.objects(uuid=uuid).first()
         return obj
+
+    @classmethod
+    def is_device_forbidden(cls, uuid):
+        if cls.objects(uuid=uuid):
+            return True
+        return False
 
 
 class SocialAccountInfo(EmbeddedDocument):

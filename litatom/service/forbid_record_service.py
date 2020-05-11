@@ -18,7 +18,7 @@ class ReportService(object):
 
     @classmethod
     def save_report(cls, user_id, reason, pics=None, target_user_id=None, related_feed_id=None, match_type=None,
-                    chat_record=None):
+                    chat_record=None, dealed=False):
         """举报内容入库"""
         report = Report()
         report.uid = user_id
@@ -29,6 +29,8 @@ class ReportService(object):
         report.region = GlobalizationService.get_region()
         if target_user_id.startswith('love'):
             target_user_id = UserService.uid_by_huanxin_id(target_user_id)
+        if dealed:
+            report.dealed = dealed
         report.target_uid = target_user_id
         report.create_ts = int(time.time())
         report.save()

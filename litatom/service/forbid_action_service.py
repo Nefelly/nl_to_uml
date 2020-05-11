@@ -54,7 +54,7 @@ class ForbidActionService(object):
 
     @classmethod
     def _authenticate_reporter(cls, reporter, target_user_id, ts_now=int(time.time())):
-        """返回None表示举报检查继续进行，否则不再继续，将返回结果返回上层"""
+        """一日内举报不可超过五次,三日内不可重复举报一人"""
         if reporter in ADMINISTRATORS:
             cls.forbid_user(reporter, target_user_id, cls.DEFAULT_SYS_FORBID_TIME, MANUAL_FORBID)
             return False, {'report_id': cls.ADMINISTRATOR_REPORT, MANUAL_FORBID: True}, True
@@ -83,7 +83,12 @@ class ForbidActionService(object):
         """举报接口服务函数"""
         if not target_user_id:
             return None, False
-        # 一日内举报不可超过五次,三日内不可重复举报一人
+
+        if ForbidCheckService.check_device_forbidden(target_user_id):
+            cls.forbid_user(user_id, cls.DEFAULT_SYS_FORBID_TIME)
+            report_id = ReportService.save_report(user_id, reason, pics, target_user_id, related_feed_id, match_type,
+                                                  chat_record, True)
+            return {"report_id": str(report_id), SYS_FORBID: True}, True
         ts_now = int(time.time())
         go_ahead, msg, res = cls._authenticate_reporter(user_id, target_user_id, ts_now)
         if not go_ahead:
@@ -94,11 +99,11 @@ class ForbidActionService(object):
                                               chat_record)
         feed_additional_score = 0
         if related_feed_id:
-            feed_additional_score = cls.resolve_feed_report(related_feed_id, target_user_id, user_id)
+            feed_additional_score = cls._resolve_feed_report(related_feed_id, target_user_id, user_id)
 
         chat_record_additional_score = 0
         if chat_record:
-            chat_record_additional_score = cls.resolve_chat_record_report(chat_record, target_user_id, user_id)
+            chat_record_additional_score = cls._resolve_chat_record_report(chat_record, target_user_id, user_id)
 
         if cls._is_reliable_reporter(user_id):
             reliable_reporter_compensation_score = 1
@@ -112,7 +117,7 @@ class ForbidActionService(object):
         return {"report_id": str(report_id), SYS_FORBID: False}, True
 
     @classmethod
-    def resolve_feed_report(cls, feed_id, target_user_id, user_id):
+    def _resolve_feed_report(cls, feed_id, target_user_id, user_id):
         """由于举报feed中，无论文字命中还是图片命中，只入库第一个"""
         word_res, pic_res = ForbidCheckService.check_feed(feed_id)
         if not word_res and not pic_res:
@@ -130,7 +135,7 @@ class ForbidActionService(object):
             return 2
 
     @classmethod
-    def resolve_chat_record_report(cls, chat_record, target_user_id, user_id):
+    def _resolve_chat_record_report(cls, chat_record, target_user_id, user_id):
         word_res, pic_res = ForbidCheckService.check_chat_record(chat_record)
         if not word_res and not pic_res:
             return 0
