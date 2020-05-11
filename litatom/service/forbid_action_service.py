@@ -173,10 +173,11 @@ class ForbidActionService(object):
         report_match_num = Report.count_match_by_time_and_uid(user_id, time_3days_ago, timestamp_now)
 
         illegal_credit = alert_num * cls.ALERT_WEIGHTING + (report_total_num - report_match_num) * cls.REPORT_WEIGHTING \
-                         + report_match_num * cls.MATCH_REPORT_WEIGHTING + additional_score - cls.get_high_value_compensation(
-            user_id)
+                         + report_match_num * cls.MATCH_REPORT_WEIGHTING + additional_score - cls.get_high_value_compensation(user_id)
         if illegal_credit >= cls.FORBID_THRESHOLD:
             return illegal_credit, True
+        if illegal_credit < 0:
+            return 0, False
         return illegal_credit, False
 
     @classmethod
