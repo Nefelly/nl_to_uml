@@ -21,6 +21,15 @@ sys_rnd = random.SystemRandom()
 redis_client = RedisClient()['lit']
 
 class AdminUser(Document):
+    '''
+    '5e357b07f142533fff0049c2',  # 绿杨
+    '5cb7536f3fff221c27f959b6',  # 第二个绿杨
+    '5e651b6dad85ef6fb4664815',  # Norman,ID
+    '5da849e33fff225cb55d1e73',  # 王贤思,VN
+    '5e1d822b3fff223633a2ba2d',  # 乐乐,VN
+    '5cebd0763fff225dc7f2bba5',  # Alice 麦明芳,ID
+    '5e70414578e8443ea1ac48d2',  # 54, TH
+    '''
     meta = {
         'strict': False,
         'alias': 'db_alias'
@@ -47,3 +56,17 @@ class AdminUser(Document):
         self.session = session
         self.save()
         return self.session
+
+
+class AppAdmin(Document):
+    meta = {
+        'strict': False,
+        'alias': 'db_alias'
+    }
+    user_id = StringField(required=True, unique=True)
+    nickname = StringField()
+    create_time = DateTimeField(required=True, default=datetime.datetime.now)
+
+    @classmethod
+    def is_admin(cls, user_id):
+        return cls.objects(user_id=user_id).count() > 0

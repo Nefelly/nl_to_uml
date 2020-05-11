@@ -66,7 +66,10 @@ from .user_account import (
     UserAccount,
     AccountFlowRecord
 )
-from .admin import AdminUser
+from .admin import (
+    AdminUser,
+    AppAdmin
+)
 from .fbbackup import FaceBookBackup
 from .globalization import RegionWord
 from .referral_code import ReferralCode

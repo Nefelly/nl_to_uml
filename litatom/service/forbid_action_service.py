@@ -23,6 +23,7 @@ from ..model import (
     User,
     UserRecord,
     Blocked,
+    AppAdmin
 )
 from ..util import (
     unix_ts_local,
@@ -55,7 +56,8 @@ class ForbidActionService(object):
     @classmethod
     def _authenticate_reporter(cls, reporter, target_user_id, ts_now=int(time.time())):
         """一日内举报不可超过五次,三日内不可重复举报一人"""
-        if reporter in ADMINISTRATORS:
+        # if reporter in ADMINISTRATORS:
+        if AppAdmin.is_admin(reporter):
             cls.forbid_user(reporter, target_user_id, cls.DEFAULT_SYS_FORBID_TIME, MANUAL_FORBID)
             return False, {'report_id': cls.ADMINISTRATOR_REPORT, MANUAL_FORBID: True}, True
         if setting.IS_DEV:
@@ -83,7 +85,8 @@ class ForbidActionService(object):
         """举报接口服务函数"""
         if not target_user_id:
             return None, False
-
+        if AppAdmin.is_admin(target_user_id):
+            return u'this is our worker, you can trust her ^_^', False
         ts_now = int(time.time())
         go_ahead, msg, res = cls._authenticate_reporter(user_id, target_user_id, ts_now)
         if not go_ahead:
