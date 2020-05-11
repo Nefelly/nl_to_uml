@@ -68,6 +68,27 @@ class AliOssService(object):
         return ''
 
     @classmethod
+    def replace_from_binary(cls, binary, fileid):
+        """
+        把图片二进制文件上传到万象优图
+        :param binary
+        :param bucket: 只支持：笔记图片、实名认证
+        :param fileid
+        :return 上传得到的图片fileid
+        """
+        if not fileid:
+           return ''
+        try:
+            old_binary = cls.get_binary_from_bucket(fileid)
+            img_bucket.put_object(fileid+'b', old_binary)
+            result = img_bucket.put_object(fileid, binary)
+            if result:
+                return fileid
+        except Exception, e:
+            logger.error('upload_from_binary failed,  %s', e)
+        return ''
+
+    @classmethod
     def upload_from_url(cls, url, bucket, fileid=''):
         """
         把url指定的图片上传到阿里云
