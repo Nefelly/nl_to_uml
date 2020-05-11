@@ -2,7 +2,7 @@
 import json
 import time
 
-from litatom.model import Report, Feed, TrackSpamRecord
+from litatom.model import Report, Feed, TrackSpamRecord, UserSetting, BlockedDevices
 from litatom.service import UserService, GlobalizationService
 from litatom.util import format_standard_time, date_from_unix_ts
 
@@ -13,12 +13,18 @@ class ForbidRecordService(object):
         TrackSpamRecordService.mark_spam_word(user_id, from_ts, to_ts)
         return ReportService.mark_report(user_id, from_ts, to_ts)
 
+    @classmethod
+    def record_sensitive_device(cls, user_id):
+        user_setting = UserSetting.get_by_user_id(user_id)
+        if not BlockedDevices.get_by_device(user_setting.uuid):
+            BlockedDevices.add_sensitive_device(user_setting.uuid)
+
 
 class ReportService(object):
 
     @classmethod
     def save_report(cls, user_id, reason, pics=None, target_user_id=None, related_feed_id=None, match_type=None,
-                    chat_record=None):
+                    chat_record=None, dealed=False):
         """举报内容入库"""
         report = Report()
         report.uid = user_id
@@ -29,6 +35,8 @@ class ReportService(object):
         report.region = GlobalizationService.get_region()
         if target_user_id.startswith('love'):
             target_user_id = UserService.uid_by_huanxin_id(target_user_id)
+        if dealed:
+            report.dealed = dealed
         report.target_uid = target_user_id
         report.create_ts = int(time.time())
         report.save()

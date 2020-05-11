@@ -103,9 +103,8 @@ class UserService(object):
 
     @classmethod
     def device_blocked(cls, uuid):
-        if BlockedDevices.get_by_device(uuid):
-            return True
-        return False
+        print(uuid, BlockedDevices.is_device_forbidden(uuid))
+        return BlockedDevices.is_device_forbidden(uuid)
 
     @classmethod
     def user_device_blocked(cls, user_id):
@@ -228,7 +227,7 @@ class UserService(object):
                 HuanxinService.active_user(user.huanxin.user_id)
             cls._trans_forbidden_2_session(user)
             if cls.user_device_blocked(user_id):
-                BlockedDevices.remove_device(request.uuid)
+                BlockedDevices.remove_forbidden_device(request.uuid)
             return True
         return False
 

@@ -10,7 +10,7 @@ import logging
 from qiniu import Auth, QiniuMacAuth, http
 from . import GlobalizationService, AliLogService
 from ..const import BLOCK_PIC, REVIEW_PIC
-from ..model import SpamWord, Feed
+from ..model import SpamWord, Feed, BlockedDevices, UserSetting
 from ..redis import (
     RedisClient,
 )
@@ -68,6 +68,12 @@ class ForbidCheckService(object):
             else:
                 words.append(record)
         return words, pics
+
+    @classmethod
+    def check_device_sensitive(cls, user_id):
+        """判断设备是否是敏感设备"""
+        user_setting = UserSetting.get_by_user_id(user_id)
+        return BlockedDevices.is_device_sensitive(user_setting.uuid)
 
 
 class SpamWordCheckService(object):

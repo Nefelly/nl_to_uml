@@ -201,7 +201,7 @@ class AdminService(object):
         for obj in UserSetting.objects(uuid=user_setting.uuid):
             if obj.user_id != uid:
                 ForbidActionService.forbid_user(obj.user_id, FOREVER, MANUAL_FORBID)
-        BlockedDevices.add_device(user_setting.uuid)
+        BlockedDevices.add_forbidden_device(user_setting.uuid)
         if not res:
             return 'forbid error', False
         return None, True

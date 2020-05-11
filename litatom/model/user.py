@@ -159,23 +159,46 @@ class BlockedDevices(Document):
     }
     uuid = StringField(required=True)
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
+    device_forbidden = BooleanField(required=True, default=False)
 
     @classmethod
-    def add_device(cls, uuid):
+    def add_forbidden_device(cls, uuid):
         if cls.get_by_device(uuid):
             return True
         obj = cls()
         obj.uuid = uuid
+        obj.device_forbidden = True
         obj.save()
 
     @classmethod
-    def remove_device(cls, uuid):
-        cls.objects(uuid=uuid).delete()
+    def remove_forbidden_device(cls, uuid):
+        cls.objects(uuid=uuid,device_forbidden=True).delete()
 
     @classmethod
     def get_by_device(cls, uuid):
         obj = cls.objects(uuid=uuid).first()
         return obj
+
+    @classmethod
+    def is_device_forbidden(cls, uuid):
+        if cls.objects(uuid=uuid, device_forbidden=True):
+            return True
+        return False
+
+    @classmethod
+    def add_sensitive_device(cls, uuid):
+        if cls.get_by_device(uuid):
+            return True
+        obj = cls()
+        obj.uuid = uuid
+        obj.device_forbidden = False
+        obj.save()
+
+    @classmethod
+    def is_device_sensitive(cls, uuid):
+        if cls.objects(uuid=uuid, device_forbidden=False):
+            return True
+        return False
 
 
 class SocialAccountInfo(EmbeddedDocument):
