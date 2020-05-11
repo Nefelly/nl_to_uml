@@ -49,7 +49,7 @@ from ..const import (
     NO_SET,
     USER_ACTIVE,
     SYS_FORBID,
-    MANUAL_FORBID, FOREVER_FORBID_TS,
+    MANUAL_FORBID,
 )
 from ..redis import RedisClient
 from ..util import (
