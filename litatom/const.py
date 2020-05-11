@@ -55,6 +55,8 @@ ACTION_ACCOST_OVER = 'accost_over'
 ACTION_ACCOST_STOP = 'accost_stop'
 ACTION_ACCOST_NEED_VIDEO = 'need_video'
 
+OFFICIAL_AVATAR = '5a6989ec-74a2-11e9-977f-00163e02deb4'
+
 
 # 提示消息
 OPERATE_TOO_OFTEN = u'you have operate too quick, please try later~'

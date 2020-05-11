@@ -21,6 +21,7 @@ from ...decorator import (
     test_required,
     get_user_id_by_phone,
     set_exp_arg,
+    set_user_id_by_phone
 )
 
 from ....util import write_data_to_xls
@@ -66,6 +67,7 @@ from ....const import (
     ONE_WEEK,
     REVIEW_PIC,
     BLOCK_PIC,
+    OFFICIAL_AVATAR
 )
 
 logger = logging.getLogger(__name__)
@@ -309,12 +311,16 @@ def unban():
     return success()
 
 
-def change_avatar():
+@set_user_id_by_phone
+def change_to_official_avatar():
     nickname = request.args.get('nickname')
-    user = User.get_by_nickname(nickname)
+    if nickname:
+        user = User.get_by_nickname(nickname)
+    else:
+        user = User.get_by_id(request.user_id)
     if not user:
         return fail()
-    user.avatar = '5a6989ec-74a2-11e9-977f-00163e02deb4'
+    user.avatar = OFFICIAL_AVATAR
     user.save()
     return success()
 

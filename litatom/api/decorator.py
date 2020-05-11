@@ -83,6 +83,14 @@ def get_user_id_by_phone():
     return user_id
 
 
+def set_user_id_by_phone(view):
+    @functools.wraps(view)
+    def wrapper(*args, **kwargs):
+        get_user_id_by_phone()
+        return view(*args, **kwargs)
+
+    return wrapper
+
 def test_required(view):
     @functools.wraps(view)
     def wrapper(*args, **kwargs):
