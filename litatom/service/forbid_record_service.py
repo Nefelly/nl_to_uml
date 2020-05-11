@@ -2,9 +2,22 @@
 import json
 import time
 
-from litatom.model import Report, Feed, TrackSpamRecord, UserSetting, BlockedDevices
-from litatom.service import UserService, GlobalizationService
-from litatom.util import format_standard_time, date_from_unix_ts
+from ..model import (
+    Report,
+    Feed,
+    TrackSpamRecord,
+    UserSetting,
+    BlockedDevices,
+    UserRecord
+)
+from ..service import (
+    UserService,
+    GlobalizationService
+)
+from ..util import (
+    format_standard_time,
+    date_from_unix_ts
+)
 
 
 class ForbidRecordService(object):
@@ -72,6 +85,8 @@ class ReportService(object):
                 report.target_uid, UserService.nickname_by_uid(report.target_uid)) if report.target_uid else '',
             'create_time': format_standard_time(date_from_unix_ts(report.create_ts))
         }
+
+        res['reporter_ban_fefore'] = UserRecord.get_forbidden_times_user_id(report.uid) > 0
         if report.chat_record:
             res_record = []
             record = json.loads(report.chat_record)
