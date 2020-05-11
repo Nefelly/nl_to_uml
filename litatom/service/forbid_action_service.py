@@ -39,10 +39,11 @@ redis_client = RedisClient()['lit']
 class ForbidActionService(object):
     REPORT_WEIGHTING = 4
     ALERT_WEIGHTING = 2
+    HISTORY_FORBID_WEIGHTING = 6
     REVIEW_FEED_PIC_WEIGHTING = 2
     MATCH_REPORT_WEIGHTING = 2
     FORBID_THRESHOLD = 10
-    DEFAULT_SYS_FORBID_TIME = 3 * ONE_DAY
+    DEFAULT_SYS_FORBID_TIME = 7 * ONE_DAY
     COMPENSATION_PER_TEN_FOLLOWER = 2
     COMPENSATION_UPPER_THRESHOLD = 10
     RELIABLE_REPORTER_COMPENSATION = 1
@@ -187,9 +188,14 @@ class ForbidActionService(object):
         alert_num = TrackSpamRecord.count_by_time_and_uid(user_id, time_3days_ago, timestamp_now)
         report_total_num = Report.count_by_time_and_uid_distinct(user_id, time_3days_ago, timestamp_now)
         report_match_num = Report.count_match_by_time_and_uid(user_id, time_3days_ago, timestamp_now)
+        history_forbidden_credit = 0
+        if UserRecord.has_been_forbidden(user_id):
+            history_forbidden_credit = cls.HISTORY_FORBID_WEIGHTING
+
 
         illegal_credit = alert_num * cls.ALERT_WEIGHTING + (report_total_num - report_match_num) * cls.REPORT_WEIGHTING \
-                         + report_match_num * cls.MATCH_REPORT_WEIGHTING + additional_score - cls.get_high_value_compensation(user_id)
+                         + report_match_num * cls.MATCH_REPORT_WEIGHTING + additional_score + history_forbidden_credit \
+                         - cls.get_high_value_compensation(user_id)
         if illegal_credit >= cls.FORBID_THRESHOLD:
             return illegal_credit, True
         if illegal_credit < 0:

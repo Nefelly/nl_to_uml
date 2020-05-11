@@ -780,3 +780,8 @@ class UserRecord(Document):
         obj.save()
         return True
 
+    @classmethod
+    def has_been_forbidden(cls, user_id):
+        if cls.objects(user_id=user_id):
+            return True
+        return False
