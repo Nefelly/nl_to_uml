@@ -9,7 +9,7 @@ from email.mime.multipart import MIMEMultipart
 
 logger = logging.getLogger(__name__)
 
-class AlertService(object):
+class EmailService(object):
     """
     告警系统，
     qq邮箱发送：https://blog.csdn.net/qlzy_5418/article/details/86683856

@@ -3,7 +3,7 @@ import sys
 import fcntl
 from hendrix.conf import setting
 from litatom.service import (
-    AlertService,
+    EmailService,
     UserService
 )
 from litatom.model import Feedback
@@ -35,7 +35,7 @@ def inform_feedback():
     res = "\n-----------------------\n\n".join(res_lst)
     lastest_alert_ts = ts
     print "send feedback!!!"
-    AlertService.send_mail(["litatomwang@gmail.com"], res, "litatom feedback")
+    EmailService.send_mail(["litatomwang@gmail.com"], res, "litatom feedback")
 
 
 def run():

@@ -43,14 +43,14 @@ from ....model import (
 )
 from ....service import (
     AdminService,
-    QiniuService,
+    PicCheckService,
     UserMessageService,
-    ForbiddenService,
+    ForbidActionService,
     FirebaseService,
     FeedService,
     GlobalizationService,
     UserService,
-    AlertService,
+    EmailService,
     JournalService,
     UserSettingService,
     AsyncCmdService,
@@ -325,7 +325,7 @@ def mail_alert():
     to_users = data.get('users', '')
     if not to_users:
         to_users = ['w326571@126.com', 'juzhongtian@gmail.com', '382365209@qq.com']
-    AlertService.send_mail(to_users, content)
+    EmailService.send_mail(to_users, content)
     return success({'to_users': to_users})
 
 
@@ -362,7 +362,7 @@ def forbid_score():
     user_id = get_user_id_by_phone()
     if not user_id:
         return fail({'reason': 'no such user'})
-    credit, res = ForbiddenService.accum_illegal_credit(user_id)
+    credit, res = ForbidActionService.accum_illegal_credit(user_id)
     return jsonify({
         'success': True,
         'data': {
@@ -377,7 +377,7 @@ def judge_pic():
     url = data.get('url')
     if not url:
         return success()
-    reason, advice = QiniuService.should_pic_block_from_url(url)
+    reason, advice = PicCheckService.check_pic_by_url(url)
     if not reason:
         return fail()
     if advice == REVIEW_PIC:
@@ -398,7 +398,7 @@ def judge_lit_pic():
     url = data.get('url')
     if not url:
         return success()
-    reason, advice = QiniuService.should_pic_block_from_file_id(url)
+    reason, advice = PicCheckService.check_pic_by_fileid(url)
     if not reason:
         return fail()
     if advice == REVIEW_PIC:

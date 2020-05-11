@@ -10,6 +10,8 @@ from mongoengine import (
     ListField,
     StringField,
 )
+
+from ..const import ONE_DAY
 from ..util import (
     date_from_unix_ts,
     format_standard_time
@@ -47,6 +49,12 @@ class Report(Document):
         for _ in cls.objects(uid=uid, target_uid=target_uid, dealed=False):
             _.duplicated = True
             _.save()
+
+    @classmethod
+    def is_dup_report(cls, uid, target_uid, ts_now):
+        if cls.objects(uid=uid,target_uid=target_uid,create_ts__gte=ts_now-3*ONE_DAY, create_ts__lte=ts_now,dealed=False):
+            return True
+        return False
 
     @classmethod
     def set_user_report_unwork(cls, uid):
@@ -102,6 +110,11 @@ class Report(Document):
     def count_by_time_and_uid(cls, user_id, from_ts, to_ts, dealed=False):
         """返回用户一段时间内被其他人举报次数，不去重"""
         return cls.objects(target_uid=user_id, create_ts__gte=from_ts, create_ts__lte=to_ts, dealed=dealed).count()
+
+    @classmethod
+    def count_by_uid(cls, user_id):
+        """返回用户总共被举报的次数"""
+        return cls.objects(target_uid=user_id).count()
 
     @classmethod
     def get_report_by_time(cls, from_ts, to_ts, dealed=True):

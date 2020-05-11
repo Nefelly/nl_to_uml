@@ -8,7 +8,7 @@ from ..util import (
 from datetime import *
 from ..service import (
     AliLogService,
-    AlertService,
+    EmailService,
 )
 
 
@@ -171,9 +171,9 @@ class MonitorService(object):
             elif rate_500 >= cls.THRESHOLD_500:
                 list_500.append([name, rate_500, num_500, called_num, uri])
         if fail_list:
-            AlertService.send_mail(cls.ALERTED_USER_LIST, str(fail_list), 'FAIL-API-ALERT')
+            EmailService.send_mail(cls.ALERTED_USER_LIST, str(fail_list), 'FAIL-API-ALERT')
         if list_500:
-            AlertService.send_mail(cls.ALERTED_USER_LIST, str(list_500), '500-API-ALERT')
+            EmailService.send_mail(cls.ALERTED_USER_LIST, str(list_500), '500-API-ALERT')
 
     @classmethod
     def monitor_report(cls, start_time=None, end_time=None):

@@ -1,6 +1,6 @@
 import os
 import sys
-from litatom.service import AlertService, JournalService
+from litatom.service import EmailService, JournalService
 import datetime
 from litatom.util import (
     ensure_path,
@@ -26,16 +26,17 @@ def run(stat_date=None):
         print(dst_addr)
         if not os.path.exists(dst_addr) or 1:
             JournalService.out_port_result(dst_addr, stat_date, StatItems.BUSINESS_TYPE)
-        AlertService.send_file(["litatomwang@gmail.com", "op.shiyang.yu@gmail.com","396408395@qq.com","w326571@126.com", '382365209@qq.com','644513759@qq.com'],dst_addr)
+        EmailService.send_file(["litatomwang@gmail.com", "op.shiyang.yu@gmail.com", "396408395@qq.com", "w326571@126.com", '382365209@qq.com', '644513759@qq.com'], dst_addr)
         JournalService.out_port_result(ad_addr, stat_date, StatItems.AD_TYPE)
-        AlertService.send_file(["litatomwang@gmail.com", "op.shiyang.yu@gmail.com","396408395@qq.com","w326571@126.com", '382365209@qq.com','644513759@qq.com'],ad_addr)
+        EmailService.send_file(["litatomwang@gmail.com", "op.shiyang.yu@gmail.com", "396408395@qq.com", "w326571@126.com", '382365209@qq.com', '644513759@qq.com'], ad_addr)
     for i in range(5):
         try:
             real()
             break
-        except Exception, e:
-            print e
+        except Exception as e:
+            print(e)
             continue
+
 
 
 if __name__ == "__main__":

@@ -21,7 +21,7 @@ from ..util import (
 )
 from ..service import (
     UserService,
-    ForbiddenService,
+    ForbidActionService,
     FirebaseService,
     FeedService,
     ReportService,
@@ -170,7 +170,7 @@ class AdminService(object):
             feed = Feed.get_by_id(report.target_uid)
             if feed:
                 report.target_uid = feed.user_id
-        res = ForbiddenService.forbid_user(report.target_uid, ban_time, MANUAL_FORBID)
+        res = ForbidActionService.forbid_user(report.target_uid, ban_time, MANUAL_FORBID)
         if res:
             report.ban(ban_time)
             return None, True
@@ -194,13 +194,13 @@ class AdminService(object):
 
     @classmethod
     def ban_device_by_uid(cls, uid):
-        res = ForbiddenService.forbid_user(uid, FOREVER, MANUAL_FORBID)
+        res = ForbidActionService.forbid_user(uid, FOREVER, MANUAL_FORBID)
         user_setting = UserSetting.get_by_user_id(uid)
         if not user_setting or not user_setting.uuid:
             return u'has not device_id', False
         for obj in UserSetting.objects(uuid=user_setting.uuid):
             if obj.user_id != uid:
-                ForbiddenService.forbid_user(obj.user_id, FOREVER, MANUAL_FORBID)
+                ForbidActionService.forbid_user(obj.user_id, FOREVER, MANUAL_FORBID)
         BlockedDevices.add_device(user_setting.uuid)
         if not res:
             return 'forbid error', False
@@ -211,13 +211,13 @@ class AdminService(object):
         num = Report.objects(uid=user_id).count()
         if not setting.IS_DEV and num >= 2:
             return u'user not reported too much', False
-        ForbiddenService.forbid_user(user_id, 20 * ONE_DAY, MANUAL_FORBID)
+        ForbidActionService.forbid_user(user_id, 20 * ONE_DAY, MANUAL_FORBID)
         return None, True
 
     @classmethod
     def ban_reporter(cls, user_id):
         num = Report.objects(uid=user_id).delete()
-        res = ForbiddenService.forbid_user(user_id, 20 * ONE_DAY, MANUAL_FORBID)
+        ForbidActionService.forbid_user(user_id, 20 * ONE_DAY, MANUAL_FORBID)
         # Report.set_user_report_unwork(user_id)
         return None, True
 
@@ -227,7 +227,7 @@ class AdminService(object):
         if not feed:
             return u'wrong feed id', False
         feed_user_id = feed.user_id
-        res = ForbiddenService.forbid_user(feed_user_id, ban_time, MANUAL_FORBID)
+        res = ForbidActionService.forbid_user(feed_user_id, ban_time, MANUAL_FORBID)
         FeedService.delete_feed('', str(feed.id))
         if res:
             for feed in Feed.get_by_user_id(feed_user_id):
