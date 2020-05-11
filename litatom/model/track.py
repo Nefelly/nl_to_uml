@@ -77,3 +77,8 @@ class TrackSpamRecord(Document):
     def count_by_time_and_uid(cls, user_id, from_time, to_time, dealed=False):
         """统计user在一段时间范围内被警告次数"""
         return cls.objects(create_time__gte=from_time, create_time__lte=to_time, user_id=user_id, dealed=dealed).count()
+
+    @classmethod
+    def count_by_uid(cls, user_id):
+        """统计用户历史总共被警告次数"""
+        return cls.objects(user_id=user_id).count()

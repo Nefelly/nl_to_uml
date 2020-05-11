@@ -112,6 +112,11 @@ class Report(Document):
         return cls.objects(target_uid=user_id, create_ts__gte=from_ts, create_ts__lte=to_ts, dealed=dealed).count()
 
     @classmethod
+    def count_by_uid(cls, user_id):
+        """返回用户总共被举报的次数"""
+        return cls.objects(target_uid=user_id).count()
+
+    @classmethod
     def get_report_by_time(cls, from_ts, to_ts, dealed=True):
         """返回一段时间内的举报情况"""
         return cls.objects(create_ts__gte=from_ts, create_ts__lte=to_ts, dealed=dealed)

@@ -20,7 +20,7 @@ from ..model import (
     TrackSpamRecord,
     Report,
     UserModel,
-    Feed,
+    User,
     UserRecord,
 )
 from ..util import (
@@ -45,6 +45,7 @@ class ForbidActionService(object):
     DEFAULT_SYS_FORBID_TIME = 3 * ONE_DAY
     COMPENSATION_PER_TEN_FOLLOWER = 2
     COMPENSATION_UPPER_THRESHOLD = 10
+    RELIABLE_REPORTER_COMPENSATION = 1
     SPAM_WORD_REASON = 'spam word existence'
     ADMINISTRATOR_REPORT = 'administrator report'
 
@@ -61,6 +62,16 @@ class ForbidActionService(object):
         cnt = Report.count_report_by_uid(reporter, ts_now - ONE_DAY, ts_now)
         if cnt >= 5:
             return False, 'You have reported too many times today, please try later', False
+
+    @classmethod
+    def _is_reliable_reporter(cls, reporter):
+        if User.get_by_id(reporter).days <= 10:
+            return False
+        if Report.count_by_uid(reporter) > 0:
+            return False
+        if TrackSpamRecord.count_by_uid(reporter) > 0:
+            return False
+        return True
 
     @classmethod
     def resolve_report(cls, user_id, reason, pics=[], target_user_id=None, related_feed_id=None, match_type=None,
@@ -84,7 +95,12 @@ class ForbidActionService(object):
         chat_record_additional_score = 0
         if chat_record:
             chat_record_additional_score = cls.resolve_chat_record_report(chat_record, target_user_id, user_id)
-        res = cls.check_forbid(target_user_id, ts_now, chat_record_additional_score + feed_additional_score)
+
+        if cls._is_reliable_reporter(user_id):
+            reliable_reporter_compensation_score = 1
+        else:
+            reliable_reporter_compensation_score = 0
+        res = cls.check_forbid(target_user_id, ts_now, chat_record_additional_score + feed_additional_score - reliable_reporter_compensation_score)
         if res:
             cls.forbid_user(target_user_id, cls.DEFAULT_SYS_FORBID_TIME, SYS_FORBID, ts_now)
             return {"report_id": str(report_id), SYS_FORBID: True}, True
