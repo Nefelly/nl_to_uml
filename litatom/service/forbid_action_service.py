@@ -55,9 +55,7 @@ class ForbidActionService(object):
     @classmethod
     def _authenticate_reporter(cls, reporter, target_user_id, ts_now=int(time.time())):
         """返回None表示举报检查继续进行，否则不再继续，将返回结果返回上层"""
-        print(ADMINISTRATORS)
         if reporter in ADMINISTRATORS:
-            print('*********************')
             cls.forbid_user(reporter, target_user_id, cls.DEFAULT_SYS_FORBID_TIME, MANUAL_FORBID)
             return False, {'report_id': cls.ADMINISTRATOR_REPORT, MANUAL_FORBID: True}, True
         if setting.IS_DEV:
@@ -67,6 +65,7 @@ class ForbidActionService(object):
         cnt = Report.count_report_by_uid(reporter, ts_now - ONE_DAY, ts_now)
         if cnt >= 5:
             return False, 'You have reported too many times today, please try later', False
+        return True, None, None
 
     @classmethod
     def _is_reliable_reporter(cls, reporter):
