@@ -22,6 +22,7 @@ from ..model import (
     UserModel,
     User,
     UserRecord,
+    Blocked,
 )
 from ..util import (
     unix_ts_local,
@@ -40,6 +41,7 @@ class ForbidActionService(object):
     REPORT_WEIGHTING = 4
     ALERT_WEIGHTING = 2
     HISTORY_FORBID_WEIGHTING = 6
+    BLOCKER_WEIGHTING = 1
     REVIEW_FEED_PIC_WEIGHTING = 2
     MATCH_REPORT_WEIGHTING = 2
     FORBID_THRESHOLD = 10
@@ -101,7 +103,8 @@ class ForbidActionService(object):
             reliable_reporter_compensation_score = 1
         else:
             reliable_reporter_compensation_score = 0
-        res = cls.check_forbid(target_user_id, ts_now, chat_record_additional_score + feed_additional_score - reliable_reporter_compensation_score)
+        res = cls.check_forbid(target_user_id, ts_now,
+                               chat_record_additional_score + feed_additional_score - reliable_reporter_compensation_score)
         if res:
             cls.forbid_user(target_user_id, cls.DEFAULT_SYS_FORBID_TIME, SYS_FORBID, ts_now)
             return {"report_id": str(report_id), SYS_FORBID: True}, True
@@ -188,14 +191,14 @@ class ForbidActionService(object):
         alert_num = TrackSpamRecord.count_by_time_and_uid(user_id, time_3days_ago, timestamp_now)
         report_total_num = Report.count_by_time_and_uid_distinct(user_id, time_3days_ago, timestamp_now)
         report_match_num = Report.count_match_by_time_and_uid(user_id, time_3days_ago, timestamp_now)
+        blocker_num = Blocked.get_blocker_num(user_id)
         history_forbidden_credit = 0
         if UserRecord.has_been_forbidden(user_id):
             history_forbidden_credit = cls.HISTORY_FORBID_WEIGHTING
 
-
         illegal_credit = alert_num * cls.ALERT_WEIGHTING + (report_total_num - report_match_num) * cls.REPORT_WEIGHTING \
                          + report_match_num * cls.MATCH_REPORT_WEIGHTING + additional_score + history_forbidden_credit \
-                         - cls.get_high_value_compensation(user_id)
+                         + blocker_num * cls.BLOCKER_WEIGHTING - cls.get_high_value_compensation(user_id)
         if illegal_credit >= cls.FORBID_THRESHOLD:
             return illegal_credit, True
         if illegal_credit < 0:
