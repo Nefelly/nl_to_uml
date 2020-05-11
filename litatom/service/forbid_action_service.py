@@ -107,8 +107,8 @@ class ForbidActionService(object):
             reliable_reporter_compensation_score = 1
         else:
             reliable_reporter_compensation_score = 0
-        res = cls.check_forbid(target_user_id, ts_now,
-                               chat_record_additional_score + feed_additional_score - reliable_reporter_compensation_score)
+        res = cls._check_forbid(target_user_id, ts_now,
+                                chat_record_additional_score + feed_additional_score - reliable_reporter_compensation_score)
         if res:
             cls.forbid_user(target_user_id, cls.DEFAULT_SYS_FORBID_TIME, SYS_FORBID, ts_now)
             return {"report_id": str(report_id), SYS_FORBID: True}, True
@@ -151,10 +151,13 @@ class ForbidActionService(object):
 
     @classmethod
     def resolve_spam_word(cls, user_id, word):
-        """IM中已知spam word处理"""
+        """已知spam word处理"""
         TrackSpamRecordService.save_record(user_id, word=word)
         MsgService.alert_basic(user_id)
-        res = cls.check_forbid(user_id)
+        if ForbidCheckService.check_device_sensitive(user_id):
+            cls.forbid_user(user_id,cls.DEFAULT_SYS_FORBID_TIME)
+            return {SYS_FORBID: True}, True
+        res = cls._check_forbid(user_id)
         if res:
             cls.forbid_user(user_id, cls.DEFAULT_SYS_FORBID_TIME)
             return {SYS_FORBID: True}, True
@@ -165,14 +168,17 @@ class ForbidActionService(object):
         """已鉴定过的block图片处理接口服务函数"""
         TrackSpamRecordService.save_record(user_id, pic=pic)
         MsgService.alert_basic(user_id)
-        res = cls.check_forbid(user_id)
+        if ForbidCheckService.check_device_sensitive(user_id):
+            cls.forbid_user(user_id,cls.DEFAULT_SYS_FORBID_TIME)
+            return u"definitely sexual picture and have forbidden user", True
+        res = cls._check_forbid(user_id)
         if not res:
             return u"definitely sexual picture", True
         cls.forbid_user(user_id, cls.DEFAULT_SYS_FORBID_TIME)
         return u"definitely sexual picture and have forbidden user", True
 
     @classmethod
-    def check_forbid(cls, target_user_id, ts_now=None, additional_score=0):
+    def _check_forbid(cls, target_user_id, ts_now=None, additional_score=0):
         """进行封号检查，应该封号返回True，未达到封号阈值返回False"""
         ts_now = int(time.time()) if not ts_now else ts_now
         # 官方账号不会被检查封号
@@ -202,7 +208,7 @@ class ForbidActionService(object):
 
         illegal_credit = alert_num * cls.ALERT_WEIGHTING + (report_total_num - report_match_num) * cls.REPORT_WEIGHTING \
                          + report_match_num * cls.MATCH_REPORT_WEIGHTING + additional_score + history_forbidden_credit \
-                         + blocker_num * cls.BLOCKER_WEIGHTING - cls.get_high_value_compensation(user_id)
+                         + blocker_num * cls.BLOCKER_WEIGHTING - cls._get_high_value_compensation(user_id)
         if illegal_credit >= cls.FORBID_THRESHOLD:
             return illegal_credit, True
         if illegal_credit < 0:
@@ -222,16 +228,12 @@ class ForbidActionService(object):
         return True
 
     @classmethod
-    def get_high_value_compensation(cls, user_id):
+    def _get_high_value_compensation(cls, user_id):
         """根据用户粉丝数量，获得一些补偿违规积分，避免高价值用户被举报封号"""
         followers = UserService.get_followers_by_uid(user_id)
         res = floor(followers / 10) * cls.COMPENSATION_PER_TEN_FOLLOWER
         res = res if res >= 0 else 0
         return res if res <= cls.COMPENSATION_UPPER_THRESHOLD else cls.COMPENSATION_UPPER_THRESHOLD
-
-    @classmethod
-    def is_high_value_user(cls, user_id):
-        return UserService.get_followers_by_uid(user_id) >= 20
 
 
 class MsgService(object):
