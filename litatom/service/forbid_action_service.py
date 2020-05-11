@@ -65,6 +65,7 @@ class ForbidActionService(object):
         cnt = Report.count_report_by_uid(reporter, ts_now - ONE_DAY, ts_now)
         if cnt >= 5:
             return False, 'You have reported too many times today, please try later', False
+        return True, None, None
 
     @classmethod
     def _is_reliable_reporter(cls, reporter):
