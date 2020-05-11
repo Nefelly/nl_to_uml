@@ -43,10 +43,10 @@ from ....service import (
     UserFilterService,
     FeedService,
     UserSettingService,
-    SpamWordService,
+    SpamWordCheckService,
     UserService,
-    QiniuService,
-    ForbiddenService,
+    PicCheckService,
+    ForbidActionService,
     AliOssService,
     ExperimentService,
     ActedService
@@ -145,7 +145,7 @@ def get_wording():
 
 
 def get_spam_word():
-    res, status = SpamWordService.get_spam_words(GlobalizationService.get_region())
+    res, status = SpamWordCheckService.get_spam_words(GlobalizationService.get_region())
     if not status:
         return fail(res)
     return success(res)
@@ -157,7 +157,7 @@ def report_spam():
     if not data:
         return success()
     word = data.get('word')
-    data, status = ForbiddenService.report_spam(request.user_id, word)
+    data, status = ForbidActionService.resolve_spam_word(request.user_id, word)
     if not status:
         return fail(data)
     return success(data)
@@ -169,11 +169,9 @@ def check_pic():
     url = data.get('url')
     if not url:
         return success()
-    reason, advice = QiniuService.should_pic_block_from_url(url)
+    reason, advice = PicCheckService.check_pic_by_url(url)
     if reason and advice == BLOCK_PIC:
-        reason_m = {"pulp": "sexual"}
-        reason = reason_m.get(reason, reason)
-        data, status = ForbiddenService.report_illegal_pic(request.user_id, url, reason)
+        data, status = ForbidActionService.resolve_block_pic(request.user_id, url)
         if not status:
             return fail(data)
         return success(data)
@@ -226,12 +224,12 @@ def report():
             return fail(feed_info)
         FeedService.dislike_feed(user_id, feed_id, False)
         pics = feed_info['pics']
-        data, status = ForbiddenService.resolve_report(user_id, reason, pics, target_user_id, feed_id)
+        data, status = ForbidActionService.resolve_report(user_id, reason, pics, target_user_id, feed_id)
     elif chat_record:
-        data, status = ForbiddenService.resolve_report(user_id, reason, pics, target_user_id, None, None,
-                                                       json.dumps(chat_record))
+        data, status = ForbidActionService.resolve_report(user_id, reason, pics, target_user_id, None, None,
+                                                          json.dumps(chat_record))
     else:
-        data, status = ForbiddenService.resolve_report(user_id, reason, pics, target_user_id)
+        data, status = ForbidActionService.resolve_report(user_id, reason, pics, target_user_id)
     if status:
         return success(data)
     return fail(data)

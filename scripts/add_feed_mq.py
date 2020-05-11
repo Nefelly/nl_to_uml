@@ -19,7 +19,7 @@ from hendrix.conf import setting
 class ConsumeFeed(MQConsumer):
     def callback(self, msg):
         payload = msg.get('payload', {})
-        print payload
+        print(payload)
         feed_id = payload.get('feed_id')
         pics = payload.get('pics', [])
         region_key = payload.get('region_key')
@@ -27,7 +27,6 @@ class ConsumeFeed(MQConsumer):
 
 
 def feed_consum():
-    # print "inininin"
     queue_name = 'feed_added'
     routing_key = 'tasks'
     ConsumeFeed(queue_name,

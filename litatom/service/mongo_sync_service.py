@@ -157,12 +157,14 @@ class MongoSyncService(object):
         pp = volatile_redis.pipeline()
         for _ in user_ids:
             pp.sadd(REDIS_ALL_USER_ID_SET, _)
+        volatile_redis.delete(REDIS_ALL_USER_ID_SET)
         pp.execute()
         print 'upload succ', time.time()
         print volatile_redis.scard(REDIS_ALL_USER_ID_SET)
 
     @classmethod
     def real_time_sync_userids(cls):
+        cls.load_user_ids_to_redis()
         timestamp_save_add = '/data/tmp/userid_sync.time'
         ensure_path(timestamp_save_add)
         host, port, user, pwd, db, auth_db, host_url = cls.get_args_from_alias(User)
@@ -171,12 +173,30 @@ class MongoSyncService(object):
         def sync_oplog(oplog):
             op = oplog['op']  # 'n' or 'i' or 'u' or 'c' or 'd'
             ns = oplog['ns']
-            dbname, collname = ns.split('.', 1)
+            dbname, collname = ns.split('.', 2)
+            # db = 'lit'
             if dbname != db or collname != user_collection_name:
                 return
-            if not res.get(op):
-                res[op] = 1
-                print oplog
+            # if not res.get(op):
+            #     res[op] = 1
+            #     print oplog
+            if op == 'i':  # insert
+                user_id = str(oplog['o'].get('_id'))
+                # print user_id, '!' * 50
+                volatile_redis.sadd(REDIS_ALL_USER_ID_SET, user_id)
+                # self._dst_mc[dbname][collname].replace_one({'_id': oplog['o']['_id']}, oplog['o'], upsert=True)
+            elif op == 'u':  # update
+                pass
+            elif op == 'd':  # delete
+                user_id = str(oplog['o'].get('_id'))
+                # print user_id, '!' * 50
+                volatile_redis.srem(REDIS_ALL_USER_ID_SET, user_id)
+            elif op == 'c':  # command
+                pass
+            elif op == 'n':  # no-op
+                pass
+            else:
+               print('unknown operation: %s' % oplog)
         opsync_obj = OplogSyncService(host_url, port, timestamp_save_add=timestamp_save_add)
         opsync_obj.sync(sync_oplog)
 

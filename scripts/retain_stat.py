@@ -3,7 +3,7 @@ import sys
 import fcntl
 import datetime
 from hendrix.conf import setting
-from litatom.service import AlertService, RetainAnaService
+from litatom.service import EmailService, RetainAnaService
 import time
 from litatom.util import (
     format_standard_date,
@@ -30,7 +30,7 @@ def run(*date):
     dst_addr = '/data/retain_ana/%s.xlsx' % (format_standard_date(from_date) + '-' + format_standard_date(to_date))
     ensure_path(dst_addr)
     RetainAnaService.get_retain_res(dst_addr, from_date, to_date)
-    AlertService.send_file(["644513759@qq.com","litatomwang@gmail.com", "w326571@126.com", '382365209@qq.com'], dst_addr)
+    EmailService.send_file(["644513759@qq.com", "litatomwang@gmail.com", "w326571@126.com", '382365209@qq.com'], dst_addr)
 
 
 if __name__ == "__main__":

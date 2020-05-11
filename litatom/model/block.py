@@ -107,6 +107,10 @@ class Blocked(Document):
             redis_client.srem(key, blocked)
         return True
 
+    @classmethod
+    def get_blocker_num(cls, user_id):
+        return len(cls.objects(blocked=user_id).distinct("uid"))
+
     # obj = cls.get_by_block(uid, blocked)
     # if obj:
     #     obj.delete()

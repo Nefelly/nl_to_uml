@@ -43,14 +43,14 @@ from ....model import (
 )
 from ....service import (
     AdminService,
-    QiniuService,
+    PicCheckService,
     UserMessageService,
-    ForbiddenService,
+    ForbidActionService,
     FirebaseService,
     FeedService,
     GlobalizationService,
     UserService,
-    AlertService,
+    EmailService,
     JournalService,
     UserSettingService,
     AsyncCmdService,
@@ -325,7 +325,7 @@ def mail_alert():
     to_users = data.get('users', '')
     if not to_users:
         to_users = ['w326571@126.com', 'juzhongtian@gmail.com', '382365209@qq.com']
-    AlertService.send_mail(to_users, content)
+    EmailService.send_mail(to_users, content)
     return success({'to_users': to_users})
 
 
@@ -349,7 +349,7 @@ def replace_image():
     if not image:
         return fail()
     fileid = request.values.get('file_id')
-    fileid = AliOssService.upload_from_binary(image, fileid)
+    fileid = AliOssService.replace_from_binary(image, fileid)
     return jsonify({
         'success': True,
         'data': {
@@ -362,7 +362,7 @@ def forbid_score():
     user_id = get_user_id_by_phone()
     if not user_id:
         return fail({'reason': 'no such user'})
-    credit, res = ForbiddenService.accum_illegal_credit(user_id)
+    credit, res = ForbidActionService.accum_illegal_credit(user_id)
     return jsonify({
         'success': True,
         'data': {
@@ -377,7 +377,7 @@ def judge_pic():
     url = data.get('url')
     if not url:
         return success()
-    reason, advice = QiniuService.should_pic_block_from_url(url)
+    reason, advice = PicCheckService.check_pic_by_url(url)
     if not reason:
         return fail()
     if advice == REVIEW_PIC:
@@ -398,7 +398,7 @@ def judge_lit_pic():
     url = data.get('url')
     if not url:
         return success()
-    reason, advice = QiniuService.should_pic_block_from_file_id(url)
+    reason, advice = PicCheckService.check_pic_by_fileid(url)
     if not reason:
         return fail()
     if advice == REVIEW_PIC:
@@ -455,19 +455,47 @@ def send_message_html():
 
 
 def batch_insert_html():
-    return render_template('batch_insert.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
+    table_name = request.values.get('table_name', '')
+    fields = request.values.get('fields', '')
+    return render_template('batch_insert.html', table_name=table_name, fields=fields), 200, {'Content-Type': 'text/html; charset=utf-8'}
 
 
-def batch_insert():
+def check_batch(table_name, fields):
+    if not table_name or not fields:
+        return False
+    return True
+
+
+def batch_act():
     data = request.json
     fields = data.get("fields")
     table_name = data.get("table_name")
     main_key = data.get("main_key", "")
     insert_data = data.get("data")
-    msg, status = AdminService.batch_insert(table_name, fields, main_key, insert_data)
+    is_delete = request.values.get('is_delete', '')
+    if not check_batch(table_name, fields):
+        return fail()
+    if is_delete in ['True', 'true']:
+        is_delete = True
+    else:
+        is_delete = False
+    msg, status = AdminService.batch_insert_or_delete(table_name, fields, main_key, insert_data, is_delete)
     if status:
         return success()
     return fail(msg)
+
+
+def load_table_data():
+    data = request.json
+    fields = data.get("fields")
+    table_name = data.get("table_name")
+    query = data.get("query")
+    if not check_batch(table_name, fields):
+        return fail()
+    data, status = AdminService.load_table_data(table_name, fields, query)
+    if status:
+        return success(data)
+    return fail(data)
 
 
 def stat_items():
