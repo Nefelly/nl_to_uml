@@ -58,7 +58,7 @@ class ForbidActionService(object):
         """一日内举报不可超过五次,三日内不可重复举报一人"""
         # if reporter in ADMINISTRATORS:
         if AppAdmin.is_admin(reporter):
-            cls.forbid_user(reporter, target_user_id, cls.DEFAULT_SYS_FORBID_TIME, MANUAL_FORBID)
+            cls.forbid_user(target_user_id, cls.DEFAULT_SYS_FORBID_TIME, MANUAL_FORBID)
             return False, {'report_id': cls.ADMINISTRATOR_REPORT, MANUAL_FORBID: True}, True
         if setting.IS_DEV:
             return True, None, None
