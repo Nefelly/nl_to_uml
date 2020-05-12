@@ -5,7 +5,9 @@ from litatom.service import ForbidCheckService
 
 def run():
     for obj in TrackSpamRecord.objects(dealed=False):
+        print(obj.id)
         if obj.word:
+            print(obj.word)
             obj.forbid_weight = 2
         if obj.pic:
             reason,advice = ForbidCheckService.check_unknown_source_pics(obj.pic)
