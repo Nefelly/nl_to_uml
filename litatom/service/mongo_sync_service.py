@@ -108,6 +108,9 @@ class MongoSyncService(object):
             res = []
         # read_head = False
         is_key_object = False if key_field != '_id' else True
+        def trans_oid(value):
+            return value.get('$oid')
+
         for l in open(save_add).readlines():
             # if not read_head:
             #     read_head = True
@@ -118,17 +121,17 @@ class MongoSyncService(object):
             # l = l.strip()
             tmp_fields = []
             for f in [key_field] + wanted_fields:
-                tmp_fields.append(j.get(f))
+                value = j.get(f)
+                if f == '_id':
+                    value = trans_oid(value)
+                tmp_fields.append(value)
             # tmp_fields = l.split(',')
-            parse_len = len('ObjectId(')
-            'ObjectId(5ca2b5013fff224462b40965)'
-            print l
-            print tmp_fields[0]
-            print tmp_fields[1]
+            # parse_len = len('ObjectId(')
+            # 'ObjectId(5ca2b5013fff224462b40965)'
             # if is_key_object:
             #     tmp_fields[0] = tmp_fields[0][parse_len:-1]
-            if is_key_object:
-                tmp_fields[0] = tmp_fields[0].get('$oid')
+            # if is_key_object:
+            #     tmp_fields[0] = tmp_fields[0].get('$oid')
             if not wanted_fields:
                 res.append(tmp_fields[0])
             else:
