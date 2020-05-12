@@ -125,8 +125,10 @@ class MongoSyncService(object):
             print l
             print tmp_fields[0]
             print tmp_fields[1]
+            # if is_key_object:
+            #     tmp_fields[0] = tmp_fields[0][parse_len:-1]
             if is_key_object:
-                tmp_fields[0] = tmp_fields[0][parse_len:-1]
+                tmp_fields[0] = tmp_fields[0].get('$oid')
             if not wanted_fields:
                 res.append(tmp_fields[0])
             else:
