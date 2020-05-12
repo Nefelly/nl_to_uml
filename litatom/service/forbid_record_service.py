@@ -127,12 +127,12 @@ class ReportService(object):
 class TrackSpamRecordService(object):
 
     @classmethod
-    def save_record(cls, user_id, word=None, pic=None):
+    def save_record(cls, user_id, word=None, pic=None, forbid_weight=0):
         if not word and not pic:
             return False
         # if cls.check_spam_word_in_one_minute(user_id, int(time.time())):
         #     return False
-        return TrackSpamRecord.create(user_id, word, pic)
+        return TrackSpamRecord.create(user_id, word, pic, forbid_weight)
 
     # @classmethod
     # def check_spam_word_in_one_minute(cls, user_id, ts):
