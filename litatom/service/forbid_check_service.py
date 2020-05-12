@@ -59,6 +59,12 @@ class ForbidCheckService(object):
         return res_words, res_pics
 
     @classmethod
+    def check_unknown_source_pics(cls, pic):
+        if re.search('https://', pic):
+            return PicCheckService.check_pic_by_url(pic)
+        return PicCheckService.check_pic_by_fileid(pic)
+
+    @classmethod
     def distinguish_pic_from_chat_record(cls, chat_record):
         words = []
         pics = []
