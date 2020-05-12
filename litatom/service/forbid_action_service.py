@@ -85,6 +85,8 @@ class ForbidActionService(object):
         """举报接口服务函数"""
         if not target_user_id:
             return None, False
+        if target_user_id.startswith('love'):
+            target_user_id = UserService.uid_by_huanxin_id(target_user_id)
         if AppAdmin.is_admin(target_user_id):
             return u'this is our worker, you can trust her ^_^', False
         ts_now = int(time.time())
@@ -96,7 +98,7 @@ class ForbidActionService(object):
         report_id = ReportService.save_report(user_id, reason, pics, target_user_id, related_feed_id, match_type,
                                               chat_record)
         if ForbidCheckService.check_device_sensitive(target_user_id):
-            cls.forbid_user(target_user_id,cls.DEFAULT_SYS_FORBID_TIME)
+            cls.forbid_user(target_user_id, cls.DEFAULT_SYS_FORBID_TIME)
             return {"report_id": str(report_id), SYS_FORBID: True}, True
         feed_additional_score = 0
         if related_feed_id:

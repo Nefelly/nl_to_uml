@@ -46,8 +46,8 @@ class ReportService(object):
         report.chat_record = chat_record
         report.related_feed = related_feed_id
         report.region = GlobalizationService.get_region()
-        if target_user_id.startswith('love'):
-            target_user_id = UserService.uid_by_huanxin_id(target_user_id)
+        # if target_user_id.startswith('love'):
+        #     target_user_id = UserService.uid_by_huanxin_id(target_user_id)
         if dealed:
             report.dealed = dealed
         report.target_uid = target_user_id
