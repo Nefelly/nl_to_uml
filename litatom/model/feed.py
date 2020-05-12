@@ -187,6 +187,16 @@ class Feed(Document):
     def get_by_create_time(cls, from_time, to_time):
         return cls.objects(create_time__gte=from_time, create_time__lte=to_time)
 
+    @classmethod
+    def change_to_review(cls, feed_id):
+        feed = Feed.get_by_id(feed_id)
+        feed.status = FEED_NEED_CHECK
+        feed.save()
+
+    @classmethod
+    def get_review_feed(cls,limit_num=10000):
+        return cls.objects(status=FEED_NEED_CHECK).limit(limit_num).order_by('-create_time')
+
 
 class FollowingFeed(Document):
     meta = {

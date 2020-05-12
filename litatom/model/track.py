@@ -71,7 +71,7 @@ class TrackSpamRecord(Document):
         return True
 
     @classmethod
-    def get_record_by_time(cls, from_ts,to_ts,dealed=True):
+    def get_record_by_time(cls, from_ts, to_ts, dealed=True):
         return cls.objects(create_time__gte=from_ts, create_time__lte=to_ts, dealed=dealed)
 
     @classmethod
@@ -96,3 +96,7 @@ class TrackSpamRecord(Document):
     def count_by_uid(cls, user_id):
         """统计用户历史总共被警告次数"""
         return cls.objects(user_id=user_id).count()
+
+    @classmethod
+    def get_review_pic(cls, limit_num=10000):
+        return cls.objects(dealed=False, forbid_weight=0, pic__ne=None).limit(limit_num).order_by('-create_time')

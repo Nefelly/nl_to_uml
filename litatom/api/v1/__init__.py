@@ -110,6 +110,8 @@ b.add_url_rule('/lit/admin/judge_lit_pic','admin-judge_lit_pic',endpoint.admin.j
 b.add_url_rule('/lit/admin/test_to_delete_users','admin-test_to_delete_users', endpoint.admin.test_to_delete_users)
 b.add_url_rule('/lit/admin/test_delete_old_users','admin-test_delete_old_users',endpoint.admin.test_delete_old_users)
 b.add_url_rule('/lit/admin/review_pic','admin-review_pic',endpoint.admin.review_pic)
+b.add_url_rule('/lit/admin/review_feed','admin-review_feed',endpoint.admin.review_feed)
+b.add_url_rule('/lit/admin/block_feed/<feed_id>','admin-block_feed',endpoint.admin.block_feed)
 
 
 # picture

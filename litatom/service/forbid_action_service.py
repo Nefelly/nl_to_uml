@@ -23,7 +23,7 @@ from ..model import (
     User,
     UserRecord,
     Blocked,
-    AppAdmin
+    AppAdmin, Feed
 )
 from ..util import (
     unix_ts_local,
@@ -137,7 +137,7 @@ class ForbidActionService(object):
                                                forbid_weight=cls.SPAM_WORD_WEIGHTING)
             MsgService.alert_feed_delete(target_user_id, cls.SPAM_WORD_REASON)
             return
-        # TODO：待审核feed的处理
+        Feed.change_to_review(feed_id)
 
     @classmethod
     def _resolve_chat_record_report(cls, chat_record, target_user_id, user_id):
@@ -167,10 +167,21 @@ class ForbidActionService(object):
         return cls._basic_alert_resolution(user_id)
 
     @classmethod
+    def resolve_review_feed(cls, feed_id):
+        """对于需要review的Feed，人工审核确认其是黄图"""
+        Feed.change_to_not_shown(feed_id)
+        feed = Feed.get_by_id(feed_id)
+        user_id = feed.user_id
+        # 理论上不可能出现
+        if not feed.pics:
+            return None, False
+        return cls.resolve_block_pic(user_id,feed.pics[0])
+
+    @classmethod
     def resolve_block_pic(cls, user_id, pic):
         """已鉴定过的block图片处理接口服务函数"""
         TrackSpamRecordService.save_record(user_id, pic=pic, forbid_weight=cls.BLOCK_PIC_WEIGHTING)
-        cls._basic_alert_resolution(user_id)
+        return cls._basic_alert_resolution(user_id)
         # MsgService.alert_basic(user_id)
         # if ForbidCheckService.check_device_sensitive(user_id):
         #     cls.forbid_user(user_id, cls.DEFAULT_SYS_FORBID_TIME)
@@ -182,7 +193,7 @@ class ForbidActionService(object):
         # return u"definitely sexual picture and have forbidden user", True
 
     @classmethod
-    def check_review_pic(cls, record_id):
+    def resolve_review_pic(cls, record_id):
         """对于疑似的图片记录，确认其违规，作出处理"""
         record = TrackSpamRecord.get_record_by_id(record_id)
         if record.pic and record.forbid_weight == cls.REVIEW_PIC_WEIGHTING:
