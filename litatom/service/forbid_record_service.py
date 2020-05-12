@@ -152,3 +152,13 @@ class TrackSpamRecordService(object):
         for obj in objs:
             obj.dealed = True
             obj.save()
+
+    @classmethod
+    def get_review_pic(cls, num=10000):
+        """按时间倒序，返回需要review的spam record, [{'pic':'','record_id':''},{'pic':'','record_id':''}]"""
+        records = TrackSpamRecord.get_review_pic(num)
+        res = []
+        for record in records:
+            temp = {'pic': record.pic, 'record_id': record.id}
+            res.append(temp)
+        return res

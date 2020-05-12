@@ -305,7 +305,6 @@ def set_diamonds():
     return fail(msg)
 
 
-
 def unban():
     UserService.unban_user(get_user_id_by_phone())
     return success()
@@ -419,8 +418,19 @@ def judge_lit_pic():
         }
     })
 
+
 def review_pic():
-    TrackSpamRecordService.
+    return success(TrackSpamRecordService.get_review_pic())
+
+def review_feed():
+    return success(FeedService.get_review_feed())
+
+def block_feed(feed_id):
+    data, status = ForbidActionService.resolve_review_feed(feed_id)
+    if not status:
+        return fail()
+    return success(data)
+
 
 def download_phone():
     date = request.args.get('date')
@@ -465,7 +475,8 @@ def send_message_html():
 def batch_insert_html():
     table_name = request.values.get('table_name', '')
     fields = request.values.get('fields', '')
-    return render_template('batch_insert.html', table_name=table_name, fields=fields), 200, {'Content-Type': 'text/html; charset=utf-8'}
+    return render_template('batch_insert.html', table_name=table_name, fields=fields), 200, {
+        'Content-Type': 'text/html; charset=utf-8'}
 
 
 def check_batch(table_name, fields):
