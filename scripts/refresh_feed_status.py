@@ -4,11 +4,14 @@ from litatom.model import Feed
 
 def run():
     for feed in Feed.objects():
-        if feed.not_shown:
-            feed.status = FEED_NOT_SHOWN
-        else:
-            feed.status = FEED_NORMAL
-        feed.save()
+        try:
+            if feed.not_shown:
+                feed.status = FEED_NOT_SHOWN
+            else:
+                feed.status = FEED_NORMAL
+            feed.save()
+        except AttributeError as e:
+            pass
 
 
 if __name__ == '__main__':

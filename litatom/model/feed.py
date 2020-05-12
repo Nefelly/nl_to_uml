@@ -89,7 +89,7 @@ class Feed(Document):
     @property
     def is_hq(self):
         return self.like_num >= 5 or self.comment_num >= 5 or (
-                    len(self.audios) > 0 and self.like_num + self.comment_num > 2)
+                len(self.audios) > 0 and self.like_num + self.comment_num > 2)
 
     def get_info(self):
         return {
@@ -107,7 +107,7 @@ class Feed(Document):
     @classmethod
     def last_feed_by_user_id(cls, user_id):
         return cls.objects(user_id=user_id).order_by("-create_time").first()
-    
+
     def is_same(self, content, pics, audios):
         if not pics:
             pics = []
@@ -118,7 +118,7 @@ class Feed(Document):
         if not content:
             content = None
         return self.pics == pics and self.content == content and self.audios == audios
-    
+
     @classmethod
     def create_feed(cls, user_id, content, pics, audios, status=FEED_NORMAL):
         last = cls.last_feed_by_user_id(user_id)
@@ -162,7 +162,7 @@ class Feed(Document):
         if self.like_num < 0:
             self.like_num = 0
         self.save()
-        
+
     def chg_dislike_num(self, num=1):
         self.dislike_num += num
         if self.dislike_num < 0:
@@ -194,7 +194,7 @@ class Feed(Document):
         feed.save()
 
     @classmethod
-    def get_review_feed(cls,limit_num=10000):
+    def get_review_feed(cls, limit_num=10000):
         return cls.objects(status=FEED_NEED_CHECK).limit(limit_num).order_by('-create_time')
 
 
@@ -357,6 +357,7 @@ class FeedLike(Document):
                 else:
                     redis_client.srem(key, uid)
         return like_now
+
 
 class FeedDislike(Document):
     DISLIKE_NUM_THRESHOLD = 500
