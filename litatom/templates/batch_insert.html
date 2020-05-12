@@ -6,7 +6,7 @@
     <div>table_name:<input id="table_name" name="table_name" value='{{table_name}}'> fields split by |:<input id="fields" name="fields" value='{{fields}}'> main key<input id="main_key" name="main_key">
         query<input id="query" name="query"></div>
     <div><button name='insert' style="width:150px;height:50px;border-radius:15px; background:yellow" @click='insert()'>insert</button></div>
-        <div><button name='delete' align="right" style="width:150px;height:50px;border-radius:15px; background:red" @click='delete_mul()'>delete</button></div>
+        <div align="right"><button name='delete'  style="width:150px;height:50px;border-radius:15px; background:red" @click='delete_mul()'>delete</button></div>
         <div><button name='load_data' style="width:150px;height:50px;border-radius:15px; background:greenyellow" @click='load_data()'>load_data</button></div>
         <div style="background:red" >data插入时 要从excle 或者 data里复制（datas below should be from excle or the input area ）</div>
     <div>data:<textarea id="insert_data" name="data" style="width:1700px; height:700px;"></textarea></div>
