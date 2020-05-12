@@ -133,7 +133,8 @@ class ForbidActionService(object):
                     return
 
         if word_res:
-            TrackSpamRecordService.save_record(target_user_id, word=word_res.keys()[0], forbid_weight=cls.SPAM_WORD_WEIGHTING)
+            TrackSpamRecordService.save_record(target_user_id, word=word_res.keys()[0],
+                                               forbid_weight=cls.SPAM_WORD_WEIGHTING)
             MsgService.alert_feed_delete(target_user_id, cls.SPAM_WORD_REASON)
             return
         # TODO：待审核feed的处理
@@ -151,13 +152,13 @@ class ForbidActionService(object):
                     TrackSpamRecordService.save_record(target_user_id, pic=pic, forbid_weight=cls.BLOCK_PIC_WEIGHTING)
                     MsgService.alert_basic(target_user_id)
                     return
-            pic = pic_res.keys()[0]
-            TrackSpamRecordService.save_record(target_user_id, pic=pic, forbid_weight=cls.REVIEW_PIC_WEIGHTING)
+        if word_res:
+            TrackSpamRecordService.save_record(target_user_id, word=word_res.keys()[0],forbid_weight=cls.SPAM_WORD_WEIGHTING)
             MsgService.alert_basic(target_user_id)
             return
-        if word_res:
-            TrackSpamRecordService.save_record(target_user_id, word=word_res.keys()[0], forbid_weight=cls.SPAM_WORD_WEIGHTING)
-            MsgService.alert_basic(target_user_id)
+        pic = pic_res.keys()[0]
+        TrackSpamRecordService.save_record(target_user_id, pic=pic, forbid_weight=cls.REVIEW_PIC_WEIGHTING)
+        MsgService.alert_basic(target_user_id)
 
     @classmethod
     def resolve_spam_word(cls, user_id, word):
@@ -181,7 +182,7 @@ class ForbidActionService(object):
         # return u"definitely sexual picture and have forbidden user", True
 
     @classmethod
-    def check_review_pic(cls,record_id):
+    def check_review_pic(cls, record_id):
         """对于疑似的图片记录，确认其违规，作出处理"""
         record = TrackSpamRecord.get_record_by_id(record_id)
         if record.pic and record.forbid_weight == cls.REVIEW_PIC_WEIGHTING:
