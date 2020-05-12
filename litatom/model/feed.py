@@ -449,5 +449,7 @@ class FeedComment(Document):
         return cls.objects(id=comment_id).first()
 
     @classmethod
-    def get_by_feed_id(cls, feed_id):
-        return cls.objects(feed_id=feed_id).order_by('-create_time').limit(DEFAULT_QUERY_LIMIT)
+    def get_by_feed_id(cls, feed_id, unlimited=False):
+        if not unlimited:
+            return cls.objects(feed_id=feed_id).order_by('-create_time').limit(DEFAULT_QUERY_LIMIT)
+        return cls.objects(feed_id=feed_id).order_by('-create_time')

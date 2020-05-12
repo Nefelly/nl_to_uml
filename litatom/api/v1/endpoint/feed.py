@@ -160,8 +160,7 @@ def del_comment(comment_id):
 
 
 def feed_comments(feed_id):
-    user_id = None
-    data, status = FeedService.get_feed_comments(user_id, feed_id)
+    data, status = FeedService.get_feed_comments(request.user_id, feed_id)
     if status:
         return success(data)
     return fail(data)
