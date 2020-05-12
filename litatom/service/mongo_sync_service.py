@@ -86,7 +86,7 @@ class MongoSyncService(object):
         '''
 
         :param model:  like User
-        :param key_field: like 'id'
+        :param key_field: like '_id'
         :param wanted_fields: like ['session']
         :return: a map {user_id: session}
         '''
