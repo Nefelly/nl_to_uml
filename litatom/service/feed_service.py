@@ -54,6 +54,7 @@ redis_client = RedisClient()['lit']
 
 class FeedService(object):
     LATEST_TYPE = 'latest'
+    COMMENT_MAX_LEN = 500
 
     @classmethod
     def should_add_to_square(cls, feed):
@@ -428,6 +429,8 @@ class FeedService(object):
         feed = Feed.get_by_id(feed_id)
         if not feed:
             return u'wrong feedid', False
+        if len(content) > cls.COMMENT_MAX_LEN:
+            return u'your comment is too long', False
         msg = BlockService.get_block_msg(feed.user_id, user_id)
         if msg:
             return msg, False
