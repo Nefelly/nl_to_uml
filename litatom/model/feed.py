@@ -18,7 +18,10 @@ from ..const import (
     DEFAULT_QUERY_LIMIT,
     ONE_HOUR,
     ONE_MIN,
-    NAN
+    NAN,
+    FEED_NORMAL,
+    FEED_NEED_CHECK,
+    FEED_NOT_SHOWN
 )
 from ..key import (
     REDIS_FEED_CACHE,
@@ -43,7 +46,7 @@ class Feed(Document):
     like_num = IntField(required=True, default=0)
     dislike_num = IntField(required=True, default=0)
     comment_num = IntField(required=True, default=0)
-    not_shown = BooleanField(default=False)
+    status = IntField(default=0)
     content = StringField()
     pics = ListField(default=[])
     audios = ListField(default=[])
@@ -54,7 +57,7 @@ class Feed(Document):
         return cls.objects(user_id=user_id).count()
 
     def change_to_not_shown(self):
-        self.not_shown = True
+        self.status = FEED_NOT_SHOWN
         self.save()
 
     @classmethod
@@ -71,7 +74,7 @@ class Feed(Document):
 
     @property
     def should_remove_from_follow(self):
-        return self.dislike_num >= self.SELF_HIGH_NUM or self.not_shown
+        return self.dislike_num >= self.SELF_HIGH_NUM or self.status == FEED_NOT_SHOWN
 
     def save(self, *args, **kwargs):
         if getattr(self, 'id', ''):
@@ -117,7 +120,7 @@ class Feed(Document):
         return self.pics == pics and self.content == content and self.audios == audios
     
     @classmethod
-    def create_feed(cls, user_id, content, pics, audios):
+    def create_feed(cls, user_id, content, pics, audios, status=FEED_NORMAL):
         last = cls.last_feed_by_user_id(user_id)
         # if last and last.is_same(content, pics, audios) and (int(time.time()) - last.create_time < 10):
         if last and last.is_same(content, pics, audios):
@@ -128,6 +131,7 @@ class Feed(Document):
         obj.pics = pics
         obj.audios = audios
         obj.create_time = int(time.time())
+        obj.status = status
         obj.save()
         return obj
 
