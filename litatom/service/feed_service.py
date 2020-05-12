@@ -108,6 +108,7 @@ class FeedService(object):
 
     @classmethod
     def consume_feed_added(cls, feed_id, pics, region_key):
+        print('------------------------------------',feed_id)
         block_pic = None
         review_pic = None
         if pics:
