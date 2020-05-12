@@ -73,6 +73,8 @@ class ForbidCheckService(object):
     def check_device_sensitive(cls, user_id):
         """判断设备是否是敏感设备"""
         user_setting = UserSetting.get_by_user_id(user_id)
+        if not user_setting:
+            return False
         return BlockedDevices.is_device_sensitive(user_setting.uuid)
 
 
