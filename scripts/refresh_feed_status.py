@@ -10,7 +10,6 @@ def run():
             else:
                 feed.status = FEED_NORMAL
             feed.save()
-            print(feed.status)
         except AttributeError as e:
             pass
 
