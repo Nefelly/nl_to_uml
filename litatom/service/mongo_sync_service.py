@@ -83,6 +83,13 @@ class MongoSyncService(object):
 
     @classmethod
     def load_table_map(cls, model, key_field, wanted_fields=[]):
+        '''
+
+        :param model:  like User
+        :param key_field: like id
+        :param wanted_fields: like session
+        :return: a map {user_id: session}
+        '''
         if wanted_fields:
             fields = key_field + ',' + ','.join(wanted_fields)
         else:

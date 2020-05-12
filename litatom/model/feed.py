@@ -435,6 +435,11 @@ class FeedDislike(Document):
 
 
 class FeedComment(Document):
+    meta = {
+        'strict': False,
+        'alias': 'db_alias',
+
+    }
     feed_id = StringField(required=True)
     comment_id = StringField()  # father comment_id
     user_id = StringField(required=True)
