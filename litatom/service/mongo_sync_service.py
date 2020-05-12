@@ -48,7 +48,7 @@ class MongoSyncService(object):
 
         '''
         model_meta = model._meta
-        alias = model_meta['alias']
+        alias = model_meta.get('alias', 'default')
         m = mongoengine.connection._connection_settings.get(alias)
         if not m:
             m = mongoengine.connection._connection_settings.get('default')
