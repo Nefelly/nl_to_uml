@@ -45,7 +45,7 @@ from ....model import (
 from ....service import (
     AdminService,
     PicCheckService,
-    UserMessageService,
+    TrackSpamRecordService,
     ForbidActionService,
     FirebaseService,
     FeedService,
@@ -434,6 +434,8 @@ def judge_lit_pic():
         }
     })
 
+def review_pic():
+    TrackSpamRecordService.
 
 def download_phone():
     date = request.args.get('date')
