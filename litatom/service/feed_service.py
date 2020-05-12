@@ -113,6 +113,7 @@ class FeedService(object):
         if pics:
             no_use, pic_res = ForbidCheckService.check_content(pics=pics)
             for pic in pic_res:
+                print(pic_res)
                 if pic_res[pic][1] == BLOCK_PIC:
                     block_pic = pic
                 if pic_res[pic][1] == REVIEW_PIC:
