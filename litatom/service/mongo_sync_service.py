@@ -115,6 +115,9 @@ class MongoSyncService(object):
             tmp_fields = l.split(',')
             parse_len = len('ObjectId(')
             'ObjectId(5ca2b5013fff224462b40965)'
+            print l
+            print tmp_fields[0]
+            print tmp_fields[1]
             if is_key_object:
                 tmp_fields[0] = tmp_fields[0][parse_len:-1]
             if not wanted_fields:
