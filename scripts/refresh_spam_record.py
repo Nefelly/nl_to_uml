@@ -8,10 +8,10 @@ def run():
         if obj.word:
             obj.forbid_weight = 2
         if obj.pic:
-            pic_res = ForbidCheckService.check_unknown_source_pics(obj.pic)
-            if not pic_res:
+            reason,advice = ForbidCheckService.check_unknown_source_pics(obj.pic)
+            if not reason:
                 obj.forbid_weight = 0
-            if pic_res[0][1] == BLOCK_PIC:
+            if advice == BLOCK_PIC:
                 obj.forbid_weight = 4
             else:
                 obj.forbid_weight = 0
