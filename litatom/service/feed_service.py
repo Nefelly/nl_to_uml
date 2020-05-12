@@ -495,7 +495,11 @@ class FeedService(object):
 
     @classmethod
     def get_feed_comments(cls, user_id, feed_id):
-        comments = FeedComment.get_by_feed_id(feed_id)
+        feed = Feed.get_by_id(feed_id)
+        unlimited = False
+        if feed.user_id == user_id:
+            unlimited = True
+        comments = FeedComment.get_by_feed_id(feed_id, unlimited)
         comments = list(comments)
         user_ids = [obj.user_id for obj in comments]
         user_info_m = UserService.batch_get_user_info_m(user_ids)
