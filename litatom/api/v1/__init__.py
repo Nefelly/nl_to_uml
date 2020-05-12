@@ -105,6 +105,8 @@ b.add_url_rule('/lit/admin/agent', 'admin-agent', endpoint.admin.agent, methods=
 b.add_url_rule('/lit/admin/replace_image', 'admin-replace_image', endpoint.admin.replace_image, methods=['POST'])
 b.add_url_rule('/lit/admin/forbid_score','admin-forbid_score',endpoint.admin.forbid_score)
 b.add_url_rule('/lit/admin/judge_pic','admin-judge_pic',endpoint.admin.judge_pic,methods=['POST'])
+b.add_url_rule('/lit/admin/judge_lit_pic','admin-judge_lit_pic',endpoint.admin.judge_lit_pic,methods=['POST'])
+b.add_url_rule('/lit/admin/review_pic')
 b.add_url_rule('/lit/admin/judge_lit_pic','admin-judge_lit_pic',endpoint.admin.judge_lit_pic, methods=['POST'])
 b.add_url_rule('/lit/admin/test_to_delete_users','admin-test_to_delete_users', endpoint.admin.test_to_delete_users)
 b.add_url_rule('/lit/admin/test_delete_old_users','admin-test_delete_old_users',endpoint.admin.test_delete_old_users)
@@ -188,7 +190,6 @@ b.add_url_rule('/lit/experiment/get_exp_value', 'experiment-get_exp_value', endp
 b.add_url_rule('/lit/experiment/all_experiments', 'experiment-all_experiments', endpoint.experiment.get_all_experiments)
 b.add_url_rule('/lit/experiment/delete_experiment', 'experiment-delete_experiment', endpoint.experiment.delete_experiment)
 
-
 # debug
 b.add_url_rule('/lit/debug/redis_status', 'debug-redis-status', endpoint.debug.redis_status)
 b.add_url_rule('/lit/debug/clear_redis', 'debug-clear-redis', endpoint.debug.clear_keys)
@@ -202,7 +203,6 @@ b.add_url_rule('/lit/debug/register_yesterday', 'debug-register_yesterday', endp
 b.add_url_rule('/lit/debug/delete_matched_record', 'debug-del_match_before', endpoint.debug.del_match_before)
 b.add_url_rule('/lit/debug/delete_online_matched_record', 'debug-online_del_match_status', endpoint.debug.online_del_match_status)
 b.add_url_rule('/lit/debug/set_times_to1', 'debug-set-times-to1', endpoint.debug.set_left_times_to_1)
-b.add_url_rule('/lit/debug/down_log/<user_id>', 'debug-down_log', endpoint.debug.down_log)
 
 
 # feed
