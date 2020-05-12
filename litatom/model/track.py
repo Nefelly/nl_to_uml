@@ -63,10 +63,11 @@ class TrackSpamRecord(Document):
         if (not word and not pic) or (word and pic):
             return False
         if word:
-            obj = cls(user_id=user_id, word=word, dealed=dealed_tag, forbid_weight=forbid_weight)
+            obj = cls(user_id=user_id, word=word, dealed=dealed_tag)
         else:
-            obj = cls(user_id=user_id, pic=pic, dealed=dealed_tag, forbid_weight=forbid_weight)
+            obj = cls(user_id=user_id, pic=pic, dealed=dealed_tag)
         obj.create_time = int(time.time())
+        obj.forbid_weight = forbid_weight
         obj.save()
         return True
 

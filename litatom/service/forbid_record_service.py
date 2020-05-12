@@ -132,6 +132,7 @@ class TrackSpamRecordService(object):
             return False
         # if cls.check_spam_word_in_one_minute(user_id, int(time.time())):
         #     return False
+        print(2)
         return TrackSpamRecord.create(user_id, word, pic, forbid_weight)
 
     # @classmethod
