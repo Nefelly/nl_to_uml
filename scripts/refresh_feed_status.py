@@ -5,10 +5,11 @@ from litatom.model import Feed
 def run():
     for feed in Feed.objects():
         try:
-            print(feed.id)
             if feed.not_shown:
+                print(feed.id,1)
                 feed.status = FEED_NOT_SHOWN
             else:
+                print(feed.id,0)
                 feed.status = FEED_NORMAL
             feed.save()
             print(feed.status)
