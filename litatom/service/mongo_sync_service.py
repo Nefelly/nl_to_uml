@@ -10,6 +10,7 @@ import exceptions
 import pymongo
 import mongoengine
 import bson
+import json
 import cPickle
 from hendrix.conf import setting
 from pymongo import (
@@ -68,14 +69,14 @@ class MongoSyncService(object):
         dir_name = '/tmp/'
         model_meta = model._meta
         table_name = model_meta['collection']
-        save_add = os.path.join(dir_name, '%s_%d.csv' % (table_name, int(time.time())))
+        save_add = os.path.join(dir_name, '%s_%d.json' % (table_name, int(time.time())))
         host, port, user, pwd, db, auth_db, host_url = cls.get_args_from_alias(model)
         # host, port, user, pwd, db, auth_db = get_args_from_db(db)
         if not fields:
             fields = 'user_id'
         # else:
         #     fields = ','.join(fields)
-        sql = '''mongoexport -h {host} --port {port} -u {user} -p {pwd} --authenticationDatabase {auth_db} -d {db_name} -c {collection} -f {fields} --type=csv --out {save_add}'''.format(
+        sql = '''mongoexport -h {host} --port {port} -u {user} -p {pwd} --authenticationDatabase {auth_db} -d {db_name} -c {collection} -f {fields} --type=json --out {save_add}'''.format(
             host=host, port=port, user=user, pwd=pwd, auth_db=auth_db, db_name=db, collection=table_name, fields=fields, save_add=save_add)
         print sql
         os.system(sql)
@@ -105,14 +106,20 @@ class MongoSyncService(object):
             res = {}
         else:
             res = []
-        read_head = False
+        # read_head = False
         is_key_object = False if key_field != '_id' else True
         for l in open(save_add).readlines():
-            if not read_head:
-                read_head = True
+            # if not read_head:
+            #     read_head = True
+            #     continue
+            if not l:
                 continue
-            l = l.strip()
-            tmp_fields = l.split(',')
+            j = json.loads(l)
+            # l = l.strip()
+            tmp_fields = []
+            for f in [key_field] + wanted_fields:
+                tmp_fields.append(j.get(f))
+            # tmp_fields = l.split(',')
             parse_len = len('ObjectId(')
             'ObjectId(5ca2b5013fff224462b40965)'
             print l
