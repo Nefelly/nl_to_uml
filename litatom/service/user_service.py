@@ -507,7 +507,7 @@ class UserService(object):
             return False
         forbid_times = UserRecord.get_forbidden_times_user_id(user_id)
         user.forbidden = True
-        user.forbidden_ts = int(time.time()) + forbid_ts * (1 + 2 * forbid_times)
+        user.forbidden_ts = int(time.time()) + forbid_ts * (1 + 5 * forbid_times)
         cls._trans_session_2_forbidden(user)
         user.clear_session()
         for gender in GENDERS:
