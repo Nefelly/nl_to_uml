@@ -115,8 +115,8 @@ class FeedService(object):
             for pic in pic_res:
                 if pic_res[pic][1] == BLOCK_PIC:
                     block_pic = pic
-                if pic_res[pic][0] == REVIEW_PIC:
-                    review_pic = review_pic
+                if pic_res[pic][1] == REVIEW_PIC:
+                    review_pic = pic
         feed = Feed.get_by_id(feed_id)
         if feed:
             if block_pic:

@@ -103,7 +103,6 @@ class UserService(object):
 
     @classmethod
     def device_blocked(cls, uuid):
-        print(uuid, BlockedDevices.is_device_forbidden(uuid))
         return BlockedDevices.is_device_forbidden(uuid)
 
     @classmethod
