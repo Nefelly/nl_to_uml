@@ -131,13 +131,12 @@ class ForbidActionService(object):
                     TrackSpamRecordService.save_record(target_user_id, pic=pic, forbid_weight=cls.BLOCK_PIC_WEIGHTING)
                     MsgService.alert_feed_delete(target_user_id, pic_res[pic][0])
                     return
-            pic = pic_res.keys()[0]
-            TrackSpamRecordService.save_record(target_user_id, pic=pic, forbid_weight=cls.REVIEW_PIC_WEIGHTING)
-            MsgService.alert_feed_delete(target_user_id, pic_res[pic][0])
-            return
+
         if word_res:
             TrackSpamRecordService.save_record(target_user_id, word=word_res.keys()[0], forbid_weight=cls.SPAM_WORD_WEIGHTING)
             MsgService.alert_feed_delete(target_user_id, cls.SPAM_WORD_REASON)
+            return
+        # TODO：待审核feed的处理
 
     @classmethod
     def _resolve_chat_record_report(cls, chat_record, target_user_id, user_id):
