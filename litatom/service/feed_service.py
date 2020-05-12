@@ -122,6 +122,7 @@ class FeedService(object):
         feed = Feed.get_by_id(feed_id)
         if feed:
             if block_pic:
+                print(1)
                 ForbidActionService.resolve_block_pic(feed.user_id, block_pic)
                 FeedLike.del_by_feedid(feed_id)
                 FeedComment.objects(feed_id=feed_id).delete()
