@@ -121,8 +121,11 @@ class FeedService(object):
             for pic in pic_res:
                 print(pic_res)
                 if pic_res[pic][1] == BLOCK_PIC:
+                    print(1)
                     ForbidActionService.resolve_block_pic(feed.user_id, pic)
+                    print(2)
                     FeedLike.del_by_feedid(feed_id)
+                    print(3)
                     FeedComment.objects(feed_id=feed_id).delete()
                     print(feed.id)
                     print(feed.to_json())
