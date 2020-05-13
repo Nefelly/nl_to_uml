@@ -507,23 +507,32 @@ class UserService(object):
         forbid_times = UserRecord.get_forbidden_times_user_id(user_id)
         user.forbidden = True
         user.forbidden_ts = int(time.time()) + forbid_ts * (1 + 5 * forbid_times)
+        print(1)
         cls._trans_session_2_forbidden(user)
+        print(2)
         user.clear_session()
+        print(3)
         for gender in GENDERS:
             # key = REDIS_ONLINE_GENDER.format(gender=gender)
             key = GlobalizationService._online_key_by_region_gender(gender)
             redis_client.zrem(key, user_id)
+            print(4)
         redis_client.zrem(GlobalizationService._online_key_by_region_gender(), user_id)
+        print(5)
         user.save()
+        print(6)
         if user.huanxin and user.huanxin.user_id:
             HuanxinService.deactive_user(user.huanxin.user_id)
+            print(7)
         feeds = Feed.objects(user_id=user_id, create_time__gte=int(time.time()) - 3 * ONE_DAY)
+        print(8)
         from ..service import FeedService
-        for _ in feeds:
-            FeedService.remove_from_pub(_)
+        for feed in feeds:
+            FeedService.remove_from_pub(feed)
             # _.delete()
-            _.change_to_not_shown()
-            MqService.push(REMOVE_EXCHANGE, {"feed_id": str(_.id)})
+            feed.change_to_not_shown()
+            MqService.push(REMOVE_EXCHANGE, {"feed_id": str(feed.id)})
+            print(feed.id)
 
     @classmethod
     def unban_by_nickname(cls, nickname):
