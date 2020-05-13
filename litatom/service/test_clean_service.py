@@ -90,10 +90,12 @@ class TestCleanService(object):
         fields = ['user_id', 'uid', 'target_uid']
         res = {}
         for model in models.values():
-            res[model] =[]
+            tmp = []
             for _ in fields:
                 if getattr(model, _, ''):
-                    res[model].append(_)
+                    tmp.append(_)
+            if tmp:
+                res[model] = tmp
         return res
 
     @classmethod
@@ -102,7 +104,16 @@ class TestCleanService(object):
         if not status:
             return data, status
         user_ids = [el.get('user_id') for el in data.get('users')]
-        users = map(User.get_by_id, user_ids)
+        clean_models = cls.clean_model_field()
+        for _ in user_ids:
+            for m in clean_models:
+                for field in clean_models[m]:
+                    delete_str = '%s.objects(%s=\'%s\').delete()' % (m.__name__, field, _)
+                    print delete_str
+                    # eval(delete_str)
+            # GlobalizationService.set_current_region_for_script(GlobalizationService.get_region_by_user_id(_))
+            request.region = GlobalizationService.get_region_by_user_id(_)
+            UserService._delete_user(User.get_by_id(_))
         num = User.objects().count()
         return u'%d user left' % num, True
 
