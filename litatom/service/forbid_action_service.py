@@ -206,6 +206,7 @@ class ForbidActionService(object):
         """内部警告处理检查方法"""
         MsgService.alert_basic(user_id)
         if ForbidCheckService.check_device_sensitive(user_id):
+            print('is sensitive device')
             cls.forbid_user(user_id, cls.DEFAULT_SYS_FORBID_TIME)
             return {SYS_FORBID: True}, True
         res = cls._check_forbid(user_id)
@@ -256,8 +257,10 @@ class ForbidActionService(object):
     def forbid_user(cls, user_id, forbid_ts, forbid_type=SYS_FORBID, ts=int(time.time())):
         """封号服务统一接口"""
         if not UserService.is_forbbiden(user_id):
+            print('not forbidden')
             UserService.forbid_action(user_id, forbid_ts)
             UserRecord.add_forbidden(user_id, forbid_type)
+        print('forbidden')
         reporters = ForbidRecordService.mark_record(user_id)
         MsgService.feedback_to_reporters(user_id, reporters)
         if not ForbidCheckService.check_device_sensitive(user_id):
@@ -296,6 +299,7 @@ class MsgService(object):
     @classmethod
     def feedback_to_reporters(cls, reported_uid, report_user_ids, is_warn=False):
         target_user_nickname = UserService.nickname_by_uid(reported_uid)
+        region = GlobalizationService.get_region_by_user_id(reported_uid)
         if is_warn:
             to_user_info = GlobalizationService.get_region_word(cls.WARN_FEEDBACK_WORDS) % (
                 target_user_nickname, target_user_nickname)
