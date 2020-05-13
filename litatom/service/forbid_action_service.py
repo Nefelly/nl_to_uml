@@ -255,7 +255,6 @@ class ForbidActionService(object):
     @classmethod
     def forbid_user(cls, user_id, forbid_ts, forbid_type=SYS_FORBID, ts=int(time.time())):
         """封号服务统一接口"""
-        print(1.4)
         if not UserService.is_forbbiden(user_id):
             UserService.forbid_action(user_id, forbid_ts)
             UserRecord.add_forbidden(user_id, forbid_type)
