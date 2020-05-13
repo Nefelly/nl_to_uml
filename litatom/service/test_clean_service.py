@@ -9,7 +9,8 @@ from flask import (
 from ..service import (
     MongoSyncService,
     UserService,
-    GlobalizationService
+    GlobalizationService,
+    StatisticService
 )
 from ..model import (
     User
@@ -80,7 +81,7 @@ class TestCleanService(object):
         ret = {
             'to_delete_num': len(res)
         }
-        user_infos = UserService._user_infos_by_uids([el[0] for el in res])
+        user_infos = StatisticService._user_infos_by_uids([el[0] for el in res])
         print user_infos
         ret['users'] = user_infos
         return ret, True
