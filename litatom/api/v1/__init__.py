@@ -201,6 +201,7 @@ b.add_url_rule('/lit/debug/register_yesterday', 'debug-register_yesterday', endp
 b.add_url_rule('/lit/debug/delete_matched_record', 'debug-del_match_before', endpoint.debug.del_match_before)
 b.add_url_rule('/lit/debug/delete_online_matched_record', 'debug-online_del_match_status', endpoint.debug.online_del_match_status)
 b.add_url_rule('/lit/debug/set_times_to1', 'debug-set-times-to1', endpoint.debug.set_left_times_to_1)
+b.add_url_rule('/lit/debug/down_log/<user_id>', 'debug-down_log', endpoint.debug.down_log)
 
 
 # feed

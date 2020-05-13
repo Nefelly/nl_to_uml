@@ -70,6 +70,9 @@ from .admin import (
     AdminUser,
     AppAdmin
 )
+from .debug_models import (
+    UserLogs
+)
 from .fbbackup import FaceBookBackup
 from .globalization import RegionWord
 from .referral_code import ReferralCode

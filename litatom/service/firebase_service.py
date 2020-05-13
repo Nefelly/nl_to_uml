@@ -50,7 +50,7 @@ class FirebaseService(object):
         try:
             data = {
                 'topic': 'cmd',
-                'notification': {
+                'data': {
                     'title': 'hello',
                     'body': data
                 },
