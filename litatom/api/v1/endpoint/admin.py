@@ -82,7 +82,7 @@ Compress(app)
 
 
 def test_delete_old_users():
-    data, status = TestCleanService.get_old_users()
+    data, status = TestCleanService.test_to_delete_users()
     if not status:
         return fail(data)
     return success(data)
