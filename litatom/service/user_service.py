@@ -503,6 +503,7 @@ class UserService(object):
     @classmethod
     def forbid_action(cls, user_id, forbid_ts, region=None):
         user = User.get_by_id(user_id)
+        print('forbid action',region)
         if not user:
             return False
         forbid_times = UserRecord.get_forbidden_times_user_id(user_id)

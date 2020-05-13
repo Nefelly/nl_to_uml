@@ -123,7 +123,8 @@ class FeedService(object):
             for pic in pic_res:
                 print(pic_res)
                 if pic_res[pic][1] == BLOCK_PIC:
-                    ForbidActionService.resolve_block_pic(feed.user_id, pic, region)
+                    print('in feed service',region)
+                    ForbidActionService.resolve_block_pic(feed.user_id, pic, region=region)
                     FeedLike.del_by_feedid(feed_id)
                     FeedComment.objects(feed_id=feed_id).delete()
                     feed.delete()

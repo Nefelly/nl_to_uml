@@ -182,7 +182,7 @@ class ForbidActionService(object):
     def resolve_block_pic(cls, user_id, pic, region=None):
         """已鉴定过的block图片处理接口服务函数"""
         TrackSpamRecordService.save_record(user_id, pic=pic, forbid_weight=cls.BLOCK_PIC_WEIGHTING)
-        print(0,region)
+        print('in resolve block pic',region)
         return cls._basic_alert_resolution(user_id, region)
         # MsgService.alert_basic(user_id)
         # if ForbidCheckService.check_device_sensitive(user_id):
