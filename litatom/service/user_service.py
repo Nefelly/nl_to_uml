@@ -501,7 +501,7 @@ class UserService(object):
     #     return True
 
     @classmethod
-    def forbid_action(cls, user_id, forbid_ts):
+    def forbid_action(cls, user_id, forbid_ts, region=None):
         user = User.get_by_id(user_id)
         if not user:
             return False
@@ -515,10 +515,10 @@ class UserService(object):
         print(3)
         for gender in GENDERS:
             # key = REDIS_ONLINE_GENDER.format(gender=gender)
-            key = GlobalizationService._online_key_by_region_gender(gender)
+            key = GlobalizationService._online_key_by_region_gender(gender,region=region)
             redis_client.zrem(key, user_id)
             print(4)
-        redis_client.zrem(GlobalizationService._online_key_by_region_gender(), user_id)
+        redis_client.zrem(GlobalizationService._online_key_by_region_gender(region=region), user_id)
         print(5)
         user.save()
         print(6)

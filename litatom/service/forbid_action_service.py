@@ -153,7 +153,8 @@ class ForbidActionService(object):
                     MsgService.alert_basic(target_user_id)
                     return
         if word_res:
-            TrackSpamRecordService.save_record(target_user_id, word=word_res.keys()[0],forbid_weight=cls.SPAM_WORD_WEIGHTING)
+            TrackSpamRecordService.save_record(target_user_id, word=word_res.keys()[0],
+                                               forbid_weight=cls.SPAM_WORD_WEIGHTING)
             MsgService.alert_basic(target_user_id)
             return
         pic = pic_res.keys()[0]
@@ -175,13 +176,13 @@ class ForbidActionService(object):
         # 理论上不可能出现
         if not feed.pics:
             return None, False
-        return cls.resolve_block_pic(user_id,feed.pics[0])
+        return cls.resolve_block_pic(user_id, feed.pics[0])
 
     @classmethod
-    def resolve_block_pic(cls, user_id, pic):
+    def resolve_block_pic(cls, user_id, pic, region=None):
         """已鉴定过的block图片处理接口服务函数"""
         TrackSpamRecordService.save_record(user_id, pic=pic, forbid_weight=cls.BLOCK_PIC_WEIGHTING)
-        return cls._basic_alert_resolution(user_id)
+        return cls._basic_alert_resolution(user_id, region)
         # MsgService.alert_basic(user_id)
         # if ForbidCheckService.check_device_sensitive(user_id):
         #     cls.forbid_user(user_id, cls.DEFAULT_SYS_FORBID_TIME)
@@ -202,9 +203,9 @@ class ForbidActionService(object):
         return cls._basic_alert_resolution(user_id)
 
     @classmethod
-    def _basic_alert_resolution(cls, user_id):
+    def _basic_alert_resolution(cls, user_id, region=None):
         """内部警告处理检查方法"""
-        MsgService.alert_basic(user_id)
+        MsgService.alert_basic(user_id, region)
         if ForbidCheckService.check_device_sensitive(user_id):
             print('is sensitive device')
             cls.forbid_user(user_id, cls.DEFAULT_SYS_FORBID_TIME)
@@ -254,7 +255,7 @@ class ForbidActionService(object):
         return illegal_credit, False
 
     @classmethod
-    def forbid_user(cls, user_id, forbid_ts, forbid_type=SYS_FORBID, ts=int(time.time())):
+    def forbid_user(cls, user_id, forbid_ts, forbid_type=SYS_FORBID, ts=int(time.time()), region=None):
         """封号服务统一接口"""
         if not UserService.is_forbbiden(user_id):
             print('not forbidden')
@@ -263,7 +264,7 @@ class ForbidActionService(object):
             UserRecord.add_forbidden(user_id, forbid_type)
         print('forbidden')
         reporters = ForbidRecordService.mark_record(user_id)
-        MsgService.feedback_to_reporters(user_id, reporters)
+        MsgService.feedback_to_reporters(user_id, reporters, region=region)
         if not ForbidCheckService.check_device_sensitive(user_id):
             ForbidRecordService.record_sensitive_device(user_id)
         return True
@@ -290,22 +291,21 @@ class MsgService(object):
         UserModel.add_alert_num(user_id)
 
     @classmethod
-    def alert_basic(cls, user_id):
-        cls.alert_atom(user_id, GlobalizationService.get_region_word(cls.DEFAULT_ALERT_WORDS, GlobalizationService.get_region_by_user_id(user_id)))
+    def alert_basic(cls, user_id, region=None):
+        cls.alert_atom(user_id, GlobalizationService.get_region_word(cls.DEFAULT_ALERT_WORDS, region))
 
     @classmethod
     def alert_feed_delete(cls, user_id, reason):
         cls.alert_atom(user_id, cls.FEED_DELETE_ALERT_WORDS % reason)
 
     @classmethod
-    def feedback_to_reporters(cls, reported_uid, report_user_ids, is_warn=False):
+    def feedback_to_reporters(cls, reported_uid, report_user_ids, is_warn=False, region=None):
         target_user_nickname = UserService.nickname_by_uid(reported_uid)
-        region = GlobalizationService.get_region_by_user_id(reported_uid)
         if is_warn:
-            to_user_info = GlobalizationService.get_region_word(cls.WARN_FEEDBACK_WORDS) % (
+            to_user_info = GlobalizationService.get_region_word(cls.WARN_FEEDBACK_WORDS, region) % (
                 target_user_nickname, target_user_nickname)
         else:
-            to_user_info = GlobalizationService.get_region_word(cls.BAN_FEEDBACK_WORDS) % (
+            to_user_info = GlobalizationService.get_region_word(cls.BAN_FEEDBACK_WORDS, region) % (
                 target_user_nickname, target_user_nickname)
         for reporter in report_user_ids:
             UserService.msg_to_user(to_user_info, reporter)
