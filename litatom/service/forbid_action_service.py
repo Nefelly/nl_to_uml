@@ -293,6 +293,8 @@ class MsgService(object):
 
     @classmethod
     def alert_basic(cls, user_id):
+        print(user_id)
+        print('xxxx',GlobalizationService.get_region_word(cls.DEFAULT_ALERT_WORDS))
         cls.alert_atom(user_id, GlobalizationService.get_region_word(cls.DEFAULT_ALERT_WORDS))
 
     @classmethod
