@@ -32,7 +32,7 @@ from ....response import (
 )
 from ....const import (
     APP_PATH,
-    BLOCK_PIC,
+    BLOCK_PIC, REVIEW_PIC,
 )
 from ....service import (
     StatisticService,
@@ -49,7 +49,7 @@ from ....service import (
     ForbidActionService,
     AliOssService,
     ExperimentService,
-    ActedService
+    ActedService, ForbidRecordService
 )
 
 logger = logging.getLogger(__name__)
@@ -170,8 +170,11 @@ def check_pic():
     if not url:
         return success()
     reason, advice = PicCheckService.check_pic_by_url(url)
-    if reason and advice == BLOCK_PIC:
-        data, status = ForbidActionService.resolve_block_pic(request.user_id, url)
+    if reason:
+        if advice == BLOCK_PIC:
+            data, status = ForbidActionService.resolve_block_pic(request.user_id, url)
+        elif advice == REVIEW_PIC:
+            data, status = ForbidRecordService
         if not status:
             return fail(data)
         return success(data)

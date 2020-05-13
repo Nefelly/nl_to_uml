@@ -170,6 +170,10 @@ class Feed(Document):
             self.dislike_num = 0
         self.save()
 
+    def change_to_normal(self):
+        self.status = FEED_NORMAL
+        self.save()
+
     @classmethod
     def get_by_id(cls, feed_id):
         cache_key = REDIS_FEED_CACHE.format(feed_id=feed_id)

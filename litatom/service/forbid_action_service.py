@@ -168,10 +168,28 @@ class ForbidActionService(object):
         return cls._basic_alert_resolution(user_id)
 
     @classmethod
-    def resolve_review_feed(cls, feed_id):
+    def resolve_review_pic(cls, record_id, res):
+        """对于需要review的track spam record，人工审核确认其是黄图"""
+        record = TrackSpamRecord.get_record_by_id(record_id)
+        if not record:
+            return None, False
+        if not res:
+            record.delete()
+            return 'record deleted', True
+        record.forbid_weight = cls.BLOCK_PIC_WEIGHTING
+        record.save()
+        return cls._basic_alert_resolution(record.user_id)
+
+    @classmethod
+    def resolve_review_feed(cls, feed_id, res):
         """对于需要review的Feed，人工审核确认其是黄图"""
-        Feed.change_to_not_shown(feed_id)
         feed = Feed.get_by_id(feed_id)
+        if not feed:
+            return None, False
+        if not res:
+            feed.change_to_normal()
+            return 'normal feed', True
+        Feed.change_to_not_shown(feed_id)
         user_id = feed.user_id
         # 理论上不可能出现
         if not feed.pics:
@@ -182,24 +200,6 @@ class ForbidActionService(object):
     def resolve_block_pic(cls, user_id, pic):
         """已鉴定过的block图片处理接口服务函数"""
         TrackSpamRecordService.save_record(user_id, pic=pic, forbid_weight=cls.BLOCK_PIC_WEIGHTING)
-        return cls._basic_alert_resolution(user_id)
-        # MsgService.alert_basic(user_id)
-        # if ForbidCheckService.check_device_sensitive(user_id):
-        #     cls.forbid_user(user_id, cls.DEFAULT_SYS_FORBID_TIME)
-        #     return u"definitely sexual picture and have forbidden user", True
-        # res = cls._check_forbid(user_id)
-        # if not res:
-        #     return u"definitely sexual picture", True
-        # cls.forbid_user(user_id, cls.DEFAULT_SYS_FORBID_TIME)
-        # return u"definitely sexual picture and have forbidden user", True
-
-    @classmethod
-    def resolve_review_pic(cls, record_id):
-        """对于疑似的图片记录，确认其违规，作出处理"""
-        record = TrackSpamRecord.get_record_by_id(record_id)
-        if record.pic and record.forbid_weight == cls.REVIEW_PIC_WEIGHTING:
-            record.forbid_weight = cls.BLOCK_PIC_WEIGHTING
-        user_id = record.user_id
         return cls._basic_alert_resolution(user_id)
 
     @classmethod
