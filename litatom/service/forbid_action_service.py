@@ -204,11 +204,8 @@ class ForbidActionService(object):
     @classmethod
     def _basic_alert_resolution(cls, user_id):
         """内部警告处理检查方法"""
-        print(1.1)
         MsgService.alert_basic(user_id)
-        print(1.2)
         if ForbidCheckService.check_device_sensitive(user_id):
-            print(1.3)
             cls.forbid_user(user_id, cls.DEFAULT_SYS_FORBID_TIME)
             return {SYS_FORBID: True}, True
         res = cls._check_forbid(user_id)
@@ -286,16 +283,12 @@ class MsgService(object):
 
     @classmethod
     def alert_atom(cls, user_id, msg):
-        print(1.11,user_id,msg)
         UserService.msg_to_user(msg, user_id)
-        print(1.12)
         UserModel.add_alert_num(user_id)
 
     @classmethod
     def alert_basic(cls, user_id):
-        print(user_id)
-        print('xxxx',GlobalizationService.get_region_word(cls.DEFAULT_ALERT_WORDS))
-        cls.alert_atom(user_id, GlobalizationService.get_region_word(cls.DEFAULT_ALERT_WORDS))
+        cls.alert_atom(user_id, GlobalizationService.get_region_word(cls.DEFAULT_ALERT_WORDS, GlobalizationService.get_region_by_user_id(user_id)))
 
     @classmethod
     def alert_feed_delete(cls, user_id, reason):
