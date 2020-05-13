@@ -204,8 +204,11 @@ class ForbidActionService(object):
     @classmethod
     def _basic_alert_resolution(cls, user_id):
         """内部警告处理检查方法"""
+        print(1.1)
         MsgService.alert_basic(user_id)
+        print(1.2)
         if ForbidCheckService.check_device_sensitive(user_id):
+            print(1.3)
             cls.forbid_user(user_id, cls.DEFAULT_SYS_FORBID_TIME)
             return {SYS_FORBID: True}, True
         res = cls._check_forbid(user_id)
@@ -255,6 +258,7 @@ class ForbidActionService(object):
     @classmethod
     def forbid_user(cls, user_id, forbid_ts, forbid_type=SYS_FORBID, ts=int(time.time())):
         """封号服务统一接口"""
+        print(1.4)
         if not UserService.is_forbbiden(user_id):
             UserService.forbid_action(user_id, forbid_ts)
             UserRecord.add_forbidden(user_id, forbid_type)
