@@ -209,11 +209,11 @@ class ForbidActionService(object):
         MsgService.alert_basic(user_id, region)
         if ForbidCheckService.check_device_sensitive(user_id):
             print('is sensitive device')
-            cls.forbid_user(user_id, cls.DEFAULT_SYS_FORBID_TIME)
+            cls.forbid_user(user_id, cls.DEFAULT_SYS_FORBID_TIME,region=region)
             return {SYS_FORBID: True}, True
         res = cls._check_forbid(user_id)
         if res:
-            cls.forbid_user(user_id, cls.DEFAULT_SYS_FORBID_TIME)
+            cls.forbid_user(user_id, cls.DEFAULT_SYS_FORBID_TIME,region=region)
             return {SYS_FORBID: True}, True
         return {SYS_FORBID: False}, True
 
