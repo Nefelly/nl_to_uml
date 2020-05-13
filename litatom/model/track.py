@@ -91,7 +91,6 @@ class TrackSpamRecord(Document):
         res = 0.0
         for obj in objs:
             try:
-                print('res=',res)
                 res += obj.forbid_weight
             except AttributeError as e:
                 pass
