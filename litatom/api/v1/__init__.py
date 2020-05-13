@@ -108,9 +108,10 @@ b.add_url_rule('/lit/admin/judge_pic','admin-judge_pic',endpoint.admin.judge_pic
 b.add_url_rule('/lit/admin/judge_lit_pic','admin-judge_lit_pic',endpoint.admin.judge_lit_pic,methods=['POST'])
 b.add_url_rule('/lit/admin/test_to_delete_users','admin-test_to_delete_users', endpoint.admin.test_to_delete_users)
 b.add_url_rule('/lit/admin/test_delete_old_users','admin-test_delete_old_users',endpoint.admin.test_delete_old_users)
-b.add_url_rule('/lit/admin/review_pic','admin-review_pic',endpoint.admin.review_pic)
+b.add_url_rule('/lit/admin/review_record','admin-review_record',endpoint.admin.review_record)
 b.add_url_rule('/lit/admin/review_feed','admin-review_feed',endpoint.admin.review_feed)
-b.add_url_rule('/lit/admin/block_feed/<feed_id>','admin-block_feed',endpoint.admin.block_feed)
+b.add_url_rule('/lit/admin/resolve_review_record','admin-resolve_review_record',endpoint.admin.resolve_review_record)
+b.add_url_rule('/lit/admin/resolve_review_feed','admin-resolve_review_feed',endpoint.admin.resolve_review_feed)
 
 
 # picture

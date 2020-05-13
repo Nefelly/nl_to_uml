@@ -434,14 +434,31 @@ def judge_lit_pic():
     })
 
 
-def review_pic():
+def review_record():
     return success(TrackSpamRecordService.get_review_pic())
+
 
 def review_feed():
     return success(FeedService.get_review_feed())
 
-def block_feed(feed_id):
-    data, status = ForbidActionService.resolve_review_feed(feed_id)
+
+def resolve_review_feed():
+    feed_id = request.args.get('feed')
+    res = request.args.get('res')
+    if not feed_id or res:
+        return fail('no feed or res')
+    data, status = ForbidActionService.resolve_review_feed(feed_id, res)
+    if not status:
+        return fail()
+    return success(data)
+
+
+def resolve_review_record():
+    record_id = request.args.get('record')
+    res = request.args.get('res')
+    if not record_id or res:
+        return fail('no record or res')
+    data, status = ForbidActionService.resolve_review_pic(record_id, res)
     if not status:
         return fail()
     return success(data)

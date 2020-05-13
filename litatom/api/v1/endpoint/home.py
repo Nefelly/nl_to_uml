@@ -174,7 +174,7 @@ def check_pic():
         if advice == BLOCK_PIC:
             data, status = ForbidActionService.resolve_block_pic(request.user_id, url)
         elif advice == REVIEW_PIC:
-            data, status = ForbidRecordService
+            data, status = ForbidActionService.re
         if not status:
             return fail(data)
         return success(data)

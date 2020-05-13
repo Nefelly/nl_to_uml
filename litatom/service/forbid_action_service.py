@@ -169,7 +169,7 @@ class ForbidActionService(object):
 
     @classmethod
     def resolve_review_pic(cls, record_id, res):
-        """对于需要review的track spam record，人工审核确认其是黄图"""
+        """对于需要review的track spam record，人工审核结果处理"""
         record = TrackSpamRecord.get_record_by_id(record_id)
         if not record:
             return None, False
@@ -182,7 +182,7 @@ class ForbidActionService(object):
 
     @classmethod
     def resolve_review_feed(cls, feed_id, res):
-        """对于需要review的Feed，人工审核确认其是黄图"""
+        """对于需要review的Feed，人工审核结果处理"""
         feed = Feed.get_by_id(feed_id)
         if not feed:
             return None, False
