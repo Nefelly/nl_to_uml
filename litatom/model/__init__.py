@@ -19,7 +19,8 @@ from .material import (
     Avatar,
     YoutubeVideo,
     Wording,
-    SpamWord
+    SpamWord,
+    FakeSpamWord
 )
 from .report import (
     Report
