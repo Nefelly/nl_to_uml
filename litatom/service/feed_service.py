@@ -117,6 +117,8 @@ class FeedService(object):
         feed = Feed.get_by_id(feed_id)
         if feed:
             if reason:
+                GlobalizationService.set_current_region_for_script(
+                    GlobalizationService.get_region_by_user_id(feed.user_id))
                 ForbidActionService.resolve_block_pic(feed.user_id, illegal_pic)
                 FeedLike.del_by_feedid(feed_id)
                 FeedComment.objects(feed_id=feed_id).delete()
