@@ -86,7 +86,19 @@ class TestCleanService(object):
 
     @classmethod
     def clean_model_field(cls):
+        '''
+
+        :return: {Report:['uid', 'target_uid']}
+        '''
         models = cls.get_tables()
+        fields = ['user_id', 'uid', 'target_uid']
+        res = {}
+        for model in models.values():
+            res[model] =[]
+            for _ in fields:
+                if getattr(model, _):
+                    res[model].append(_)
+        return res
 
     @classmethod
     def clear_old_users(cls):
