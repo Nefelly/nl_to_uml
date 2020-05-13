@@ -75,7 +75,7 @@ class TestCleanService(object):
                 print _, region, '!' * 100
             # GlobalizationService.set_current_region_for_script(region)
             request.region = region
-            online_time = UserService.uid_online(_)
+            online_time = UserService.uid_online_time(_)
             if online_time < judge_time:
                 res.append([_, time_now - online_time])
         ret = {
