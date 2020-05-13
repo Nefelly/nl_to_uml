@@ -286,7 +286,9 @@ class MsgService(object):
 
     @classmethod
     def alert_atom(cls, user_id, msg):
+        print(1.11,user_id,msg)
         UserService.msg_to_user(msg, user_id)
+        print(1.12)
         UserModel.add_alert_num(user_id)
 
     @classmethod
