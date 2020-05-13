@@ -307,7 +307,8 @@ class GlobalizationService(object):
             if tmp_loc and tmp_loc in cls.LOCS:
                 loc = tmp_loc
             else:
-                cls._set_user_loc(user_id, tmp_loc)
+                loc = cls.DEFAULT_LOC
+                cls._set_user_loc(user_id, loc)
         if cls.LOC_REGION.get(loc, ''):
             res = cls.LOC_REGION[loc]
         else:
@@ -403,6 +404,4 @@ class GlobalizationService(object):
             # if word:
             #     redis_client.set(cls._region_tag_key(region, tag), word)
         return word
-
 # RegionWord.load()
-

@@ -505,7 +505,7 @@ class FeedService(object):
     def get_feed_comments(cls, user_id, feed_id):
         feed = Feed.get_by_id(feed_id)
         unlimited = False
-        if feed.user_id == user_id:
+        if feed and feed.user_id == user_id:
             unlimited = True
         comments = FeedComment.get_by_feed_id(feed_id, unlimited)
         comments = list(comments)

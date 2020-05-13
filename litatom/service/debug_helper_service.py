@@ -5,6 +5,7 @@ from ..model import (
     User,
     Feed,
     HuanxinAccount,
+    UserLogs,
 )
 from ..service import (
     SmsCodeService,
@@ -42,6 +43,18 @@ redis_client = RedisClient()['lit']
 class DebugHelperService(object):
     BASE_PHONE = 8618189180000
     TEST_NUM = 20
+
+    @classmethod
+    def add_user_log(cls, user_id, file_id):
+        UserLogs.add_user_log(user_id, file_id)
+        return None, True
+
+    @classmethod
+    def get_user_log_file_id(cls, user_id):
+        file_id = UserLogs.get_latest_file_id(user_id)
+        if not file_id:
+            return u'this user has not been upload', False
+        return file_id, True
 
     @classmethod
     def get_field_by_batchid(cls, bid, field):

@@ -58,7 +58,8 @@ from ....service import (
     AccountService,
     FeedbackService,
     AliOssService,
-    ExperimentService
+    ExperimentService,
+    TestCleanService
 )
 from ....const import (
     MAX_TIME,
@@ -78,6 +79,20 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = timedelta(seconds=1)
 app.config['COMPRESS_MIN_SIZE'] = 100
 app.config['COMPRESS_MIMETYPES'] = ['text/html', 'text/css', 'text/xml', 'application/json', 'application/javascript']
 Compress(app)
+
+
+def test_to_delete_users():
+    data, status = TestCleanService.get_old_users()
+    if not status:
+        return fail(data)
+    return success(data)
+
+
+def test_delete_old_users():
+    data, status = TestCleanService.clear_old_users()
+    if not status:
+        return fail(data)
+    return success(data)
 
 
 def login():
@@ -553,7 +568,7 @@ def journal_cal(item_id):
 
 
 def get_log(user_id):
-    msg, status = FirebaseService.command_to_user(user_id, {"type": 1000})
+    msg, status = FirebaseService.command_to_user(user_id, {"type": 1000, "data": {"code": 0}})
     if status:
         return success()
     return fail(msg)
