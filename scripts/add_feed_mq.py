@@ -53,12 +53,12 @@ def run():
     thread_num = 10
     threads = []
     feed_consum()
-    # for i in range(thread_num):
-    #     t = threading.Thread(target=feed_consum, args=())
-    #     t.start()
-    #     threads.append(t)
-    # for t in threads:
-    #     t.join()
+    for i in range(thread_num):
+        t = threading.Thread(target=feed_consum, args=())
+        t.start()
+        threads.append(t)
+    for t in threads:
+        t.join()
 
 
 if __name__ == "__main__":
