@@ -12,9 +12,7 @@ from ..service import (
     GlobalizationService,
     StatisticService
 )
-from ..model import (
-    User
-)
+from ..model import *
 from .. import model
 from mongoengine import (
     NULLIFY,
