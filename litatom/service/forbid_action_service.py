@@ -243,7 +243,6 @@ class ForbidActionService(object):
         history_forbidden_credit = 0
         if UserRecord.has_been_forbidden(user_id):
             history_forbidden_credit = cls.HISTORY_FORBID_WEIGHTING
-        print(alert_score,report_total_num,report_match_num,history_forbidden_credit,blocker_num)
         illegal_credit = alert_score + (report_total_num - report_match_num) * cls.REPORT_WEIGHTING \
                          + report_match_num * cls.MATCH_REPORT_WEIGHTING + additional_score + history_forbidden_credit \
                          + blocker_num * cls.BLOCKER_WEIGHTING - cls._get_high_value_compensation(user_id)
