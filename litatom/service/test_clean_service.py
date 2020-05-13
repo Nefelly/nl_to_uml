@@ -60,6 +60,7 @@ class TestCleanService(object):
         if not setting.IS_DEV:
             return u'you are not in testing', False
         user_ids = MongoSyncService.load_table_map(User, '_id')
+        print user_ids
         time_now = int(time.time())
         judge_time = time_now - cls.MAINTAIN_TIME
         res = []
