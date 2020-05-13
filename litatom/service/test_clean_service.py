@@ -68,6 +68,7 @@ class TestCleanService(object):
         for _ in user_ids:
             region = GlobalizationService.get_region_by_user_id(_)
             GlobalizationService.set_current_region_for_script(region)
+            print 'here'
             online_time = UserService.uid_online(_)
             if online_time < judge_time:
                 res.append([_, time_now - online_time])
