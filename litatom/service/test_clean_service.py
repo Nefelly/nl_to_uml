@@ -96,7 +96,7 @@ class TestCleanService(object):
         for model in models.values():
             res[model] =[]
             for _ in fields:
-                if getattr(model, _):
+                if getattr(model, _, ''):
                     res[model].append(_)
         return res
 
