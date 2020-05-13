@@ -86,7 +86,7 @@ class UserService(object):
     @classmethod
     def _trans_session_2_forbidden(cls, user):
         user._set_forbidden_session_cache(user.session_id.replace("session.", ""))
-        request.session_id = user.session_id
+        # request.session_id = user.session_id
 
     @classmethod
     def _trans_forbidden_2_session(cls, user):
