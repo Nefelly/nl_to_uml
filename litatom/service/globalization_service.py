@@ -152,6 +152,7 @@ class GlobalizationService(object):
     '''
     @classmethod
     def _online_key_by_region_gender(cls, gender=None, region=None):
+        print(3.5,region)
         if not region:
             region = cls.get_region()
         if gender:
