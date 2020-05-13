@@ -3,6 +3,9 @@ import json
 import time
 import traceback
 import logging
+from flask import (
+    request
+)
 from ..service import (
     MongoSyncService,
     UserService,
@@ -67,7 +70,8 @@ class TestCleanService(object):
         print 'user_ids to check', len(user_ids)
         for _ in user_ids:
             region = GlobalizationService.get_region_by_user_id(_)
-            GlobalizationService.set_current_region_for_script(region)
+            # GlobalizationService.set_current_region_for_script(region)
+            request.region = region
             online_time = UserService.uid_online(_)
             if online_time < judge_time:
                 res.append([_, time_now - online_time])
