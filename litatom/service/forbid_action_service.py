@@ -174,7 +174,7 @@ class ForbidActionService(object):
         TrackSpamRecordService.save_record(user_id, pic=pic)
         MsgService.alert_basic(user_id)
         if ForbidCheckService.check_device_sensitive(user_id):
-            cls.forbid_user(user_id,cls.DEFAULT_SYS_FORBID_TIME)
+            cls.forbid_user(user_id, cls.DEFAULT_SYS_FORBID_TIME)
             return u"definitely sexual picture and have forbidden user", True
         res = cls._check_forbid(user_id)
         if not res:
