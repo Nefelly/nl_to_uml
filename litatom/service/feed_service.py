@@ -124,6 +124,8 @@ class FeedService(object):
                     ForbidActionService.resolve_block_pic(feed.user_id, pic)
                     FeedLike.del_by_feedid(feed_id)
                     FeedComment.objects(feed_id=feed_id).delete()
+                    print(feed.id)
+                    print(feed.to_json())
                     feed.delete()
                     return
                 if not reviewed_tag and pic_res[pic][1] == REVIEW_PIC:
