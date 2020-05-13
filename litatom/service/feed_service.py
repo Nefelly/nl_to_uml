@@ -110,11 +110,12 @@ class FeedService(object):
 
     @classmethod
     def consume_feed_added(cls, feed_id, pics, region_key):
-        print('------------------------------------',feed_id)
+        print('------------------------------------',feed_id, pics)
         feed = Feed.get_by_id(feed_id)
         if not feed:
             return
         if pics:
+            print(0)
             no_use, pic_res = ForbidCheckService.check_content(pics=pics)
             reviewed_tag = False
             for pic in pic_res:
