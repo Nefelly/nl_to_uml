@@ -86,8 +86,7 @@ class UserService(object):
     @classmethod
     def _trans_session_2_forbidden(cls, user):
         user._set_forbidden_session_cache(user.session_id.replace("session.", ""))
-        # request.session_id=''
-        # request.session_id = user.session_id
+        request.session_id = user.session_id
 
     @classmethod
     def _trans_forbidden_2_session(cls, user):
@@ -501,40 +500,30 @@ class UserService(object):
     #     return True
 
     @classmethod
-    def forbid_action(cls, user_id, forbid_ts, region=None):
+    def forbid_action(cls, user_id, forbid_ts):
         user = User.get_by_id(user_id)
-        print('forbid action',region)
         if not user:
             return False
         forbid_times = UserRecord.get_forbidden_times_user_id(user_id)
         user.forbidden = True
         user.forbidden_ts = int(time.time()) + forbid_ts * (1 + 5 * forbid_times)
-        print(1)
         cls._trans_session_2_forbidden(user)
-        print(2)
         user.clear_session()
-        print(3)
         for gender in GENDERS:
             # key = REDIS_ONLINE_GENDER.format(gender=gender)
-            key = GlobalizationService._online_key_by_region_gender(gender,region=region)
+            key = GlobalizationService._online_key_by_region_gender(gender)
             redis_client.zrem(key, user_id)
-            print(4)
-        redis_client.zrem(GlobalizationService._online_key_by_region_gender(region=region), user_id)
-        print(5)
+        redis_client.zrem(GlobalizationService._online_key_by_region_gender(), user_id)
         user.save()
-        print(6)
         if user.huanxin and user.huanxin.user_id:
             HuanxinService.deactive_user(user.huanxin.user_id)
-            print(7)
         feeds = Feed.objects(user_id=user_id, create_time__gte=int(time.time()) - 3 * ONE_DAY)
-        print(8)
         from ..service import FeedService
         for feed in feeds:
             FeedService.remove_from_pub(feed)
             # _.delete()
             feed.change_to_not_shown()
             MqService.push(REMOVE_EXCHANGE, {"feed_id": str(feed.id)})
-            print(feed.id)
 
     @classmethod
     def unban_by_nickname(cls, nickname):

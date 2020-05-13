@@ -179,11 +179,10 @@ class ForbidActionService(object):
         return cls.resolve_block_pic(user_id, feed.pics[0])
 
     @classmethod
-    def resolve_block_pic(cls, user_id, pic, region=None):
+    def resolve_block_pic(cls, user_id, pic):
         """已鉴定过的block图片处理接口服务函数"""
         TrackSpamRecordService.save_record(user_id, pic=pic, forbid_weight=cls.BLOCK_PIC_WEIGHTING)
-        print('in resolve block pic',region)
-        return cls._basic_alert_resolution(user_id, region)
+        return cls._basic_alert_resolution(user_id)
         # MsgService.alert_basic(user_id)
         # if ForbidCheckService.check_device_sensitive(user_id):
         #     cls.forbid_user(user_id, cls.DEFAULT_SYS_FORBID_TIME)
@@ -204,16 +203,15 @@ class ForbidActionService(object):
         return cls._basic_alert_resolution(user_id)
 
     @classmethod
-    def _basic_alert_resolution(cls, user_id, region=None):
+    def _basic_alert_resolution(cls, user_id):
         """内部警告处理检查方法"""
-        MsgService.alert_basic(user_id, region)
+        MsgService.alert_basic(user_id)
         if ForbidCheckService.check_device_sensitive(user_id):
-            print('is sensitive device')
-            cls.forbid_user(user_id, cls.DEFAULT_SYS_FORBID_TIME,region=region)
+            cls.forbid_user(user_id, cls.DEFAULT_SYS_FORBID_TIME)
             return {SYS_FORBID: True}, True
         res = cls._check_forbid(user_id)
         if res:
-            cls.forbid_user(user_id, cls.DEFAULT_SYS_FORBID_TIME,region=region)
+            cls.forbid_user(user_id, cls.DEFAULT_SYS_FORBID_TIME)
             return {SYS_FORBID: True}, True
         return {SYS_FORBID: False}, True
 
@@ -256,16 +254,13 @@ class ForbidActionService(object):
         return illegal_credit, False
 
     @classmethod
-    def forbid_user(cls, user_id, forbid_ts, forbid_type=SYS_FORBID, ts=int(time.time()), region=None):
+    def forbid_user(cls, user_id, forbid_ts, forbid_type=SYS_FORBID, ts=int(time.time())):
         """封号服务统一接口"""
         if not UserService.is_forbbiden(user_id):
-            print('not forbidden')
-            UserService.forbid_action(user_id, forbid_ts, region)
-            print(10)
+            UserService.forbid_action(user_id, forbid_ts)
             UserRecord.add_forbidden(user_id, forbid_type)
-        print('forbidden')
         reporters = ForbidRecordService.mark_record(user_id)
-        MsgService.feedback_to_reporters(user_id, reporters, region=region)
+        MsgService.feedback_to_reporters(user_id, reporters)
         if not ForbidCheckService.check_device_sensitive(user_id):
             ForbidRecordService.record_sensitive_device(user_id)
         return True
@@ -292,21 +287,21 @@ class MsgService(object):
         UserModel.add_alert_num(user_id)
 
     @classmethod
-    def alert_basic(cls, user_id, region=None):
-        cls.alert_atom(user_id, GlobalizationService.get_region_word(cls.DEFAULT_ALERT_WORDS, region))
+    def alert_basic(cls, user_id):
+        cls.alert_atom(user_id, GlobalizationService.get_region_word(cls.DEFAULT_ALERT_WORDS))
 
     @classmethod
     def alert_feed_delete(cls, user_id, reason):
         cls.alert_atom(user_id, cls.FEED_DELETE_ALERT_WORDS % reason)
 
     @classmethod
-    def feedback_to_reporters(cls, reported_uid, report_user_ids, is_warn=False, region=None):
+    def feedback_to_reporters(cls, reported_uid, report_user_ids, is_warn=False):
         target_user_nickname = UserService.nickname_by_uid(reported_uid)
         if is_warn:
-            to_user_info = GlobalizationService.get_region_word(cls.WARN_FEEDBACK_WORDS, region) % (
+            to_user_info = GlobalizationService.get_region_word(cls.WARN_FEEDBACK_WORDS) % (
                 target_user_nickname, target_user_nickname)
         else:
-            to_user_info = GlobalizationService.get_region_word(cls.BAN_FEEDBACK_WORDS, region) % (
+            to_user_info = GlobalizationService.get_region_word(cls.BAN_FEEDBACK_WORDS) % (
                 target_user_nickname, target_user_nickname)
         for reporter in report_user_ids:
             UserService.msg_to_user(to_user_info, reporter)
