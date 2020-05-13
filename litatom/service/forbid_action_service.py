@@ -164,7 +164,7 @@ class ForbidActionService(object):
     @classmethod
     def resolve_spam_word(cls, user_id, word):
         """已知spam word处理"""
-        TrackSpamRecordService.save_record(user_id, word=word, forbid_weight=cls.BLOCK_PIC_WEIGHTING)
+        TrackSpamRecordService.save_record(user_id, word=word, forbid_weight=cls.SPAM_WORD_WEIGHTING)
         return cls._basic_alert_resolution(user_id)
 
     @classmethod
