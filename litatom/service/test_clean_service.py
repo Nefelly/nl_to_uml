@@ -62,11 +62,9 @@ class TestCleanService(object):
         if not setting.IS_DEV:
             return u'you are not in testing', False
         user_ids = MongoSyncService.load_table_map(User, '_id')
-        print user_ids
         time_now = int(time.time())
         judge_time = time_now - cls.MAINTAIN_TIME
         res = []
-        print 'user_ids to check', len(user_ids)
         for _ in user_ids:
             region = GlobalizationService.get_region_by_user_id(_)
             if not region:
@@ -80,14 +78,12 @@ class TestCleanService(object):
             'to_delete_num': len(res)
         }
         user_infos = StatisticService._user_infos_by_uids([el[0] for el in res])
-        print user_infos
         ret['users'] = user_infos
         return ret, True
 
     @classmethod
     def clean_model_field(cls):
         '''
-
         :return: {Report:['uid', 'target_uid']}
         '''
         models = cls.get_tables()
@@ -106,6 +102,7 @@ class TestCleanService(object):
         if not status:
             return data, status
         user_ids = [el.get('user_id') for el in data.get('users')]
+        users = map(User.get_by_id, user_ids)
         num = User.objects().count()
         return u'%d user left' % num, True
 
