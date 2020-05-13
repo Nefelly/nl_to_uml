@@ -30,8 +30,8 @@ class UserLogs(Document):
         'alias': 'db_alias'
     }
 
-    user_id = StringField(required=True, unique=True)
-    file_id = StringField(required=True, unique=True)
+    user_id = StringField(required=True)
+    file_id = StringField(required=True)
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
 
     @classmethod
