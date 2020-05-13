@@ -111,29 +111,27 @@ class FeedService(object):
     @classmethod
     def consume_feed_added(cls, feed_id, pics, region_key):
         print('------------------------------------',feed_id, pics)
-        feed = Feed.get_by_id(feed_id)
-        if not feed:
-            return
+        reason = None
+        illegal_pic = None
         if pics:
             no_use, pic_res = ForbidCheckService.check_content(pics=pics)
-            reviewed_tag = False
             for pic in pic_res:
-                print(pic_res)
-                if pic_res[pic][1] == BLOCK_PIC:
-                    ForbidActionService.resolve_block_pic(feed.user_id, pic)
-                    FeedLike.del_by_feedid(feed_id)
-                    FeedComment.objects(feed_id=feed_id).delete()
-                    feed.delete()
-                    return
-                if not reviewed_tag and pic_res[pic][1] == REVIEW_PIC:
-                    feed.status = FEED_NEED_CHECK
-                    feed.save()
-                    reviewed_tag = True
-
-            #  need region to send to this because of request env
-            if feed.pics and cls.should_add_to_square(feed):
-                redis_client.zadd(region_key,{str(feed.id): feed.create_time})
-        FollowingFeedService.add_feed(feed)
+                if pic_res[pic][1] == 'block':
+                    reason = pic_res[pic][0]
+                    illegal_pic = pic
+        feed = Feed.get_by_id(feed_id)
+        if feed:
+            if reason:
+                ForbidActionService.resolve_block_pic(feed.user_id, illegal_pic)
+                FeedLike.del_by_feedid(feed_id)
+                FeedComment.objects(feed_id=feed_id).delete()
+                feed.delete()
+            else:
+                #  need region to send to this because of request env
+                if feed.pics and cls.should_add_to_square(feed):
+                    redis_client.zadd(region_key,
+                                      {str(feed.id): feed.create_time})
+            FollowingFeedService.add_feed(feed)
 
     @classmethod
     def consume_feed_removed(cls, feed_id):
