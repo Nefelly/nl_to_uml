@@ -67,8 +67,10 @@ class TrackSpamRecord(Document):
         else:
             obj = cls(user_id=user_id, pic=pic, dealed=dealed_tag)
         obj.create_time = int(time.time())
+        print(3, forbid_weight)
         obj.forbid_weight = forbid_weight
         obj.save()
+        print(4, obj.forbid_weight)
         return True
 
     @classmethod
