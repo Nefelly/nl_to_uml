@@ -99,8 +99,6 @@ class FeedService(object):
         if not feed.pics:
             if cls.should_add_to_square(feed):
                 cls._add_to_feed_pool(feed)
-        print({"feed_id": str(feed.id), "pics": feed.pics,
-                        "region_key": cls._redis_feed_region_key(REDIS_FEED_SQUARE_REGION)}, '!' * 100)
         MqService.push(ADD_EXCHANGE,
                        {"feed_id": str(feed.id), "pics": feed.pics,
                         "region_key": cls._redis_feed_region_key(REDIS_FEED_SQUARE_REGION)})
@@ -110,10 +108,7 @@ class FeedService(object):
 
     @classmethod
     def consume_feed_added(cls, feed_id, pics, region_key):
-        print('------------------------------------',feed_id, pics)
-        import re
-        res = re.search(':',region_key).span()[0]
-        region = region_key[res+1:]
+        from litatom.service import TrackSpamRecordService
         feed = Feed.get_by_id(feed_id)
         if not feed:
             return
@@ -123,8 +118,8 @@ class FeedService(object):
             for pic in pic_res:
                 print(pic_res)
                 if pic_res[pic][1] == BLOCK_PIC:
-                    print('in feed service',region)
-                    ForbidActionService.resolve_block_pic(feed.user_id, pic, region=region)
+                    print('in feed service')
+                    TrackSpamRecordService.save_record(feed.user_id, pic=pic, forbid_weight=ForbidActionService.BLOCK_PIC_WEIGHTING)
                     FeedLike.del_by_feedid(feed_id)
                     FeedComment.objects(feed_id=feed_id).delete()
                     feed.delete()
