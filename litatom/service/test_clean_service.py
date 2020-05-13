@@ -6,12 +6,12 @@ import logging
 from ..service import (
     MongoSyncService,
     UserService,
-    GlobalizationService,
-    MysqlSyncService
+    GlobalizationService
 )
 from ..model import (
     User
 )
+from .. import model
 from mongoengine import (
     NULLIFY,
     BooleanField,
@@ -44,6 +44,18 @@ class TestCleanService(object):
     MAINTAIN_TIME = 5 * ONE_DAY
 
     @classmethod
+    def get_tables(cls):
+        res = {}
+        for _ in dir(model):
+            try:
+                if globals().get(_, None) and issubclass(globals()[_], Document):
+                    res[_] = globals()[_]
+            except Exception as e:
+                # print _, e
+                continue
+        return res
+
+    @classmethod
     def get_old_users(cls):
         if not setting.IS_DEV:
             return u'you are not in testing', False
@@ -67,12 +79,15 @@ class TestCleanService(object):
 
     @classmethod
     def clean_model_field(cls):
-        models = MysqlSyncService.get_tables()
+        models = cls.get_tables()
 
     @classmethod
     def clear_old_users(cls):
         data, status = cls.get_old_users()
         if not status:
             return data, status
-        user_ids =
+        user_ids = [el.get('user_id') for el in data.get('users')]
+        num = User.objects().count()
+        return u'%d user left' % num, True
+
 
