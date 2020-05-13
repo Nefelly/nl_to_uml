@@ -259,6 +259,7 @@ class ForbidActionService(object):
         if not UserService.is_forbbiden(user_id):
             print('not forbidden')
             UserService.forbid_action(user_id, forbid_ts)
+            print(1)
             UserRecord.add_forbidden(user_id, forbid_type)
         print('forbidden')
         reporters = ForbidRecordService.mark_record(user_id)
