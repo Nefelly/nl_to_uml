@@ -306,7 +306,8 @@ class GlobalizationService(object):
             if tmp_loc and tmp_loc in cls.LOCS:
                 loc = tmp_loc
             else:
-                cls._set_user_loc(user_id, cls.DEFAULT_LOC)
+                loc = cls.DEFAULT_LOC
+                cls._set_user_loc(user_id, loc)
         if cls.LOC_REGION.get(loc, ''):
             res = cls.LOC_REGION[loc]
         else:
