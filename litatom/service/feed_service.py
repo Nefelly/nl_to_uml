@@ -108,7 +108,6 @@ class FeedService(object):
 
     @classmethod
     def consume_feed_added(cls, feed_id, pics, region_key):
-        from litatom.service import TrackSpamRecordService
         feed = Feed.get_by_id(feed_id)
         if not feed:
             return
@@ -118,8 +117,8 @@ class FeedService(object):
             for pic in pic_res:
                 print(pic_res)
                 if pic_res[pic][1] == BLOCK_PIC:
-                    print('in feed service')
-                    TrackSpamRecordService.save_record(feed.user_id, pic=pic, forbid_weight=ForbidActionService.BLOCK_PIC_WEIGHTING)
+                    # TrackSpamRecordService.save_record(feed.user_id, pic=pic, forbid_weight=ForbidActionService.BLOCK_PIC_WEIGHTING)
+                    ForbidActionService.resolve_block_pic(feed.user_id, pic)
                     FeedLike.del_by_feedid(feed_id)
                     FeedComment.objects(feed_id=feed_id).delete()
                     feed.delete()
