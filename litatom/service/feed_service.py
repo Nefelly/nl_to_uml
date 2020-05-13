@@ -115,20 +115,14 @@ class FeedService(object):
         if not feed:
             return
         if pics:
-            print(0)
             no_use, pic_res = ForbidCheckService.check_content(pics=pics)
             reviewed_tag = False
             for pic in pic_res:
                 print(pic_res)
                 if pic_res[pic][1] == BLOCK_PIC:
-                    print(1)
                     ForbidActionService.resolve_block_pic(feed.user_id, pic)
-                    print(2)
                     FeedLike.del_by_feedid(feed_id)
-                    print(3)
                     FeedComment.objects(feed_id=feed_id).delete()
-                    print(feed.id)
-                    print(feed.to_json())
                     feed.delete()
                     return
                 if not reviewed_tag and pic_res[pic][1] == REVIEW_PIC:
