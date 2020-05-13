@@ -158,6 +158,6 @@ class TrackSpamRecordService(object):
         records = TrackSpamRecord.get_review_pic(num)
         res = []
         for record in records:
-            temp = {'pic': record.pic, 'record_id': record.id}
+            temp = {'pic': record.pic, 'record_id': str(record.id)}
             res.append(temp)
         return res

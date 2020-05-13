@@ -115,7 +115,6 @@ class FeedService(object):
             no_use, pic_res = ForbidCheckService.check_content(pics=pics)
             reviewed_tag = False
             for pic in pic_res:
-                print(pic_res)
                 if pic_res[pic][1] == BLOCK_PIC:
                     GlobalizationService.set_current_region_for_script(GlobalizationService.get_region_by_user_id(feed.user_id))
                     ForbidActionService.resolve_block_pic(feed.user_id, pic)
@@ -548,6 +547,6 @@ class FeedService(object):
         feeds = Feed.get_review_feed(num)
         res = []
         for feed in feeds:
-            temp = {'feed_id':feed.id, 'pics':feed.pics}
+            temp = {'feed_id':str(feed.id), 'pics':feed.pics}
             res.append(temp)
         return res
