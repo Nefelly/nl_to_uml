@@ -81,8 +81,8 @@ app.config['COMPRESS_MIMETYPES'] = ['text/html', 'text/css', 'text/xml', 'applic
 Compress(app)
 
 
-def test_delete_old_users():
-    data, status = TestCleanService.test_to_delete_users()
+def test_to_delete_users():
+    data, status = TestCleanService.get_old_users()
     if not status:
         return fail(data)
     return success(data)
