@@ -111,6 +111,11 @@ class FeedService(object):
     @classmethod
     def consume_feed_added(cls, feed_id, pics, region_key):
         print('------------------------------------',feed_id, pics)
+        print(region_key,type(region_key))
+        import re
+        res = re.search(':',region_key).span()[0]
+        region = region_key[res+1:]
+        print(region)
         reason = None
         illegal_pic = None
         if pics:
