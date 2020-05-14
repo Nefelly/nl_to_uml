@@ -796,13 +796,11 @@ class UserRecord(Document):
 
     @classmethod
     def add_forbidden(cls, user_id, action=SYS_FORBID):
-        print(2)
         obj = cls()
         obj.user_id = user_id
         obj.action = action
         obj.create_time = int(time.time())
         obj.save()
-        print(3)
         return True
 
     @classmethod
