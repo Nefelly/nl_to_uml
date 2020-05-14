@@ -188,7 +188,7 @@ class ForbidActionService(object):
         if not res:
             feed.change_to_normal()
             return 'normal feed', True
-        Feed.change_to_not_shown(feed_id)
+        feed.change_to_not_shown()
         user_id = feed.user_id
         # 理论上不可能出现
         if not feed.pics:
