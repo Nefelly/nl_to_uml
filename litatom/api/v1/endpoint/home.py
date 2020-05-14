@@ -175,9 +175,10 @@ def check_pic():
         if advice == BLOCK_PIC:
             data, status = ForbidActionService.resolve_block_pic(user_id, url)
         elif advice == REVIEW_PIC:
-            data, status = TrackSpamRecordService.save_record(user_id,pic=url,forbid_weight=0)
+            data = 'review picture'
+            status = TrackSpamRecordService.save_record(user_id,pic=url,forbid_weight=0)
         else:
-            data = 'normal pic'
+            data = 'normal picture'
             status = True
         if not status:
             return fail(data)
