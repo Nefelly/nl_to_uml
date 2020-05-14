@@ -10,7 +10,13 @@ import logging
 from qiniu import Auth, QiniuMacAuth, http
 from . import GlobalizationService, AliLogService
 from ..const import BLOCK_PIC, REVIEW_PIC
-from ..model import SpamWord, Feed, BlockedDevices, UserSetting
+from litatom.model import (
+    SpamWord,
+    Feed,
+    BlockedDevices,
+    UserSetting,
+    UserRecord
+)
 from ..redis import (
     RedisClient,
 )
@@ -76,13 +82,18 @@ class ForbidCheckService(object):
         return words, pics
 
     @classmethod
-    def check_device_sensitive(cls, user_id):
-        """判断设备是否是敏感设备"""
+    def check_sensitive_user(cls, user_id):
+        """判断用户及其设备是否是敏感设备"""
+        if UserRecord.has_been_forbidden(user_id):
+            return True
+        return cls.check_sensitive_device(user_id)
+
+    @classmethod
+    def check_sensitive_device(cls, user_id):
         user_setting = UserSetting.get_by_user_id(user_id)
         if not user_setting:
             return False
         return BlockedDevices.is_device_sensitive(user_setting.uuid)
-
 
 class SpamWordCheckService(object):
     KEYWORD_CHAINS = {}
