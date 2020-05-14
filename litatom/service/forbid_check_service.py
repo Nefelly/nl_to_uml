@@ -95,6 +95,7 @@ class ForbidCheckService(object):
             return False
         return BlockedDevices.is_device_sensitive(user_setting.uuid)
 
+
 class SpamWordCheckService(object):
     KEYWORD_CHAINS = {}
     DEFAULT_KEYWORD_CHAIN = {}
