@@ -108,8 +108,8 @@ class Blocked(Document):
         return True
 
     @classmethod
-    def get_blocker_num(cls, user_id):
-        return len(cls.objects(blocked=user_id).distinct("uid"))
+    def get_blocker_num_by_time(cls, user_id, from_time,to_time):
+        return len(cls.objects(blocked=user_id, create_time__gte=from_time, create_time__lte=to_time).distinct("uid"))
 
     # obj = cls.get_by_block(uid, blocked)
     # if obj:

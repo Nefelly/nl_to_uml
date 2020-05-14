@@ -2,7 +2,6 @@
 import datetime
 import time
 from hendrix.conf import setting
-import json
 from math import floor
 from ..service import (
     ForbidCheckService,
@@ -27,11 +26,11 @@ from ..model import (
 )
 from ..util import (
     unix_ts_local,
+    date_from_unix_ts,
 )
 from ..const import (
     ONE_DAY,
     SYS_FORBID,
-    ADMINISTRATORS,
     MANUAL_FORBID,
 )
 
@@ -50,6 +49,7 @@ class ForbidActionService(object):
     COMPENSATION_PER_TEN_FOLLOWER = 2
     COMPENSATION_UPPER_THRESHOLD = 10
     RELIABLE_REPORTER_COMPENSATION = 1
+    NEW_BLOCKER_DAYS = 7
     SPAM_WORD_REASON = 'spam word existence'
     ADMINISTRATOR_REPORT = 'administrator report'
 
@@ -201,12 +201,13 @@ class ForbidActionService(object):
             timestamp_now = unix_ts_local(time_now)
             time_3days_ago = unix_ts_local(time_now - datetime.timedelta(days=3))
         else:
+            time_now = date_from_unix_ts(timestamp_now)
             time_3days_ago = timestamp_now - 3 * ONE_DAY
 
         alert_num = TrackSpamRecord.count_by_time_and_uid(user_id, time_3days_ago, timestamp_now)
         report_total_num = Report.count_by_time_and_uid_distinct(user_id, time_3days_ago, timestamp_now)
         report_match_num = Report.count_match_by_time_and_uid(user_id, time_3days_ago, timestamp_now)
-        blocker_num = Blocked.get_blocker_num(user_id)
+        blocker_num = Blocked.get_blocker_num_by_time(user_id, time_now - datetime.timedelta(days=cls.NEW_BLOCKER_DAYS),time_now)
         history_forbidden_credit = 0
         if UserRecord.has_been_forbidden(user_id):
             history_forbidden_credit = cls.HISTORY_FORBID_WEIGHTING
