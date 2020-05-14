@@ -799,6 +799,10 @@ class UserRecord(Document):
         return cls.objects(create_time__gte=from_ts, create_time__lte=to_ts)
 
     @classmethod
+    def get_by_uid_and_time(cls, user_id, from_ts, to_ts):
+        return cls.objects(user_id=user_id,create_time__gte=from_ts,create_time__lte=to_ts).order_by()
+
+    @classmethod
     def add_forbidden(cls, user_id, action=SYS_FORBID):
         obj = cls()
         obj.user_id = user_id
