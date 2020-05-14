@@ -1,3 +1,4 @@
+from litatom.const import FEED_NEED_CHECK
 from litatom.model import (
     Feed,
     UserSetting
@@ -16,7 +17,12 @@ class ForbidPlatformService(object):
         if loc not in cls.FEED_LOCATIONS:
             return 'invalid location', False
         if condition == cls.FEED_NEED_REVIEW:
-            feeds = Feed.objects()
+            feeds = Feed.objects(status=FEED_NEED_CHECK).limit(100)
+            res = []
+            for feed in feeds:
+                user_id = feed.user_id
+                if loc:
+                    UserSetting.get_loc_by_uid(user_id)
         elif condition == cls.FEED_RECOMMENDED:
 
         elif condition == cls.FEED_USER_UNRELIABLE:
