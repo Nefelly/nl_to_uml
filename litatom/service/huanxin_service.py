@@ -341,8 +341,8 @@ class HuanxinService(object):
         if not access_token:
             return False
         headers = {
-            'Content-Type':'application/json',
-            'Authorization':'Bearer %s' % access_token
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer %s' % access_token
         }
         data = {'username': user_name, 'password': password}
         try:
