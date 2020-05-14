@@ -67,7 +67,17 @@ class UserConversation(Document):
     @classmethod
     def get_by_user_id(cls, user_id):
         objs = cls.objects(user_id=user_id).order_by('-create_time').limit(cls.MAX_QUERY_NUM)
-        return [el.to_json() for el in objs]
+        pinned_obj = None
+        if len(objs) < cls.MAX_QUERY_NUM:
+            for el in objs:
+                if el.pinned:
+                    pinned_obj = el
+        else:
+            pinned_obj = cls.get_pinned_conversation(user_id)
+        pinned_json = {}
+        if pinned_obj:
+            pinned_json = pinned_obj.to_json()
+        return [el.to_json() for el in objs], pinned_json
 
     @classmethod
     def get_pinned_conversation(cls, user_id):
@@ -82,20 +92,34 @@ class UserConversation(Document):
 
     @classmethod
     def pin_conversation_id(cls, user_id, other_user_id, conversation_id):
+        old_pinned = cls.get_pinned_conversation(user_id)
+        if old_pinned:
+            if old_pinned.conversation_id == conversation_id:
+                return True
+            else:
+                old_pinned.pinned = False
+                old_pinned.save()
         obj = cls.get_by_user_id_conversation_id(user_id, conversation_id)
         if not obj:
             obj = cls(user_id=user_id, other_user_id=other_user_id, conversation_id=conversation_id)
         obj.pinned = True
         obj.save()
+        return True
 
     @classmethod
-    def unpin_conversation_id(cls, user_id, conversation_id):
+    def unpin_conversation(cls, user_id, other_user_id, conversation_id):
+        obj = cls.get_by_user_id_conversation_id(user_id, conversation_id)
+        if obj:
+            obj.pinned = False
+            obj.save()
+
+    @classmethod
+    def unpin_conversation(cls, user_id, conversation_id):
         obj = cls.get_by_user_id_conversation_id(user_id, conversation_id)
         if obj:
             if obj.pinned:
                 obj.pinned = False
                 obj.save()
-
 
     @classmethod
     def add_conversation(cls, user_id, other_user_id, conversation_id, from_type=None):

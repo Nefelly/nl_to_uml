@@ -137,6 +137,32 @@ def add_conversation():
 
 
 @session_required
+def pin_conversation():
+    data = request.json
+    other_user_id = data.get('other_user_id')
+    conversation_id = data.get('conversation_id')
+    if not other_user_id or not conversation_id:
+        return fail(u'lake of field')
+    data, status = ConversationService.pin_conversation(request.user_id, other_user_id, conversation_id)
+    if not status:
+        return fail(data)
+    return success(data)
+
+
+@session_required
+def unpin_conversation():
+    data = request.json
+    other_user_id = data.get('other_user_id')
+    conversation_id = data.get('conversation_id')
+    if not other_user_id or not conversation_id:
+        return fail(u'lake of field')
+    data, status = ConversationService.unpin_conversation(request.user_id, other_user_id, conversation_id)
+    if not status:
+        return fail(data)
+    return success(data)
+
+
+@session_required
 def delete_conversation(conversation_id):
     data, status = ConversationService.del_conversation(request.user_id, conversation_id)
     if not status:
