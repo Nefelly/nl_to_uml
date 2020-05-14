@@ -20,6 +20,7 @@ from ...decorator import (
     admin_session_required,
     test_required,
     get_user_id_by_phone,
+    get_page_info,
     set_exp_arg,
     set_user_id_by_phone
 )
@@ -45,7 +46,7 @@ from ....model import (
 from ....service import (
     AdminService,
     PicCheckService,
-    UserMessageService,
+    ForbidPlatformService,
     ForbidActionService,
     FirebaseService,
     FeedService,
@@ -637,3 +638,11 @@ def mongo_gen_csv_page():
 
 def journal():
     return current_app.send_static_file('journal.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
+
+def get_feed():
+    page,page_size = get_page_info()
+    if not page or not page_size:
+        return fail('invalid page or page size param')
+    loc = request.args.get('loc')
+    condition = request.args.get('condition')
+    ForbidPlatformService.get_feeed(loc,condition)

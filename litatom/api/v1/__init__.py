@@ -108,7 +108,7 @@ b.add_url_rule('/lit/admin/judge_pic','admin-judge_pic',endpoint.admin.judge_pic
 b.add_url_rule('/lit/admin/judge_lit_pic','admin-judge_lit_pic',endpoint.admin.judge_lit_pic, methods=['POST'])
 b.add_url_rule('/lit/admin/test_to_delete_users','admin-test_to_delete_users', endpoint.admin.test_to_delete_users)
 b.add_url_rule('/lit/admin/test_delete_old_users','admin-test_delete_old_users',endpoint.admin.test_delete_old_users)
-
+b.add_url_rule('/lit/admin/get_feed','admin-get_feed',endpoint.admin.get_feed)
 
 # picture
 b.add_url_rule('/lit/image/upload', 'image-upload', endpoint.oss.upload_image_from_file, methods=['POST'])

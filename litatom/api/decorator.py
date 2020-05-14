@@ -72,6 +72,12 @@ def set_exp_arg(arg=7 * ONE_DAY):
     return _deco
 
 
+def get_page_info():
+    page = request.args.get('page')
+    page_size = request.args.get('page_size')
+    return page, page_size
+
+
 def get_user_id_by_phone():
     phone = request.args.get('phone')
     user_id = request.user_id
@@ -90,6 +96,7 @@ def set_user_id_by_phone(view):
         return view(*args, **kwargs)
 
     return wrapper
+
 
 def test_required(view):
     @functools.wraps(view)
