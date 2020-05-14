@@ -15,3 +15,4 @@ from . import voice_chat
 from . import ad
 from . import account
 from . import experiment
+from . import user_visit

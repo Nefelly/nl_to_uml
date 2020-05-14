@@ -118,7 +118,8 @@ REDIS_VOICE_CHAT_WAIT = 'voice_chat_wait:{user_id}'
 REDIS_VOICE_CHAT_CALLED = 'voice_chat_called:{user_id}'
 REDIS_VOICE_CHAT_IN_CHAT = 'voice_chat_in_chat:{user_id}'
 
-
+#user visit
+REDIS_NEW_VISIT_NUM = 'new_visit_num:{user_id}'
 
 
 # video match

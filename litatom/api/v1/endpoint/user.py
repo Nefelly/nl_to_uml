@@ -48,6 +48,12 @@ logger = logging.getLogger(__name__)
 # logger.addHandler(handler)
 
 def dela_login_fail(data, status):
+    '''
+    封禁用户返回体
+    :param data:
+    :param status:
+    :return:
+    '''
     if not status:
         if not getattr(request, 'is_banned', False):
             return jsonify({

@@ -39,6 +39,9 @@ b.add_url_rule('/lit/user/unpin_conversation', 'user-unpin_conversation', endpoi
 b.add_url_rule('/lit/user/conversations', 'user-conversations', endpoint.user.get_conversations)
 b.add_url_rule('/lit/user/del_conversation/<conversation_id>', 'user-del_conversations', endpoint.user.delete_conversation)
 
+# user visit
+b.add_url_rule('/lit/user_visit/new_visited_num', 'user-visit-new_visited_num', endpoint.user_visit.new_visited_num)
+
 
 b.add_url_rule('/lit/account/account_info', 'account-account_info', endpoint.account.account_info)
 b.add_url_rule('/lit/account/products', 'account-product_info', endpoint.account.product_info)

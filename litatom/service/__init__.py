@@ -52,6 +52,7 @@ from .anoy_match_service import AnoyMatchService
 from .voice_match_service import VoiceMatchService
 from .video_match_service import VideoMatchService
 from .feed_service import FeedService
+from .visit_service import VisitService
 from .debug_helper_service import DebugHelperService
 from .feedback_service import FeedbackService
 from .admin_service import AdminService

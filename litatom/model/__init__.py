@@ -22,6 +22,10 @@ from .material import (
     SpamWord,
     FakeSpamWord
 )
+from . visit_record import (
+    VisitRecord,
+    DiffVisitRecord
+)
 from .report import (
     Report
 )
