@@ -15,9 +15,6 @@ from .. key import (
 from ..const import (
     ONE_DAY
 )
-from ..model import (
-    User
-)
 from ..redis import RedisClient
 
 sys_rnd = random.SystemRandom()
