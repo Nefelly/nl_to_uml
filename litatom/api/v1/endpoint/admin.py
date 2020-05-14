@@ -45,7 +45,7 @@ from ....model import (
 from ....service import (
     AdminService,
     PicCheckService,
-    UserMessageService,
+    TrackSpamRecordService,
     ForbidActionService,
     FirebaseService,
     FeedService,
@@ -320,7 +320,6 @@ def set_diamonds():
     return fail(msg)
 
 
-
 def unban():
     UserService.unban_user(get_user_id_by_phone())
     return success()
@@ -435,6 +434,44 @@ def judge_lit_pic():
     })
 
 
+def review_record():
+    return success(TrackSpamRecordService.get_review_pic())
+
+
+def review_feed():
+    return success(FeedService.get_review_feed())
+
+
+def resolve_review_feed():
+    feed_id = request.args.get('feed')
+    res = request.args.get('res')
+    if not feed_id or not res:
+        return fail('no feed or res')
+    if res == 'true':
+        res = True
+    elif res == 'false':
+        res = False
+    data, status = ForbidActionService.resolve_review_feed(feed_id, res)
+    if not status:
+        return fail()
+    return success(data)
+
+
+def resolve_review_record():
+    record_id = request.args.get('record')
+    res = request.args.get('res')
+    if not record_id or not res:
+        return fail('no record or res')
+    if res == 'true':
+        res = True
+    elif res == 'false':
+        res = False
+    data, status = ForbidActionService.resolve_review_pic(record_id, res)
+    if not status:
+        return fail()
+    return success(data)
+
+
 def download_phone():
     date = request.args.get('date')
     time_low = int(time.mktime(time.strptime(date, '%Y%m%d')))
@@ -478,7 +515,8 @@ def send_message_html():
 def batch_insert_html():
     table_name = request.values.get('table_name', '')
     fields = request.values.get('fields', '')
-    return render_template('batch_insert.html', table_name=table_name, fields=fields), 200, {'Content-Type': 'text/html; charset=utf-8'}
+    return render_template('batch_insert.html', table_name=table_name, fields=fields), 200, {
+        'Content-Type': 'text/html; charset=utf-8'}
 
 
 def check_batch(table_name, fields):

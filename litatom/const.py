@@ -2,6 +2,10 @@
 
 WHOSYOURDADDY = 'IAMYOURDADDY'
 
+FEED_NORMAL = 0
+FEED_NOT_SHOWN = 1
+FEED_NEED_CHECK = 2
+
 ADMINISTRATORS = {
     '5e357b07f142533fff0049c2',         # 绿杨
     '5cb7536f3fff221c27f959b6',         # 第二个绿杨

@@ -18,7 +18,10 @@ from ..const import (
     DEFAULT_QUERY_LIMIT,
     ONE_HOUR,
     ONE_MIN,
-    NAN
+    NAN,
+    FEED_NORMAL,
+    FEED_NEED_CHECK,
+    FEED_NOT_SHOWN
 )
 from ..key import (
     REDIS_FEED_CACHE,
@@ -44,6 +47,7 @@ class Feed(Document):
     dislike_num = IntField(required=True, default=0)
     comment_num = IntField(required=True, default=0)
     not_shown = BooleanField(default=False)
+    status = IntField(default=0)
     content = StringField()
     pics = ListField(default=[])
     audios = ListField(default=[])
@@ -54,7 +58,7 @@ class Feed(Document):
         return cls.objects(user_id=user_id).count()
 
     def change_to_not_shown(self):
-        self.not_shown = True
+        self.status = FEED_NOT_SHOWN
         self.save()
 
     @classmethod
@@ -71,7 +75,7 @@ class Feed(Document):
 
     @property
     def should_remove_from_follow(self):
-        return self.dislike_num >= self.SELF_HIGH_NUM or self.not_shown
+        return self.dislike_num >= self.SELF_HIGH_NUM or self.status == FEED_NOT_SHOWN
 
     def save(self, *args, **kwargs):
         if getattr(self, 'id', ''):
@@ -86,7 +90,7 @@ class Feed(Document):
     @property
     def is_hq(self):
         return self.like_num >= 5 or self.comment_num >= 5 or (
-                    len(self.audios) > 0 and self.like_num + self.comment_num > 2)
+                len(self.audios) > 0 and self.like_num + self.comment_num > 2)
 
     def get_info(self):
         return {
@@ -104,7 +108,7 @@ class Feed(Document):
     @classmethod
     def last_feed_by_user_id(cls, user_id):
         return cls.objects(user_id=user_id).order_by("-create_time").first()
-    
+
     def is_same(self, content, pics, audios):
         if not pics:
             pics = []
@@ -115,9 +119,9 @@ class Feed(Document):
         if not content:
             content = None
         return self.pics == pics and self.content == content and self.audios == audios
-    
+
     @classmethod
-    def create_feed(cls, user_id, content, pics, audios):
+    def create_feed(cls, user_id, content, pics, audios, status=FEED_NORMAL):
         last = cls.last_feed_by_user_id(user_id)
         # if last and last.is_same(content, pics, audios) and (int(time.time()) - last.create_time < 10):
         if last and last.is_same(content, pics, audios):
@@ -128,6 +132,7 @@ class Feed(Document):
         obj.pics = pics
         obj.audios = audios
         obj.create_time = int(time.time())
+        obj.status = status
         obj.save()
         return obj
 
@@ -158,11 +163,15 @@ class Feed(Document):
         if self.like_num < 0:
             self.like_num = 0
         self.save()
-        
+
     def chg_dislike_num(self, num=1):
         self.dislike_num += num
         if self.dislike_num < 0:
             self.dislike_num = 0
+        self.save()
+
+    def change_to_normal(self):
+        self.status = FEED_NORMAL
         self.save()
 
     @classmethod
@@ -182,6 +191,16 @@ class Feed(Document):
     @classmethod
     def get_by_create_time(cls, from_time, to_time):
         return cls.objects(create_time__gte=from_time, create_time__lte=to_time)
+
+    @classmethod
+    def change_to_review(cls, feed_id):
+        feed = Feed.get_by_id(feed_id)
+        feed.status = FEED_NEED_CHECK
+        feed.save()
+
+    @classmethod
+    def get_review_feed(cls, limit_num=10000):
+        return cls.objects(status=FEED_NEED_CHECK).order_by('-create_time').limit(limit_num)
 
 
 class FollowingFeed(Document):
@@ -343,6 +362,7 @@ class FeedLike(Document):
                 else:
                     redis_client.srem(key, uid)
         return like_now
+
 
 class FeedDislike(Document):
     DISLIKE_NUM_THRESHOLD = 500

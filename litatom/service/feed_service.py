@@ -23,7 +23,9 @@ from ..const import (
     REMOVE_EXCHANGE,
     ADD_EXCHANGE,
     ONE_HOUR,
-    ONE_MIN
+    ONE_MIN,
+    BLOCK_PIC,
+    REVIEW_PIC, FEED_NEED_CHECK
 )
 
 from ..service import (
@@ -106,29 +108,30 @@ class FeedService(object):
 
     @classmethod
     def consume_feed_added(cls, feed_id, pics, region_key):
-        reason = None
-        illegal_pic = None
+        feed = Feed.get_by_id(feed_id)
+        if not feed:
+            return
         if pics:
             no_use, pic_res = ForbidCheckService.check_content(pics=pics)
+            reviewed_tag = False
             for pic in pic_res:
-                if pic_res[pic][1] == 'block':
-                    reason = pic_res[pic][0]
-                    illegal_pic = pic
-        feed = Feed.get_by_id(feed_id)
-        if feed:
-            if reason:
-                GlobalizationService.set_current_region_for_script(
-                    GlobalizationService.get_region_by_user_id(feed.user_id))
-                ForbidActionService.resolve_block_pic(feed.user_id, illegal_pic)
-                FeedLike.del_by_feedid(feed_id)
-                FeedComment.objects(feed_id=feed_id).delete()
-                feed.delete()
-            else:
-                #  need region to send to this because of request env
-                if feed.pics and cls.should_add_to_square(feed):
-                    redis_client.zadd(region_key,
-                                      {str(feed.id): feed.create_time})
-            FollowingFeedService.add_feed(feed)
+                advice = pic_res[pic][1]
+                if advice == BLOCK_PIC:
+                    GlobalizationService.set_current_region_for_script(GlobalizationService.get_region_by_user_id(feed.user_id))
+                    ForbidActionService.resolve_block_pic(feed.user_id, pic)
+                    FeedLike.del_by_feedid(feed_id)
+                    FeedComment.objects(feed_id=feed_id).delete()
+                    feed.delete()
+                    return
+                if not reviewed_tag and advice == REVIEW_PIC:
+                    feed.status = FEED_NEED_CHECK
+                    feed.save()
+                    reviewed_tag = True
+
+            #  need region to send to this because of request env
+            if feed.pics and cls.should_add_to_square(feed):
+                redis_client.zadd(region_key,{str(feed.id): feed.create_time})
+        FollowingFeedService.add_feed(feed)
 
     @classmethod
     def consume_feed_removed(cls, feed_id):
@@ -239,8 +242,8 @@ class FeedService(object):
     def create_feed(cls, user_id, content, pics=None, audios=None):
         if content:
             if SpamWordCheckService.is_spam_word(content):
-                ForbidActionService.resolve_spam_word(user_id,content)
-                return GlobalizationService.get_region_word('alert_msg'),False
+                ForbidActionService.resolve_spam_word(user_id, content)
+                return GlobalizationService.get_region_word('alert_msg'), False
         feed = Feed.create_feed(user_id, content, pics, audios)
         cls._on_add_feed(feed)
         UserModelService.add_comments_by_uid(user_id)
@@ -539,3 +542,12 @@ class FeedService(object):
                 }
                 res[tmp_ind]['inner_comments'].append(_)
         return res, True
+
+    @classmethod
+    def get_review_feed(cls, num=10000):
+        feeds = Feed.get_review_feed(num)
+        res = []
+        for feed in feeds:
+            temp = {'feed_id':str(feed.id), 'pics':feed.pics}
+            res.append(temp)
+        return res
