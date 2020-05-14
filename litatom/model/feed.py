@@ -200,7 +200,7 @@ class Feed(Document):
 
     @classmethod
     def get_review_feed(cls, limit_num=10000):
-        return cls.objects(status=FEED_NEED_CHECK).limit(limit_num).order_by('-create_time')
+        return cls.objects(status=FEED_NEED_CHECK).order_by('-create_time').limit(limit_num)
 
 
 class FollowingFeed(Document):

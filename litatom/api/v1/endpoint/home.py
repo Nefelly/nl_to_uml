@@ -32,7 +32,8 @@ from ....response import (
 )
 from ....const import (
     APP_PATH,
-    BLOCK_PIC, REVIEW_PIC,
+    BLOCK_PIC,
+    REVIEW_PIC,
 )
 from ....service import (
     StatisticService,
@@ -44,12 +45,12 @@ from ....service import (
     FeedService,
     UserSettingService,
     SpamWordCheckService,
-    UserService,
     PicCheckService,
     ForbidActionService,
     AliOssService,
     ExperimentService,
-    ActedService, ForbidRecordService, TrackSpamRecordService
+    ActedService,
+    TrackSpamRecordService
 )
 
 logger = logging.getLogger(__name__)

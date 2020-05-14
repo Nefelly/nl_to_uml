@@ -103,4 +103,4 @@ class TrackSpamRecord(Document):
 
     @classmethod
     def get_review_pic(cls, limit_num=10000):
-        return cls.objects(dealed=False, forbid_weight=0, pic__ne=None).limit(limit_num).order_by('-create_time')
+        return cls.objects(dealed=False, forbid_weight=0, pic__ne=None).order_by('-create_time').limit(limit_num)
