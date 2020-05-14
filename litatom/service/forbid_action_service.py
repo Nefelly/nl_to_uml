@@ -101,6 +101,8 @@ class ForbidActionService(object):
         if ForbidCheckService.check_device_sensitive(target_user_id):
             cls.forbid_user(target_user_id, cls.DEFAULT_SYS_FORBID_TIME)
             return {"report_id": str(report_id), SYS_FORBID: True}, True
+
+        # feed, chat record不会同时在一条举报中
         if related_feed_id:
             cls._resolve_feed_report(related_feed_id, target_user_id, user_id)
 
@@ -243,7 +245,7 @@ class ForbidActionService(object):
         history_forbidden_credit = 0
         if UserRecord.has_been_forbidden(user_id):
             history_forbidden_credit = cls.HISTORY_FORBID_WEIGHTING
-        print(alert_score,report_match_num,report_total_num,blocker_num,history_forbidden_credit)
+        print(alert_score,report_match_num,report_total_num,blocker_num,history_forbidden_credit,additional_score)
         illegal_credit = alert_score + (report_total_num - report_match_num) * cls.REPORT_WEIGHTING \
                          + report_match_num * cls.MATCH_REPORT_WEIGHTING + additional_score + history_forbidden_credit \
                          + blocker_num * cls.BLOCKER_WEIGHTING - cls._get_high_value_compensation(user_id)
