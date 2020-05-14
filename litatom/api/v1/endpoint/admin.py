@@ -447,6 +447,10 @@ def resolve_review_feed():
     res = request.args.get('res')
     if not feed_id or not res:
         return fail('no feed or res')
+    if res == 'true':
+        res = True
+    elif res == 'false':
+        res = False
     data, status = ForbidActionService.resolve_review_feed(feed_id, res)
     if not status:
         return fail()
@@ -458,6 +462,10 @@ def resolve_review_record():
     res = request.args.get('res')
     if not record_id or not res:
         return fail('no record or res')
+    if res == 'true':
+        res = True
+    elif res == 'false':
+        res = False
     data, status = ForbidActionService.resolve_review_pic(record_id, res)
     if not status:
         return fail()

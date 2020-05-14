@@ -236,7 +236,8 @@ class ForbidActionService(object):
         alert_score = TrackSpamRecord.get_alert_score_by_time_and_uid(user_id, time_3days_ago, timestamp_now)
         report_total_num = Report.count_by_time_and_uid_distinct(user_id, time_3days_ago, timestamp_now)
         report_match_num = Report.count_match_by_time_and_uid(user_id, time_3days_ago, timestamp_now)
-        blocker_num = Blocked.get_blocker_num_by_time(user_id, time_now - datetime.timedelta(days=cls.NEW_BLOCKER_DAYS),time_now)
+        blocker_num = Blocked.get_blocker_num_by_time(user_id, time_now - datetime.timedelta(days=cls.NEW_BLOCKER_DAYS),
+                                                      time_now)
         history_forbidden_credit = 0
         if ForbidCheckService.check_sensitive_user(user_id):
             history_forbidden_credit = cls.HISTORY_FORBID_WEIGHTING
