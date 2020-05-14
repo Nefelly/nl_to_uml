@@ -4,7 +4,7 @@ from litatom.service import ForbidCheckService
 
 
 def run():
-    for obj in TrackSpamRecord.objects(dealed=False, forbid_weight=0):
+    for obj in TrackSpamRecord.objects(dealed=False, forbid_weight=0, create_time__gte=1588694400):
         if obj.word:
             obj.forbid_weight = 2
         if obj.pic:
@@ -13,8 +13,6 @@ def run():
                 obj.delete()
             if advice == BLOCK_PIC:
                 obj.forbid_weight = 4
-            else:
-                obj.forbid_weight = 0
         obj.save()
 
 
