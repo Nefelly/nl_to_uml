@@ -69,6 +69,14 @@ methods: {
         })
             }
         }
+        else {
+            if(confirm('you want to delete' + data.split('\n').length.toString() + 'records?')){
+                this.$http.post(BASE_URL + 'admin/batch_act?is_delete=True', {"table_name":table_name, "fields":fields, "main_key":main_key, "data":data}).then(function(result){
+            if (result.data.result === 0){alert('success!');}
+            else{alert(result.data.msg);}
+        })
+        }
+        }
     },
 
     load_data:function() {
