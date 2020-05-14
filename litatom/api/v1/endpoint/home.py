@@ -33,6 +33,7 @@ from ....response import (
 from ....const import (
     APP_PATH,
     BLOCK_PIC,
+    REVIEW_PIC,
 )
 from ....service import (
     StatisticService,
@@ -44,12 +45,12 @@ from ....service import (
     FeedService,
     UserSettingService,
     SpamWordCheckService,
-    UserService,
     PicCheckService,
     ForbidActionService,
     AliOssService,
     ExperimentService,
-    ActedService
+    ActedService,
+    TrackSpamRecordService
 )
 
 logger = logging.getLogger(__name__)
@@ -166,12 +167,20 @@ def report_spam():
 @session_required
 def check_pic():
     data = request.json
+    user_id = request.user_id
     url = data.get('url')
     if not url:
         return success()
     reason, advice = PicCheckService.check_pic_by_url(url)
-    if reason and advice == BLOCK_PIC:
-        data, status = ForbidActionService.resolve_block_pic(request.user_id, url)
+    if reason:
+        if advice == BLOCK_PIC:
+            data, status = ForbidActionService.resolve_block_pic(user_id, url)
+        elif advice == REVIEW_PIC:
+            data = 'review picture'
+            status = TrackSpamRecordService.save_record(user_id,pic=url,forbid_weight=0)
+        else:
+            data = 'normal picture'
+            status = True
         if not status:
             return fail(data)
         return success(data)

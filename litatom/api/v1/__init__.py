@@ -105,10 +105,14 @@ b.add_url_rule('/lit/admin/agent', 'admin-agent', endpoint.admin.agent, methods=
 b.add_url_rule('/lit/admin/replace_image', 'admin-replace_image', endpoint.admin.replace_image, methods=['POST'])
 b.add_url_rule('/lit/admin/forbid_score','admin-forbid_score',endpoint.admin.forbid_score)
 b.add_url_rule('/lit/admin/judge_pic','admin-judge_pic',endpoint.admin.judge_pic,methods=['POST'])
-b.add_url_rule('/lit/admin/judge_lit_pic','admin-judge_lit_pic',endpoint.admin.judge_lit_pic, methods=['POST'])
+b.add_url_rule('/lit/admin/judge_lit_pic','admin-judge_lit_pic',endpoint.admin.judge_lit_pic,methods=['POST'])
 b.add_url_rule('/lit/admin/test_to_delete_users','admin-test_to_delete_users', endpoint.admin.test_to_delete_users)
 b.add_url_rule('/lit/admin/test_delete_old_users','admin-test_delete_old_users',endpoint.admin.test_delete_old_users)
 b.add_url_rule('/lit/admin/get_feed','admin-get_feed',endpoint.admin.get_feed)
+b.add_url_rule('/lit/admin/review_record','admin-review_record',endpoint.admin.review_record)
+b.add_url_rule('/lit/admin/review_feed','admin-review_feed',endpoint.admin.review_feed)
+b.add_url_rule('/lit/admin/resolve_review_record','admin-resolve_review_record',endpoint.admin.resolve_review_record)
+b.add_url_rule('/lit/admin/resolve_review_feed','admin-resolve_review_feed',endpoint.admin.resolve_review_feed)
 
 # picture
 b.add_url_rule('/lit/image/upload', 'image-upload', endpoint.oss.upload_image_from_file, methods=['POST'])
@@ -187,7 +191,6 @@ b.add_url_rule('/lit/experiment/get_experiments', 'experiment-get_experiments', 
 b.add_url_rule('/lit/experiment/get_exp_value', 'experiment-get_exp_value', endpoint.experiment.get_exp_value)
 b.add_url_rule('/lit/experiment/all_experiments', 'experiment-all_experiments', endpoint.experiment.get_all_experiments)
 b.add_url_rule('/lit/experiment/delete_experiment', 'experiment-delete_experiment', endpoint.experiment.delete_experiment)
-
 
 # debug
 b.add_url_rule('/lit/debug/redis_status', 'debug-redis-status', endpoint.debug.redis_status)

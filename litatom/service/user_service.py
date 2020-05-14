@@ -103,7 +103,6 @@ class UserService(object):
 
     @classmethod
     def device_blocked(cls, uuid):
-        print(uuid, BlockedDevices.is_device_forbidden(uuid))
         return BlockedDevices.is_device_forbidden(uuid)
 
     @classmethod
@@ -520,11 +519,11 @@ class UserService(object):
             HuanxinService.deactive_user(user.huanxin.user_id)
         feeds = Feed.objects(user_id=user_id, create_time__gte=int(time.time()) - 3 * ONE_DAY)
         from ..service import FeedService
-        for _ in feeds:
-            FeedService.remove_from_pub(_)
+        for feed in feeds:
+            FeedService.remove_from_pub(feed)
             # _.delete()
-            _.change_to_not_shown()
-            MqService.push(REMOVE_EXCHANGE, {"feed_id": str(_.id)})
+            feed.change_to_not_shown()
+            MqService.push(REMOVE_EXCHANGE, {"feed_id": str(feed.id)})
 
     @classmethod
     def unban_by_nickname(cls, nickname):
