@@ -563,7 +563,7 @@ class DiamStatService(object):
                                r'搭讪人数', r'搭讪人次', r'搭讪钻石消耗数量',
                                r'手相解锁人数', r'手相解锁人次', r'手相解锁-钻石消耗数量',
                                r'分享链接浏览人次', r'分享链接浏览人数', r'分享带来新用户数']
-        tb_head = [r'日期', r'member数', r'收入']
+        # tb_head = [r'日期', r'member数', r'收入']
         write_data_to_xls_col(addr, tb_head, res, 'utf-8')
 
     @classmethod
