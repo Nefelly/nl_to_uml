@@ -91,7 +91,7 @@ class UserConversation(Document):
         }
 
     @classmethod
-    def pin_conversation_id(cls, user_id, other_user_id, conversation_id):
+    def pin_conversation(cls, user_id, other_user_id, conversation_id):
         old_pinned = cls.get_pinned_conversation(user_id)
         if old_pinned:
             if old_pinned.conversation_id == conversation_id:
@@ -105,13 +105,6 @@ class UserConversation(Document):
         obj.pinned = True
         obj.save()
         return True
-
-    @classmethod
-    def unpin_conversation(cls, user_id, other_user_id, conversation_id):
-        obj = cls.get_by_user_id_conversation_id(user_id, conversation_id)
-        if obj:
-            obj.pinned = False
-            obj.save()
 
     @classmethod
     def unpin_conversation(cls, user_id, conversation_id):
