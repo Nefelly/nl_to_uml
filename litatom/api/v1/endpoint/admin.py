@@ -684,4 +684,4 @@ def get_feed():
         return fail('invalid page or page size param')
     loc = request.args.get('loc')
     condition = request.args.get('condition')
-    ForbidPlatformService.get_feeed(loc,condition)
+    ForbidPlatformService.get_feed(loc, condition)
