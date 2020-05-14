@@ -90,10 +90,7 @@ class TrackSpamRecord(Document):
         objs = cls.objects(create_time__gte=from_time, create_time__lte=to_time, user_id=user_id, dealed=False)
         res = 0.0
         for obj in objs:
-            try:
                 res += obj.forbid_weight
-            except AttributeError as e:
-                pass
         return res
 
     @classmethod
