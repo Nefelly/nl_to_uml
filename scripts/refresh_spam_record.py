@@ -10,7 +10,7 @@ def run():
         if obj.pic:
             reason,advice = ForbidCheckService.check_unknown_source_pics(obj.pic)
             if not reason:
-                obj.forbid_weight = 0
+                obj.delete()
             if advice == BLOCK_PIC:
                 obj.forbid_weight = 4
             else:
