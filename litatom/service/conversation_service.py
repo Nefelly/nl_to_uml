@@ -41,5 +41,5 @@ class ConversationService(object):
     
     @classmethod
     def unpin_conversation(cls, user_id, other_user_id, conversation_id):
-        UserConversation.unpin_conversation(user_id, other_user_id, conversation_id)
+        UserConversation.unpin_conversation(user_id, conversation_id)
         return None, True
