@@ -7,6 +7,5 @@ def run():
             feed.status = FEED_NOT_SHOWN
             feed.save()
 
-
 if __name__ == '__main__':
     run()
