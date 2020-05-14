@@ -26,7 +26,10 @@ class ConversationService(object):
 
     @classmethod
     def get_conversations(cls, user_id):
+        conversations, pinned_conversation = UserConversation.get_by_user_id(user_id)
         data = {
-            "conversations": UserConversation.get_by_user_id(user_id)
+            "conversations": conversations,
+            "pinned_conversation": pinned_conversation
+
         }
         return data, True
