@@ -40,7 +40,7 @@ def all_viewed():
     return success(data)
 
 @session_required
-def new_visited_num():
+def visited_list():
     page_num = request.values().get('page_num', '0')
     print page_num
     page_num = int(page_num) if page_num and page_num.isdigit() else 0
