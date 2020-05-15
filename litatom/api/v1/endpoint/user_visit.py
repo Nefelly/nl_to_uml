@@ -26,8 +26,8 @@ logger = logging.getLogger(__name__)
 
 
 @session_required
-def new_visited_num():
-    data, status = VisitService.new_visited_num(request.user_id)
+def get_visit_nums():
+    data, status = VisitService.get_visit_nums(request.user_id)
     if not status:
         return fail(data)
     return success(data)

@@ -72,6 +72,7 @@ class NewVisit(Document):
     }
 
     visited_user_id = StringField(required=True, unique=True)   # 被访问者的id
+    viewed_visited = IntField(default=0)
     new_visit_num = IntField(default=0)
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
     VISITED_CACHE_TIME = ONE_DAY
@@ -87,21 +88,25 @@ class NewVisit(Document):
             obj = cls(visited_user_id=visited_user_id)
         obj.new_visit_num += 1
         obj.save()
-        cls.disable_cache(visited_user_id)
+        # cls.disable_cache(visited_user_id)
 
     @classmethod
-    def new_visit_num(cls, visited_user_id):
-        num = redis_client.get(cls.new_visited_cache_key(visited_user_id))
-        if num is None:
-            obj = cls.get_by_visited_user_id(visited_user_id)
-            if obj:
-                num = obj.new_visit_num
-            else:
-                num = 0
-            redis_client.set(cls.new_visited_cache_key(visited_user_id), num, cls.VISITED_CACHE_TIME)
-        else:
-            num = int(num)
-        return num
+    def get_visit_nums(cls, visited_user_id):
+        obj = cls.get_by_visited_user_id(visited_user_id)
+        if obj:
+            total_num = obj.new_visit_num + obj.viewed_visited
+            new_visit_num = obj.new_visit_num
+        # num = redis_client.get(cls.new_visited_cache_key(visited_user_id))
+        # if num is None:
+        #     obj = cls.get_by_visited_user_id(visited_user_id)
+        #     if obj:
+        #         num = obj.new_visit_num
+        #     else:
+        #         num = 0
+        #     redis_client.set(cls.new_visited_cache_key(visited_user_id), num, cls.VISITED_CACHE_TIME)
+        # else:
+        #     num = int(num)
+        return total_num, new_visit_num
 
 
     @classmethod
@@ -112,9 +117,10 @@ class NewVisit(Document):
     def record_has_viewed(cls, visited_user_id):
         obj = cls.get_by_visited_user_id(visited_user_id)
         if obj:
+            obj.viewed_visited += obj.new_visit_num
             obj.new_visit_num = 0
             obj.save()
-        redis_client.set(cls.new_visited_cache_key(visited_user_id), 0, cls.VISITED_CACHE_TIME)
+        # redis_client.set(cls.new_visited_cache_key(visited_user_id), 0, cls.VISITED_CACHE_TIME)
 
     @classmethod
     def get_by_visited_user_id(cls, visited_user_id):

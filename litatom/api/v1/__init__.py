@@ -40,7 +40,7 @@ b.add_url_rule('/lit/user/conversations', 'user-conversations', endpoint.user.ge
 b.add_url_rule('/lit/user/del_conversation/<conversation_id>', 'user-del_conversations', endpoint.user.delete_conversation)
 
 # user visit
-b.add_url_rule('/lit/user_visit/new_visited_num', 'user-visit-new_visited_num', endpoint.user_visit.new_visited_num)
+b.add_url_rule('/lit/user_visit/get_visit_nums', 'user-visit-get_visit_nums', endpoint.user_visit.get_visit_nums)
 b.add_url_rule('/lit/user_visit/all_viewed', 'user-visit-all_viewed', endpoint.user_visit.all_viewed)
 b.add_url_rule('/lit/user_visit/visited_list', 'user-visit-visited_list', endpoint.user_visit.visited_list)
 

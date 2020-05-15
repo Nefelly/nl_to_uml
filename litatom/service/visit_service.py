@@ -8,9 +8,6 @@ from ..model import (
     NewVisit,
     User
 )
-from ..key import (
-    REDIS_NEW_VISIT_NUM
-)
 from ..service import (
     AccountService,
     UserService
@@ -27,6 +24,7 @@ redis_client = RedisClient()['lit']
 
 class VisitService(object):
     '''
+    后续得做成批量的 难设计哦
     用户访问记录  v3.5
     查看差值时： 先命中缓存， 缓存有就从缓存取； 无： 就从库里取 差值； 在访问完成后就去除缓存， 设置库里的值为现有的值
     '''
@@ -39,9 +37,9 @@ class VisitService(object):
         return None, True
 
     @classmethod
-    def new_visited_num(cls, user_id):
-        num = NewVisit.new_viewed_num()
-        return {'num': num}, True
+    def get_visit_nums(cls, user_id):
+        total_num, new_visit_num = NewVisit.get_visit_nums(user_id)
+        return {'total_num': total_num, 'new_visit_num': new_visit_num}, True
 
     @classmethod
     def get_visited_list(cls, user_id, page_num, num):
@@ -61,7 +59,6 @@ class VisitService(object):
     @classmethod
     def all_viewed(cls, user_id):
         NewVisit.record_has_viewed(user_id)
-        redis_client.set(cls.new_visited_cache_key(user_id), 0, cls.VISITED_CACHE_TIME)
         return None, True
 
     @classmethod
