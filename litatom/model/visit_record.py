@@ -53,7 +53,7 @@ class VisitRecord(Document):
         if not obj:
             obj = cls(user_id=user_id, target_user_id=target_user_id)
         obj.visit_num += 1
-        obj.last_visited_time = datetime.datetime.now()
+        obj.last_visited_time = int(time.time())
         obj.save()
 
     def to_json(self):

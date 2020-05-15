@@ -52,7 +52,7 @@ class VisitService(object):
             has_viewed = HasViewedVisit.get_has_viewed_num(user_id)
             num = max(total_num - has_viewed, 0)
             redis_client.set(cls.new_visited_cache_key(user_id), num, cls.VISITED_CACHE_TIME)
-        return {'num':num}, True
+        return {'num': num}, True
 
     @classmethod
     def get_visited_list(cls, user_id, page_num, num):
