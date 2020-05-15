@@ -38,8 +38,8 @@ class VisitService(object):
     @classmethod
     def visit(cls, user_id, other_user_id):
         VisitRecord.add_visit(user_id, other_user_id)
-        redis_client.incr(cls.new_visited_cache_key(user_id))
-        redis_client.expire(cls.new_visited_cache_key(user_id), cls.VISITED_CACHE_TIME)
+        redis_client.incr(cls.new_visited_cache_key(other_user_id))
+        redis_client.expire(cls.new_visited_cache_key(other_user_id), cls.VISITED_CACHE_TIME)
         return None, True
 
     @classmethod
