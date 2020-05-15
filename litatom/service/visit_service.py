@@ -24,11 +24,10 @@ redis_client = RedisClient()['lit']
 
 class VisitService(object):
     '''
-    后续得做成批量的 难设计哦
+    后续得做成批量的 难设计
     用户访问记录  v3.5
     查看差值时： 先命中缓存， 缓存有就从缓存取； 无： 就从库里取 差值； 在访问完成后就去除缓存， 设置库里的值为现有的值
     '''
-
 
     @classmethod
     def visit(cls, user_id, other_user_id):

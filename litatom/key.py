@@ -70,6 +70,7 @@ REDIS_FAKE_START = 'fake_start:{fake_id}'   # 开始进入匹配
 REDIS_USER_MATCH_LEFT = 'user_match_left:{user_date}'   # 过期时间一天
 REDIS_FAKE_ID_UID = 'fakeid_uid:{fake_id}'
 REDIS_UID_FAKE_ID = 'uid_fakeid:{user_id}'
+REDIS_LIKE_EACH_OTHER_IN_MATCH = 'like_each_other_in_match:{user_id_pair}'
 
 
 REDIS_REGION_WORLD_CACHE = 'region_world_cache:{region_tag}'   # 缓存用户的
