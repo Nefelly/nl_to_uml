@@ -58,7 +58,7 @@ class MatchHistory(Document):
     # match_id = StringField()  # 为加双方user_id及时间戳hash而成的id
     # match_type = StringField(required=True)
     other_user_id = StringField(required=True)
-    friend_status = IntField()
+    friend_status = IntField(default=STRANGER)
     match_success_time = IntField()
     chat_time = IntField()
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
