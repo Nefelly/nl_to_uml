@@ -37,7 +37,7 @@ class HuanxinService(object):
     SIG_HOST = 'https://a1-sgp.easemob.com'   # 新加坡
     APP_URL = '%(HOST)s/%(ORG_NAME)s/%(APP_NAME)s/' % dict(HOST=HOST, ORG_NAME=ORG_NAME, APP_NAME=APP_NAME)
     SIG_APP_URL = '%(HOST)s/%(ORG_NAME)s/%(APP_NAME)s/' % dict(HOST=SIG_HOST, ORG_NAME=ORG_NAME, APP_NAME=APP_NAME)
-    # APP_URL = SIG_APP_URL
+    APP_URL = SIG_APP_URL
     TRY_TIMES = 3
 
     CLIENT_ID = HUANXIN_SETTING.get('client_id', 'YXA6ALfHYDd7EemQqCO501ONvQ')
