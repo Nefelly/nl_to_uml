@@ -222,6 +222,7 @@ class HuanxinService(object):
             'Authorization':'Bearer %s' % access_token
         }
         try:
+            print url, '!' * 100
             response = requests.post(url, verify=False, headers=headers, data=json.dumps({'usernames': [dest_user_name]})).json()
             assert response.get('data')[0]
             return True
