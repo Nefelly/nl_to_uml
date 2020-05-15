@@ -494,7 +494,7 @@ class UserService(object):
     # @classmethod
     # def _forbid(cls, user_id):
     #     forbid_time = cls.FORBID_TIME
-    #     if UserRecord.get_forbidden_times_user_id(user_id) > 0:
+    #     if UserRecord.get_forbidden_num_by_uid(user_id) > 0:
     #         forbid_time *= 10
     #     cls.forbid_user(user_id, forbid_time)
     #     return True
@@ -504,7 +504,7 @@ class UserService(object):
         user = User.get_by_id(user_id)
         if not user:
             return False
-        forbid_times = UserRecord.get_forbidden_times_user_id(user_id)
+        forbid_times = UserRecord.get_forbidden_num_by_uid(user_id)
         user.forbidden = True
         user.forbidden_ts = int(time.time()) + forbid_ts * (1 + 5 * forbid_times)
         cls._trans_session_2_forbidden(user)

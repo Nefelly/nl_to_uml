@@ -33,6 +33,7 @@ from ..const import (
     SYS_FORBID,
     MANUAL_FORBID,
     BLOCK_PIC,
+    SYS_FORBID_TIME,
 )
 
 redis_client = RedisClient()['lit']
@@ -48,7 +49,6 @@ class ForbidActionService(object):
     REVIEW_FEED_PIC_WEIGHTING = 2
     MATCH_REPORT_WEIGHTING = 2
     FORBID_THRESHOLD = 10
-    DEFAULT_SYS_FORBID_TIME = 7 * ONE_DAY
     COMPENSATION_PER_TEN_FOLLOWER = 2
     COMPENSATION_UPPER_THRESHOLD = 10
     RELIABLE_REPORTER_COMPENSATION = 1
@@ -60,7 +60,7 @@ class ForbidActionService(object):
     def _authenticate_reporter(cls, reporter, target_user_id, ts_now=int(time.time())):
         """一日内举报不可超过五次,三日内不可重复举报一人"""
         if AppAdmin.is_admin(reporter):
-            cls.forbid_user(target_user_id, cls.DEFAULT_SYS_FORBID_TIME, MANUAL_FORBID)
+            cls.forbid_user(target_user_id, SYS_FORBID_TIME, MANUAL_FORBID)
             return False, {'report_id': cls.ADMINISTRATOR_REPORT, MANUAL_FORBID: True}, True
         if setting.IS_DEV:
             return True, None, None
@@ -112,7 +112,7 @@ class ForbidActionService(object):
             reliable_reporter_compensation_score = 0
         res = cls._check_forbid(target_user_id, ts_now, -reliable_reporter_compensation_score)
         if res:
-            cls.forbid_user(target_user_id, cls.DEFAULT_SYS_FORBID_TIME, SYS_FORBID, ts_now)
+            cls.forbid_user(target_user_id, SYS_FORBID_TIME, SYS_FORBID, ts_now)
             return {"report_id": str(report_id), SYS_FORBID: True}, True
         return {"report_id": str(report_id), SYS_FORBID: False}, True
 
@@ -207,7 +207,7 @@ class ForbidActionService(object):
         MsgService.alert_basic(user_id)
         res = cls._check_forbid(user_id)
         if res:
-            cls.forbid_user(user_id, cls.DEFAULT_SYS_FORBID_TIME)
+            cls.forbid_user(user_id, SYS_FORBID_TIME)
             return {SYS_FORBID: True}, True
         return {SYS_FORBID: False}, True
 

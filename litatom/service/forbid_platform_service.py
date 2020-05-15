@@ -1,6 +1,16 @@
+# encoding:utf-8
 import time
 
-from litatom.const import FEED_NEED_CHECK, ONE_DAY
+from litatom.const import (
+    FEED_NEED_CHECK,
+    ONE_DAY,
+    FORBID_PAGE_SIZE,
+    SYS_FORBID,
+    MANUAL_FORBID,
+    SYS_FORBID_TIME,
+    OSS_AUDIO_URL,
+    OSS_PIC_URL, FEED_NOT_FOUND_ERROR,
+)
 from litatom.model import (
     Feed,
     UserSetting,
@@ -11,7 +21,11 @@ from litatom.model import (
     User,
 )
 from litatom.service import (
-    ForbidActionService, ForbidCheckService
+    ForbidActionService,
+    ForbidRecordService,
+    ForbidCheckService,
+    ReportService,
+    TrackSpamRecordService
 )
 from litatom.util import (
     get_ts_from_str,
@@ -24,116 +38,102 @@ class ForbidPlatformService(object):
     FEED_NEED_REVIEW = 'review'
     FEED_RECOMMENDED = 'recommended'
     FEED_USER_UNRELIABLE = 'score_up5'
-    FEED_LOCATIONS = {'VN', 'TH', 'ID'}
-
-    PIC_URL = 'http://www.litatom.com/api/sns/v1/lit/simage/'
-    AUDIO_URL = 'http://www.litatom.com/api/sns/v1/lit/audio/'
+    FORBID_LOCATIONS = {'VN', 'TH', 'ID'}
+    REPORT_REGIONS = {'th', 'vi', 'id', 'en', 'us'}
+    MATCH_REPORT = 'match'
+    OTHER_REPORT = 'other'
 
     @classmethod
     def _load_spam_record(cls, temp_res, from_ts, to_ts):
         records = TrackSpamRecord.get_record_by_time(from_ts, to_ts)
         for record in records:
-            if record.user_id in temp_res.keys():
-                # temp_num表示目前已录入的警告次数
-                temp_num = temp_res[record.user_id][1]
-                if temp_num == temp_res[record.user_id][u'警告次数']:
-                    continue
-                temp_res[record.user_id][1] += 1
-                if record.word:
-                    temp_res[record.user_id][u'警告' + str(temp_num + 1)] = {u'敏感词': record.word,
-                                                                           u'命中词':SpamWordCheckService.get_spam_word(record.word,GlobalizationService.get_region_by_user_id(record.user_id)),
-                                                                           u'警告时间': time_str_by_ts(record.create_time)}
-                elif record.pic:
-                    temp_res[record.user_id][u'警告' + str(temp_num + 1)] = {u'色情图片': record.pic,
-                                                                           u'警告时间': time_str_by_ts(record.create_time)}
+            user_id = record.user_id
+            if user_id not in temp_res.keys():
+                continue
+            temp_res[user_id]['forbid_history']['records'].append(TrackSpamRecordService.get_spam_record_info(record))
 
     @classmethod
     def _load_report(cls, temp_res, from_ts, to_ts):
         reports = Report.get_report_by_time(from_ts, to_ts)
         for report in reports:
-            if report.target_uid in temp_res.keys():
-                temp_num = temp_res[report.target_uid][2]
-                if temp_num == temp_res[report.target_uid][u'举报次数']:
-                    continue
-                if not temp_num:
-                    temp_res[report.target_uid][u'地区'] = report.region
-                temp_res[report.target_uid][2] += 1
-                temp_res[report.target_uid][u'举报' + str(temp_num + 1)] = {u'举报者': report.uid, u'举报原因': report.reason,
-                                                                          u'举报时间': time_str_by_ts(report.create_ts)}
-                if report.pics:
-                    pics = [cls.PIC_URL + pic for pic in report.pics]
-                    temp_res[report.target_uid][u'举报' + str(temp_num + 1)][u'举报图片'] = pics
-                elif report.related_feed:
-                    feed = Feed.objects(id=report.related_feed).first()
-                    temp_res[report.target_uid][u'举报' + str(temp_num + 1)][u'举报feed'] = {}
-                    if not feed:
-                        temp_res[report.target_uid][u'举报' + str(temp_num + 1)][u'举报feed'][
-                            'ERROR'] = 'FEED CAN NOT BE FOUND'
-                    else:
-                        if feed.content:
-                            temp_res[report.target_uid][u'举报' + str(temp_num + 1)][u'举报feed']['content'] = feed.content
-                        if feed.pics:
-                            pics = [cls.PIC_URL + pic for pic in feed.pics]
-                            temp_res[report.target_uid][u'举报' + str(temp_num + 1)][u'举报feed']['pictures'] = pics
-                        if feed.audios:
-                            audios = [cls.AUDIO_URL + audio for audio in feed.audios]
-                            temp_res[report.target_uid][u'举报' + str(temp_num + 1)][u'举报feed']['audios'] = audios
+            user_id = report.target_uid
+            if user_id not in temp_res.keys():
+                continue
+            temp_res[user_id]['forbid_history']['reports'].append(ReportService.get_report_info(report))
 
     @classmethod
-    def get_forbid_history(cls, from_ts=int(time.time() - ONE_DAY), to_ts=int(time.time())):
+    def get_forbid_record(cls, from_ts, to_ts, region=None, forbid_type=None):
+        """封号记录表"""
+        if region and region not in cls.FORBID_LOCATIONS:
+            return 'invalid region', False
+        if forbid_type and forbid_type not in {SYS_FORBID, MANUAL_FORBID}:
+            return 'invalid forbid type', False
         # 从UserRecord中加载封号用户和封号时间
-        users = UserRecord.get_forbid_users_by_time(from_ts, to_ts, 'sysForbid')
+        if not forbid_type:
+            users = UserRecord.get_forbid_users_by_time(from_ts, to_ts)
+        else:
+            users = UserRecord.get_forbid_users_by_time(from_ts, to_ts, forbid_type)
         temp_res = {}
+        user_num = 0
         for user in users:
-            temp_res[user.user_id] = {u'user_id': user.user_id, u'封号时间': time_str_by_ts(user.create_time)}
+            user_id = user.user_id
+            if region and region != UserSetting.get_loc_by_uid(user_id):
+                continue
+            temp_res[user_id] = {'user_id': user_id, 'forbidden_from': time_str_by_ts(user.create_time)}
+            user_num += 1
+            if user_num > FORBID_PAGE_SIZE:
+                break
 
         # 从TrackSpamRecord中导入次数和命中历史,从Report中导入次数和命中历史
-        earlist_illegal_action_ts = int(time.time())
-        total_forbid_num = len(temp_res)
-        report_forbid_num = 0.0
+        earliest_forbidden = int(time.time())
         for uid in temp_res.keys():
-            temp_ts = get_ts_from_str(temp_res[uid][u'封号时间']) - 7 * ONE_DAY
-            if temp_ts < earlist_illegal_action_ts:
-                earlist_illegal_action_ts = temp_ts
-            temp_res[uid][u'警告次数'] = TrackSpamRecord.count_by_time_and_uid(uid, temp_ts, temp_ts + 3 * ONE_DAY, True)
-            temp_res[uid][u'举报次数'] = Report.count_by_time_and_uid(uid, temp_ts, temp_ts + 3 * ONE_DAY, True)
-            temp_res[uid][u'历史被封次数'] = UserRecord.get_forbidden_times_user_id(uid)
-            temp_res[uid][u'被多少人拉黑'] = Blocked.get_blocker_num_by_time(uid)
-            temp_res[uid][1] = 0
-            temp_res[uid][2] = 0
-            # if temp_res[uid][u'警告次数'] != 0:
-            #     temp_res.pop(uid)
-            # report_forbid_num += 1
-            if temp_res[uid][u'警告次数'] == 0:
-                report_forbid_num += 1
+            forbidden_from = get_ts_from_str(temp_res[uid]['forbidden_from'])
+            if forbidden_from < earliest_forbidden:
+                earliest_forbidden = forbidden_from
+            forbidden_until = User.get_by_id(uid).forbidden_ts
+            if forbidden_until:
+                forbidden_until = unix_ts_string(forbidden_until)
+            temp_res[uid]['forbidden_until'] = forbidden_until
+            temp_res[uid]['user_forbidden_num'] = UserRecord.get_forbidden_num_by_uid(uid)
+            temp_res[uid]['device_forbidden_num'] = ForbidRecordService.get_device_forbidden_num_by_uid(uid)
+            temp_res[uid]['forbid_score'] = ForbidActionService.accum_illegal_credit(uid)
+            temp_res[uid]['nickname'] = User.get_by_id(uid).nickname
+            temp_res[uid]['forbid_history'] = {'sensitive': ForbidCheckService.check_sensitive_user(uid),
+                                               'blocker_num': Blocked.get_blocker_num_by_time(uid,
+                                                                                              forbidden_from - SYS_FORBID_TIME,
+                                                                                              forbidden_from),
+                                               'reports': [], 'records': []}
 
-        cls._load_spam_record(temp_res, earlist_illegal_action_ts, to_ts)
-        cls._load_report(temp_res, earlist_illegal_action_ts, to_ts)
-        print('总封号人数',total_forbid_num)
-        print('仅因举报封号人数',report_forbid_num)
-        print('仅因举报封号率',report_forbid_num/total_forbid_num)
-        # write_to_json(file, [item for item in temp_res.values() if (item.pop(1) or 1) and (item.pop(2) or 1)])
+        cls._load_spam_record(temp_res, earliest_forbidden, to_ts)
+        cls._load_report(temp_res, earliest_forbidden, to_ts)
+        return temp_res.values()
 
     @classmethod
-    def get_forbid_history_by_uid(cls, user_id):
-        has_forbidden_num = UserRecord.get_forbidden_times_user_id(user_id)
-        forbidden_ts = User.get_by_id(user_id).forbidden_ts
-        if forbidden_ts:
-            forbidden_ts = unix_ts_string(forbidden_ts)
+    def get_forbid_record_atom(cls, user_id):
+        """对于单个用户，如此查询"""
+        nickname = User.get_by_id(user_id).nickname
+        forbidden_until = User.get_by_id(user_id).forbidden_ts
+        if forbidden_until:
+            forbidden_until = unix_ts_string(forbidden_until)
+        user_forbidden_num = UserRecord.get_forbidden_num_by_uid(user_id)
+        device_forbidden_num = ForbidRecordService.get_device_forbidden_num_by_uid(user_id)
         forbid_score = ForbidActionService.accum_illegal_credit(user_id)
-        is_sensitive = ForbidCheckService.check_sensitive_user(user_id)
-        ts_now = int(time.time())
-        report_times = Report.count_by_time_and_uid(user_id, temp_ts, temp_ts + 3 * ONE_DAY, True)
-
+        forbid_history = ForbidRecordService.get_forbid_history_by_uid(user_id)
+        return {'user_id': user_id, 'nickname': nickname, 'forbidden_until': forbidden_until,
+                'forbidden_from': UserRecord.get_forbidden_time_by_uid(user_id),
+                'user_forbidden_num': user_forbidden_num, 'device_forbidden_num': device_forbidden_num,
+                'forbid_score': forbid_score, 'forbid_history': forbid_history}
 
     @classmethod
-    def get_feed(cls, loc, condition):
-        if loc not in cls.FEED_LOCATIONS:
+    def get_feed(cls, loc=None, condition=None):
+        """feed审核表"""
+        if loc and loc not in cls.FORBID_LOCATIONS:
             return 'invalid location', False
-        if condition not in {cls.FEED_NEED_REVIEW, cls.FEED_RECOMMENDED, cls.FEED_USER_UNRELIABLE}:
+        if condition and condition not in {cls.FEED_NEED_REVIEW, cls.FEED_RECOMMENDED, cls.FEED_USER_UNRELIABLE}:
             return 'invalid condition', False
-        feeds = Feed.objects(status=FEED_NEED_CHECK).limit(100)
         res = []
+        feeds = Feed.objects(status=FEED_NEED_CHECK)
+        res_length = 0
         for feed in feeds:
             user_id = feed.user_id
             if loc and loc != UserSetting.get_loc_by_uid(user_id):
@@ -144,10 +144,69 @@ class ForbidPlatformService(object):
             forbid_score = ForbidActionService.accum_illegal_credit(user_id)
             if condition == cls.FEED_USER_UNRELIABLE and forbid_score <= 5:
                 continue
-            tmp = {'user_id': user_id, 'word': feed.content, 'pics': feed.pics, 'audio': feed.audios,
+            tmp = {'user_id': user_id, 'word': feed.content, 'pics': [OSS_PIC_URL + pic for pic in feed.pics],
+                   'audio': [OSS_AUDIO_URL + audio for audio in feed.audios],
                    'comment_num': feed.comment_num, 'like_num': feed.like_num, 'hq': is_hq,
                    'forbid_score': forbid_score}
             res.append(tmp)
+            res_length += 1
+            if res_length > FORBID_PAGE_SIZE:
+                break
         return res, True
 
+    @classmethod
+    def get_feed_atom(cls, user_id):
+        feeds = Feed.objects(user_id=user_id, status=FEED_NEED_CHECK)
+        res = []
+        res_length = 0
+        forbid_score = ForbidActionService.accum_illegal_credit(user_id)
+        for feed in feeds:
+            tmp = {'user_id': user_id, 'word': feed.content, 'pics': [OSS_PIC_URL + pic for pic in feed.pics],
+                   'audio': [OSS_AUDIO_URL + audio for audio in feed.audios],
+                   'comment_num': feed.comment_num, 'like_num': feed.like_num, 'hq': feed.is_hq,
+                   'forbid_score': forbid_score}
+            res.append(tmp)
+            res_length += 1
+            if res_length > FORBID_PAGE_SIZE:
+                break
+        return res, True
 
+    @classmethod
+    def get_report(cls, from_ts, to_ts, region=None, match_type=None):
+        if region and region not in cls.REPORT_REGIONS:
+            return 'invalid region', False
+        if match_type and match_type not in {cls.MATCH_REPORT, cls.OTHER_REPORT}:
+            return 'invalid match type', False
+        if not region and not match_type:
+            reports = Report.objetcs(create_ts__gte=from_ts, create_ts__lte=to_ts)
+        elif region and match_type == cls.MATCH_REPORT:
+            reports = Report.objects(create_ts__gte=from_ts, create_ts__lte=to_ts, region=region, reason=match_type)
+        elif region and match_type == cls.OTHER_REPORT:
+            reports = Report.objetcs(create_ts__gte=from_ts, create_ts__lte=to_ts, region=region,
+                                     reason__ne=cls.MATCH_REPORT)
+        elif region and not match_type:
+            reports = Report.objects(create_ts__gte=from_ts, create_ts__lte=to_ts, region=region)
+        elif not region and match_type == cls.MATCH_REPORT:
+            reports = Report.objects(create_ts__gte=from_ts, create_ts__lte=to_ts, reason=match_type)
+        else:
+            reports = Report.objects(create_ts__gte=from_ts, create_ts__lte=to_ts, reason__ne=cls.MATCH_REPORT)
+        res = []
+        report_num = 0
+        for report in reports:
+            res.append(ReportService.get_report_info(report))
+            report_num += 1
+            if report_num > FORBID_PAGE_SIZE:
+                break
+        return res, True
+
+    @classmethod
+    def get_report_atom(cls, user_id):
+        reports = Report.objects(target_uid=user_id)
+        res = []
+        report_num = 0
+        for report in reports:
+            res.append(ReportService.get_report_info(report))
+            report_num += 1
+            if report_num > FORBID_PAGE_SIZE:
+                break
+        return res, True

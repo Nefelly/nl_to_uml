@@ -49,13 +49,9 @@ from ..const import (
     NO_SET,
     USER_ACTIVE,
     SYS_FORBID,
-    MANUAL_FORBID,
 )
 from ..redis import RedisClient
 from ..util import (
-    format_standard_time,
-    unix_ts_local,
-    passwdhash,
     date_to_int_time
 )
 
@@ -638,6 +634,10 @@ class UserSetting(Document):
         return ''
 
     @classmethod
+    def get_uids_by_uuid(cls, uuid):
+        return cls.objects(uuid=uuid).distinct('user_id')
+
+    @classmethod
     def batch_get_by_user_ids(cls, user_ids):
         user_ids = [_ for _ in user_ids if _]
         keys = [REDIS_USER_SETTING_CACHE.format(user_id=_) for _ in user_ids]
@@ -791,12 +791,18 @@ class UserRecord(Document):
     create_time = IntField(required=True)
 
     @classmethod
-    def get_forbidden_times_user_id(cls, user_id):
+    def get_forbidden_num_by_uid(cls, user_id):
         return cls.objects(user_id=user_id).count()
 
     @classmethod
-    def get_forbid_users_by_time(cls, from_ts, to_ts):
-        return cls.objects(create_time__gte=from_ts, create_time__lte=to_ts)
+    def get_forbidden_time_by_uid(cls, user_id):
+        return cls.objects(user_id=user_id).order_by('-create_time').first().create_time
+
+    @classmethod
+    def get_forbid_users_by_time(cls, from_ts, to_ts, forbid_type=None):
+        if not forbid_type:
+            return cls.objects(create_time__gte=from_ts, create_time__lte=to_ts)
+        return cls.objects(create_time__gte=from_ts, create_time__lte=to_ts, action=forbid_type)
 
     @classmethod
     def get_by_uid_and_time(cls, user_id, from_ts, to_ts):

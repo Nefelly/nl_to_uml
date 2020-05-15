@@ -102,7 +102,7 @@ class AccountService(object):
         if device_blocked:
             print 'get inn', request.uuid
             return 50 * cls.UNBAN_DIAMONDS
-        forbid_times = UserRecord.get_forbidden_times_user_id(user_id)
+        forbid_times = UserRecord.get_forbidden_num_by_uid(user_id)
         if forbid_times <= 1:
             return cls.UNBAN_DIAMONDS
         return max((forbid_times - 1) * 5 * cls.UNBAN_DIAMONDS, 500)

@@ -132,8 +132,10 @@ class GlobalizationService(object):
     LOC_REGION = {
         'TH': REGION_TH,
         'VN': REGION_VN,
+        'vi': REGION_VN,
         'IN': REGION_IN,
         'ID': REGION_ID,
+        'id': REGION_ID,
         'th': REGION_TH,
         'CN': REGION_EN,
         #'INN': REGION_IN_NOCORE

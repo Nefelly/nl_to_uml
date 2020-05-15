@@ -138,7 +138,6 @@ class SpamWordCheckService(object):
 
     @classmethod
     def get_spam_word(cls, word, region=None):
-        """从word的某个位置开始连续匹配到了一个keyword，则判定为spam_word"""
         if not word:
             return False
         word = word.lower()
