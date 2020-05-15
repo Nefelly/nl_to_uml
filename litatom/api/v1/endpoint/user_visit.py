@@ -41,7 +41,7 @@ def all_viewed():
 
 @session_required
 def visited_list():
-    page_num = request.values().get('page_num', '0')
+    page_num = request.values().get('page_num', 'lll')
     print page_num
     print request.args.get('page_num')
     page_num = int(page_num) if page_num and page_num.isdigit() else 0
