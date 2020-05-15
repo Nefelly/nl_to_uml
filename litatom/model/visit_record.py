@@ -83,8 +83,11 @@ class NewVisit(Document):
     @classmethod
     def incr_visited(cls, visited_user_id):
         obj = cls.get_by_visited_user_id(visited_user_id)
-        if obj:
-            pass
+        if not obj:
+            obj = cls(visited_user_id=visited_user_id)
+        obj.new_visit_num += 1
+        obj.save()
+        cls.disable_cache(visited_user_id)
 
     @classmethod
     def new_visit_num(cls, visited_user_id):
