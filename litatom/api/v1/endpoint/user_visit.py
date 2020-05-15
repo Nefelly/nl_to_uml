@@ -44,7 +44,7 @@ def all_viewed():
 def visited_list():
     page_num = request.values.get('page_num', '0')
     page_num = int(page_num) if page_num and page_num.isdigit() else 0
-    num = request.values.get('num', '0')
+    num = request.values.get('num', '20')
     num = int(num) if num and num.isdigit() else 10
     data, status = VisitService.get_visited_list(request.user_id, page_num, num)
     if not status:

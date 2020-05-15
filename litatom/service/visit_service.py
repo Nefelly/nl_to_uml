@@ -83,4 +83,5 @@ class VisitService(object):
         visited_id = str(visited.id)
         print visited.session
         for _ in UserService.get_all_ids():
-            cls.visit(_, visited_id)
+            if _:
+                cls.visit(_, visited_id)
