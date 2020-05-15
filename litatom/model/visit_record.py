@@ -81,6 +81,12 @@ class NewVisit(Document):
         return REDIS_NEW_VISIT_NUM.format(user_id=user_id)
 
     @classmethod
+    def incr_visited(cls, visited_user_id):
+        obj = cls.get_by_visited_user_id(visited_user_id)
+        if obj:
+            pass
+
+    @classmethod
     def new_visit_num(cls, visited_user_id):
         num = redis_client.get(cls.new_visited_cache_key(visited_user_id))
         if num is None:
