@@ -6,7 +6,8 @@ from ..const import (
     SYS_FORBID_TIME,
     OSS_AUDIO_URL,
     OSS_PIC_URL,
-    FEED_NOT_FOUND_ERROR
+    FEED_NOT_FOUND_ERROR,
+    SPAM_RECORD_UNKNOWN_SOURCE
 )
 from ..model import (
     Report,
@@ -149,12 +150,12 @@ class ReportService(object):
 class TrackSpamRecordService(object):
 
     @classmethod
-    def save_record(cls, user_id, word=None, pic=None, forbid_weight=0):
+    def save_record(cls, user_id, word=None, pic=None, forbid_weight=0, source=SPAM_RECORD_UNKNOWN_SOURCE):
         if not word and not pic:
             return False
         # if cls.check_spam_word_in_one_minute(user_id, int(time.time())):
         #     return False
-        return TrackSpamRecord.create(user_id, word, pic, forbid_weight=forbid_weight)
+        return TrackSpamRecord.create(user_id, word, pic, forbid_weight=forbid_weight,source=source)
 
     # @classmethod
     # def check_spam_word_in_one_minute(cls, user_id, ts):
@@ -187,7 +188,7 @@ class TrackSpamRecordService(object):
 
     @classmethod
     def get_spam_record_info(cls, record):
-        tmp = {'forbid_weight': record.forbid_weight,'record_id':record.id, 'create_time':unix_ts_string(record.create_time)}
+        tmp = {'forbid_weight': record.forbid_weight,'record_id':record.id, 'create_time':unix_ts_string(record.create_time), 'source':record.source}
         if record.word:
             tmp['word'] = {'word': record.word, 'hit_word': SpamWordCheckService.get_spam_word(record.word, GlobalizationService.get_region_by_user_id(record.user_id))}
         elif record.pic:

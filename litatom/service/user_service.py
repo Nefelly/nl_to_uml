@@ -29,7 +29,9 @@ from ..const import (
     USER_ACTIVE,
     OPERATE_TOO_OFTEN,
     REMOVE_EXCHANGE,
-    OFFICIAL_AVATAR
+    OFFICIAL_AVATAR,
+    SPAM_RECORD_NICKNAME_SOURCE,
+    SPAM_RECORD_BIO_SOURCE
 )
 
 from ..key import (
@@ -47,7 +49,6 @@ from ..model import (
     Avatar,
     SocialAccountInfo,
     UserRecord,
-    Follow,
     Blocked,
     FaceBookBackup,
     RedisLock,
@@ -272,11 +273,11 @@ class UserService(object):
             # nickname,bio spam word风险拦截
             res = SpamWordCheckService.is_spam_word(nickname)
             if res:
-                ForbidActionService.resolve_spam_word(uid,nickname)
+                ForbidActionService.resolve_spam_word(uid,nickname,SPAM_RECORD_NICKNAME_SOURCE)
                 return GlobalizationService.get_region_word('alert_msg'), False
             res = SpamWordCheckService.is_spam_word(bio)
             if res:
-                ForbidActionService.resolve_spam_word(uid,bio)
+                ForbidActionService.resolve_spam_word(uid,bio,SPAM_RECORD_BIO_SOURCE)
                 return GlobalizationService.get_region_word('alert_msg'), False
             # if (bio or nickname) and GlobalizationService.get_region() == GlobalizationService.DEFAULT_REGION:
             if (bio or nickname) and GlobalizationService.get_region() not in GlobalizationService.BIG_REGIONS:

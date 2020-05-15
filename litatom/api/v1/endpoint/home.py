@@ -34,6 +34,7 @@ from ....const import (
     APP_PATH,
     BLOCK_PIC,
     REVIEW_PIC,
+    SPAM_RECORD_IM_SOURCE
 )
 from ....service import (
     StatisticService,
@@ -158,7 +159,7 @@ def report_spam():
     if not data:
         return success()
     word = data.get('word')
-    data, status = ForbidActionService.resolve_spam_word(request.user_id, word)
+    data, status = ForbidActionService.resolve_spam_word(request.user_id, word, SPAM_RECORD_IM_SOURCE)
     if not status:
         return fail(data)
     return success(data)
@@ -166,6 +167,7 @@ def report_spam():
 
 @session_required
 def check_pic():
+    """搭讪前10句和match环节的图片审查"""
     data = request.json
     user_id = request.user_id
     url = data.get('url')
@@ -174,10 +176,10 @@ def check_pic():
     reason, advice = PicCheckService.check_pic_by_url(url)
     if reason:
         if advice == BLOCK_PIC:
-            data, status = ForbidActionService.resolve_block_pic(user_id, url)
+            data, status = ForbidActionService.resolve_block_pic(user_id, pic=url, source=SPAM_RECORD_IM_SOURCE)
         elif advice == REVIEW_PIC:
             data = 'review picture'
-            status = TrackSpamRecordService.save_record(user_id,pic=url,forbid_weight=0)
+            status = TrackSpamRecordService.save_record(user_id,pic=url,forbid_weight=0,source=SPAM_RECORD_IM_SOURCE)
         else:
             data = 'normal picture'
             status = True
