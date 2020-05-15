@@ -32,7 +32,7 @@ class VisitRecord(Document):
         'shard_key': {'user_id': 'hashed'}
     }
 
-    user_id = StringField(required=True, unique=True)
+    user_id = StringField(required=True)
     target_user_id = StringField()
     visit_num = IntField(default=0)
     last_visited_time = IntField(required=True, default=int(time.time()))
