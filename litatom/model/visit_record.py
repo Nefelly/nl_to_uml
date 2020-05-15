@@ -53,7 +53,7 @@ class VisitRecord(Document):
         obj.save()
 
 
-class DiffVisitRecord(Document):
+class HasViewedVisit(Document):
     meta = {
         'strict': False,
         'db_alias': 'relations',
@@ -61,10 +61,20 @@ class DiffVisitRecord(Document):
     }
 
     visited_user_id = StringField(required=True, unique=True)   # 被访问者的id
-    recorded_visit_num = IntField(default=0)
+    has_viewed_num = IntField(default=0)
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
 
     @classmethod
-    def record_recorded(cls, visited_user_id):
+    def record_has_viewed(cls, visited_user_id):
         pass
 
+    @classmethod
+    def get_has_viewed_num(cls, visited_user_id):
+        obj = cls.get_by_visited_user_id(visited_user_id)
+        if obj:
+            return obj.has_viewed_num
+        return 0
+
+    @classmethod
+    def get_by_visited_user_id(cls, visited_user_id):
+        return cls.objects(visited_user_id=visited_user_id).first()
