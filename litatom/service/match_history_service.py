@@ -9,7 +9,6 @@ from ..model import (
     MatchHistory,
 )
 from ..service import (
-    AccountService,
     UserService,
     MqService
 )
