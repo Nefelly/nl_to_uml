@@ -106,6 +106,8 @@ class NewVisit(Document):
         #     redis_client.set(cls.new_visited_cache_key(visited_user_id), num, cls.VISITED_CACHE_TIME)
         # else:
         #     num = int(num)
+        else:
+            total_num, new_visit_num = 0, 0
         return total_num, new_visit_num
 
 
