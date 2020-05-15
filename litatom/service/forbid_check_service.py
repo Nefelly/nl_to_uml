@@ -274,7 +274,7 @@ class PicCheckService(object):
                     if details and details[0]['label'] != 'normal':
                         cls.record_fail(out_url, scenes, r)
                     if details and details[0].get('suggestion') == 'block':
-                        cls.record_fail(out_url, scenes, r)
+                        # cls.record_fail(out_url, scenes, r)
                         return r, BLOCK_PIC
                     if details and details[0].get('suggestion') == 'review':
                         return r, REVIEW_PIC
