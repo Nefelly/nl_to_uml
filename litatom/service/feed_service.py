@@ -157,6 +157,8 @@ class FeedService(object):
             feed.delete()
             return {}
         user_info = UserService.user_info_by_uid(feed.user_id)
+        if not user_info:
+            return {}
         res = feed.get_info()
         res['user_info'] = user_info
         if visitor_user_id:
