@@ -43,6 +43,7 @@ def all_viewed():
 def visited_list():
     page_num = request.values().get('page_num', '0')
     print page_num
+    print request.args.get('page_num')
     page_num = int(page_num) if page_num and page_num.isdigit() else 0
     num = request.values().get('num', '0')
     num = int(num) if num and num.isdigit() else 10
