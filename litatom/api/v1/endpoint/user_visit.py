@@ -34,16 +34,15 @@ def new_visited_num():
 
 @session_required
 def all_viewed():
-    data, status = VisitService.all_viewed(request.user_id)
+    num = request.json.get('num', 0)
+    data, status = VisitService.all_viewed(request.user_id, num)
     if not status:
         return fail(data)
     return success(data)
 
 @session_required
 def visited_list():
-    page_num = request.values.get('page_num', 'lll')
-    print page_num
-    print request.args.get('page_num')
+    page_num = request.values.get('page_num', '0')
     page_num = int(page_num) if page_num and page_num.isdigit() else 0
     num = request.values.get('num', '0')
     num = int(num) if num and num.isdigit() else 10
