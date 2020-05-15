@@ -38,7 +38,7 @@ class MatchHistoryService(object):
             res.append(obj.to_json())
         # if AccountService.is_member(user_id):
         if True:
-            user_ids = [el.user_id for el in objs]
+            user_ids = [el.other_user_id for el in objs]
             user_info_m = UserService.batch_get_user_info_m(user_ids)
             for i in range(len(res)):
                 user_id = res[i]['other_user_id']
