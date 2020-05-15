@@ -23,8 +23,7 @@ from ..service import (
     SpamWordCheckService
 )
 from ..util import (
-    format_standard_time,
-    date_from_unix_ts
+    unix_ts_string
 )
 
 
@@ -188,12 +187,9 @@ class TrackSpamRecordService(object):
 
     @classmethod
     def get_spam_record_info(cls, record):
-        tmp = {'forbid_weight': record.forbid_weight}
+        tmp = {'forbid_weight': record.forbid_weight,'record_id':record.id, 'create_time':unix_ts_string(record.create_time)}
         if record.word:
-            tmp['word'] = {'word': record.word, 'hit_word': SpamWordCheckService.get_spam_word(record.word, region)}
+            tmp['word'] = {'word': record.word, 'hit_word': SpamWordCheckService.get_spam_word(record.word, GlobalizationService.get_region_by_user_id(record.user_id))}
         elif record.pic:
             tmp['pic'] = {'pic': record.pic}
         return tmp
-
-
-

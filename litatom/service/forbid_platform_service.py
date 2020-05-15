@@ -25,7 +25,7 @@ from litatom.service import (
     ForbidRecordService,
     ForbidCheckService,
     ReportService,
-    TrackSpamRecordService
+    TrackSpamRecordService, GlobalizationService
 )
 from litatom.util import (
     get_ts_from_str,
@@ -125,14 +125,14 @@ class ForbidPlatformService(object):
                 'forbid_score': forbid_score, 'forbid_history': forbid_history}
 
     @classmethod
-    def get_feed(cls, loc=None, condition=None):
+    def get_feed(cls, from_ts, to_ts, loc=None, condition=None):
         """feed审核表"""
         if loc and loc not in cls.FORBID_LOCATIONS:
             return 'invalid location', False
         if condition and condition not in {cls.FEED_NEED_REVIEW, cls.FEED_RECOMMENDED, cls.FEED_USER_UNRELIABLE}:
             return 'invalid condition', False
         res = []
-        feeds = Feed.objects(status=FEED_NEED_CHECK)
+        feeds = Feed.objects(status=FEED_NEED_CHECK, create_time__gte=from_ts, create_time__lte=to_ts)
         res_length = 0
         for feed in feeds:
             user_id = feed.user_id
@@ -208,5 +208,34 @@ class ForbidPlatformService(object):
             res.append(ReportService.get_report_info(report))
             report_num += 1
             if report_num > FORBID_PAGE_SIZE:
+                break
+        return res, True
+
+    @classmethod
+    def get_spam_record(cls, from_ts, to_ts, region=None):
+        if region and region not in cls.FORBID_LOCATIONS:
+            return 'invalid region', False
+        records = TrackSpamRecord.objects(create_time__gte=from_ts, create_time__lte=to_ts, dealed=False)
+        res = []
+        res_len = 0
+        for record in records:
+            user_id = record.user_id
+            if region and GlobalizationService.get_region_by_user_id(user_id) != region:
+                continue
+            res.append(TrackSpamRecordService.get_spam_record_info(record))
+            res_len += 1
+            if res_len > FORBID_PAGE_SIZE:
+                break
+        return res, True
+
+    @classmethod
+    def get_spam_record_atom(cls, user_id):
+        records = TrackSpamRecord.objects(user_id=user_id, dealed=False)
+        res = []
+        res_len = 0
+        for record in records:
+            res.append(TrackSpamRecordService.get_spam_record_info(record))
+            res_len += 1
+            if res_len > FORBID_PAGE_SIZE:
                 break
         return res, True

@@ -22,7 +22,8 @@ from ...decorator import (
     get_user_id_by_phone,
     get_page_info,
     set_exp_arg,
-    set_user_id_by_phone
+    set_user_id_by_phone,
+    check_time
 )
 
 from ....util import write_data_to_xls
@@ -32,12 +33,8 @@ from ...error import (
     FailedLackOfField
 )
 from ....response import (
-    failure,
     fail,
     success
-)
-from ..form import (
-    PhoneLoginForm
 )
 from ....model import (
     User,
@@ -47,7 +44,6 @@ from ....service import (
     AdminService,
     PicCheckService,
     ForbidPlatformService,
-    TrackSpamRecordService,
     ForbidActionService,
     FirebaseService,
     FeedService,
@@ -436,12 +432,75 @@ def judge_lit_pic():
     })
 
 
-def review_record():
-    return success(TrackSpamRecordService.get_review_pic())
+def forbid_record():
+    user_id = request.args.get('user_id')
+    if user_id:
+        data, status = ForbidPlatformService.get_forbid_record_atom(user_id)
+        if not status:
+            return fail(data)
+        return success(data)
+    from_ts, to_ts = check_time()
+    if not from_ts:
+        return fail('neither time nor user_id')
+    region = request.args.get('region')
+    forbid_type = request.args.get('forbid_type')
+    data, status = ForbidPlatformService.get_forbid_record(from_ts, to_ts, region, forbid_type)
+    if not status:
+        return fail(data)
+    return success(data)
 
 
 def review_feed():
-    return success(FeedService.get_review_feed())
+    user_id = request.args.get('user_id')
+    if user_id:
+        data, status = ForbidPlatformService.get_feed_atom(user_id)
+        if not status:
+            return fail(data)
+        return success(data)
+    from_ts, to_ts = check_time()
+    if not from_ts:
+        return fail('neither time nor user_id')
+    loc = request.args.get('loc')
+    condition = request.args.get('location')
+    data, status = ForbidPlatformService.get_feed(from_ts, to_ts, loc, condition)
+    if not status:
+        return fail(data)
+    return success(data)
+
+
+def review_record():
+    user_id = request.args.get('user_id')
+    if user_id:
+        data, status = ForbidPlatformService.get_spam_record_atom(user_id)
+        if not status:
+            return fail(data)
+        return success(data)
+    from_ts, to_ts = check_time()
+    if not from_ts:
+        return fail('neither time nor user_id')
+    region = request.args.get('region')
+    data, status = ForbidPlatformService.get_spam_record(from_ts, to_ts, region)
+    if not status:
+        return fail(data)
+    return success(data)
+
+
+def review_report():
+    user_id = request.args.get('user_id')
+    if user_id:
+        data, status = ForbidPlatformService.get_report_atom(user_id)
+        if not status:
+            return fail(data)
+        return success(data)
+    from_ts, to_ts = check_time()
+    if not from_ts:
+        return fail('neither time nor user_id')
+    region = request.args.get('region')
+    match_type = request.args.get('match_type')
+    data, status = ForbidPlatformService.get_report(from_ts, to_ts, region, match_type)
+    if not status:
+        return fail(data)
+    return success(data)
 
 
 def resolve_review_feed():
@@ -678,8 +737,9 @@ def mongo_gen_csv_page():
 def journal():
     return current_app.send_static_file('journal.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
 
+
 def get_feed():
-    page,page_size = get_page_info()
+    page, page_size = get_page_info()
     if not page or not page_size:
         return fail('invalid page or page size param')
     loc = request.args.get('loc')

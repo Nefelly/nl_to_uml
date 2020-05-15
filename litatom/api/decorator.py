@@ -13,6 +13,7 @@ from flask import (
 )
 from ..util import (
     time_str_by_ts,
+    get_ts_from_str,
 )
 from ..const import (
     ONE_DAY
@@ -70,6 +71,16 @@ def set_exp_arg(arg=7 * ONE_DAY):
         return wrapper
 
     return _deco
+
+
+def check_time():
+    from_ts = request.args.get('from_ts')
+    to_ts = request.args.get('to_ts')
+    if not from_ts and not to_ts:
+        return None, None
+    from_ts = get_ts_from_str(from_ts)
+    to_ts = get_ts_from_str(to_ts)
+    return from_ts, to_ts
 
 
 def get_page_info():
