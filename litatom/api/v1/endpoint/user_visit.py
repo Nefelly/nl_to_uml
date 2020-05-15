@@ -34,8 +34,7 @@ def new_visited_num():
 
 @session_required
 def all_viewed():
-    num = request.json.get('num', 0)
-    data, status = VisitService.all_viewed(request.user_id, num)
+    data, status = VisitService.all_viewed(request.user_id)
     if not status:
         return fail(data)
     return success(data)

@@ -24,7 +24,7 @@ from .material import (
 )
 from . visit_record import (
     VisitRecord,
-    HasViewedVisit
+    NewVisit
 )
 from .report import (
     Report

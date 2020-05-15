@@ -5,7 +5,7 @@ import traceback
 import logging
 from ..model import (
     VisitRecord,
-    HasViewedVisit,
+    NewVisit,
     User
 )
 from ..key import (
@@ -30,28 +30,19 @@ class VisitService(object):
     用户访问记录  v3.5
     查看差值时： 先命中缓存， 缓存有就从缓存取； 无： 就从库里取 差值； 在访问完成后就去除缓存， 设置库里的值为现有的值
     '''
-    VISITED_CACHE_TIME = ONE_DAY
-    @classmethod
-    def new_visited_cache_key(cls, user_id):
-        return REDIS_NEW_VISIT_NUM.format(user_id=user_id)
+
 
     @classmethod
     def visit(cls, user_id, other_user_id):
         VisitRecord.add_visit(user_id, other_user_id)
+        NewVisit.incr_visited(other_user_id)
         redis_client.incr(cls.new_visited_cache_key(other_user_id))
         redis_client.expire(cls.new_visited_cache_key(other_user_id), cls.VISITED_CACHE_TIME)
         return None, True
 
     @classmethod
     def new_visited_num(cls, user_id):
-        num = redis_client.get(cls.new_visited_cache_key(user_id))
-        if num is not None:
-            num = int(num)
-        else:
-            total_num = sum([el.visit_num for el in VisitRecord.objects(target_user_id=user_id)])
-            has_viewed = HasViewedVisit.get_has_viewed_num(user_id)
-            num = max(total_num - has_viewed, 0)
-            redis_client.set(cls.new_visited_cache_key(user_id), num, cls.VISITED_CACHE_TIME)
+        num = NewVisit.new_viewed_num()
         return {'num': num}, True
 
     @classmethod
@@ -70,8 +61,8 @@ class VisitService(object):
         return {'records': res}, True
 
     @classmethod
-    def all_viewed(cls, user_id, num):
-        HasViewedVisit.record_has_viewed(user_id, num)
+    def all_viewed(cls, user_id):
+        NewVisit.record_has_viewed(user_id)
         redis_client.set(cls.new_visited_cache_key(user_id), 0, cls.VISITED_CACHE_TIME)
         return None, True
 

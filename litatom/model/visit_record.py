@@ -14,7 +14,7 @@ from ..util import (
     date_to_int_time
 )
 from .. key import (
-    REDIS_ADMIN_USER
+    REDIS_NEW_VISIT_NUM
 )
 from ..const import (
     ONE_DAY
@@ -64,7 +64,7 @@ class VisitRecord(Document):
         }
 
 
-class HasViewedVisit(Document):
+class NewVisit(Document):
     meta = {
         'strict': False,
         'db_alias': 'relations',
@@ -72,23 +72,40 @@ class HasViewedVisit(Document):
     }
 
     visited_user_id = StringField(required=True, unique=True)   # 被访问者的id
-    has_viewed_num = IntField(default=0)
+    new_visit_num = IntField(default=0)
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
+    VISITED_CACHE_TIME = ONE_DAY
 
     @classmethod
-    def record_has_viewed(cls, visited_user_id, num):
-        obj = cls.get_by_visited_user_id(visited_user_id)
-        if not obj:
-            obj = cls(visited_user_id=visited_user_id)
-        obj.has_viewed_num += num
-        obj.save()
+    def new_visited_cache_key(cls, user_id):
+        return REDIS_NEW_VISIT_NUM.format(user_id=user_id)
 
     @classmethod
-    def get_has_viewed_num(cls, visited_user_id):
+    def new_visit_num(cls, visited_user_id):
+        num = redis_client.get(cls.new_visited_cache_key(visited_user_id))
+        if num is None:
+            obj = cls.get_by_visited_user_id(visited_user_id)
+            if obj:
+                num = obj.new_visit_num
+            else:
+                num = 0
+            redis_client.set(cls.new_visited_cache_key(visited_user_id), num, cls.VISITED_CACHE_TIME)
+        else:
+            num = int(num)
+        return num
+
+
+    @classmethod
+    def disable_cache(cls, visited_user_id):
+        redis_client.delete(cls.new_visited_cache_key(visited_user_id))
+
+    @classmethod
+    def record_has_viewed(cls, visited_user_id):
         obj = cls.get_by_visited_user_id(visited_user_id)
         if obj:
-            return obj.has_viewed_num
-        return 0
+            obj.new_visit_num = 0
+            obj.save()
+        redis_client.set(cls.new_visited_cache_key(visited_user_id), 0, cls.VISITED_CACHE_TIME)
 
     @classmethod
     def get_by_visited_user_id(cls, visited_user_id):
