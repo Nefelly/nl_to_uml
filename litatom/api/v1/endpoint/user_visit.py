@@ -32,12 +32,14 @@ def get_visit_nums():
         return fail(data)
     return success(data)
 
+
 @session_required
 def all_viewed():
     data, status = VisitService.all_viewed(request.user_id)
     if not status:
         return fail(data)
     return success(data)
+
 
 @session_required
 def visited_list():

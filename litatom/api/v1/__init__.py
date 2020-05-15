@@ -45,7 +45,6 @@ b.add_url_rule('/lit/user_visit/all_viewed', 'user-visit-all_viewed', endpoint.u
 b.add_url_rule('/lit/user_visit/visited_list', 'user-visit-visited_list', endpoint.user_visit.visited_list)
 
 
-
 b.add_url_rule('/lit/account/account_info', 'account-account_info', endpoint.account.account_info)
 b.add_url_rule('/lit/account/products', 'account-product_info', endpoint.account.product_info)
 b.add_url_rule('/lit/account/pay_activities', 'account-pay_activities', endpoint.account.pay_activities)

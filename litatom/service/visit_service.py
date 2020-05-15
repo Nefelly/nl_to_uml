@@ -44,11 +44,12 @@ class VisitService(object):
     @classmethod
     def get_visited_list(cls, user_id, page_num, num):
         objs = VisitRecord.get_by_target_user_id(user_id, page_num, num)
-        is_member = AccountService.is_member(user_id)
+        # is_member = AccountService.is_member(user_id)
         res = []
         for obj in objs:
             res.append(obj.to_json())
-        if is_member:
+        # if is_member:
+        if True:
             user_ids = [el.user_id for el in objs]
             user_info_m = UserService.batch_get_user_info_m(user_ids)
             for i in range(len(res)):
