@@ -58,6 +58,7 @@ class MatchHistoryService(object):
     def send_add_request(cls, user_id, other_user_id, match_success_time):
         obj = MatchHistory.get_specified(user_id, other_user_id, match_success_time)
         other_obj = MatchHistory.get_specified(other_user_id, user_id, match_success_time)
+        print obj, '!!!', other_obj
         if not obj or not other_obj:
             return u'fake match record', False
         if obj.friend_status == MatchHistory.STRANGER:
