@@ -72,7 +72,7 @@ class VisitService(object):
     @classmethod
     def all_viewed(cls, user_id, num):
         HasViewedVisit.record_has_viewed(user_id, num)
-        redis_client.set(cls.new_visited_cache_key(user_id), cls.VISITED_CACHE_TIME)
+        redis_client.set(cls.new_visited_cache_key(user_id), 0, cls.VISITED_CACHE_TIME)
         return None, True
 
     @classmethod
