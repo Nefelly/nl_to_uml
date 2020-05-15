@@ -71,7 +71,7 @@ class MatchHistory(Document):
         obj.save()
 
     @classmethod
-    def get_history(cls, user_id, page_num, num):
+    def get_by_user_id(cls, user_id, page_num, num):
         return cls.objects(user_id=user_id).order_by('-match_success_time').skip(page_num * num).limit(num)
 
 
