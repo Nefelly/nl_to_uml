@@ -47,7 +47,7 @@ b.add_url_rule('/lit/user_visit/visited_list', 'user-visit-visited_list', endpoi
 #  match history
 b.add_url_rule('/lit/match_history/matched_history', 'match-history-matched_history', endpoint.match_history.matched_history)
 b.add_url_rule('/lit/match_history/send_friend_request', 'match-history-send_friend_request', endpoint.match_history.send_friend_request, methods=['POST'])
-b.add_url_rule('/lit/match_history/accep_friend_request', 'match-history-accep_friend_request', endpoint.match_history.accep_friend_request, methods=['POST'])
+b.add_url_rule('/lit/match_history/accept_friend_request', 'match-history-accept_friend_request', endpoint.match_history.accept_friend_request, methods=['POST'])
 
 b.add_url_rule('/lit/account/account_info', 'account-account_info', endpoint.account.account_info)
 b.add_url_rule('/lit/account/products', 'account-product_info', endpoint.account.product_info)

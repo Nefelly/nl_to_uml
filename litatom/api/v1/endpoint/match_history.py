@@ -37,7 +37,7 @@ def send_friend_request():
 
 
 @session_required
-def accep_friend_request():
+def accept_friend_request():
     data = request.json
     other_user_id = data.get('other_user_id')
     match_success_time = data.get('match_success_time')
