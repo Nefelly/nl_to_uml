@@ -92,6 +92,6 @@ class MatchHistoryService(object):
         import random
         for _ in UserService.get_all_ids():
             if _:
-                r = random.randint(1000)
+                r = random.randint(1, 1000)
                 cls.add_match_record(test_user_id, _, 'anoy1', _, int(time.time()) + r, r % 10, r % 4 == 0)
 
