@@ -57,11 +57,21 @@ class MatchHistoryService(object):
     @classmethod
     def send_add_request(cls, user_id, other_user_id, match_success_time):
         obj = MatchHistory.get_specified(user_id, other_user_id, match_success_time)
-        if not obj:
+        other_obj = MatchHistory.get_specified(other_user_id, user_id, match_success_time)
+        if not obj or not other_obj:
             return u'fake match record', False
         if obj.friend_status == MatchHistory.STRANGER:
             obj.friend_status = MatchHistory.SEND_REQUEST
             obj.save()
+        elif obj.friend_status == MatchHistory.WAIT_TO_ACCEPT:
+            obj.friend_status = MatchHistory.FRIENDS
+            obj.save()
+        if other_obj.friend_status == MatchHistory.SEND_REQUEST:
+            other_obj.friend_status == MatchHistory.FRIENDS
+            other_obj.save()
+        else:
+            other_obj.friend_status == MatchHistory.WAIT_TO_ACCEPT
+            other_obj.save()
         return None, True
         # elif obj.friend_status == cls.WAIT_TO_ACCEPT:
         #     obj.friend_status = cls.FRIENDS
@@ -74,6 +84,8 @@ class MatchHistoryService(object):
             return u'fake match record', False
         if other_obj.friend_status != MatchHistory.SEND_REQUEST:
             return u'other party has not send you add request', False
+        if not obj.friend_status == MatchHistory.WAIT_TO_ACCEPT:
+            return u'you are in wrong states', False
         obj.friend_status = MatchHistory.FRIENDS
         other_obj.friend_status = MatchHistory.FRIENDS
         obj.save()
