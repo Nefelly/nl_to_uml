@@ -30,11 +30,12 @@ class Avatar(Document):
 
     fileid = StringField(required=True)
     gender = StringField(required=False)
+    paid = BooleanField(default=False)
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
 
     @classmethod
-    def create(cls, fileid, gender):
-        obj = cls(fileid=fileid, gender=gender)
+    def create(cls, fileid, gender, paid=False):
+        obj = cls(fileid=fileid, gender=gender, paid=paid)
         obj.save()
         cls._disable_cache()
 
@@ -59,23 +60,26 @@ class Avatar(Document):
             return cPickle.loads(cache_obj)
 
         avatars = {}
-        for g in GENDERS:
-            if not avatars.get(g):
-                avatars[g] = []
-            objs = cls.objects(gender=g)
-            for obj in objs:
-                fileid = obj.fileid
-                avatars[g].append(fileid)
+        for paied in [False, True]:
+            for gender in GENDERS:
+                g = gender if not paied else gender + '_paied'
+                if not avatars.get(g):
+                    avatars[g] = []
+                objs = cls.objects(gender=g, paied=paied)
+                for obj in objs:
+                    fileid = obj.fileid
+                    avatars[g].append(fileid)
         redis_client.set(REDIS_AVATAR_CACHE, cPickle.dumps(avatars))
-
         return avatars
 
     @classmethod
     def valid_avatar(cls, fileid):
         avatars = cls.get_avatars()
-        for _ in GENDERS:
-            if fileid in avatars[_]:
-                return True
+        for paied in [False, True]:
+            for gender in GENDERS:
+                g = gender if not paied else gender + '_paied'
+                if fileid in avatars[g]:
+                    return True
         return False
 
 # Avatar.test()
