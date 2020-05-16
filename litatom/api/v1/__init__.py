@@ -169,6 +169,7 @@ b.add_url_rule('/lit/activity/user_share/<share_user_id>', 'activity-user-share'
 b.add_url_rule('/lit/activity/share_static1', 'activity-share-static', endpoint.activity.share_static)
 b.add_url_rule('/lit/activity/claim_rewards', 'activity-claim-rewards', endpoint.activity.claim_rewards)
 b.add_url_rule('/lit/activity/share_num', 'activity-share-num',endpoint.activity.share_num)
+b.add_url_rule('/lit/activity/admin', 'activity-adnmin', endpoint.activity.admin_page)
 
 # anoy_match
 b.add_url_rule('/lit/anoy_match/get_fakeid', 'anoy-match-create-fakeid', endpoint.anoy_match.get_fakeid)
