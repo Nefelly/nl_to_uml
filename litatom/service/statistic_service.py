@@ -371,7 +371,8 @@ class DiamStatService(object):
     @classmethod
     def _load_user_account(cls):
         """预装载函数，从UserAccount表中抽取会员的user_id, membership_time；之后可视情况只抽取一天的会员信息"""
-        members = UserAccount.objects(membership_time__ne=0)
+        # members = UserAccount.objects(membership_time__ne=0)
+        members = User.objects(membership_time__ne=0)
         for member in members:
             cls.USER_MEM_TIME[member.user_id] = member.membership_time
 
