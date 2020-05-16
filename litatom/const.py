@@ -2,8 +2,13 @@
 
 WHOSYOURDADDY = 'IAMYOURDADDY'
 
+FEED_NORMAL = 0
+FEED_NOT_SHOWN = 1
+FEED_NEED_CHECK = 2
+
 ADMINISTRATORS = {
     '5e357b07f142533fff0049c2',         # 绿杨
+    '5cb7536f3fff221c27f959b6',         # 第二个绿杨
     '5e651b6dad85ef6fb4664815',         # Norman,ID
     '5da849e33fff225cb55d1e73',         # 王贤思,VN
     '5e1d822b3fff223633a2ba2d',         # 乐乐,VN
@@ -54,6 +59,8 @@ ALL_FILTER = True
 ACTION_ACCOST_OVER = 'accost_over'
 ACTION_ACCOST_STOP = 'accost_stop'
 ACTION_ACCOST_NEED_VIDEO = 'need_video'
+
+OFFICIAL_AVATAR = '5a6989ec-74a2-11e9-977f-00163e02deb4'
 
 
 # 提示消息

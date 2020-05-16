@@ -1,9 +1,11 @@
+# coding: utf-8
 import logging
 import datetime
 
 from flask import (
     jsonify,
-    request
+    request,
+    Response
 )
 
 from hendrix.conf import setting
@@ -21,6 +23,7 @@ from ....response import (
 from ....service import (
     DebugHelperService,
     AnoyMatchService,
+    AliOssService,
     GlobalizationService,
     HuanxinService
 )
@@ -93,6 +96,17 @@ def set_left_times_to_1():
     if status:
         return success()
     return fail(msg)
+
+
+def down_log(user_id):
+    fileid, status = DebugHelperService.get_user_log_file_id(user_id)
+    if not status:
+        return fail(fileid)
+    content = AliOssService.get_binary_from_bucket(fileid)
+    if not content:
+        return Response('', mimetype='application/zip')  # 返回空流, 兼容错误
+    return Response(content, mimetype='application/zip')
+
 
 #@session_required
 def query_region():

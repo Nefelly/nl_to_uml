@@ -2,9 +2,22 @@
 import json
 import time
 
-from litatom.model import Report, Feed, TrackSpamRecord
-from litatom.service import UserService, GlobalizationService
-from litatom.util import format_standard_time, date_from_unix_ts
+from ..model import (
+    Report,
+    Feed,
+    TrackSpamRecord,
+    UserSetting,
+    BlockedDevices,
+    UserRecord
+)
+from ..service import (
+    UserService,
+    GlobalizationService
+)
+from ..util import (
+    format_standard_time,
+    date_from_unix_ts
+)
 
 
 class ForbidRecordService(object):
@@ -13,12 +26,18 @@ class ForbidRecordService(object):
         TrackSpamRecordService.mark_spam_word(user_id, from_ts, to_ts)
         return ReportService.mark_report(user_id, from_ts, to_ts)
 
+    @classmethod
+    def record_sensitive_device(cls, user_id):
+        user_setting = UserSetting.get_by_user_id(user_id)
+        if not BlockedDevices.get_by_device(user_setting.uuid):
+            BlockedDevices.add_sensitive_device(user_setting.uuid)
+
 
 class ReportService(object):
 
     @classmethod
     def save_report(cls, user_id, reason, pics=None, target_user_id=None, related_feed_id=None, match_type=None,
-                    chat_record=None):
+                    chat_record=None, dealed=False):
         """举报内容入库"""
         report = Report()
         report.uid = user_id
@@ -27,8 +46,10 @@ class ReportService(object):
         report.chat_record = chat_record
         report.related_feed = related_feed_id
         report.region = GlobalizationService.get_region()
-        if target_user_id.startswith('love'):
-            target_user_id = UserService.uid_by_huanxin_id(target_user_id)
+        # if target_user_id.startswith('love'):
+        #     target_user_id = UserService.uid_by_huanxin_id(target_user_id)
+        if dealed:
+            report.dealed = dealed
         report.target_uid = target_user_id
         report.create_ts = int(time.time())
         report.save()
@@ -64,6 +85,8 @@ class ReportService(object):
                 report.target_uid, UserService.nickname_by_uid(report.target_uid)) if report.target_uid else '',
             'create_time': format_standard_time(date_from_unix_ts(report.create_ts))
         }
+
+        res['reporter_ban_fefore'] = UserRecord.get_forbidden_times_user_id(report.uid) > 0
         if report.chat_record:
             res_record = []
             record = json.loads(report.chat_record)
@@ -104,19 +127,18 @@ class ReportService(object):
 class TrackSpamRecordService(object):
 
     @classmethod
-    def save_record(cls, user_id, word=None, pic=None):
+    def save_record(cls, user_id, word=None, pic=None, forbid_weight=0):
         if not word and not pic:
             return False
-        if cls.check_spam_word_in_one_minute(user_id, int(time.time())):
-            return False
-        return TrackSpamRecord.create(user_id, word, pic)
-
-    @classmethod
-    def check_spam_word_in_one_minute(cls, user_id, ts):
-        """检查两条spam_word之间的间隔是不是在1min之内，是的话不入库"""
-        if TrackSpamRecord.count_by_time_and_uid(user_id, ts - 60, ts) > 0:
-            return True
-        return False
+        # if cls.check_spam_word_in_one_minute(user_id, int(time.time())):
+        #     return False
+        return TrackSpamRecord.create(user_id, word, pic, forbid_weight=forbid_weight)
+    # @classmethod
+    # def check_spam_word_in_one_minute(cls, user_id, ts):
+    #     """检查两条spam_word之间的间隔是不是在1min之内，是的话不入库"""
+    #     if TrackSpamRecord.count_by_time_and_uid(user_id, ts - 60, ts) > 0:
+    #         return True
+    #     return False
 
     @classmethod
     def mark_spam_word(cls, user_id, from_time=None, to_time=None):
@@ -129,3 +151,13 @@ class TrackSpamRecordService(object):
         for obj in objs:
             obj.dealed = True
             obj.save()
+
+    @classmethod
+    def get_review_pic(cls, num=10000):
+        """按时间倒序，返回需要review的spam record, [{'pic':'','record_id':''},{'pic':'','record_id':''}]"""
+        records = TrackSpamRecord.get_review_pic(num)
+        res = []
+        for record in records:
+            temp = {'pic': record.pic, 'record_id': str(record.id)}
+            res.append(temp)
+        return res

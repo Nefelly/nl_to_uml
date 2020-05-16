@@ -551,8 +551,7 @@ class DiamStatService(object):
         res = [yesterday_res]
         for delta in range(1, days_delta):
             res.append(cls.diam_stat_report(date - datetime.timedelta(days=delta)))
-        write_data_to_xls_col(addr,
-                              [r'日期', r'会员数', r'收入', r'钻石消耗人数', r'钻石消耗数量', r'钻石消耗人次', r'钻石购买人数', r'钻石购买数量', r'钻石购买人次',
+        tb_head = [r'日期', r'会员数', r'收入', r'钻石消耗人数', r'钻石消耗数量', r'钻石消耗人次', r'钻石购买人数', r'钻石购买数量', r'钻石购买人次',
                                r'免费钻石获取人数', r'免费钻石获取人次', r'免费钻石获取数量', r'50钻石购买人数',
                                r'50钻石购买人次', r'100钻石购买人数', r'100钻石购买人次', r'200钻石购买人数', r'200钻石购买人次', r'500钻石购买人数',
                                r'500钻石购买人次', r'观看激励视频人数', r'观看激励视频人次', r'激励视频钻石数量',
@@ -563,7 +562,9 @@ class DiamStatService(object):
                                r'钻石解封人数', r'钻石解封人次', r'解封-钻石消耗数量',
                                r'搭讪人数', r'搭讪人次', r'搭讪钻石消耗数量',
                                r'手相解锁人数', r'手相解锁人次', r'手相解锁-钻石消耗数量',
-                               r'分享链接浏览人次', r'分享链接浏览人数', r'分享带来新用户数'], res, 'utf-8')
+                               r'分享链接浏览人次', r'分享链接浏览人数', r'分享带来新用户数']
+        # tb_head = [r'日期', r'member数', r'收入']
+        write_data_to_xls_col(addr, tb_head, res, 'utf-8')
 
     @classmethod
     def diam_free_report(cls, addr, date=datetime.datetime.now()):

@@ -68,7 +68,7 @@ b.add_url_rule('/lit/admin/delete_feed/<feed_id>', 'admin-delete-feed', endpoint
 b.add_url_rule('/lit/admin/change_loc', 'admin-change-loc', endpoint.admin.change_loc)
 b.add_url_rule('/lit/admin/add_diamonds', 'admin-add_diamonds', endpoint.admin.add_diamonds)
 b.add_url_rule('/lit/admin/set_diamonds', 'admin-set_diamonds', endpoint.admin.set_diamonds)
-b.add_url_rule('/lit/admin/change_avatar', 'admin-change-avatar', endpoint.admin.change_avatar)
+b.add_url_rule('/lit/admin/change_to_official_avatar', 'admin-change_to_official_avatar', endpoint.admin.change_to_official_avatar)
 b.add_url_rule('/lit/admin/upload_apk', 'admin-upload_apk', endpoint.admin.upload_apk, methods=['POST'])
 b.add_url_rule('/lit/admin/msg_to_region', 'admin-to-region', endpoint.admin.msg_to_region, methods=['POST'])
 b.add_url_rule('/lit/admin/send_message', 'admin-send_message', endpoint.admin.send_message_html)
@@ -106,6 +106,12 @@ b.add_url_rule('/lit/admin/replace_image', 'admin-replace_image', endpoint.admin
 b.add_url_rule('/lit/admin/forbid_score','admin-forbid_score',endpoint.admin.forbid_score)
 b.add_url_rule('/lit/admin/judge_pic','admin-judge_pic',endpoint.admin.judge_pic,methods=['POST'])
 b.add_url_rule('/lit/admin/judge_lit_pic','admin-judge_lit_pic',endpoint.admin.judge_lit_pic,methods=['POST'])
+b.add_url_rule('/lit/admin/test_to_delete_users','admin-test_to_delete_users', endpoint.admin.test_to_delete_users)
+b.add_url_rule('/lit/admin/test_delete_old_users','admin-test_delete_old_users',endpoint.admin.test_delete_old_users)
+b.add_url_rule('/lit/admin/review_record','admin-review_record',endpoint.admin.review_record)
+b.add_url_rule('/lit/admin/review_feed','admin-review_feed',endpoint.admin.review_feed)
+b.add_url_rule('/lit/admin/resolve_review_record','admin-resolve_review_record',endpoint.admin.resolve_review_record)
+b.add_url_rule('/lit/admin/resolve_review_feed','admin-resolve_review_feed',endpoint.admin.resolve_review_feed)
 
 
 # picture
@@ -200,6 +206,7 @@ b.add_url_rule('/lit/debug/register_yesterday', 'debug-register_yesterday', endp
 b.add_url_rule('/lit/debug/delete_matched_record', 'debug-del_match_before', endpoint.debug.del_match_before)
 b.add_url_rule('/lit/debug/delete_online_matched_record', 'debug-online_del_match_status', endpoint.debug.online_del_match_status)
 b.add_url_rule('/lit/debug/set_times_to1', 'debug-set-times-to1', endpoint.debug.set_left_times_to_1)
+b.add_url_rule('/lit/debug/down_log/<user_id>', 'debug-down_log', endpoint.debug.down_log)
 
 
 # feed

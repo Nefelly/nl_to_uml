@@ -19,7 +19,8 @@ from .material import (
     Avatar,
     YoutubeVideo,
     Wording,
-    SpamWord
+    SpamWord,
+    FakeSpamWord
 )
 from .report import (
     Report
@@ -66,7 +67,13 @@ from .user_account import (
     UserAccount,
     AccountFlowRecord
 )
-from .admin import AdminUser
+from .admin import (
+    AdminUser,
+    AppAdmin
+)
+from .debug_models import (
+    UserLogs
+)
 from .fbbackup import FaceBookBackup
 from .globalization import RegionWord
 from .referral_code import ReferralCode

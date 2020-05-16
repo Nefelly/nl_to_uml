@@ -21,6 +21,7 @@ from ...decorator import (
     test_required,
     get_user_id_by_phone,
     set_exp_arg,
+    set_user_id_by_phone
 )
 
 from ....util import write_data_to_xls
@@ -44,7 +45,7 @@ from ....model import (
 from ....service import (
     AdminService,
     PicCheckService,
-    UserMessageService,
+    TrackSpamRecordService,
     ForbidActionService,
     FirebaseService,
     FeedService,
@@ -57,7 +58,8 @@ from ....service import (
     AccountService,
     FeedbackService,
     AliOssService,
-    ExperimentService
+    ExperimentService,
+    TestCleanService
 )
 from ....const import (
     MAX_TIME,
@@ -66,6 +68,7 @@ from ....const import (
     ONE_WEEK,
     REVIEW_PIC,
     BLOCK_PIC,
+    OFFICIAL_AVATAR
 )
 
 logger = logging.getLogger(__name__)
@@ -76,6 +79,20 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = timedelta(seconds=1)
 app.config['COMPRESS_MIN_SIZE'] = 100
 app.config['COMPRESS_MIMETYPES'] = ['text/html', 'text/css', 'text/xml', 'application/json', 'application/javascript']
 Compress(app)
+
+
+def test_to_delete_users():
+    data, status = TestCleanService.get_old_users()
+    if not status:
+        return fail(data)
+    return success(data)
+
+
+def test_delete_old_users():
+    data, status = TestCleanService.clear_old_users()
+    if not status:
+        return fail(data)
+    return success(data)
 
 
 def login():
@@ -303,18 +320,21 @@ def set_diamonds():
     return fail(msg)
 
 
-
 def unban():
     UserService.unban_user(get_user_id_by_phone())
     return success()
 
 
-def change_avatar():
+@set_user_id_by_phone
+def change_to_official_avatar():
     nickname = request.args.get('nickname')
-    user = User.get_by_nickname(nickname)
+    if nickname:
+        user = User.get_by_nickname(nickname)
+    else:
+        user = User.get_by_id(request.user_id)
     if not user:
         return fail()
-    user.avatar = '5a6989ec-74a2-11e9-977f-00163e02deb4'
+    user.avatar = OFFICIAL_AVATAR
     user.save()
     return success()
 
@@ -414,6 +434,44 @@ def judge_lit_pic():
     })
 
 
+def review_record():
+    return success(TrackSpamRecordService.get_review_pic())
+
+
+def review_feed():
+    return success(FeedService.get_review_feed())
+
+
+def resolve_review_feed():
+    feed_id = request.args.get('feed')
+    res = request.args.get('res')
+    if not feed_id or not res:
+        return fail('no feed or res')
+    if res == 'true':
+        res = True
+    elif res == 'false':
+        res = False
+    data, status = ForbidActionService.resolve_review_feed(feed_id, res)
+    if not status:
+        return fail()
+    return success(data)
+
+
+def resolve_review_record():
+    record_id = request.args.get('record')
+    res = request.args.get('res')
+    if not record_id or not res:
+        return fail('no record or res')
+    if res == 'true':
+        res = True
+    elif res == 'false':
+        res = False
+    data, status = ForbidActionService.resolve_review_pic(record_id, res)
+    if not status:
+        return fail()
+    return success(data)
+
+
 def download_phone():
     date = request.args.get('date')
     time_low = int(time.mktime(time.strptime(date, '%Y%m%d')))
@@ -457,7 +515,8 @@ def send_message_html():
 def batch_insert_html():
     table_name = request.values.get('table_name', '')
     fields = request.values.get('fields', '')
-    return render_template('batch_insert.html', table_name=table_name, fields=fields), 200, {'Content-Type': 'text/html; charset=utf-8'}
+    return render_template('batch_insert.html', table_name=table_name, fields=fields), 200, {
+        'Content-Type': 'text/html; charset=utf-8'}
 
 
 def check_batch(table_name, fields):

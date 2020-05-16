@@ -27,7 +27,8 @@ from ....response import (
 )
 from ....service import (
     AliOssService,
-    PicCheckService
+    PicCheckService,
+    DebugHelperService
 )
 
 logger = logging.getLogger(__name__)
@@ -149,6 +150,9 @@ def upload_log_from_file():
     fileid = AliOssService.upload_from_binary(log_file)
     if not fileid:
         return jsonify(Failed)
+    data, status = DebugHelperService.add_user_log(request.user_id, fileid)
+    if not status:
+        return fail(data)
     return jsonify({
         'success': True,
         'data': {

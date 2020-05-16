@@ -62,6 +62,12 @@ class Report(Document):
             _.dealed = True
             _.save()
 
+    @classmethod
+    def set_targetuser_report_unwork(cls, uid):
+        for _ in cls.objects(target_uid=uid, dealed=False):
+            _.dealed = True
+            _.save()
+
     def to_json(self, *args, **kwargs):
         if not self:
             return {}

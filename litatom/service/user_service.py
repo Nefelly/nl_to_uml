@@ -28,7 +28,8 @@ from ..const import (
     ONLINE_LIVE,
     USER_ACTIVE,
     OPERATE_TOO_OFTEN,
-    REMOVE_EXCHANGE
+    REMOVE_EXCHANGE,
+    OFFICIAL_AVATAR
 )
 
 from ..key import (
@@ -102,9 +103,7 @@ class UserService(object):
 
     @classmethod
     def device_blocked(cls, uuid):
-        if BlockedDevices.get_by_device(uuid):
-            return True
-        return False
+        return BlockedDevices.is_device_forbidden(uuid)
 
     @classmethod
     def user_device_blocked(cls, user_id):
@@ -227,7 +226,7 @@ class UserService(object):
                 HuanxinService.active_user(user.huanxin.user_id)
             cls._trans_forbidden_2_session(user)
             if cls.user_device_blocked(user_id):
-                BlockedDevices.remove_device(request.uuid)
+                BlockedDevices.remove_forbidden_device(request.uuid)
             return True
         return False
 
@@ -507,7 +506,7 @@ class UserService(object):
             return False
         forbid_times = UserRecord.get_forbidden_times_user_id(user_id)
         user.forbidden = True
-        user.forbidden_ts = int(time.time()) + forbid_ts * (1 + 2 * forbid_times)
+        user.forbidden_ts = int(time.time()) + forbid_ts * (1 + 5 * forbid_times)
         cls._trans_session_2_forbidden(user)
         user.clear_session()
         for gender in GENDERS:
@@ -520,11 +519,11 @@ class UserService(object):
             HuanxinService.deactive_user(user.huanxin.user_id)
         feeds = Feed.objects(user_id=user_id, create_time__gte=int(time.time()) - 3 * ONE_DAY)
         from ..service import FeedService
-        for _ in feeds:
-            FeedService.remove_from_pub(_)
+        for feed in feeds:
+            FeedService.remove_from_pub(feed)
             # _.delete()
-            _.change_to_not_shown()
-            MqService.push(REMOVE_EXCHANGE, {"feed_id": str(_.id)})
+            feed.change_to_not_shown()
+            MqService.push(REMOVE_EXCHANGE, {"feed_id": str(feed.id)})
 
     @classmethod
     def unban_by_nickname(cls, nickname):
@@ -581,7 +580,8 @@ class UserService(object):
             if len(nick_name) > cls.NICKNAME_LEN_LIMIT:
                 nick_name = trunc(nick_name, cls.NICKNAME_LEN_LIMIT)
             if 'LIT' in nick_name.upper():
-                return u"illeagal nickname", False
+                if user.avatar != OFFICIAL_AVATAR:
+                    return u"illeagal nickname", False
             # if cls.verify_nickname_exists(nick_name):
             #     if not user.finished_info:
             #         nick_name = cls.choose_a_nickname_for_user(nick_name)
