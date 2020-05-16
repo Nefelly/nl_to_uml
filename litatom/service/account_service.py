@@ -326,8 +326,6 @@ class AccountService(object):
             if r:
                 return 'Already deposit success', False
             redis_client.setex(key, ONE_WEEK, 1)
-        if not isinstance(product_name, int):
-            return u'error request diamonds', False
         # if diamonds >= 10000:
         #     return u'authorize false, please retry', False
         err_msg = cls._buy_vip(user_id)
