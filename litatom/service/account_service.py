@@ -86,6 +86,13 @@ class AccountService(object):
         }, True
 
     @classmethod
+    def get_membership_infos(cls):
+        res = {
+
+        }
+
+
+    @classmethod
     def get_product_name_by_diamonds(cls, diamonds):
         product_set, res = cls.diamond_products()
         for product in product_set:
