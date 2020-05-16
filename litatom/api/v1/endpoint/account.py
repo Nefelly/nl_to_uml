@@ -108,8 +108,8 @@ def reset_rate_by_diamonds():
     return success(data)
 
 
-def get_membership_info():
-    data, status = AccountService.get_membership_infos()
+def membership_badges():
+    data, status = AccountService.membership_badges()
     if not status:
         return fail(data)
     return success(data)

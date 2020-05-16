@@ -86,7 +86,7 @@ class AccountService(object):
         }, True
 
     @classmethod
-    def get_membership_infos(cls):
+    def membership_badges(cls):
         res = [
             {
                 "icon": "a34c0d48-91c4-11ea-a839-00163e00ecaa",
