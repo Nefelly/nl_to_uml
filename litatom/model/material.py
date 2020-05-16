@@ -60,12 +60,12 @@ class Avatar(Document):
             return cPickle.loads(cache_obj)
 
         avatars = {}
-        for paied in [False, True]:
+        for paid in [False, True]:
             for gender in GENDERS:
-                g = gender if not paied else gender + '_paied'
+                g = gender if not paid else gender + '_paid'
                 if not avatars.get(g):
                     avatars[g] = []
-                objs = cls.objects(gender=g, paied=paied)
+                objs = cls.objects(gender=g, paid=paid)
                 for obj in objs:
                     fileid = obj.fileid
                     avatars[g].append(fileid)
@@ -77,7 +77,7 @@ class Avatar(Document):
         avatars = cls.get_avatars()
         for paied in [False, True]:
             for gender in GENDERS:
-                g = gender if not paied else gender + '_paied'
+                g = gender if not paied else gender + '_paid'
                 if fileid in avatars[g]:
                     return True
         return False
