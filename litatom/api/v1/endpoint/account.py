@@ -88,6 +88,7 @@ def pay_inform():
 def buy_vip():
     payload = request.json
     user_id = request.user_id
+    print 'aaaaaaaa'
     try:
         if setting.IS_DEV:
             data, status = None, True
