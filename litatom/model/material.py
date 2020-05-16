@@ -65,7 +65,7 @@ class Avatar(Document):
                 g = gender if not paid else gender + '_paid'
                 if not avatars.get(g):
                     avatars[g] = []
-                objs = cls.objects(gender=g, paid=paid)
+                objs = cls.objects(gender=gender, paid=paid)
 
                 for obj in objs:
                     fileid = obj.fileid
