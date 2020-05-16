@@ -254,7 +254,7 @@ class User(Document, UserSessionMixin):
     logined = BooleanField(default=False)
     platform = StringField(default='android')
     bio = StringField()
-    membership_time = IntField(default=0)
+    membership_time = IntField(required=True, default=0)
     phone = StringField()
     country = StringField()
     forbidden = BooleanField(required=True, default=False)
