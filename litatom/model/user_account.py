@@ -87,6 +87,8 @@ class AccountFlowRecord(Document):
     DEPOSIT = 'deposit'
     CONSUME = 'consume'
     WRONG = 'wrong'
+    WRONG_VIP = 'wrong_vip'
+    SUCCESS_VIP = 'success_vip'
     ADD_BY_ACTIVITY = 'add_by_activity'
 
     user_id = StringField(required=True)

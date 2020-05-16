@@ -61,8 +61,7 @@ class AccountService(object):
         ONE_MORE_TIME: 5,
         ACCELERATE: 2,
         ACCOST_RESET: 3,
-        PALM_RESULT: 10,
-        VIP_MONTH: 100
+        PALM_RESULT: 10
     }
     SHARE = 'share'
     WATCH_AD = 'watch_video'
@@ -219,7 +218,7 @@ class AccountService(object):
         return None
 
     @classmethod
-    def buy_vip(cls, user_id, vip_type=VIP_MONTH):
+    def _buy_vip(cls, user_id, vip_type=VIP_MONTH):
         user = User.get_by_id(user_id)
         if not user:
             return u'user account not exists'
@@ -249,10 +248,6 @@ class AccountService(object):
 
         if product in cls.MEMBER_SHIPS:
             err_msg = cls.buy_member_ship(user_id, product)
-            if err_msg:
-                return err_msg, False
-        elif product in cls.VIP:
-            err_msg = cls.buy_vip(user_id, product)
             if err_msg:
                 return err_msg, False
         elif product == cls.ACCELERATE:
@@ -318,6 +313,29 @@ class AccountService(object):
             return err_msg, False
         AccountFlowRecord.create(user_id, AccountFlowRecord.DEPOSIT, diamonds)
         return None, True
+
+    @classmethod
+    def buy_vip(cls, user_id, payload):
+        token = payload.get('payload', {}).get('token')
+        product_name = payload.get('product_name', 'vip')
+        if not token:
+            AccountFlowRecord.create(user_id, AccountFlowRecord.WRONG_VIP, product_name)
+        elif not setting.IS_DEV:
+            key = REDIS_ACCOUNT_ACTION.format(key=('pay' + token))
+            r = redis_client.get(key)
+            if r:
+                return 'Already deposit success', False
+            redis_client.setex(key, ONE_WEEK, 1)
+        if not isinstance(product_name, int):
+            return u'error request diamonds', False
+        # if diamonds >= 10000:
+        #     return u'authorize false, please retry', False
+        err_msg = cls._buy_vip(user_id)
+        if err_msg:
+            return err_msg, False
+        AccountFlowRecord.create(user_id, AccountFlowRecord.SUCCESS_VIP)
+        return None, True
+
 
     @classmethod
     def deposit_by_activity(cls, user_id, activity, other_info={}):
