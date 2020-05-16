@@ -15,7 +15,8 @@ from ..const import (
     ONE_WEEK,
     ONE_MIN,
     ONE_DAY,
-    MAX_DIAMONDS
+    MAX_DIAMONDS,
+    ONE_MONTH
 )
 from ..util import (
     now_date_key
@@ -50,16 +51,18 @@ class AccountService(object):
     '''
     '''
     WEEK_MEMBER = 'week_member'
+    VIP_MONTH = 'vip_month'
     ONE_MORE_TIME = 'one_more_time'
     ACCELERATE = 'accelerate'
     ACCOST_RESET = 'accost_reset'
     PALM_RESULT = 'palm_result'
     PRODUCT_INFOS = {
-        WEEK_MEMBER: 30 if not setting.IS_DEV else 1,
+        WEEK_MEMBER: 30,
         ONE_MORE_TIME: 5,
         ACCELERATE: 2,
         ACCOST_RESET: 3,
-        PALM_RESULT: 10
+        PALM_RESULT: 10,
+        VIP_MONTH: 100
     }
     SHARE = 'share'
     WATCH_AD = 'watch_video'
@@ -72,6 +75,7 @@ class AccountService(object):
     UNBAN_DIAMONDS = 100
     DAY_ACTIVITY_LIMIT = 500 if not setting.IS_DEV else 200
     MEMBER_SHIPS = [WEEK_MEMBER]
+    VIP = [VIP_MONTH] 
     ERR_DIAMONDS_NOT_ENOUGH = 'not enough diamonds, please deposit first.'
 
     @classmethod
@@ -215,6 +219,25 @@ class AccountService(object):
         return None
 
     @classmethod
+    def buy_vip(cls, user_id, vip_type=VIP_MONTH):
+        user = User.get_by_id(user_id)
+        if not user:
+            return u'user account not exists'
+        old_vip_time = user.vip_time
+        # old_vip_time = user_account.vip_time
+        time_now = int(time.time())
+        if old_vip_time < time_now:
+            old_vip_time = time_now
+        if vip_type == cls.VIP_MONTH:
+            time_int = ONE_MONTH if not setting.IS_DEV else ONE_DAY
+            new_vip_time = old_vip_time + time_int
+            # user_account.vip_time = new_vip_time
+            # user_account.save()
+            user.vip_time = new_vip_time
+            user.save()
+        return None
+    
+    @classmethod
     def buy_product(cls, user_id, product):
         if product not in cls.PRODUCT_INFOS:
             return u'product must be one of: %s' % (','.join(cls.PRODUCT_INFOS.keys())), False
@@ -226,6 +249,10 @@ class AccountService(object):
 
         if product in cls.MEMBER_SHIPS:
             err_msg = cls.buy_member_ship(user_id, product)
+            if err_msg:
+                return err_msg, False
+        elif product in cls.VIP:
+            err_msg = cls.buy_vip(user_id, product)
             if err_msg:
                 return err_msg, False
         elif product == cls.ACCELERATE:

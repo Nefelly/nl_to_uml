@@ -255,6 +255,7 @@ class User(Document, UserSessionMixin):
     platform = StringField(default='android')
     bio = StringField()
     membership_time = IntField(required=True, default=0)
+    vip_time = IntField(required=True, default=0)
     phone = StringField()
     country = StringField()
     forbidden = BooleanField(required=True, default=False)
@@ -295,6 +296,11 @@ class User(Document, UserSessionMixin):
     def is_member(self):
         time_now = int(time.time())
         return self.membership_time > time_now
+
+    @property
+    def is_vip(self):
+        time_now = int(time.time())
+        return self.vip_time > time_now
 
     @classmethod
     def get_user_id_by_session(cls, sid):
@@ -561,7 +567,7 @@ class User(Document, UserSessionMixin):
             'judged_like': self.judge[2],
             'follower': self.follower,
             'following': self.following,
-            'is_member': self.is_member,
+            'is_vip': self.is_vip,
             'age': self.age_by_user_id(str(self.id))
 
         }
