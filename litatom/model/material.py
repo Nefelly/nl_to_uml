@@ -30,7 +30,7 @@ class Avatar(Document):
 
     fileid = StringField(required=True)
     gender = StringField(required=False)
-    paid = BooleanField(default=False)
+    paid = BooleanField(required=True, default=False)
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
 
     @classmethod
@@ -66,6 +66,7 @@ class Avatar(Document):
                 if not avatars.get(g):
                     avatars[g] = []
                 objs = cls.objects(gender=g, paid=paid)
+
                 for obj in objs:
                     fileid = obj.fileid
                     avatars[g].append(fileid)
