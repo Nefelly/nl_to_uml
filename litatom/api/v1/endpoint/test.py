@@ -51,6 +51,7 @@ def test_anti():
 
 
 def hello():
+    return jsonify('im ok')
     logger.error("hello, this is a mistake")
     assert False
     return render_template('hello.html', name='joey')
