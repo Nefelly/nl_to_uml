@@ -108,6 +108,13 @@ def reset_rate_by_diamonds():
     return success(data)
 
 
+def get_membership_info():
+    data, status = AccountService.get_membership_infos()
+    if not status:
+        return fail(data)
+    return success(data)
+
+
 @forbidden_session_required
 def unban_by_diamonds():
     data, status = AccountService.unban_by_diamonds(request.forbidden_user_id)

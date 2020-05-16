@@ -87,10 +87,19 @@ class AccountService(object):
 
     @classmethod
     def get_membership_infos(cls):
-        res = {
-
-        }
-
+        res = [
+            {
+                "icon": "a34c0d48-91c4-11ea-a839-00163e00ecaa",
+                "name": "Unlimited acceleration",
+                "description": "Speed up matching",
+            },
+            {
+                "icon": "a34c0d48-91c4-11ea-a839-00163e00ecaa",
+                "name": "Unlimited match times",
+                "description": "You can get unlimited matches"
+            },
+        ]
+        return res, True
 
     @classmethod
     def get_product_name_by_diamonds(cls, diamonds):
