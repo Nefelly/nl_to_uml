@@ -446,6 +446,7 @@ class HuanxinService(object):
             return True
         except Exception, e:
             logger.error(traceback.format_exc())
+            logger.error(e)
             logger.error('Error deactive huanxin response:%r , user_id: %r, err: %r', response, user_name, e)
             return True
 
