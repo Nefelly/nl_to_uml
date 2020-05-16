@@ -318,6 +318,7 @@ class AccountService(object):
     def buy_vip(cls, user_id, payload):
         token = payload.get('payload', {}).get('token')
         product_name = payload.get('product_name', 'vip')
+        print 'nimade'
         if not token:
             AccountFlowRecord.create(user_id, AccountFlowRecord.WRONG_VIP, product_name)
         elif not setting.IS_DEV:
