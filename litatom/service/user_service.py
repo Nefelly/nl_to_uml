@@ -955,7 +955,7 @@ class UserService(object):
             return basic_info, True
         login_info = target_user.get_login_info()
         basic_info.update(login_info)
-        basic_info.update({"account_info": UserAccount.get_account_info(user_id)})
+        basic_info.update({"account_info": UserAccount.get_account_info(user_id), "membership_time": target_user.membership_time})
         return basic_info, True
 
     @classmethod
