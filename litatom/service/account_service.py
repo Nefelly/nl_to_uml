@@ -328,7 +328,9 @@ class AccountService(object):
             redis_client.setex(key, ONE_WEEK, 1)
         # if diamonds >= 10000:
         #     return u'authorize false, please retry', False
+        print 'ggggg'
         err_msg = cls._buy_vip(user_id)
+        print err_msg
         if err_msg:
             return err_msg, False
         AccountFlowRecord.create(user_id, AccountFlowRecord.SUCCESS_VIP)
