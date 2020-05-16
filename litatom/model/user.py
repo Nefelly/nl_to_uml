@@ -254,6 +254,7 @@ class User(Document, UserSessionMixin):
     logined = BooleanField(default=False)
     platform = StringField(default='android')
     bio = StringField()
+    membership_time = IntField(default=0)
     phone = StringField()
     country = StringField()
     forbidden = BooleanField(required=True, default=False)
@@ -289,6 +290,11 @@ class User(Document, UserSessionMixin):
         # self.user_sig_expire_at = time_now + self.TENCENT_SIG_EXPIRE
         # self.save()
         return sig
+
+    @property
+    def is_member(self):
+        time_now = int(time.time())
+        return self.membership_time > time_now
 
     @classmethod
     def get_user_id_by_session(cls, sid):
@@ -555,6 +561,7 @@ class User(Document, UserSessionMixin):
             'judged_like': self.judge[2],
             'follower': self.follower,
             'following': self.following,
+            'is_member': self.is_member,
             'age': self.age_by_user_id(str(self.id))
 
         }

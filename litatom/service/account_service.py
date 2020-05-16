@@ -8,7 +8,8 @@ import logging
 from ..model import (
     UserAccount,
     AccountFlowRecord,
-    UserRecord
+    UserRecord,
+    User
 )
 from ..const import (
     ONE_WEEK,
@@ -165,6 +166,8 @@ class AccountService(object):
 
     @classmethod
     def is_member(cls, user_id):
+        # user = User.get_by_id(user_id)
+        # return user and user.is_member
         user_account = UserAccount.get_by_user_id(user_id)
         if not user_account:
             return False
@@ -175,17 +178,23 @@ class AccountService(object):
 
     @classmethod
     def buy_member_ship(cls, user_id, member_type=WEEK_MEMBER):
+        user = User.get_by_id(user_id)
         user_account = UserAccount.get_by_user_id(user_id)
         if not user_account:
             return u'user account not exists'
+        old_membership_time = user.membership_time
         old_membership_time = user_account.membership_time
         time_now = int(time.time())
         if old_membership_time < time_now:
             old_membership_time = time_now
         if member_type == cls.WEEK_MEMBER:
             time_int = ONE_WEEK if not setting.IS_DEV else ONE_MIN
-            user_account.membership_time = old_membership_time + time_int
+            new_member_ship_time = old_membership_time + time_int
+            user_account.membership_time = new_member_ship_time
             user_account.save()
+            user.membership_time = new_member_ship_time
+            user.save()
+
         MatchService.set_member_match_left(user_id)
         return None
 

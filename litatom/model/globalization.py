@@ -9,8 +9,16 @@ from mongoengine import (
     ListField, 
     StringField, 
 )
+from ..key import (
+    REDIS_REGION_WORLD_CACHE
+)
+from ..const import (
+    ONE_MONTH
+)
+from ..redis import RedisClient
 from ..util import is_json
 
+redis_client = RedisClient()['lit']
 
 class RegionWord(Document):
     meta = {
@@ -258,6 +266,7 @@ class RegionWord(Document):
     }
 
     REGION_BENCHMARK = 'en'
+    NOTSET_WORLD = 'not set, please contact administrator'
 
     @classmethod
     def is_valid_word(cls, region, tag, word):
@@ -286,7 +295,40 @@ class RegionWord(Document):
         obj.tag = tag
         obj.word = word
         obj.save()
+        cls.disable_cache_word(region, tag)
         return True
+
+    @classmethod
+    def get_cache_key(cls, region, tag):
+        region_tag = '%s_%s' % (region, tag)
+        return REDIS_REGION_WORLD_CACHE.format(region_tag=region_tag)
+
+    @classmethod
+    def disable_cache_word(cls, region, tag):
+        redis_client.delete(cls.get_cache_key(region, tag))
+
+    @classmethod
+    def cache_word_by_region_tag(cls, region, tag):
+        cache_key = cls.get_cache_key(region, tag)
+        cached_res = redis_client.get(cache_key)
+        if cached_res:
+            return cached_res
+        if cached_res != cls.NOTSET_WORLD:
+            return ''
+        obj = cls.objects(region=region,  tag=tag).first()
+        word = ''
+        if obj:
+            word = obj.word
+        else:
+            if region != cls.REGION_BENCHMARK:   # 防止循环调用
+                word = cls.cache_word_by_region_tag(cls.REGION_BENCHMARK, tag)
+        if word:
+            redis_client.set(cache_key, word, ONE_MONTH)
+        else:
+            redis_client.set(cache_key, cls.NOTSET_WORLD, ONE_MONTH)
+        return word
+
+
 
     @classmethod
     def word_by_region_tag(cls,  region,  tag):
@@ -295,11 +337,6 @@ class RegionWord(Document):
         if not res:
             res = tag_words.get('en', '')
         return res
-        # return cls.TAG_REGION_WORD.get(tag,  {}).get(region,  '')
-        # obj = cls.objects(region=region,  tag=tag).first()
-        # if obj:
-        #     return obj.word
-        # return ''
 
     @classmethod
     def get_content(cls, word):
