@@ -280,6 +280,7 @@ class AccountService(object):
             # user_account.save()
             user.vip_time = new_vip_time
             user.save()
+        MatchService.set_member_match_left(user_id)
         return None
 
     @classmethod

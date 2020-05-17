@@ -417,7 +417,7 @@ class MatchService(object):
     @classmethod
     def _match_left_verify(cls, user_id):
         # 匹配次数验证
-        if cls._is_member(user_id):
+        if cls._is_member(user_id) or User.is_vip_by_user_id(user_id):
             return cls.FAKE_MAX_TIME, True
         now_date = now_date_key()
         match_left_key = cls.TYPE_USER_MATCH_LEFT.format(user_date=user_id + now_date)
