@@ -33,7 +33,8 @@ from ..service import (
     AdService,
     AliLogService,
     AntiSpamRateService,
-    AvatarService
+    AvatarService,
+    GlobalizationService
 )
 from ..key import (
     REDIS_ACCOUNT_ACTION,
@@ -92,6 +93,26 @@ class AccountService(object):
 
     @classmethod
     def membership_badges(cls):
+        meta = [
+            {
+                "icon": "a34c0d48-91c4-11ea-a839-00163e00ecaa",
+                "name": "member_unlimited"
+            },
+            {
+                "icon": "a34c0d48-91c4-11ea-a839-00163e00ecaa",
+                "name": "match_times_unlimited"
+            }
+
+        ]
+        res = []
+        for j in meta:
+            icon = j['icon']
+            tag_name = j['name']
+            description_tag = tag_name + '_description'
+            tmp = {
+                "icon": icon,
+                "name": GlobalizationService.get_region_word()
+            }
         res = [
             {
                 "icon": "a34c0d48-91c4-11ea-a839-00163e00ecaa",
