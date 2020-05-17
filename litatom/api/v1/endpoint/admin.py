@@ -604,7 +604,9 @@ def journal_cal(item_id):
 
 
 def get_log(user_id):
-    msg, status = FirebaseService.command_to_user(user_id, {"type": 1000, "data": {"code": 0}})
+    code = request.values.get("code", "0")
+    code = int(code)
+    msg, status = FirebaseService.command_to_user(user_id, {"type": 1000, "data": {"code": code}})
     if status:
         return success()
     return fail(msg)
