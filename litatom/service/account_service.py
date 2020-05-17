@@ -94,20 +94,39 @@ class AccountService(object):
     @classmethod
     def membership_badges(cls):
         meta = [
-            {
-                "icon": "a34c0d48-91c4-11ea-a839-00163e00ecaa",
-                "name": "member_unlimited"
-            },
-            {
-                "icon": "a34c0d48-91c4-11ea-a839-00163e00ecaa",
-                "name": "match_times_unlimited"
-            }
+            [
+                "a34c0d48-91c4-11ea-a839-00163e00ecaa",
+                "acceleration_unlimited"
+            ],
+            [
+                "a34c0d48-91c4-11ea-a839-00163e00ecaa",
+                "match_times_unlimited"
+            ],
+            [
+                "",
+                "vip_remove_ads"
+            ],
+            [
+                "",
+                "vip_match_record"
+            ],
+            [
+                "",
+                "vip_visit_record"
+            ],
+            [
+                "",
+                "vip_badge"
+            ],
+            [
+                "",
+                "vip_palmistry"
+            ]
+
 
         ]
         res = []
-        for j in meta:
-            icon = j['icon']
-            tag_name = j['name']
+        for icon, tag_name in meta:
             description_tag = tag_name + '_description'
             tmp = {
                 "icon": icon,
