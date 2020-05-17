@@ -190,8 +190,8 @@ class AccountService(object):
         if member_type == cls.WEEK_MEMBER:
             time_int = ONE_WEEK if not setting.IS_DEV else ONE_MIN
             new_member_ship_time = old_membership_time + time_int
-            # user_account.membership_time = new_member_ship_time
-            # user_account.save()
+            user_account.membership_time = new_member_ship_time
+            user_account.save()
             user.membership_time = new_member_ship_time
             user.save()
 
