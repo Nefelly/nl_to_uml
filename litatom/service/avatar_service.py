@@ -20,7 +20,7 @@ class AvatarService(object):
     @classmethod
     def get_avatar_price(cls, fileid):
         paid_avatars = Avatar.get_paid_avatars()
-        return paid_avatars.get(fileid, 0)
+        return paid_avatars.get(fileid, {}).get('price', 0)
 
     @classmethod
     def can_change(cls, user_id, fileid):
