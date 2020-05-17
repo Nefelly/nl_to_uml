@@ -72,6 +72,7 @@ class Avatar(Document):
 
         # laod paid avatar
         for g in GENDERS:
+            print 'here'
             paid_key = g + '_paid'
             avatars[paid_key] = []
             for obj in cls.objects(gender=g, paid=True):
@@ -80,6 +81,7 @@ class Avatar(Document):
                     "price": obj.price
                 }
                 avatars[paid_key].append(tmp)
+            print avatars[paid_key]
         redis_client.set(REDIS_AVATAR_CACHE, cPickle.dumps(avatars))
         return avatars
 
