@@ -381,7 +381,6 @@ class GlobalizationService(object):
         en = RegionWord.REGION_BENCHMARK
         for obj in RegionWord.objects(region=en):
             tag = obj.tag
-            tmp = {}
             tmp = {"tag": tag}
             en_word = RegionWord.get_content(obj.word)
             tmp[en] = en_word
@@ -397,7 +396,12 @@ class GlobalizationService(object):
 
     @classmethod
     def get_cached_region_word(cls, tag, region=None):
-        pass
+        if not region:
+            region = cls.get_region()
+        if region == cls.REGION_IN or region == cls.REGION_IN_NOCORE:
+            region = cls.REGION_EN
+        word = RegionWord.cache_word_by_region_tag(region, tag)
+        return word
 
     @classmethod
     def get_region_word(cls, tag, region=None):

@@ -111,20 +111,24 @@ class AccountService(object):
             description_tag = tag_name + '_description'
             tmp = {
                 "icon": icon,
-                "name": GlobalizationService.get_region_word()
+                "name": GlobalizationService.get_cached_region_word(tag_name),
+                "description": GlobalizationService.get_cached_region_word(description_tag)
+
             }
-        res = [
-            {
-                "icon": "a34c0d48-91c4-11ea-a839-00163e00ecaa",
-                "name": "Unlimited acceleration",
-                "description": "Speed up matching",
-            },
-            {
-                "icon": "a34c0d48-91c4-11ea-a839-00163e00ecaa",
-                "name": "Unlimited match times",
-                "description": "You can get unlimited matches"
-            },
-        ]
+            res.append(tmp)
+
+        # res = [
+        #     {
+        #         "icon": "a34c0d48-91c4-11ea-a839-00163e00ecaa",
+        #         "name": "Unlimited acceleration",
+        #         "description": "Speed up matching",
+        #     },
+        #     {
+        #         "icon": "a34c0d48-91c4-11ea-a839-00163e00ecaa",
+        #         "name": "Unlimited match times",
+        #         "description": "You can get unlimited matches"
+        #     },
+        # ]
         return res, True
 
     @classmethod
