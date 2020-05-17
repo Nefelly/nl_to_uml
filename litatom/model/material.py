@@ -35,8 +35,8 @@ class Avatar(Document):
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
 
     @classmethod
-    def create(cls, fileid, gender, paid=False):
-        obj = cls(fileid=fileid, gender=gender, paid=paid)
+    def create(cls, fileid, gender, paid=False, price=0):
+        obj = cls(fileid=fileid, gender=gender, paid=paid, price=price)
         obj.save()
         cls._disable_cache()
 
@@ -61,16 +61,24 @@ class Avatar(Document):
             return cPickle.loads(cache_obj)
 
         avatars = {}
-        for paid in [False, True]:
-            for gender in GENDERS:
-                g = gender if not paid else gender + '_paid'
-                if not avatars.get(g):
-                    avatars[g] = []
-                objs = cls.objects(gender=gender, paid=paid)
+        # load not paid avatar
+        for g in GENDERS:
+            if not avatars.get(g):
+                avatars[g] = []
+            objs = cls.objects(gender=g, paid=False)
+            for obj in objs:
+                fileid = obj.fileid
+                avatars[g].append(fileid)
 
-                for obj in objs:
-                    fileid = obj.fileid
-                    avatars[g].append(fileid)
+        # laod paid avatar
+        for g in GENDERS:
+            paid_key = g + '_paid'
+            avatars[paid_key] = []
+            for obj in cls.objects(gender=g, paid=True):
+                tmp = {
+                    "fileid": obj.fileid,
+                    "price": obj.price
+                }
         redis_client.set(REDIS_AVATAR_CACHE, cPickle.dumps(avatars))
         return avatars
 
