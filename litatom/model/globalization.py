@@ -313,9 +313,10 @@ class RegionWord(Document):
         cached_res = redis_client.get(cache_key)
         if cached_res:
             return cached_res
+        print region, tag, cached_res
         if cached_res != cls.NOTSET_WORLD:
             return ''
-        obj = cls.objects(region=region,  tag=tag).first()
+        obj = cls.objects(region=region, tag=tag).first()
         word = ''
         if obj:
             word = obj.word
