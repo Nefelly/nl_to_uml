@@ -767,6 +767,8 @@ class MatchService(object):
 
     @classmethod
     def _is_accelerate(cls, user_id):
+        if User.is_vip_by_user_id(user_id):
+            return True
         key = REDIS_ACCELERATE_CACHE.format(user_id=user_id)
         if not redis_client.get(key):
             return False
