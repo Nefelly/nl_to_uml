@@ -79,6 +79,7 @@ class Avatar(Document):
                     "fileid": obj.fileid,
                     "price": obj.price
                 }
+                avatars[paid_key].append(tmp)
         redis_client.set(REDIS_AVATAR_CACHE, cPickle.dumps(avatars))
         return avatars
 
