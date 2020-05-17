@@ -178,12 +178,10 @@ class AccountService(object):
 
     @classmethod
     def buy_member_ship(cls, user_id, member_type=WEEK_MEMBER):
-        user = User.get_by_id(user_id)
         user_account = UserAccount.get_by_user_id(user_id)
         if not user_account:
             return u'user account not exists'
-        old_membership_time = user.membership_time
-        # old_membership_time = user_account.membership_time
+        old_membership_time = user_account.membership_time
         time_now = int(time.time())
         if old_membership_time < time_now:
             old_membership_time = time_now
@@ -192,8 +190,6 @@ class AccountService(object):
             new_member_ship_time = old_membership_time + time_int
             user_account.membership_time = new_member_ship_time
             user_account.save()
-            user.membership_time = new_member_ship_time
-            user.save()
 
         MatchService.set_member_match_left(user_id)
         return None
