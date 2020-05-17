@@ -41,7 +41,5 @@ class AvatarService(object):
         for k in Avatar.paid_keys():
             for fielid in avatars[k]:
                 if fielid in asset_avatars:
-                    avatars[k][fielid]['buyed'] = True
-                else:
-                    avatars[k][fielid]['buyed'] = False
+                    avatars[k][fielid]['owned'] = True
         return avatars
