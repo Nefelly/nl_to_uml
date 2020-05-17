@@ -314,7 +314,7 @@ class RegionWord(Document):
         if cached_res:
             return cached_res
         print region, tag, cached_res
-        if cached_res != cls.NOTSET_WORLD:
+        if cached_res == cls.NOTSET_WORLD:
             return ''
         obj = cls.objects(region=region, tag=tag).first()
         word = ''
