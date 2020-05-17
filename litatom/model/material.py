@@ -27,7 +27,7 @@ class Avatar(Document):
         'strict': False,
         'alias': 'db_alias'
     }
-
+    PAID_SUFFIX = '_paid'
     fileid = StringField(required=True)
     gender = StringField(required=False)
     paid = BooleanField(required=True, default=False)
@@ -72,25 +72,28 @@ class Avatar(Document):
 
         # laod paid avatar
         for g in GENDERS:
-            print 'here'
-            paid_key = g + '_paid'
-            avatars[paid_key] = []
+            paid_key = g + cls.PAID_SUFFIX
+            avatars[paid_key] = {}
             for obj in cls.objects(gender=g, paid=True):
-                tmp = {
-                    "fileid": obj.fileid,
-                    "price": obj.price
-                }
-                avatars[paid_key].append(tmp)
-            print avatars[paid_key]
+                avatars[paid_key][obj.fileid] = obj.price
         redis_client.set(REDIS_AVATAR_CACHE, cPickle.dumps(avatars))
         return avatars
+
+    @classmethod
+    def get_paid_avatars(cls):
+        avatars = cls.get_avatars()
+        res = {}
+        for g in GENDERS:
+            paid_key = g + cls.PAID_SUFFIX
+            res.update(avatars.get(paid_key))
+        return res
 
     @classmethod
     def valid_avatar(cls, fileid):
         avatars = cls.get_avatars()
         for paied in [False, True]:
             for gender in GENDERS:
-                g = gender if not paied else gender + '_paid'
+                g = gender if not paied else gender + cls.PAID_SUFFIX
                 if fileid in avatars[g]:
                     return True
         return False

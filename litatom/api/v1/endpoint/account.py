@@ -147,6 +147,14 @@ def unban_by_diamonds():
 
 
 @session_required
+def buy_avatar(fileid):
+    data, status = AccountService.buy_avatar(request.user_id, fileid)
+    if not status:
+        return fail(data)
+    return success(data)
+
+
+@session_required
 def buy_product():
     product = request.json.get("product")
     data, status = AccountService.buy_product(request.user_id, product)

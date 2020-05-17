@@ -20,6 +20,43 @@ from ..redis import RedisClient
 
 redis_client = RedisClient()['lit']
 
+class UserAsset(Document):
+    '''
+    用户资产，包括头像等
+    '''
+    meta = {
+        'strict': False,
+        'alias': 'db_alias'
+    }
+    user_id = StringField(required=True)
+    avatars = ListField(default=[])
+    # membership_time = IntField(required=True, default=0)
+    create_time = DateTimeField(required=True, default=datetime.datetime.now)
+
+    @classmethod
+    def add_avatar(cls, user_id, fileid):
+        obj = cls.get_by_user_id(user_id)
+        if not obj:
+            obj = cls(user_id=user_id)
+        avatars = obj.avatars
+        if fileid not in avatars:
+            avatars.append(fileid)
+            obj.avatars = avatars
+            obj.save()
+        else:
+            return u'You have had this avatar'
+
+    @classmethod
+    def get_avatars(cls, user_id):
+        obj = cls.get_by_user_id(user_id)
+        if not obj:
+            return []
+        return obj.avatars
+
+    @classmethod
+    def get_by_user_id(cls, user_id):
+        return cls.objects(user_id=user_id).first()
+
 
 class UserAccount(Document):
     meta = {

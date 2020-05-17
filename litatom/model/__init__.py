@@ -69,7 +69,8 @@ from .experiment import (
 )
 from .user_account import (
     UserAccount,
-    AccountFlowRecord
+    AccountFlowRecord,
+    UserAsset
 )
 from .admin import (
     AdminUser,

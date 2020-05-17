@@ -13,6 +13,7 @@ from .mongo_sync_service import (
     MongoSyncService,
     OplogSyncService
 )
+from .avatar_service import AvatarService
 from .experiment_service import ExperimentService
 from .acted_service import ActedService
 from .track_action_service import TrackActionService

@@ -9,7 +9,8 @@ from ..model import (
     UserAccount,
     AccountFlowRecord,
     UserRecord,
-    User
+    User,
+    UserAsset
 )
 from ..const import (
     ONE_WEEK,
@@ -31,7 +32,8 @@ from ..service import (
     UserService,
     AdService,
     AliLogService,
-    AntiSpamRateService
+    AntiSpamRateService,
+    AvatarService
 )
 from ..key import (
     REDIS_ACCOUNT_ACTION,
@@ -235,7 +237,21 @@ class AccountService(object):
             user.vip_time = new_vip_time
             user.save()
         return None
-    
+
+    @classmethod
+    def buy_avatar(cls, user_id, fileid):
+        diamonds = AvatarService.get_avatar_price(fileid)
+        '''先检查钻石够不够'''
+        if not cls.is_diamond_enough(user_id, diamonds):
+            return cls.ERR_DIAMONDS_NOT_ENOUGH, False
+        add_err = UserAsset.add_avatar(user_id, fileid)
+        if add_err:
+            return add_err, False
+        err_msg = cls.change_diamonds(user_id, -diamonds, 'buy avatar')
+        if err_msg:
+            return err_msg, False
+        return None, True
+
     @classmethod
     def buy_product(cls, user_id, product):
         if product not in cls.PRODUCT_INFOS:
