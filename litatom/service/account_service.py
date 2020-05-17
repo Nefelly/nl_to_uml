@@ -334,7 +334,6 @@ class AccountService(object):
     def buy_vip(cls, user_id, payload):
         token = payload.get('payload', {}).get('token')
         product_name = payload.get('product_name', 'vip')
-        print 'nimade'
         if not token:
             AccountFlowRecord.create(user_id, AccountFlowRecord.WRONG_VIP, product_name)
         elif not setting.IS_DEV:
@@ -343,9 +342,6 @@ class AccountService(object):
             if r:
                 return 'Already deposit success', False
             redis_client.setex(key, ONE_WEEK, 1)
-        # if diamonds >= 10000:
-        #     return u'authorize false, please retry', False
-        print 'ggggg'
         err_msg = cls._buy_vip(user_id)
         print err_msg
         if err_msg:
