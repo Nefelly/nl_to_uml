@@ -79,7 +79,7 @@ class Avatar(Document):
             paid_key = g + cls.PAID_SUFFIX
             avatars[paid_key] = {}
             for obj in cls.objects(gender=g, paid=True):
-                avatars[paid_key][obj.fileid] = {'price': obj.price}
+                avatars[paid_key][obj.fileid] = {'price': obj.price, 'owned': False}
         redis_client.set(REDIS_AVATAR_CACHE, cPickle.dumps(avatars))
         return avatars
 
