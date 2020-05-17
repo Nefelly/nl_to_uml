@@ -41,6 +41,10 @@ class Avatar(Document):
         cls._disable_cache()
 
     @classmethod
+    def paid_keys(cls):
+        return [g + cls.PAID_SUFFIX for g in GENDERS]
+
+    @classmethod
     def _disable_cache(cls):
         redis_client.delete(REDIS_AVATAR_CACHE)
 
