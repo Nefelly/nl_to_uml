@@ -272,6 +272,7 @@ class RegionWord(Document):
     def is_valid_word(cls, region, tag, word):
         if region == cls.REGION_BENCHMARK:
             return None
+        if region != 
         obj = cls.objects(region=cls.REGION_BENCHMARK, tag=tag).first()
         if not obj:
             return u'tag not vailid, please retry later'
@@ -327,8 +328,6 @@ class RegionWord(Document):
         else:
             redis_client.set(cache_key, cls.NOTSET_WORLD, ONE_MONTH)
         return word
-
-
 
     @classmethod
     def word_by_region_tag(cls,  region,  tag):

@@ -592,7 +592,7 @@ class UserService(object):
             #         return u'nickname already exists', False
             data['nickname'] = nick_name
         if data.get('avatar', ''):
-            avatar_err = AvatarService.can_change(data.get('avatar'))
+            avatar_err = AvatarService.can_change(user_id, data.get('avatar'))
             if avatar_err:
             # if not Avatar.valid_avatar(data.get('avatar')):
                 data.pop('avatar')
