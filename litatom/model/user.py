@@ -303,6 +303,13 @@ class User(Document, UserSessionMixin):
         return self.vip_time > time_now
 
     @classmethod
+    def is_vip_by_user_id(cls, user_id):
+        user = cls.get_by_id(user_id)
+        if not user:
+            return False
+        return user.is_vip
+
+    @classmethod
     def get_user_id_by_session(cls, sid):
         pure_session = sid.replace('session.', '')
         key = REDIS_KEY_SESSION_USER.format(session=pure_session)
