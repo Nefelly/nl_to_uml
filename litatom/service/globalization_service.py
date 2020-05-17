@@ -61,7 +61,7 @@ class GlobalizationService(object):
     LOC_INN = 'INN'
     LOC_EN = 'EN'
     LOC_US = 'US'
-    LOC_LAO = 'LAO' # 老挝
+    LOC_LAO = 'LA' # 老挝
     # LOC_KR = 'KR'
     # LOC_JP = 'JP'
     LOC_PH = 'PH'
