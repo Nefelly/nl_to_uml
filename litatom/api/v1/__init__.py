@@ -124,6 +124,7 @@ b.add_url_rule('/lit/gimage/<fileid>', 'get-gimage', endpoint.oss.get_gimage)
 b.add_url_rule('/lit/audio/upload', 'audio-upload', endpoint.oss.upload_audio_from_file, methods=['POST'])
 b.add_url_rule('/lit/audio/<fileid>', 'get-audio', endpoint.oss.get_audio)
 b.add_url_rule('/lit/log/upload', 'log-upload', endpoint.oss.upload_log_from_file, methods=['POST'])
+b.add_url_rule('/lit/log/upload_from_device', 'log-upload_from_device', endpoint.oss.upload_log_from_device, methods=['POST'])
 b.add_url_rule('/lit/log/<fileid>', 'get-log', endpoint.oss.get_log)
 b.add_url_rule('/lit/mp3audio/<fileid>', 'get-mp3audio', endpoint.oss.get_audio_mp3)
 

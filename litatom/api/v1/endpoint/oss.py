@@ -161,6 +161,22 @@ def upload_log_from_file():
     })
 
 
+def upload_log_from_device():
+    device_id = request.device_id
+    if not device_id:
+        return fail(u'not deviceId')
+    log_file = request.files.get('log')
+    fileid = AliOssService.upload_from_binary(log_file)
+    if not fileid:
+        return jsonify(Failed)
+    return jsonify({
+        'success': True,
+        'data': {
+            'fileid': fileid
+        }
+    })
+
+
 def get_log(fileid):
     if fileid == 'null':
         return jsonify(Failed)
