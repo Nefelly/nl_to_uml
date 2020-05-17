@@ -204,6 +204,16 @@ def admin_words():
     return current_app.send_static_file('region_info.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
 
 
+def upsert_region_word():
+    data = request.json
+    tag = data.get('tag')
+    word = data.get('word')
+    data, status = GlobalizationService.add_or_modify_region_word(tag, word)
+    if status:
+        return success(data)
+    return fail(data)
+
+
 def get_official_feed():
     start_ts = request.args.get('start_ts')
     num = request.args.get('num')

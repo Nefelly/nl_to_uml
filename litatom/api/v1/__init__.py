@@ -102,6 +102,7 @@ b.add_url_rule('/lit/admin/official_feed', 'admin-official_feed', endpoint.admin
 b.add_url_rule('/lit/admin/journal_cal/<item_id>', 'admin-journal_cal', endpoint.admin.journal_cal)
 b.add_url_rule('/lit/admin/get_log/<user_id>', 'admin-get_log', endpoint.admin.get_log)
 b.add_url_rule('/lit/admin/region_words', 'admin-region_words', endpoint.admin.region_words)
+b.add_url_rule('/lit/admin/upsert_region_word', 'admin-upsert_region_word', endpoint.admin.upsert_region_word, methods=['POST'])
 b.add_url_rule('/lit/admin/admin_words', 'admin-admin_words', endpoint.admin.admin_words)
 b.add_url_rule('/lit/admin/ban_by_uid/<user_id>', 'admin-ban_by_uid', endpoint.admin.ban_by_uid)
 b.add_url_rule('/lit/admin/ban_reporter/<user_id>', 'admin-ban_reporter', endpoint.admin.ban_reporter)
