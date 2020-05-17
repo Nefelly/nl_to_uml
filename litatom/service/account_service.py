@@ -231,15 +231,15 @@ class AccountService(object):
 
     @classmethod
     def is_member(cls, user_id):
-        user = User.get_by_id(user_id)
-        return user and user.is_member
-        # user_account = UserAccount.get_by_user_id(user_id)
-        # if not user_account:
-        #     return False
-        # time_now = int(time.time())
-        # if user_account.membership_time > time_now:
-        #     return True
-        # return False
+        # user = User.get_by_id(user_id)
+        # return user and user.is_member
+        user_account = UserAccount.get_by_user_id(user_id)
+        if not user_account:
+            return False
+        time_now = int(time.time())
+        if user_account.membership_time > time_now:
+            return True
+        return False
 
     @classmethod
     def buy_member_ship(cls, user_id, member_type=WEEK_MEMBER):
