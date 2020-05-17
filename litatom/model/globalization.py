@@ -272,10 +272,9 @@ class RegionWord(Document):
     def is_valid_word(cls, region, tag, word):
         if region == cls.REGION_BENCHMARK:
             return None
-        if region != cls.REGION_BENCHMARK:
-            obj = cls.objects(region=cls.REGION_BENCHMARK, tag=tag).first()
-            if not obj:
-                return u'tag not vailid, please retry later'
+        obj = cls.objects(region=cls.REGION_BENCHMARK, tag=tag).first()
+        if not obj:
+            return u'tag not vailid, please retry later'
         en_word = obj.word
         is_json_en = is_json(en_word)
         is_json_local = is_json(word)
