@@ -254,66 +254,66 @@ class HuanxinService(object):
     @classmethod
     def add_friend(cls, source_user_name, dest_user_name):
         return True
-        url = cls.APP_URL + 'users/%s/contacts/users/%s' % (source_user_name, dest_user_name)
-
-        access_token = cls.get_access_token_init()
-        if not access_token:
-            return False
-        headers = {
-            'Authorization':'Bearer %s' % access_token
-        }
-        try:
-            response = requests.post(url, verify=False, headers=headers, data={}).json()
-            assert response.get('entities')[0]['username']
-            return True
-        except Exception, e:
-            logger.error(traceback.format_exc())
-            logger.error('Error create huanxin  add friend, user_id: %r, err: %r', source_user_name, e)
-            return False
+        # url = cls.APP_URL + 'users/%s/contacts/users/%s' % (source_user_name, dest_user_name)
+        #
+        # access_token = cls.get_access_token_init()
+        # if not access_token:
+        #     return False
+        # headers = {
+        #     'Authorization':'Bearer %s' % access_token
+        # }
+        # try:
+        #     response = requests.post(url, verify=False, headers=headers, data={}).json()
+        #     assert response.get('entities')[0]['username']
+        #     return True
+        # except Exception, e:
+        #     logger.error(traceback.format_exc())
+        #     logger.error('Error create huanxin  add friend, user_id: %r, err: %r', source_user_name, e)
+        #     return False
 
     @classmethod
     def del_friend(cls, source_user_name, dest_user_name):
         return True
-        url = cls.APP_URL + 'users/%s/contacts/users/%s' % (source_user_name, dest_user_name)
-
-        access_token = cls.get_access_token_init()
-        if not access_token:
-            return False
-        headers = {
-            'Authorization':'Bearer %s' % access_token
-        }
-        try:
-            response = requests.delete(url, verify=False, headers=headers, data={}).json()
-            assert response.get('entities')[0]['username']
-            return True
-        except Exception, e:
-            logger.error(traceback.format_exc())
-            logger.error('Error create huanxin  add friend, user_id: %r, err: %r', source_user_name, e)
-            return False
+        # url = cls.APP_URL + 'users/%s/contacts/users/%s' % (source_user_name, dest_user_name)
+        #
+        # access_token = cls.get_access_token_init()
+        # if not access_token:
+        #     return False
+        # headers = {
+        #     'Authorization':'Bearer %s' % access_token
+        # }
+        # try:
+        #     response = requests.delete(url, verify=False, headers=headers, data={}).json()
+        #     assert response.get('entities')[0]['username']
+        #     return True
+        # except Exception, e:
+        #     logger.error(traceback.format_exc())
+        #     logger.error('Error create huanxin  add friend, user_id: %r, err: %r', source_user_name, e)
+        #     return False
 
 
     @classmethod
     def update_nickname(cls, user_name, nickname):
         return True
-        url = cls.APP_URL + 'users/%s' % user_name
-
-        access_token = cls.get_access_token_init()
-        if not access_token:
-            return False
-        headers = {
-            'Authorization':'Bearer %s' % access_token
-        }
-        for i in range(cls.TRY_TIMES):
-            try:
-                response = requests.put(url, verify=False, headers=headers, data=json.dumps({'nickname': nickname, 'username': user_name})).json()
-                # print response
-                assert response.get('entities')[0]['nickname']
-                return True
-            except Exception, e:
-                # traceback.print_exc()
-                logger.error(traceback.format_exc())
-                logger.error('Error  huanxin update_nickname user, user_id: %r, response:%r, err: %r', user_name, response, e)
-                # return {}
+        # url = cls.APP_URL + 'users/%s' % user_name
+        #
+        # access_token = cls.get_access_token_init()
+        # if not access_token:
+        #     return False
+        # headers = {
+        #     'Authorization':'Bearer %s' % access_token
+        # }
+        # for i in range(cls.TRY_TIMES):
+        #     try:
+        #         response = requests.put(url, verify=False, headers=headers, data=json.dumps({'nickname': nickname, 'username': user_name})).json()
+        #         # print response
+        #         assert response.get('entities')[0]['nickname']
+        #         return True
+        #     except Exception, e:
+        #         # traceback.print_exc()
+        #         logger.error(traceback.format_exc())
+        #         logger.error('Error  huanxin update_nickname user, user_id: %r, response:%r, err: %r', user_name, response, e)
+        #         # return {}
         return False
 
     @classmethod
