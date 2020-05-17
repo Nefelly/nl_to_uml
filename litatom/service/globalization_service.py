@@ -61,6 +61,7 @@ class GlobalizationService(object):
     LOC_INN = 'INN'
     LOC_EN = 'EN'
     LOC_US = 'US'
+    LOC_LAO = 'LAO' # 老挝
     # LOC_KR = 'KR'
     # LOC_JP = 'JP'
     LOC_PH = 'PH'
@@ -139,6 +140,7 @@ class GlobalizationService(object):
         #'INN': REGION_IN_NOCORE
         'INN': REGION_IN,
         'TEST': REGION_EN,
+        LOC_LAO: REGION_TH,
         # LOC_KR: REGION_KR,
         # LOC_JP: REGION_JP,
         LOC_PH: REGION_PH,
