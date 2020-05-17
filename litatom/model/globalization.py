@@ -312,7 +312,6 @@ class RegionWord(Document):
         cache_key = cls.get_cache_key(region, tag)
         cached_res = redis_client.get(cache_key)
         if cached_res:
-            print region, tag, cached_res
             return cached_res
         if cached_res == cls.NOTSET_WORLD:
             return ''
