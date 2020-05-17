@@ -31,6 +31,7 @@ class Avatar(Document):
     fileid = StringField(required=True)
     gender = StringField(required=False)
     paid = BooleanField(required=True, default=False)
+    price = IntField(default=0)
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
 
     @classmethod
