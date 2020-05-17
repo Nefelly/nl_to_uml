@@ -215,7 +215,7 @@ class HuanxinService(object):
     @classmethod
     def block_user(cls, source_user_name, dest_user_name):
         url = cls.APP_URL + 'users/%s/blocks/users' % source_user_name
-        print url
+        # print url
         access_token = cls.get_access_token()
         if not access_token:
             return False
