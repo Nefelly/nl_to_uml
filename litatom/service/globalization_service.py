@@ -375,18 +375,25 @@ class GlobalizationService(object):
 
     @classmethod
     def region_words(cls):
-        res = {}
+        trans = []
+        no_trans = []
         region = cls.get_region()
         en = RegionWord.REGION_BENCHMARK
         for obj in RegionWord.objects(region=en):
             tag = obj.tag
-            res[tag] = {'name': tag}
-            res[tag][en] = RegionWord.get_content(obj.word)
-            other_word = RegionWord.cache_word_by_region_tag(region, tag)
-            if not isinstance(other_word, str):
-                other_word = json.dumps(other_word)
-            res[tag]['other_word'] = other_word
-        return res, True
+            tmp = {}
+            tmp[tag] = {"tag": tag}
+            en_word = RegionWord.get_content(obj.word)
+            tmp[tag][en] = en_word
+            loc_word = RegionWord.cache_word_by_region_tag(region, tag)
+            if not isinstance(loc_word, str):
+                loc_word = json.dumps(loc_word)
+            tmp[tag]['loc_word'] = loc_word
+            if loc_word == en_word:
+                no_trans.append(tmp)
+            else:
+                trans.append(tmp)
+        return no_trans + trans, True
 
     @classmethod
     def get_region_word(cls, tag, region=None):
