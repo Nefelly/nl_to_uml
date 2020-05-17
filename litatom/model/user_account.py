@@ -28,7 +28,7 @@ class UserAccount(Document):
     }
     user_id = StringField(required=True)
     diamonds = IntField(required=False)
-    # membership_time = IntField(required=True, default=0)
+    membership_time = IntField(required=True, default=0)
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
 
     @classmethod
