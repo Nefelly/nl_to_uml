@@ -154,7 +154,6 @@ class ExperimentService(object):
         old_noset_num = len(old_noset)
 
         def add_new(value, num, old_noset):
-            print num, old_noset
             buckets = sys_rnd.sample(old_noset, num)
             for b in buckets:
                 # print 'creating', exp_name, b, value
@@ -206,7 +205,6 @@ class ExperimentService(object):
     @classmethod
     def get_buckets(cls, exp_name):
         buckets = ExpBucket.load_buckets(exp_name)
-        print buckets
         used_bucket = {}
         for i in range(cls.BUCKET_NUM):
             used_bucket[i] = False
@@ -215,7 +213,6 @@ class ExperimentService(object):
             for _ in buckets[el]:
                 used_bucket[_] = True
 
-        print 'not used', [el for el in used_bucket if not used_bucket[el]]
         if not buckets.get(ExpBucket.NOSET):
             buckets[ExpBucket.NOSET] = []
         buckets[ExpBucket.NOSET] += [el for el in used_bucket if not used_bucket[el]]
