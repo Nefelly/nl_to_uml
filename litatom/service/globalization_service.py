@@ -387,8 +387,8 @@ class GlobalizationService(object):
             en_word = RegionWord.get_content(obj.word)
             tmp[en] = en_word
             loc_word = RegionWord.cache_word_by_region_tag(region, tag)
-            if not isinstance(loc_word, str):
-                loc_word = json.dumps(loc_word)
+            # if not isinstance(loc_word, str):
+            #     loc_word = json.dumps(loc_word)
             tmp['loc_word'] = loc_word
             if loc_word == en_word:
                 no_trans.append(tmp)
