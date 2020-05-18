@@ -32,6 +32,20 @@ def is_json(myjson):
         return False
     return True
 
+def filter_emoji(content):
+    '''
+    过滤content中的表情符
+    :param content:
+    :return:
+    '''
+    try:
+	    # Wide UCS-4 build
+	    cont = re.compile(u'['u'\U0001F300-\U0001F64F' u'\U0001F680-\U0001F6FF'u'\u2600-\u2B55]+')
+	except re.error:
+	    # Narrow UCS-2 build
+	    cont = re.compile(u'('u'\ud83c[\udf00-\udfff]|'u'\ud83d[\udc00-\ude4f\ude80-\udeff]|'u'[\u2600-\u2B55])+')
+    return cont.sub(u'', content)
+
 
 def get_args_from_db(db_name):
     db_m = setting.DB_SETTINGS.get(db_name)
