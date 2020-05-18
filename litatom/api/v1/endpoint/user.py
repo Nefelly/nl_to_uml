@@ -122,7 +122,7 @@ def get_user_info(target_user_id):
     user_id = request.user_id
     data, status = UserService.get_user_info(user_id, target_user_id)
     if user_id != target_user_id:
-        VisitService.visit(user_id, target_user_id)
+        # VisitService.visit(user_id, target_user_id)
         UserMessageService.visit_message(target_user_id, user_id)
     if not status:
         return fail(data)
