@@ -16,6 +16,7 @@ from ..util import (
     parse_standard_date,
     format_standard_date,
     get_zero_today,
+    filter_emoji
 )
 from ..const import (
     TWO_WEEKS,
@@ -203,6 +204,7 @@ class UserService(object):
     @classmethod
     def _get_words_loc(cls, words):
         for word in words:
+            word = filter_emoji(word)
             lang, score = langid.classify(word)
             loc = GlobalizationService.loc_by_lang(lang)
             if loc:
