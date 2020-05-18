@@ -135,7 +135,7 @@ class UserSettingService(object):
         if region not in [GlobalizationService.REGION_TH, GlobalizationService.REGION_VN]:
                res['modules_open']['video_match'] = 0
         if region == GlobalizationService.REGION_ID:
-            if ExperimentService.get_exp_value('id_show_video') == 'show':
+            if ExperimentService.lit_exp_value('id_show_video') == 'show':
                 res['modules_open']['video_match'] = 1
         if region == GlobalizationService.REGION_PH:
             res['modules_open']['voice_match'] = 0
