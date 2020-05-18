@@ -146,6 +146,7 @@ class ExperimentService(object):
         for _ in old_buckets:
             if _ not in value_bucket_num_dict and _ not in [ExpBucket.NOSET, ExpBucket.DEFAULT]:
                 need_adjust[_] = -len(old_buckets[_])
+        print need_adjust
         # release_num = -sum([el for el in need_adjust.values() if el < 0])
         add_num = sum([el for el in need_adjust.values() if el > 0])
         old_noset = []
