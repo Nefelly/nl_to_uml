@@ -207,6 +207,7 @@ class ExperimentService(object):
     @classmethod
     def get_buckets(cls, exp_name):
         buckets = ExpBucket.load_buckets(exp_name)
+        print buckets
         used_bucket = {}
         for i in range(cls.BUCKET_NUM):
             used_bucket[i] = False
