@@ -676,7 +676,7 @@ class UserSetting(Document):
             self._disable_cache(str(self.user_id))
         user_id = getattr(self, 'user_id', '')
         if user_id:
-            user_setting_loc_key = REDIS_SAVE_LOCK.format(key='user_setting' + user_id)
+            user_setting_loc_key = REDIS_SAVE_LOCK.format(key=self.__class__.__name__ + user_id)
             not_in_set = redis_client.setnx(user_setting_loc_key, 1)
             if not not_in_set:   # 正在存储
                 return
