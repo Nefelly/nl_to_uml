@@ -676,11 +676,11 @@ class UserSetting(Document):
             self._disable_cache(str(self.user_id))
         user_id = getattr(self, 'user_id', '')
         if user_id:
-            user_setting_loc_key = REDIS_SAVE_LOCK.format('user_setting' + user_id)
+            user_setting_loc_key = REDIS_SAVE_LOCK.format(key='user_setting' + user_id)
             not_in_set = redis_client.setnx(user_setting_loc_key)
             if not not_in_set:   # 正在存储
                 return
-            redis_client.expire(user_setting_loc_key, 2)
+            redis_client.expire(user_setting_loc_key, 200)
         super(UserSetting, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
