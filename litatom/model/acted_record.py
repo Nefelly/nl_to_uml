@@ -29,7 +29,7 @@ class ActedRecord(Document):
     meta = {
         'strict': False,
         'db_alias': 'relations',
-        'shard_key': {'uid': 'hashed'}
+        'shard_key': {'user_id': 'hashed'}
     }
     COMUNITY_ACT = 'community_rule'
     user_id = StringField(required=True)
