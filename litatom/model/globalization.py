@@ -269,6 +269,10 @@ class RegionWord(Document):
     NOTSET_WORLD = 'not set, please contact administrator'
 
     @classmethod
+    def benchmark_word_exists(cls, tag):
+        return cls.objects(region=cls.REGION_BENCHMARK, tag=tag).first() is not None
+
+    @classmethod
     def is_valid_word(cls, region, tag, word):
         if region == cls.REGION_BENCHMARK:
             return None

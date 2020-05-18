@@ -208,7 +208,8 @@ def upsert_region_word():
     data = request.json
     tag = data.get('tag')
     word = data.get('word')
-    data, status = GlobalizationService.add_or_modify_region_word(tag, word)
+    en = data.get('en')
+    data, status = GlobalizationService.add_or_modify_region_word(tag, word, en)
     if status:
         return success(data)
     return fail(data)
