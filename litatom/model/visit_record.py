@@ -71,7 +71,7 @@ class NewVisit(Document):
         'shard_key': {'visited_user_id': 'hashed'}
     }
 
-    visited_user_id = StringField(required=True, unique=True)   # 被访问者的id
+    visited_user_id = StringField(required=True)   # 被访问者的id
     viewed_visited = IntField(default=0)
     new_visit_num = IntField(default=0)
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
