@@ -69,7 +69,7 @@ class Avatar(Document):
         for g in GENDERS:
             if not avatars.get(g):
                 avatars[g] = []
-            objs = cls.objects(gender=g, paid=False)
+            objs = cls.objects(gender=g, paid__ne=True)
             for obj in objs:
                 fileid = obj.fileid
                 avatars[g].append(fileid)
