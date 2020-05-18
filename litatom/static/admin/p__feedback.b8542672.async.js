@@ -1,1 +1,0 @@
-(window["webpackJsonp"]=window["webpackJsonp"]||[]).push([[9],{mcW4:function(n,t,e){"use strict";e.r(t);var o=e("q1tI"),i=e.n(o),c=e("t3Un");function u(){return c["a"].post("/api/sns/v1/lit/user/phone_login",{phone:18701207198,code:1314,zone:86})}function p(n){function t(){u.then((function(){}))}return i.a.createElement("div",{onClick:t},"11")}t["default"]=p}}]);
