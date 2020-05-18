@@ -281,18 +281,34 @@ class UserService(object):
                 ForbidActionService.resolve_spam_word(uid,bio)
                 return GlobalizationService.get_region_word('alert_msg'), False
             # if (bio or nickname) and GlobalizationService.get_region() == GlobalizationService.DEFAULT_REGION:
-            if (bio or nickname) and GlobalizationService.get_region() not in GlobalizationService.BIG_REGIONS:
-                loc = cls._get_words_loc([nickname, bio])
-                if loc in GlobalizationService.BIG_REGIONS.values():
-                    userSetting = UserSetting.get_by_user_id(uid)
-                    if not userSetting or userSetting.loc_change_times <= 1:
-                        GlobalizationService.change_loc(uid, loc)
-                        userSetting = UserSetting.get_by_user_id(uid)
-                        if userSetting:
-                            userSetting.loc_change_times += 1
-                            userSetting.save()
+            if (bio or nickname):
+                cls.check_and_move_to_big(uid, [nickname, bio])
+            # if (bio or nickname) and GlobalizationService.get_region() not in GlobalizationService.BIG_REGIONS:
+            #     loc = cls._get_words_loc([nickname, bio])
+            #     if loc in GlobalizationService.BIG_REGIONS.values():
+            #         userSetting = UserSetting.get_by_user_id(uid)
+            #         if not userSetting or userSetting.loc_change_times <= 1:
+            #             GlobalizationService.change_loc(uid, loc)
+            #             userSetting = UserSetting.get_by_user_id(uid)
+            #             if userSetting:
+            #                 userSetting.loc_change_times += 1
+            #                 userSetting.save()
         return None, True
-
+    
+    @classmethod
+    def check_and_move_to_big(cls, user_id, words):
+        if GlobalizationService.get_region() in GlobalizationService.BIG_REGIONS:
+            return 
+        loc = cls._get_words_loc(words)
+        if loc in GlobalizationService.BIG_REGIONS.values():
+            userSetting = UserSetting.get_by_user_id(user_id)
+            if not userSetting or userSetting.loc_change_times <= 1:
+                GlobalizationService.change_loc(user_id, loc)
+                userSetting = UserSetting.get_by_user_id(user_id)
+                if userSetting:
+                    userSetting.loc_change_times += 1
+                    userSetting.save()
+    
     @classmethod
     def uids_age(cls, user_ids):
         res = {}
