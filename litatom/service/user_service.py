@@ -71,7 +71,7 @@ from ..service import (
 logger = logging.getLogger(__name__)
 sys_rnd = random.SystemRandom()
 redis_client = RedisClient()['lit']
-
+volatile_redis = RedisClient()['volatile']
 
 class UserService(object):
     FORBID_TIME = ONE_MIN
@@ -82,7 +82,8 @@ class UserService(object):
 
     @classmethod
     def get_all_ids(cls):
-        return [el.user_id for el in UserSetting.objects().only('user_id')]
+        # return [el.user_id for el in UserSetting.objects().only('user_id')]
+        return list(volatile_redis.smembers('all_user_ids'))
 
     @classmethod
     def _trans_session_2_forbidden(cls, user):
