@@ -29,11 +29,11 @@ class VisitRecord(Document):
     meta = {
         'strict': False,
         'db_alias': 'relations',
-        'shard_key': {'user_id': 'hashed'}
+        'shard_key': {'target_user_id': 'hashed'}
     }
 
     user_id = StringField(required=True)
-    target_user_id = StringField()
+    target_user_id = StringField(required=True)
     visit_num = IntField(default=0)
     last_visited_time = IntField(required=True, default=int(time.time()))
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
