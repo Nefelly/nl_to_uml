@@ -308,7 +308,7 @@ class ExperimentService(object):
         for _ in ids:
             bucket = cls._get_bucket(exp_name, _)
             value = bucket_values.get(bucket)
-            if values_ids[value]:
+            if values_ids.get(value, []):
                 values_ids[value].append(_)
             else:
                 values_ids[value] = [_]
