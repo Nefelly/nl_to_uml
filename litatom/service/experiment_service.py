@@ -293,7 +293,7 @@ class ExperimentService(object):
         pass
 
     @classmethod
-    def batch_get_values_id(cls, exp_name, ids):
+    def batch_get_value_ids(cls, exp_name, ids):
         '''
         批量获取用户对应实验的value
         :param exp_name:
