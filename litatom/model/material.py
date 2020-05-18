@@ -60,9 +60,9 @@ class Avatar(Document):
 
     @classmethod
     def get_avatars(cls):
-        cache_obj = redis_client.get(REDIS_AVATAR_CACHE)
-        if cache_obj:
-            return cPickle.loads(cache_obj)
+        # cache_obj = redis_client.get(REDIS_AVATAR_CACHE)
+        # if cache_obj:
+        #     return cPickle.loads(cache_obj)
 
         avatars = {}
         # load not paid avatar
@@ -73,14 +73,15 @@ class Avatar(Document):
             for obj in objs:
                 fileid = obj.fileid
                 avatars[g].append(fileid)
-
+        print avatars
         # laod paid avatar
         for g in GENDERS:
             paid_key = g + cls.PAID_SUFFIX
             avatars[paid_key] = {}
             for obj in cls.objects(gender=g, paid=True):
                 avatars[paid_key][obj.fileid] = {'price': obj.price, 'owned': False}
-        redis_client.set(REDIS_AVATAR_CACHE, cPickle.dumps(avatars))
+        print avatars
+        # redis_client.set(REDIS_AVATAR_CACHE, cPickle.dumps(avatars))
         return avatars
 
     @classmethod
