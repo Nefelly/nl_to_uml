@@ -89,7 +89,7 @@ class Avatar(Document):
         res = {}
         for g in GENDERS:
             paid_key = g + cls.PAID_SUFFIX
-            res.update(avatars.get(paid_key))
+            res.update(avatars.get(paid_key, {}))
         return res
 
     @classmethod
