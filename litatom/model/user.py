@@ -690,7 +690,7 @@ class UserSetting(Document):
 
     @classmethod
     def create_setting(cls, user_id, lang, uuid=None):
-        if cls.get_by_user_id(user_id):
+        if not user_id or cls.get_by_user_id(user_id):
             return True
         obj = cls()
         obj.user_id = user_id
