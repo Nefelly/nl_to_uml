@@ -293,15 +293,26 @@ class ExperimentService(object):
         pass
 
     @classmethod
-    def batch_get_id_values(cls, exp_name, ids):
+    def batch_get_values_id(cls, exp_name, ids):
         '''
         批量获取用户对应实验的value
         :param exp_name:
         :param ids:
         :return:
+        先 查询桶对应的value
+        再 查询id 对应的桶
+        再 返回
         '''
-        id_values = {}
-        pass
+        bucket_values = cls.load_bucket_value_m(exp_name)
+        values_ids = {}
+        for _ in ids:
+            bucket = cls._get_bucket(exp_name, _)
+            value = bucket_values.get(bucket)
+            if values_ids[value]:
+                values_ids[value].append(_)
+            else:
+                values_ids[value] = [_]
+        return values_ids
 
     @classmethod
     def get_exp_bucket_values(cls, exp_name):
