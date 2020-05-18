@@ -129,6 +129,8 @@ class ExperimentService(object):
         '''
         # 判断传值是否准确
         total = sum([value_bucket_num_dict.get(e) for e in value_bucket_num_dict if e != ExpBucket.NOSET])
+        if not value_bucket_num_dict.get(ExpBucket.DEFAULT):
+            return u'default must in', False
         if total > cls.BUCKET_NUM:
             return u'wrong arguments, total bucket num exceed max:%d' % cls.BUCKET_NUM, False
 
@@ -146,12 +148,9 @@ class ExperimentService(object):
         for _ in old_buckets:
             if _ not in value_bucket_num_dict and _ not in [ExpBucket.NOSET, ExpBucket.DEFAULT]:
                 need_adjust[_] = -len(old_buckets[_])
-        print need_adjust
         # release_num = -sum([el for el in need_adjust.values() if el < 0])
         add_num = sum([el for el in need_adjust.values() if el > 0])
-        old_noset = []
         old_noset = old_buckets[ExpBucket.NOSET]
-        print old_buckets
         old_noset_num = len(old_noset)
 
         def add_new(value, num, old_noset):
