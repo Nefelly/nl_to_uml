@@ -90,6 +90,7 @@ class GoogleService(object):
             # if idinfo['aud'] not in [CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3]:
             #     raise ValueError('Could not verify audience.')
             if idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
+                # AliLogService.put_logs()
                 raise ValueError('Wrong issuer.')
 
             # If auth request is from a G Suite domain:

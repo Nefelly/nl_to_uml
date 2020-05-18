@@ -120,6 +120,20 @@ class AliLogService(object):
         cls._put_logs_atom(logitemList, project, logstore, topic, source, client)
 
     @classmethod
+    def simplest_put_log(cls, contents, project):
+        topic = cls.DEFAULT_TOPIC
+        source = cls.DEFAULT_SOURCE
+        client = cls.DEFAULT_CLIENT
+        logstore = project
+        logitemList = []  # LogItem list
+        logItem = LogItem()
+        logItem.set_time(int(time()))
+        logItem.set_contents(contents)
+        logitemList.append(logItem)
+        cls._put_logs_atom(logitemList, project, logstore, topic, source, client)
+
+
+    @classmethod
     def put_logs_batch(cls, contents_list, topic=DEFAULT_TOPIC, source=DEFAULT_SOURCE, project=DEFAULT_PROJECT,
                        logstore=DEFAULT_LOGSTORE, client=DEFAULT_CLIENT):
         """
