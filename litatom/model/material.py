@@ -98,7 +98,7 @@ class Avatar(Document):
         for paied in [False, True]:
             for gender in GENDERS:
                 g = gender if not paied else gender + cls.PAID_SUFFIX
-                if fileid in avatars[g]:
+                if fileid in avatars.get(g, {}):
                     return True
         return False
 
