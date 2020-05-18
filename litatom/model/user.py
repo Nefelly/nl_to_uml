@@ -39,7 +39,8 @@ from ..key import (
     REDIS_USER_CACHE,
     REDIS_USER_SETTING_CACHE,
     REDIS_USER_MODEL_CACHE,
-    REDIS_KEY_FORBIDDEN_SESSION_USER
+    REDIS_KEY_FORBIDDEN_SESSION_USER,
+    REDIS_SAVE_LOCK
 )
 from ..const import (
     TWO_WEEKS,
@@ -673,6 +674,13 @@ class UserSetting(Document):
     def save(self, *args, **kwargs):
         if getattr(self, 'user_id', ''):
             self._disable_cache(str(self.user_id))
+        user_id = getattr(self, 'user_id', '')
+        if user_id:
+            user_setting_loc_key = REDIS_SAVE_LOCK.format('user_setting' + user_id)
+            not_in_set = redis_client.setnx(user_setting_loc_key)
+            if not not_in_set:   # 正在存储
+                return
+            redis_client.expire(user_setting_loc_key, 2)
         super(UserSetting, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):

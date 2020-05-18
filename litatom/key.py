@@ -17,6 +17,9 @@ REDIS_AD_TIMES_LEFT = 'ad_times_left:{user_date}'
 REDIS_REGION_FEED_TOP = 'region_feed_top:{region}'
 REDIS_ACCOUNT_ACTION = 'account:{key}'
 
+#distirbute_lock
+REDIS_SAVE_LOCK = 'mongo_save_loc:{key}'
+
 # share stat
 REDIS_SHARE_STAT = 'share_stat:{user_id}'
 REDIS_SHARE_KNOWN_NUM = 'share_known_num:{user_id}'
