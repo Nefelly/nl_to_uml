@@ -22,6 +22,10 @@ from .material import (
     SpamWord,
     FakeSpamWord
 )
+from . visit_record import (
+    VisitRecord,
+    NewVisit
+)
 from .report import (
     Report
 )
@@ -65,7 +69,8 @@ from .experiment import (
 )
 from .user_account import (
     UserAccount,
-    AccountFlowRecord
+    AccountFlowRecord,
+    UserAsset
 )
 from .admin import (
     AdminUser,
@@ -81,7 +86,10 @@ from .user_model import (
     UserModel,
     Uuids
 )
-from .match_record import MatchRecord
+from .match_record import (
+    MatchRecord,
+    MatchHistory
+)
 from .anoy_online import AnoyOnline
 from ..db import DBManager
 

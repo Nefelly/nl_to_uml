@@ -13,6 +13,7 @@ from .mongo_sync_service import (
     MongoSyncService,
     OplogSyncService
 )
+from .avatar_service import AvatarService
 from .experiment_service import ExperimentService
 from .acted_service import ActedService
 from .track_action_service import TrackActionService
@@ -47,6 +48,7 @@ from .message_service import UserMessageService
 from .conversation_service import ConversationService
 from .ali_oss import AliOssService
 from .statistic_service import StatisticService
+from .match_history_service import MatchHistoryService
 from .match_service import MatchService
 from .anoy_match_service import AnoyMatchService
 from .voice_match_service import VoiceMatchService
@@ -57,6 +59,7 @@ from .feedback_service import FeedbackService
 from .admin_service import AdminService
 from .palm_service import PalmService
 from .account_service import AccountService
+from .visit_service import VisitService
 from .share_stat_service import ShareStatService
 from .maintain_service import MaintainService
 from .chat_record_service import ChatRecordService

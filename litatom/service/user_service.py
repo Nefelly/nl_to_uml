@@ -65,6 +65,7 @@ from ..service import (
     FollowService,
     GlobalizationService,
     MqService,
+    AvatarService
 )
 
 logger = logging.getLogger(__name__)
@@ -591,7 +592,9 @@ class UserService(object):
             #         return u'nickname already exists', False
             data['nickname'] = nick_name
         if data.get('avatar', ''):
-            if not Avatar.valid_avatar(data.get('avatar')):
+            avatar_err = AvatarService.can_change(user_id, data.get('avatar'))
+            if avatar_err:
+            # if not Avatar.valid_avatar(data.get('avatar')):
                 data.pop('avatar')
         gender = data.get('gender', '').strip().replace('\n', '')
         if gender:
@@ -955,7 +958,7 @@ class UserService(object):
             return basic_info, True
         login_info = target_user.get_login_info()
         basic_info.update(login_info)
-        basic_info.update({"account_info": UserAccount.get_account_info(user_id)})
+        basic_info.update({"account_info": UserAccount.get_account_info(user_id), "vip_time": target_user.vip_time})
         return basic_info, True
 
     @classmethod
@@ -971,7 +974,7 @@ class UserService(object):
 
     @classmethod
     def get_avatars(cls):
-        return Avatar.get_avatars()
+        return AvatarService.get_avatars(request.user_id)
 
     @classmethod
     def _delete_user(cls, user):

@@ -129,7 +129,7 @@ class MaintainService(object):
             ids = UserService.get_all_ids()
         try:
             judge = datetime.datetime.now() - datetime.timedelta(days=30)
-            UserConversation.objects(create_time__lte=judge).delete()
+            UserConversation.objects(create_time__lte=judge, pinned=False).delete()
         except:
             pass
         # ids = UserService.get_all_ids()

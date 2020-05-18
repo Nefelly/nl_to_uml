@@ -15,9 +15,6 @@ from .. key import (
 from ..const import (
     ONE_DAY
 )
-from ..model import (
-    User
-)
 from ..redis import RedisClient
 
 sys_rnd = random.SystemRandom()
@@ -34,5 +31,5 @@ class Model(Document):
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
 
     @classmethod
-    def get_by_user_name(cls, user_name):
-        return cls.objects(user_name=user_name).first()
+    def get_by_user_id(cls, user_id):
+        return cls.objects(user_id=user_id).first()

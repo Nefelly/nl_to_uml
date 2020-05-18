@@ -9,13 +9,15 @@ from ..model import (
     UserAccount,
     AccountFlowRecord,
     UserRecord,
-    User
+    User,
+    UserAsset
 )
 from ..const import (
     ONE_WEEK,
     ONE_MIN,
     ONE_DAY,
-    MAX_DIAMONDS
+    MAX_DIAMONDS,
+    ONE_MONTH
 )
 from ..util import (
     now_date_key
@@ -30,7 +32,9 @@ from ..service import (
     UserService,
     AdService,
     AliLogService,
-    AntiSpamRateService
+    AntiSpamRateService,
+    AvatarService,
+    GlobalizationService
 )
 from ..key import (
     REDIS_ACCOUNT_ACTION,
@@ -50,12 +54,13 @@ class AccountService(object):
     '''
     '''
     WEEK_MEMBER = 'week_member'
+    VIP_MONTH = 'vip_month'
     ONE_MORE_TIME = 'one_more_time'
     ACCELERATE = 'accelerate'
     ACCOST_RESET = 'accost_reset'
     PALM_RESULT = 'palm_result'
     PRODUCT_INFOS = {
-        WEEK_MEMBER: 30 if not setting.IS_DEV else 1,
+        WEEK_MEMBER: 30,
         ONE_MORE_TIME: 5,
         ACCELERATE: 2,
         ACCOST_RESET: 3,
@@ -72,6 +77,7 @@ class AccountService(object):
     UNBAN_DIAMONDS = 100
     DAY_ACTIVITY_LIMIT = 500 if not setting.IS_DEV else 200
     MEMBER_SHIPS = [WEEK_MEMBER]
+    VIP = [VIP_MONTH] 
     ERR_DIAMONDS_NOT_ENOUGH = 'not enough diamonds, please deposit first.'
 
     @classmethod
@@ -84,6 +90,65 @@ class AccountService(object):
             # 'asfd324': 5,
             # '324asd': 15
         }, True
+
+    @classmethod
+    def membership_badges(cls):
+        meta = [
+            [
+                "a34c0d48-91c4-11ea-a839-00163e00ecaa",
+                "acceleration_unlimited"
+            ],
+            [
+                "a34c0d48-91c4-11ea-a839-00163e00ecaa",
+                "match_times_unlimited"
+            ],
+            [
+                "",
+                "vip_remove_ads"
+            ],
+            [
+                "",
+                "vip_match_record"
+            ],
+            [
+                "",
+                "vip_visit_record"
+            ],
+            [
+                "",
+                "vip_badge"
+            ],
+            [
+                "",
+                "vip_palmistry"
+            ]
+
+
+        ]
+        res = []
+        for icon, tag_name in meta:
+            description_tag = tag_name + '_description'
+            tmp = {
+                "icon": icon,
+                "name": GlobalizationService.get_cached_region_word(tag_name),
+                "description": GlobalizationService.get_cached_region_word(description_tag)
+
+            }
+            res.append(tmp)
+
+        # res = [
+        #     {
+        #         "icon": "a34c0d48-91c4-11ea-a839-00163e00ecaa",
+        #         "name": "Unlimited acceleration",
+        #         "description": "Speed up matching",
+        #     },
+        #     {
+        #         "icon": "a34c0d48-91c4-11ea-a839-00163e00ecaa",
+        #         "name": "Unlimited match times",
+        #         "description": "You can get unlimited matches"
+        #     },
+        # ]
+        return res, True
 
     @classmethod
     def get_product_name_by_diamonds(cls, diamonds):
@@ -194,6 +259,40 @@ class AccountService(object):
         return None
 
     @classmethod
+    def _buy_vip(cls, user_id, vip_type=VIP_MONTH):
+        user = User.get_by_id(user_id)
+        if not user:
+            return u'user account not exists'
+        old_vip_time = user.vip_time
+        # old_vip_time = user_account.vip_time
+        time_now = int(time.time())
+        if old_vip_time < time_now:
+            old_vip_time = time_now
+        if vip_type == cls.VIP_MONTH:
+            time_int = ONE_MONTH if not setting.IS_DEV else ONE_DAY
+            new_vip_time = old_vip_time + time_int
+            # user_account.vip_time = new_vip_time
+            # user_account.save()
+            user.vip_time = new_vip_time
+            user.save()
+        MatchService.set_member_match_left(user_id)
+        return None
+
+    @classmethod
+    def buy_avatar(cls, user_id, fileid):
+        diamonds = AvatarService.get_avatar_price(fileid)
+        '''先检查钻石够不够'''
+        if not cls.is_diamond_enough(user_id, diamonds):
+            return cls.ERR_DIAMONDS_NOT_ENOUGH, False
+        add_err = UserAsset.add_avatar(user_id, fileid)
+        if add_err:
+            return add_err, False
+        err_msg = cls.change_diamonds(user_id, -diamonds, 'buy avatar')
+        if err_msg:
+            return err_msg, False
+        return None, True
+
+    @classmethod
     def buy_product(cls, user_id, product):
         if product not in cls.PRODUCT_INFOS:
             return u'product must be one of: %s' % (','.join(cls.PRODUCT_INFOS.keys())), False
@@ -270,6 +369,26 @@ class AccountService(object):
             return err_msg, False
         AccountFlowRecord.create(user_id, AccountFlowRecord.DEPOSIT, diamonds)
         return None, True
+
+    @classmethod
+    def buy_vip(cls, user_id, payload):
+        token = payload.get('payload', {}).get('token')
+        product_name = payload.get('product_name', 'vip')
+        if not token:
+            AccountFlowRecord.create(user_id, AccountFlowRecord.WRONG_VIP, product_name)
+        elif not setting.IS_DEV:
+            key = REDIS_ACCOUNT_ACTION.format(key=('pay' + token))
+            r = redis_client.get(key)
+            if r:
+                return 'Already deposit success', False
+            redis_client.setex(key, ONE_WEEK, 1)
+        err_msg = cls._buy_vip(user_id)
+        print err_msg
+        if err_msg:
+            return err_msg, False
+        AccountFlowRecord.create(user_id, AccountFlowRecord.SUCCESS_VIP)
+        return None, True
+
 
     @classmethod
     def deposit_by_activity(cls, user_id, activity, other_info={}):

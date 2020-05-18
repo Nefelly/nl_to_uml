@@ -56,22 +56,47 @@ class UserConversation(Document):
         'db_alias': 'relations',
         'shard_key': {'user_id': 'hashed'}
     }
+    MAX_QUERY_NUM = 100
     user_id = StringField(required=True)
     other_user_id = StringField()
     conversation_id = StringField(required=True)
+    pinned = BooleanField(default=False)
     from_type = StringField()
     create_time = DateTimeField(required=True, default=lambda: datetime.datetime.now)
 
     @classmethod
     def get_by_user_id(cls, user_id):
-        return [el.to_json() for el in cls.objects(user_id=user_id).order_by('-create_time').limit(100)]
+        objs = cls.objects(user_id=user_id).order_by('-create_time').limit(cls.MAX_QUERY_NUM)
+        return [el.to_json() for el in objs]
+
+    @classmethod
+    def get_pinned_conversation(cls, user_id):
+        return cls.objects(user_id=user_id, pinned=True).first()
 
     def to_json(self, *args, **kwargs):
         return {
             'user_id': self.user_id,
             'conversation_id': self.conversation_id,
+            'pinned': self.pinned,
             'create_time': self.create_time
         }
+
+    @classmethod
+    def pin_conversation(cls, user_id, other_user_id, conversation_id):
+        obj = cls.get_by_user_id_conversation_id(user_id, conversation_id)
+        if not obj:
+            obj = cls(user_id=user_id, other_user_id=other_user_id, conversation_id=conversation_id)
+        obj.pinned = True
+        obj.save()
+        return True
+
+    @classmethod
+    def unpin_conversation(cls, user_id, conversation_id):
+        obj = cls.get_by_user_id_conversation_id(user_id, conversation_id)
+        if obj:
+            if obj.pinned:
+                obj.pinned = False
+                obj.save()
 
     @classmethod
     def add_conversation(cls, user_id, other_user_id, conversation_id, from_type=None):

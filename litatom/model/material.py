@@ -27,16 +27,22 @@ class Avatar(Document):
         'strict': False,
         'alias': 'db_alias'
     }
-
+    PAID_SUFFIX = '_paid'
     fileid = StringField(required=True)
     gender = StringField(required=False)
+    paid = BooleanField(required=True, default=False)
+    price = IntField(default=0)
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
 
     @classmethod
-    def create(cls, fileid, gender):
-        obj = cls(fileid=fileid, gender=gender)
+    def create(cls, fileid, gender, paid=False, price=0):
+        obj = cls(fileid=fileid, gender=gender, paid=paid, price=price)
         obj.save()
         cls._disable_cache()
+
+    @classmethod
+    def paid_keys(cls):
+        return [g + cls.PAID_SUFFIX for g in GENDERS]
 
     @classmethod
     def _disable_cache(cls):
@@ -59,23 +65,41 @@ class Avatar(Document):
             return cPickle.loads(cache_obj)
 
         avatars = {}
+        # load not paid avatar
         for g in GENDERS:
             if not avatars.get(g):
                 avatars[g] = []
-            objs = cls.objects(gender=g)
+            objs = cls.objects(gender=g, paid=False)
             for obj in objs:
                 fileid = obj.fileid
                 avatars[g].append(fileid)
-        redis_client.set(REDIS_AVATAR_CACHE, cPickle.dumps(avatars))
 
+        # laod paid avatar
+        for g in GENDERS:
+            paid_key = g + cls.PAID_SUFFIX
+            avatars[paid_key] = {}
+            for obj in cls.objects(gender=g, paid=True):
+                avatars[paid_key][obj.fileid] = {'price': obj.price, 'owned': False}
+        redis_client.set(REDIS_AVATAR_CACHE, cPickle.dumps(avatars))
         return avatars
+
+    @classmethod
+    def get_paid_avatars(cls):
+        avatars = cls.get_avatars()
+        res = {}
+        for g in GENDERS:
+            paid_key = g + cls.PAID_SUFFIX
+            res.update(avatars.get(paid_key))
+        return res
 
     @classmethod
     def valid_avatar(cls, fileid):
         avatars = cls.get_avatars()
-        for _ in GENDERS:
-            if fileid in avatars[_]:
-                return True
+        for paied in [False, True]:
+            for gender in GENDERS:
+                g = gender if not paied else gender + cls.PAID_SUFFIX
+                if fileid in avatars[g]:
+                    return True
         return False
 
 # Avatar.test()

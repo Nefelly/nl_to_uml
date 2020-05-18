@@ -34,19 +34,33 @@ b.add_url_rule('/lit/user/search', 'user-search', endpoint.user.search_user)
 b.add_url_rule('/lit/user/accost', 'user-accost', endpoint.user.accost)
 b.add_url_rule('/lit/user/accost_other', 'user-accost_other', endpoint.user.accost_other)
 b.add_url_rule('/lit/user/conversation', 'user-create-conversation', endpoint.user.add_conversation, methods=['POST'])
+b.add_url_rule('/lit/user/pin_conversation', 'user-pin_conversation', endpoint.user.pin_conversation, methods=['POST'])
+b.add_url_rule('/lit/user/unpin_conversation', 'user-unpin_conversation', endpoint.user.unpin_conversation, methods=['POST'])
 b.add_url_rule('/lit/user/conversations', 'user-conversations', endpoint.user.get_conversations)
 b.add_url_rule('/lit/user/del_conversation/<conversation_id>', 'user-del_conversations', endpoint.user.delete_conversation)
 
+# user visit
+b.add_url_rule('/lit/user_visit/get_visit_nums', 'user-visit-get_visit_nums', endpoint.user_visit.get_visit_nums)
+b.add_url_rule('/lit/user_visit/all_viewed', 'user-visit-all_viewed', endpoint.user_visit.all_viewed)
+b.add_url_rule('/lit/user_visit/visited_list', 'user-visit-visited_list', endpoint.user_visit.visited_list)
+
+#  match history
+b.add_url_rule('/lit/match_history/matched_history', 'match-history-matched_history', endpoint.match_history.matched_history)
+b.add_url_rule('/lit/match_history/send_friend_request', 'match-history-send_friend_request', endpoint.match_history.send_friend_request, methods=['POST'])
+b.add_url_rule('/lit/match_history/accept_friend_request', 'match-history-accept_friend_request', endpoint.match_history.accept_friend_request, methods=['POST'])
 
 b.add_url_rule('/lit/account/account_info', 'account-account_info', endpoint.account.account_info)
 b.add_url_rule('/lit/account/products', 'account-product_info', endpoint.account.product_info)
 b.add_url_rule('/lit/account/pay_activities', 'account-pay_activities', endpoint.account.pay_activities)
 b.add_url_rule('/lit/account/pay_inform', 'account-pay_inform', endpoint.account.pay_inform, methods=['POST'])
+b.add_url_rule('/lit/account/buy_vip', 'account-buy_vip', endpoint.account.buy_vip, methods=['POST'])
 b.add_url_rule('/lit/account/deposit_by_activity', 'account-deposit_by_activity', endpoint.account.deposit_by_activity, methods=['POST'])
 b.add_url_rule('/lit/account/buy_product', 'account-buy_product', endpoint.account.buy_product, methods=['POST'])
+b.add_url_rule('/lit/account/buy_avatar/<fileid>', 'account-buy_avatar', endpoint.account.buy_avatar)
 b.add_url_rule('/lit/account/diamond_products', 'account-diamond_products', endpoint.account.diamond_products)
 b.add_url_rule('/lit/account/unban_by_diamonds', 'account-unban-by-diamonds', endpoint.account.unban_by_diamonds)
 b.add_url_rule('/lit/account/reset_rate_by_diamonds', 'account-reset_rate_by_diamonds', endpoint.account.reset_rate_by_diamonds, methods=['POST'])
+b.add_url_rule('/lit/account/membership_badges', 'account-membership_badges', endpoint.account.membership_badges)
 
 
 # admin
@@ -88,6 +102,7 @@ b.add_url_rule('/lit/admin/official_feed', 'admin-official_feed', endpoint.admin
 b.add_url_rule('/lit/admin/journal_cal/<item_id>', 'admin-journal_cal', endpoint.admin.journal_cal)
 b.add_url_rule('/lit/admin/get_log/<user_id>', 'admin-get_log', endpoint.admin.get_log)
 b.add_url_rule('/lit/admin/region_words', 'admin-region_words', endpoint.admin.region_words)
+b.add_url_rule('/lit/admin/upsert_region_word', 'admin-upsert_region_word', endpoint.admin.upsert_region_word, methods=['POST'])
 b.add_url_rule('/lit/admin/admin_words', 'admin-admin_words', endpoint.admin.admin_words)
 b.add_url_rule('/lit/admin/ban_by_uid/<user_id>', 'admin-ban_by_uid', endpoint.admin.ban_by_uid)
 b.add_url_rule('/lit/admin/ban_reporter/<user_id>', 'admin-ban_reporter', endpoint.admin.ban_reporter)

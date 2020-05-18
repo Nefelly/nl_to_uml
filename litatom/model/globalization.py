@@ -269,6 +269,10 @@ class RegionWord(Document):
     NOTSET_WORLD = 'not set, please contact administrator'
 
     @classmethod
+    def benchmark_word_exists(cls, tag):
+        return cls.objects(region=cls.REGION_BENCHMARK, tag=tag).first() is not None
+
+    @classmethod
     def is_valid_word(cls, region, tag, word):
         if region == cls.REGION_BENCHMARK:
             return None
@@ -313,9 +317,9 @@ class RegionWord(Document):
         cached_res = redis_client.get(cache_key)
         if cached_res:
             return cached_res
-        if cached_res != cls.NOTSET_WORLD:
+        if cached_res == cls.NOTSET_WORLD:
             return ''
-        obj = cls.objects(region=region,  tag=tag).first()
+        obj = cls.objects(region=region, tag=tag).first()
         word = ''
         if obj:
             word = obj.word
@@ -327,8 +331,6 @@ class RegionWord(Document):
         else:
             redis_client.set(cache_key, cls.NOTSET_WORLD, ONE_MONTH)
         return word
-
-
 
     @classmethod
     def word_by_region_tag(cls,  region,  tag):

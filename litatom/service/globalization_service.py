@@ -367,30 +367,45 @@ class GlobalizationService(object):
         return None, True
 
     @classmethod
-    def _region_tag_key(cls, region, tag):
-        region_tag = '%s:%s' % (region, tag)
-        return REDIS_REGION_TAG_WORD.format(region_tag=region_tag)
-
-    @classmethod
-    def add_or_modify_region_words(cls, region, tag, word):
-        if RegionWord.add_or_mod(region, tag, word):
-            redis_client.set(cls._region_tag_key(region, tag), word)
-        return True
+    def add_or_modify_region_word(cls, tag, word, en=None):
+        region = cls.get_region()
+        if not RegionWord.benchmark_word_exists(tag) and en:
+            RegionWord.add_or_mod(RegionWord.REGION_BENCHMARK, tag, en)
+        fail_reason = RegionWord.is_valid_word(region, tag, word)
+        if fail_reason:
+            return fail_reason, False
+        RegionWord.add_or_mod(region, tag, word)
+        return None, True
 
     @classmethod
     def region_words(cls):
-        res = {}
+        trans = []
+        no_trans = []
         region = cls.get_region()
         en = RegionWord.REGION_BENCHMARK
         for obj in RegionWord.objects(region=en):
             tag = obj.tag
-            res[tag] = {'name': tag}
-            res[tag][en] = RegionWord.get_content(obj.word)
-            other_word = RegionWord.word_by_region_tag(region, tag)
-            if not isinstance(other_word, str):
-                other_word = json.dumps(other_word)
-            res[tag]['other_word'] = other_word
-        return res, True
+            tmp = {"tag": tag}
+            en_word = RegionWord.get_content(obj.word)
+            tmp[en] = en_word
+            loc_word = RegionWord.cache_word_by_region_tag(region, tag)
+            # if not isinstance(loc_word, str):
+            #     loc_word = json.dumps(loc_word)
+            tmp['loc_word'] = loc_word
+            if loc_word == en_word:
+                no_trans.append(tmp)
+            else:
+                trans.append(tmp)
+        return no_trans + trans, True
+
+    @classmethod
+    def get_cached_region_word(cls, tag, region=None):
+        if not region:
+            region = cls.get_region()
+        if region == cls.REGION_IN or region == cls.REGION_IN_NOCORE:
+            region = cls.REGION_EN
+        word = RegionWord.cache_word_by_region_tag(region, tag)
+        return word
 
     @classmethod
     def get_region_word(cls, tag, region=None):
