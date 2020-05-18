@@ -215,6 +215,7 @@ class ExperimentService(object):
             for _ in buckets[el]:
                 used_bucket[_] = True
 
+        print 'not used', [el for el in used_bucket if not used_bucket[el]]
         if not buckets.get(ExpBucket.NOSET):
             buckets[ExpBucket.NOSET] = []
         buckets[ExpBucket.NOSET] += [el for el in used_bucket if not used_bucket[el]]
