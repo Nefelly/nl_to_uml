@@ -153,6 +153,7 @@ class ExperimentService(object):
         old_noset_num = len(old_noset)
 
         def add_new(value, num, old_noset):
+            print num, old_noset
             buckets = sys_rnd.sample(old_noset, num)
             for b in buckets:
                 # print 'creating', exp_name, b, value
