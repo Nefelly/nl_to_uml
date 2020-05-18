@@ -680,7 +680,7 @@ class UserSetting(Document):
             not_in_set = redis_client.setnx(user_setting_loc_key, 1)
             if not not_in_set:   # 正在存储
                 return
-            redis_client.expire(user_setting_loc_key, 200)
+            redis_client.expire(user_setting_loc_key, 1)
         super(UserSetting, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
