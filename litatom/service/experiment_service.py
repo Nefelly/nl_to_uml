@@ -151,6 +151,7 @@ class ExperimentService(object):
         add_num = sum([el for el in need_adjust.values() if el > 0])
         old_noset = []
         old_noset = old_buckets[ExpBucket.NOSET]
+        print old_buckets
         old_noset_num = len(old_noset)
 
         def add_new(value, num, old_noset):
