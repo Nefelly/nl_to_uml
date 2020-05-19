@@ -16,7 +16,9 @@ from ..model import (
 )
 from ..key import (
     REDIS_HUANXIN_ACCESS_TOKEN,
-    REDIS_HUANXIN_ACCESS_TOKEN_EXPIRE
+    REDIS_HUANXIN_ACCESS_TOKEN_EXPIRE,
+    REDIS_HUANXIN_SIG_ACCESS_TOKEN,
+    REDIS_HUANXIN_SIG_ACCESS_TOKEN_EXPIRE,
 )
 from ..util import (
     passwdhash
@@ -32,7 +34,10 @@ class HuanxinService(object):
     APP_NAME = HUANXIN_SETTING.get('app_name', 'lit')
     APP_KEY = '%s#%s' % (ORG_NAME, APP_NAME)
     HOST = 'https://a1.easemob.com'
+    SIG_HOST = 'https://a1-sgp.easemob.com'   # 新加坡
     APP_URL = '%(HOST)s/%(ORG_NAME)s/%(APP_NAME)s/' % dict(HOST=HOST, ORG_NAME=ORG_NAME, APP_NAME=APP_NAME)
+    SIG_APP_URL = '%(HOST)s/%(ORG_NAME)s/%(APP_NAME)s/' % dict(HOST=SIG_HOST, ORG_NAME=ORG_NAME, APP_NAME=APP_NAME)
+    APP_URL = SIG_APP_URL
     TRY_TIMES = 3
 
     CLIENT_ID = HUANXIN_SETTING.get('client_id', 'YXA6ALfHYDd7EemQqCO501ONvQ')
@@ -58,18 +63,22 @@ class HuanxinService(object):
         return raw_id, pwd
 
     @classmethod
-    def get_access_token(cls):
+    def get_access_token(cls, is_sig=False):
+        token_expire_key, access_token_key = REDIS_HUANXIN_ACCESS_TOKEN_EXPIRE, REDIS_HUANXIN_ACCESS_TOKEN
+        if is_sig:
+            token_expire_key, access_token_key = REDIS_HUANXIN_SIG_ACCESS_TOKEN_EXPIRE, REDIS_HUANXIN_SIG_ACCESS_TOKEN
         lock_name = 'redis_mutex'
         time_now = int(time.time())
-        str_expire = redis_client.get(REDIS_HUANXIN_ACCESS_TOKEN_EXPIRE)
+        str_expire = redis_client.get(token_expire_key)
         expire = int(str_expire) if str_expire else 0
         if expire - 10 > time_now:   # - 10 for subtle time diffrence
-            access_token = redis_client.get(REDIS_HUANXIN_ACCESS_TOKEN)
+            access_token = redis_client.get(access_token_key)
             if access_token:
                 return access_token
 
         url = cls.APP_URL + 'token'
-
+        if is_sig:
+            url = cls.SIG_APP_URL + 'token'
         try:
             data = {
                 'grant_type': 'client_credentials',
@@ -79,12 +88,12 @@ class HuanxinService(object):
             lock = RedisLock.get_mutex(lock_name)
             if not lock:
                 time.sleep(1)
-                return redis_client.get(REDIS_HUANXIN_ACCESS_TOKEN)
+                return redis_client.get(access_token_key)
             response = requests.post(url, verify=False, json=data).json()
             access_token = response.get('access_token')
             expires_in = int(response.get('expires_in'))
-            redis_client.set(REDIS_HUANXIN_ACCESS_TOKEN_EXPIRE, time_now + expires_in)
-            redis_client.set(REDIS_HUANXIN_ACCESS_TOKEN, access_token)
+            redis_client.set(token_expire_key, time_now + expires_in)
+            redis_client.set(access_token_key, access_token)
             RedisLock.release_mutex(lock_name)
             return access_token
         except Exception, e:
@@ -107,7 +116,7 @@ class HuanxinService(object):
             return response.get('data')
         except Exception, e:
             logger.error(traceback.format_exc())
-            logger.error('Error create huanxin  add friend, user_id: %r, err: %r', source_user_name, e)
+            logger.error('Error create huanxin  add friend, user_id: %r, err: %r', user_name, e)
             return {}
 
     @classmethod
@@ -206,7 +215,7 @@ class HuanxinService(object):
     @classmethod
     def block_user(cls, source_user_name, dest_user_name):
         url = cls.APP_URL + 'users/%s/blocks/users' % source_user_name
-
+        # print url
         access_token = cls.get_access_token()
         if not access_token:
             return False
@@ -215,6 +224,7 @@ class HuanxinService(object):
         }
         try:
             response = requests.post(url, verify=False, headers=headers, data=json.dumps({'usernames': [dest_user_name]})).json()
+            print response
             assert response.get('data')[0]
             return True
         except Exception, e:
@@ -244,66 +254,66 @@ class HuanxinService(object):
     @classmethod
     def add_friend(cls, source_user_name, dest_user_name):
         return True
-        url = cls.APP_URL + 'users/%s/contacts/users/%s' % (source_user_name, dest_user_name)
-
-        access_token = cls.get_access_token_init()
-        if not access_token:
-            return False
-        headers = {
-            'Authorization':'Bearer %s' % access_token
-        }
-        try:
-            response = requests.post(url, verify=False, headers=headers, data={}).json()
-            assert response.get('entities')[0]['username']
-            return True
-        except Exception, e:
-            logger.error(traceback.format_exc())
-            logger.error('Error create huanxin  add friend, user_id: %r, err: %r', source_user_name, e)
-            return False
+        # url = cls.APP_URL + 'users/%s/contacts/users/%s' % (source_user_name, dest_user_name)
+        #
+        # access_token = cls.get_access_token_init()
+        # if not access_token:
+        #     return False
+        # headers = {
+        #     'Authorization':'Bearer %s' % access_token
+        # }
+        # try:
+        #     response = requests.post(url, verify=False, headers=headers, data={}).json()
+        #     assert response.get('entities')[0]['username']
+        #     return True
+        # except Exception, e:
+        #     logger.error(traceback.format_exc())
+        #     logger.error('Error create huanxin  add friend, user_id: %r, err: %r', source_user_name, e)
+        #     return False
 
     @classmethod
     def del_friend(cls, source_user_name, dest_user_name):
         return True
-        url = cls.APP_URL + 'users/%s/contacts/users/%s' % (source_user_name, dest_user_name)
-
-        access_token = cls.get_access_token_init()
-        if not access_token:
-            return False
-        headers = {
-            'Authorization':'Bearer %s' % access_token
-        }
-        try:
-            response = requests.delete(url, verify=False, headers=headers, data={}).json()
-            assert response.get('entities')[0]['username']
-            return True
-        except Exception, e:
-            logger.error(traceback.format_exc())
-            logger.error('Error create huanxin  add friend, user_id: %r, err: %r', source_user_name, e)
-            return False
+        # url = cls.APP_URL + 'users/%s/contacts/users/%s' % (source_user_name, dest_user_name)
+        #
+        # access_token = cls.get_access_token_init()
+        # if not access_token:
+        #     return False
+        # headers = {
+        #     'Authorization':'Bearer %s' % access_token
+        # }
+        # try:
+        #     response = requests.delete(url, verify=False, headers=headers, data={}).json()
+        #     assert response.get('entities')[0]['username']
+        #     return True
+        # except Exception, e:
+        #     logger.error(traceback.format_exc())
+        #     logger.error('Error create huanxin  add friend, user_id: %r, err: %r', source_user_name, e)
+        #     return False
 
 
     @classmethod
     def update_nickname(cls, user_name, nickname):
         return True
-        url = cls.APP_URL + 'users/%s' % user_name
-
-        access_token = cls.get_access_token_init()
-        if not access_token:
-            return False
-        headers = {
-            'Authorization':'Bearer %s' % access_token
-        }
-        for i in range(cls.TRY_TIMES):
-            try:
-                response = requests.put(url, verify=False, headers=headers, data=json.dumps({'nickname': nickname, 'username': user_name})).json()
-                # print response
-                assert response.get('entities')[0]['nickname']
-                return True
-            except Exception, e:
-                # traceback.print_exc()
-                logger.error(traceback.format_exc())
-                logger.error('Error  huanxin update_nickname user, user_id: %r, response:%r, err: %r', user_name, response, e)
-                # return {}
+        # url = cls.APP_URL + 'users/%s' % user_name
+        #
+        # access_token = cls.get_access_token_init()
+        # if not access_token:
+        #     return False
+        # headers = {
+        #     'Authorization':'Bearer %s' % access_token
+        # }
+        # for i in range(cls.TRY_TIMES):
+        #     try:
+        #         response = requests.put(url, verify=False, headers=headers, data=json.dumps({'nickname': nickname, 'username': user_name})).json()
+        #         # print response
+        #         assert response.get('entities')[0]['nickname']
+        #         return True
+        #     except Exception, e:
+        #         # traceback.print_exc()
+        #         logger.error(traceback.format_exc())
+        #         logger.error('Error  huanxin update_nickname user, user_id: %r, response:%r, err: %r', user_name, response, e)
+        #         # return {}
         return False
 
     @classmethod
@@ -327,14 +337,15 @@ class HuanxinService(object):
 
     @classmethod
     def create_user(cls, user_name, password):
+
         url = cls.APP_URL + 'users'
 
         access_token = cls.get_access_token()
         if not access_token:
             return False
         headers = {
-            'Content-Type':'application/json',
-            'Authorization':'Bearer %s' % access_token
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer %s' % access_token
         }
         data = {'username': user_name, 'password': password}
         try:

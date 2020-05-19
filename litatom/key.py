@@ -97,6 +97,8 @@ REDIS_JUDGE_LOCK = 'judge_lock:{fake_id}'   # 评价对方的接口, 用于防�
 REDIS_USER_MESSAGES = 'user_messages:{user_id}'   #sortedset
 REDIS_HUANXIN_ACCESS_TOKEN = 'huanxin_access_token'
 REDIS_HUANXIN_ACCESS_TOKEN_EXPIRE = 'huanxin_access_token_expire'
+REDIS_HUANXIN_SIG_ACCESS_TOKEN = 'huanxin_sig_access_token'
+REDIS_HUANXIN_SIG_ACCESS_TOKEN_EXPIRE = 'huanxin_sig_access_token_expire'
 REDIS_LOCK = 'redis_lock:{key}'
 
 # feed service
