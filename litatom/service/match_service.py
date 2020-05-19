@@ -421,9 +421,9 @@ class MatchService(object):
             return cls.FAKE_MAX_TIME, True
         now_date = now_date_key()
         match_left_key = cls.TYPE_USER_MATCH_LEFT.format(user_date=user_id + now_date)
-        default_match_times = cls.match_times_less(user_id)   #  if not cls._is_member(user_id) else cls.FAKE_MAX_TIME
-        if ExperimentService.get_exp_value('times_left_exp') == 'less':
-            default_match_times = 5
+        default_match_times = cls._match_times_less(user_id)   #  if not cls._is_member(user_id) else cls.FAKE_MAX_TIME
+        # if ExperimentService.get_exp_value('times_left_exp') == 'less':
+        #     default_match_times = 5
         redis_client.setnx(match_left_key, default_match_times)
         redis_client.expire(match_left_key, ONE_DAY)
         times_left = int(redis_client.get(match_left_key))
@@ -432,7 +432,7 @@ class MatchService(object):
         return times_left, True
 
     @classmethod
-    def _match_tms_by_user_id(cls, user_id):
+    def _match_times_less(cls, user_id):
         if ExperimentService.lit_exp_value('match_times_less', user_id) == 'less':
             return 5
         return cls.MATCH_TMS
@@ -442,8 +442,8 @@ class MatchService(object):
         times, status = cls._match_left_verify(user_id)
         if not status:
             # return cls.MATCH_TMS
-            return cls.match_times_less(user_id)
-        return max(cls.match_times_less(user_id) - times, 0)
+            return cls._match_times_less(user_id)
+        return max(cls._match_times_less(user_id) - times, 0)
 
     @classmethod
     def _decr_match_left(cls, user_id):
@@ -452,7 +452,7 @@ class MatchService(object):
         now_date = now_date_key()
         match_left_key = cls.TYPE_USER_MATCH_LEFT.format(user_date=user_id + now_date)
         if not redis_client.get(match_left_key):
-            default_match_times = cls.match_times_less(user_id) # if not cls._is_member(user_id) else cls.FAKE_MAX_TIME
+            default_match_times = cls._match_times_less(user_id) # if not cls._is_member(user_id) else cls.FAKE_MAX_TIME
             redis_client.setnx(match_left_key, default_match_times)
             # redis_client.setnx(match_left_key, cls.MATCH_TMS)
             redis_client.expire(match_left_key, ONE_DAY)
@@ -479,7 +479,7 @@ class MatchService(object):
         now_date = now_date_key()
         match_left_key = cls.TYPE_USER_MATCH_LEFT.format(user_date=user_id + now_date)
         if not redis_client.get(match_left_key):
-            default_match_times = cls.cls.match_times_less(user_id) #
+            default_match_times = cls._match_times_less(user_id) #
             redis_client.setnx(match_left_key, default_match_times)
             # redis_client.setnx(match_left_key, cls.MATCH_TMS)
             redis_client.expire(match_left_key, ONE_DAY)
