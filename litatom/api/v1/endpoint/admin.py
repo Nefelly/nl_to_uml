@@ -563,6 +563,7 @@ def resolve_review_record():
         res = True
     elif res == 'false':
         res = False
+    print(record_id,res,1)
     data, status = ForbidActionService.resolve_review_pic(record_id, res)
     if not status:
         return fail()
