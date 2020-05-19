@@ -99,6 +99,7 @@ class ForbidPlatformService(object):
             user = User.get_by_id(uid)
             # 并不知道为什么某些uid查不到
             if not user:
+                del temp_res[uid]
                 continue
             forbidden_until = user.forbidden_ts
             if forbidden_until:
