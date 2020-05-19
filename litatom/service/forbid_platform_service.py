@@ -43,23 +43,23 @@ class ForbidPlatformService(object):
     MATCH_REPORT = 'match'
     OTHER_REPORT = 'other'
 
-    @classmethod
-    def _load_spam_record(cls, temp_res, from_ts, to_ts):
-        records = TrackSpamRecord.get_record_by_time(from_ts, to_ts)
-        for record in records:
-            user_id = record.user_id
-            if user_id not in temp_res.keys():
-                continue
-            temp_res[user_id]['forbid_history']['records'].append(TrackSpamRecordService.get_spam_record_info(record))
-
-    @classmethod
-    def _load_report(cls, temp_res, from_ts, to_ts):
-        reports = Report.get_report_by_time(from_ts, to_ts)
-        for report in reports:
-            user_id = report.target_uid
-            if user_id not in temp_res.keys():
-                continue
-            temp_res[user_id]['forbid_history']['reports'].append(ReportService.get_report_info(report))
+    # @classmethod
+    # def _load_spam_record(cls, temp_res, from_ts, to_ts):
+    #     records = TrackSpamRecord.get_record_by_time(from_ts, to_ts)
+    #     for record in records:
+    #         user_id = record.user_id
+    #         if user_id not in temp_res.keys():
+    #             continue
+    #         temp_res[user_id]['forbid_history']['records'].append(TrackSpamRecordService.get_spam_record_info(record))
+    #
+    # @classmethod
+    # def _load_report(cls, temp_res, from_ts, to_ts):
+    #     reports = Report.get_report_by_time(from_ts, to_ts)
+    #     for report in reports:
+    #         user_id = report.target_uid
+    #         if user_id not in temp_res.keys():
+    #             continue
+    #         temp_res[user_id]['forbid_history']['reports'].append(ReportService.get_report_info(report))
 
     @classmethod
     def get_forbid_record(cls, from_ts, to_ts, region=None, forbid_type=None, num=100):
@@ -110,8 +110,6 @@ class ForbidPlatformService(object):
             temp_res[uid]['nickname'] = User.get_by_id(uid).nickname
             temp_res[uid]['forbid_history'] = ForbidRecordService.get_forbid_history_by_uid(uid)
 
-        cls._load_spam_record(temp_res, earliest_forbidden, to_ts)
-        cls._load_report(temp_res, earliest_forbidden, to_ts)
         return temp_res.values()
 
     @classmethod
