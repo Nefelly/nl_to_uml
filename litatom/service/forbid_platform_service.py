@@ -3,13 +3,10 @@ import time
 
 from litatom.const import (
     FEED_NEED_CHECK,
-    ONE_DAY,
-    FORBID_PAGE_SIZE,
     SYS_FORBID,
     MANUAL_FORBID,
-    SYS_FORBID_TIME,
     OSS_AUDIO_URL,
-    OSS_PIC_URL, FEED_NOT_FOUND_ERROR, ERROR_RANGE,
+    OSS_PIC_URL,
 )
 from litatom.model import (
     Feed,
@@ -17,13 +14,11 @@ from litatom.model import (
     TrackSpamRecord,
     Report,
     UserRecord,
-    Blocked,
     User,
 )
 from litatom.service import (
     ForbidActionService,
     ForbidRecordService,
-    ForbidCheckService,
     ReportService,
     TrackSpamRecordService, GlobalizationService
 )
@@ -35,7 +30,6 @@ from litatom.util import (
 
 
 class ForbidPlatformService(object):
-    FEED_NEED_REVIEW = 'review'
     FEED_RECOMMENDED = 'recommended'
     FEED_USER_UNRELIABLE = 'score_up5'
     FORBID_LOCATIONS = {'VN', 'TH', 'ID'}
@@ -134,12 +128,11 @@ class ForbidPlatformService(object):
         """feed审核表"""
         if loc and loc not in cls.FORBID_LOCATIONS:
             return 'invalid location', False
-        if condition and condition not in {cls.FEED_NEED_REVIEW, cls.FEED_RECOMMENDED, cls.FEED_USER_UNRELIABLE}:
+        if condition and condition not in {cls.FEED_RECOMMENDED, cls.FEED_USER_UNRELIABLE}:
             return 'invalid condition', False
         res = []
         res_length = 0
         have_read = 0
-        print(from_ts,to_ts)
         while res_length < num:
             feeds = Feed.objects(status=FEED_NEED_CHECK, create_time__gte=from_ts, create_time__lte=to_ts).order_by(
                 '-create_time').skip(have_read).limit(num)
