@@ -96,6 +96,7 @@ class ForbidPlatformService(object):
             forbidden_from = get_ts_from_str(temp_res[uid]['forbidden_from'])
             if forbidden_from < earliest_forbidden:
                 earliest_forbidden = forbidden_from
+            print(uid)
             forbidden_until = User.get_by_id(uid).forbidden_ts
             if forbidden_until:
                 forbidden_until = unix_ts_string(forbidden_until)
