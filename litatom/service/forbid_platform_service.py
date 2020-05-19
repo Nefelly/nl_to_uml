@@ -209,17 +209,15 @@ class ForbidPlatformService(object):
         res_len = 0
         have_read = 0
         while res_len < num:
-            print(from_ts,to_ts)
             records = TrackSpamRecord.objects(create_time__gte=from_ts, create_time__lte=to_ts, dealed=False).order_by(
                 '-create_time').skip(have_read).limit(num)
             if not records:
                 break
             have_read += len(records)
-            print(have_read)
             for record in records:
                 print(record.id)
                 user_id = record.user_id
-                if region and GlobalizationService.get_region_by_user_id(user_id) != region:
+                if region and UserSetting.get_loc_by_uid(user_id) != region:
                     continue
                 res.append(TrackSpamRecordService.get_spam_record_info(record))
                 res_len += 1
