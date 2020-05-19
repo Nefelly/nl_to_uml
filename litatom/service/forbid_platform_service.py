@@ -62,27 +62,33 @@ class ForbidPlatformService(object):
             temp_res[user_id]['forbid_history']['reports'].append(ReportService.get_report_info(report))
 
     @classmethod
-    def get_forbid_record(cls, from_ts, to_ts, region=None, forbid_type=None):
+    def get_forbid_record(cls, from_ts, to_ts, region=None, forbid_type=None, num=100):
         """封号记录表"""
         if region and region not in cls.FORBID_LOCATIONS:
             return 'invalid region', False
         if forbid_type and forbid_type not in {SYS_FORBID, MANUAL_FORBID}:
             return 'invalid forbid type', False
-        # 从UserRecord中加载封号用户和封号时间
-        if not forbid_type:
-            users = UserRecord.get_forbid_users_by_time(from_ts, to_ts)
-        else:
-            users = UserRecord.get_forbid_users_by_time(from_ts, to_ts, forbid_type)
+
         temp_res = {}
         user_num = 0
-        for user in users:
-            user_id = user.user_id
-            if region and region != UserSetting.get_loc_by_uid(user_id):
-                continue
-            temp_res[user_id] = {'user_id': user_id, 'forbidden_from': time_str_by_ts(user.create_time)}
-            user_num += 1
-            if user_num > FORBID_PAGE_SIZE:
+        have_read = 0
+        # 从UserRecord中加载封号用户和封号时间
+        while user_num < num:
+            if not forbid_type:
+                users = UserRecord.get_forbid_users_by_time(from_ts, to_ts).skip(have_read).limit(num)
+            else:
+                users = UserRecord.get_forbid_users_by_time(from_ts, to_ts, forbid_type).skip(have_read).limit(num)
+            if not users:
                 break
+            have_read += len(users)
+            for user in users:
+                user_id = user.user_id
+                if region and region != UserSetting.get_loc_by_uid(user_id):
+                    continue
+                temp_res[user_id] = {'user_id': user_id, 'forbidden_from': time_str_by_ts(user.create_time)}
+                user_num += 1
+                if user_num >= num:
+                    break
 
         # 从TrackSpamRecord中导入次数和命中历史,从Report中导入次数和命中历史
         earliest_forbidden = int(time.time())
@@ -98,12 +104,7 @@ class ForbidPlatformService(object):
             temp_res[uid]['device_forbidden_num'] = ForbidRecordService.get_device_forbidden_num_by_uid(uid)
             temp_res[uid]['forbid_score'] = ForbidActionService.accum_illegal_credit(uid)
             temp_res[uid]['nickname'] = User.get_by_id(uid).nickname
-            temp_res[uid]['forbid_history'] = {
-                'sensitive': ForbidCheckService.check_sensitive_user(uid, forbidden_from - ERROR_RANGE),
-                'blocker_num': Blocked.get_blocker_num_by_time(uid,
-                                                               forbidden_from - SYS_FORBID_TIME,
-                                                               forbidden_from),
-                'reports': [], 'records': []}
+            temp_res[uid]['forbid_history'] = ForbidRecordService.get_forbid_history_by_uid(uid)
 
         cls._load_spam_record(temp_res, earliest_forbidden, to_ts)
         cls._load_report(temp_res, earliest_forbidden, to_ts)
@@ -119,7 +120,7 @@ class ForbidPlatformService(object):
         user_forbidden_num = UserRecord.get_forbidden_num_by_uid(user_id)
         device_forbidden_num = ForbidRecordService.get_device_forbidden_num_by_uid(user_id)
         forbid_score = ForbidActionService.accum_illegal_credit(user_id)
-        forbid_history = ForbidRecordService.get_forbid_history_by_uid(user_id)
+        forbid_history = ForbidRecordService.get_forbid_history_by_uid(user_id)[0]
         return {'user_id': user_id, 'nickname': nickname, 'forbidden_until': forbidden_until,
                 'forbidden_from': UserRecord.get_forbidden_time_by_uid(user_id),
                 'user_forbidden_num': user_forbidden_num, 'device_forbidden_num': device_forbidden_num,
@@ -133,27 +134,32 @@ class ForbidPlatformService(object):
         if condition and condition not in {cls.FEED_NEED_REVIEW, cls.FEED_RECOMMENDED, cls.FEED_USER_UNRELIABLE}:
             return 'invalid condition', False
         res = []
-        feeds = Feed.objects(status=FEED_NEED_CHECK, create_time__gte=from_ts, create_time__lte=to_ts).order_by(
-            '-create_ts').limit(num)
         res_length = 0
-        for feed in feeds:
-            user_id = feed.user_id
-            if loc and loc != UserSetting.get_loc_by_uid(user_id):
-                continue
-            is_hq = feed.is_hq
-            if condition == cls.FEED_RECOMMENDED and not is_hq:
-                continue
-            forbid_score = ForbidActionService.accum_illegal_credit(user_id)[0]
-            if condition == cls.FEED_USER_UNRELIABLE and forbid_score <= 5:
-                continue
-            tmp = {'user_id': user_id, 'word': feed.content, 'pics': [OSS_PIC_URL + pic for pic in feed.pics],
-                   'audio': [OSS_AUDIO_URL + audio for audio in feed.audios],
-                   'comment_num': feed.comment_num, 'like_num': feed.like_num, 'hq': is_hq,
-                   'forbid_score': forbid_score, 'feed_id': str(feed.id)}
-            res.append(tmp)
-            res_length += 1
-            if res_length > FORBID_PAGE_SIZE:
+        have_read = 0
+        while res_length < num:
+            feeds = Feed.objects(status=FEED_NEED_CHECK, create_time__gte=from_ts, create_time__lte=to_ts).order_by(
+                '-create_ts').skip(have_read).limit(num)
+            if not feeds:
                 break
+            have_read += len(feeds)
+            for feed in feeds:
+                user_id = feed.user_id
+                if loc and loc != UserSetting.get_loc_by_uid(user_id):
+                    continue
+                is_hq = feed.is_hq
+                if condition == cls.FEED_RECOMMENDED and not is_hq:
+                    continue
+                forbid_score = ForbidActionService.accum_illegal_credit(user_id)[0]
+                if condition == cls.FEED_USER_UNRELIABLE and forbid_score <= 5:
+                    continue
+                tmp = {'user_id': user_id, 'word': feed.content, 'pics': [OSS_PIC_URL + pic for pic in feed.pics],
+                       'audio': [OSS_AUDIO_URL + audio for audio in feed.audios],
+                       'comment_num': feed.comment_num, 'like_num': feed.like_num, 'hq': is_hq,
+                       'forbid_score': forbid_score, 'feed_id': str(feed.id)}
+                res.append(tmp)
+                res_length += 1
+                if res_length >= num:
+                    break
         return res, True
 
     @classmethod
@@ -207,7 +213,9 @@ class ForbidPlatformService(object):
         while res_len < num:
             records = TrackSpamRecord.objects(create_time__gte=from_ts, create_time__lte=to_ts, dealed=False).order_by(
                 '-create_time').skip(have_read).limit(num)
-            have_read += num
+            if not records:
+                break
+            have_read += len(records)
             for record in records:
                 user_id = record.user_id
                 if region and GlobalizationService.get_region_by_user_id(user_id) != region:

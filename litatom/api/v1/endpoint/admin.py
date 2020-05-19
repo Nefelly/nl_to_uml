@@ -455,7 +455,11 @@ def forbid_record():
         return fail('neither time nor user_id')
     region = request.args.get('region')
     forbid_type = request.args.get('forbid_type')
-    data, status = ForbidPlatformService.get_forbid_record(from_ts, to_ts, region, forbid_type)
+    num = request.args.get('num')
+    num = check_int(num)
+    if not num:
+        return fail('invalid number')
+    data, status = ForbidPlatformService.get_forbid_record(from_ts, to_ts, region, forbid_type,num)
     if not status:
         return fail(data)
     return success(data)
