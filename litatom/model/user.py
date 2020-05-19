@@ -645,7 +645,10 @@ class UserSetting(Document):
 
     @classmethod
     def get_loc_by_uid(cls, user_id):
-        return cls.get_by_user_id(user_id).lang
+        user = cls.get_by_user_id(user_id)
+        if not user:
+            return None
+        return user.lang
 
     @classmethod
     def uuid_by_user_id(cls, user_id):
