@@ -121,7 +121,7 @@ class ReportService(object):
     @classmethod
     def get_report_info(cls, report):
         tmp = {'report_id': str(report.id),'forbid_weight': 2 if report.reason == 'match' else 4, 'reporter': report.uid, 'pics': [OSS_PIC_URL + pic for pic in report.pics],
-               'region': report.region, 'chat_record': None, 'reason': report.reason, 'feed': None,
+               'region': report.region, 'chat_record': None, 'reason': report.reason, 'feed': None,'user_id':report.target_uid,
                'reporter_ban_before': UserRecord.get_forbidden_num_by_uid(report.uid) > 0}
 
         if report.related_feed:
