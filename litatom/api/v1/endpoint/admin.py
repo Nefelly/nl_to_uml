@@ -476,7 +476,7 @@ def review_feed():
     if not from_ts:
         return fail('neither time nor user_id')
     loc = request.args.get('loc')
-    condition = request.args.get('location')
+    condition = request.args.get('condition')
     num = request.args.get('num')
     num = check_int(num)
     if not num:
