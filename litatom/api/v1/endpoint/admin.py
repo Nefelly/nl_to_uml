@@ -512,6 +512,7 @@ def review_report():
     match_type = request.args.get('match_type')
     num = request.args.get('num')
     data, status = ForbidPlatformService.get_report(from_ts, to_ts, region, match_type, num=num)
+    print(data,status)
     if not status:
         return fail(data)
     return success(data)
