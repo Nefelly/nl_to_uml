@@ -119,8 +119,8 @@ class ForbidPlatformService(object):
             forbidden_until = unix_ts_string(forbidden_until)
         user_forbidden_num = UserRecord.get_forbidden_num_by_uid(user_id)
         device_forbidden_num = ForbidRecordService.get_device_forbidden_num_by_uid(user_id)
-        forbid_score = ForbidActionService.accum_illegal_credit(user_id)
-        forbid_history = ForbidRecordService.get_forbid_history_by_uid(user_id)[0]
+        forbid_score = ForbidActionService.accum_illegal_credit(user_id)[0]
+        forbid_history = ForbidRecordService.get_forbid_history_by_uid(user_id)
         return {'user_id': user_id, 'nickname': nickname, 'forbidden_until': forbidden_until,
                 'forbidden_from': UserRecord.get_forbidden_time_by_uid(user_id),
                 'user_forbidden_num': user_forbidden_num, 'device_forbidden_num': device_forbidden_num,
