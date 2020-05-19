@@ -141,7 +141,7 @@ class ForbidPlatformService(object):
             is_hq = feed.is_hq
             if condition == cls.FEED_RECOMMENDED and not is_hq:
                 continue
-            forbid_score = ForbidActionService.accum_illegal_credit(user_id)
+            forbid_score = ForbidActionService.accum_illegal_credit(user_id)[0]
             if condition == cls.FEED_USER_UNRELIABLE and forbid_score <= 5:
                 continue
             tmp = {'user_id': user_id, 'word': feed.content, 'pics': [OSS_PIC_URL + pic for pic in feed.pics],
@@ -159,7 +159,7 @@ class ForbidPlatformService(object):
         feeds = Feed.objects(user_id=user_id, status=FEED_NEED_CHECK)
         res = []
         res_length = 0
-        forbid_score = ForbidActionService.accum_illegal_credit(user_id)
+        forbid_score = ForbidActionService.accum_illegal_credit(user_id)[0]
         for feed in feeds:
             tmp = {'user_id': user_id, 'word': feed.content, 'pics': [OSS_PIC_URL + pic for pic in feed.pics],
                    'audio': [OSS_AUDIO_URL + audio for audio in feed.audios],

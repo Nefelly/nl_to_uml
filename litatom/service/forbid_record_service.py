@@ -63,7 +63,7 @@ class ForbidRecordService(object):
 
         reports = Report.get_report_by_time_and_uid(user_id, forbidden_from - SYS_FORBID_TIME, forbidden_from,
                                                     True)
-        region = reports[0].region
+        # region = reports[0].region
         reports_res = []
         for report in reports:
             reports_res.append(ReportService.get_report_info(report))
