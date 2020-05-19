@@ -459,7 +459,10 @@ def review_forbid_record():
     num, status = get_num()
     if not status:
         return fail('invalid number')
-    data, status = ForbidPlatformService.get_forbid_record(from_ts, to_ts, region, forbid_type,num)
+    if num:
+        data, status = ForbidPlatformService.get_forbid_record(from_ts, to_ts, region, forbid_type,num)
+    else:
+        data, status = ForbidPlatformService.get_forbid_record(from_ts, to_ts, region, forbid_type)
     if not status:
         return fail(data)
     return success(data)
@@ -480,7 +483,10 @@ def review_feed():
     num, status = get_num()
     if not status:
         return fail('invalid number')
-    data, status = ForbidPlatformService.get_feed(from_ts, to_ts, loc, condition, num=num)
+    if num:
+        data, status = ForbidPlatformService.get_feed(from_ts, to_ts, loc, condition, num=num)
+    else:
+        data, status = ForbidPlatformService.get_feed(from_ts, to_ts, loc, condition)
     if not status:
         return fail(data)
     return success(data)
@@ -500,7 +506,10 @@ def review_record():
     num, status = get_num()
     if not status:
         return fail('invalid number')
-    data, status = ForbidPlatformService.get_spam_record(from_ts, to_ts, region, num=num)
+    if num:
+        data, status = ForbidPlatformService.get_spam_record(from_ts, to_ts, region, num=num)
+    else:
+        data, status = ForbidPlatformService.get_spam_record(from_ts, to_ts, region)
     if not status:
         return fail(data)
     return success(data)
@@ -521,7 +530,10 @@ def review_report():
     num, status = get_num()
     if not status:
         return fail('invalid number')
-    data, status = ForbidPlatformService.get_report(from_ts, to_ts, region, match_type, num=num)
+    if num:
+        data, status = ForbidPlatformService.get_report(from_ts, to_ts, region, match_type, num=num)
+    else:
+        data, status = ForbidPlatformService.get_report(from_ts, to_ts, region, match_type)
     if not status:
         return fail(data)
     return success(data)
