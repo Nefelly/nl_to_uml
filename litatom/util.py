@@ -21,6 +21,7 @@ from pyparsing import anyOpenTag, anyCloseTag
 
 import json
 from . import const
+from .const import OSS_PIC_URL
 
 logger = logging.getLogger(__name__)
 
@@ -31,6 +32,7 @@ def is_json(myjson):
     except ValueError as e:
         return False
     return True
+
 
 def filter_emoji(content):
     '''
@@ -88,14 +90,17 @@ def passwdhash(passwd):
     m.update('hello world')
     return m.hexdigest()
 
+
 def ensure_path(path):
-    dir_name  = path[:path.rfind('/')]
+    dir_name = path[:path.rfind('/')]
     if not os.path.exists(dir_name):
         os.makedirs(dir_name)
+
 
 def exists_path(path):
     dir_name = path[:path.rfind('/')]
     return os.path.exists(dir_name)
+
 
 def ensure_unicode(v):
     if isinstance(v, str):
@@ -192,13 +197,13 @@ def get_time_info(int_time, user_mode=False):
     if time_dis < const.ONE_MIN:
         time_desc = 'now' if not user_mode else 'active'
     elif time_dis < const.ONE_HOUR:
-        mins = time_dis/const.ONE_MIN
-        time_desc = '1 minute ago' if mins == 1 else '%d mins ago' % mins 
+        mins = time_dis / const.ONE_MIN
+        time_desc = '1 minute ago' if mins == 1 else '%d mins ago' % mins
     elif time_dis < const.ONE_DAY:
-        hours = time_dis/const.ONE_HOUR
+        hours = time_dis / const.ONE_HOUR
         time_desc = '1 hour ago' if hours == 1 else '%d hours ago' % hours
     else:
-        days = time_dis/const.ONE_DAY
+        days = time_dis / const.ONE_DAY
         if not user_mode:
             time_desc = '1 day ago' if days == 1 else '%d days ago' % days
         else:
@@ -211,11 +216,12 @@ def get_time_info(int_time, user_mode=False):
 
 def now_date_key():
     """今日日期str"""
-    return datetime.datetime.now().strftime('%Y-%m-%d') # for time latency reason
+    return datetime.datetime.now().strftime('%Y-%m-%d')  # for time latency reason
 
 
 def low_high_pair(id1, id2):
     return id1 + id2 if id1 < id2 else id2 + id1
+
 
 def unix_ts_string(ts):
     """timestamp(int) -> str"""
@@ -264,18 +270,21 @@ def is_emoji(schar):
         return True
     return False
 
+
 '''
 从xlsx文件name中读取第一张表，返回list: tb_heads, 为表中第一行；返回list[list]: data，为表中各行 
 '''
+
+
 def read_data_from_xls(name):
     import xlrd
     tb = xlrd.open_workbook(name).sheets()[0]
     tb_heads = tb.row_values(0)
-    nrows = tb.nrows-1
+    nrows = tb.nrows - 1
     data = []
     for row in range(nrows):
-        data.append(tb.row_value(row+1))
-    return tb_heads,data
+        data.append(tb.row_value(row + 1))
+    return tb_heads, data
 
 
 def write_data_to_xls(name, tb_heads, datas):
@@ -289,9 +298,9 @@ def write_data_to_xls(name, tb_heads, datas):
         datas = [datas]
     for i in range(len(datas)):
         for j in range(len(datas[i])):
-
             sheet1.write(i + 1, j, datas[i][j])
     f.save(name)
+
 
 def write_data_to_multisheets(name, sheet_names, tb_heads, data):
     """
@@ -314,7 +323,7 @@ def write_data_to_multisheets(name, sheet_names, tb_heads, data):
         sheet_data = data[sheet_num]
         for i in range(len(sheet_data)):
             for j in range(len(sheet_data[i])):
-                sheets[sheet_num].write(i+1, j, sheet_data[i][j])
+                sheets[sheet_num].write(i + 1, j, sheet_data[i][j])
     f.save(name)
 
 
@@ -329,12 +338,14 @@ def write_data_to_xls_col(name, tb_heads, data, encoding='ascii'):
         datas = [data]
     for i in range(len(data)):
         for j in range(len(data[i])):
-            sheet1.write(j, i+1, data[i][j])
+            sheet1.write(j, i + 1, data[i][j])
     f.save(name)
+
 
 def write_sheet_certain_pos(sheet_name, row_pos, col_pos, data):
     """向excel sheet具体位置中写入数据"""
     sheet_name.write(row_pos, col_pos, data)
+
 
 def remove_emoji_ending(raw_string):
     formated_string = '\n'.join([x.strip() for x in raw_string.replace('\r', '\n').split('\n') if x])
@@ -342,9 +353,10 @@ def remove_emoji_ending(raw_string):
         formated_string = formated_string[:-1]
     return formated_string
 
+
 def dic_order_by_value(d, reverse=False):
     """字典按值排序"""
-    d_order=sorted(d.items(),key=lambda x:x[1],reverse=reverse)
+    d_order = sorted(d.items(), key=lambda x: x[1], reverse=reverse)
     return d_order
 
 
@@ -372,6 +384,7 @@ def is_alphabet(uchar):
     else:
         return False
 
+
 def str2float(str):
     """转换str中第一个浮点数，没有数返回None"""
     pattern = '[0-9]+\.[0-9]+'
@@ -386,8 +399,10 @@ def dsn2srv(dsn):
     parsed = urlparse.urlparse(dsn)
     return parsed.hostname, parsed.port
 
+
 def rm_file(file):
     os.remove(file)
+
 
 def write_to_json(file, dic):
     """
@@ -396,14 +411,23 @@ def write_to_json(file, dic):
     """
     if exists_path(file):
         rm_file(file)
-    with codecs.open(file,'a',encoding='utf-8') as f:
+    with codecs.open(file, 'a', encoding='utf-8') as f:
         for item in dic:
             f.write(json.dumps(item, indent=4, ensure_ascii=False))
             f.write('\n')
 
+
 def find_key_by_value(dic, value):
     """从字典的值反查键，值必须唯一"""
     return list(dic.keys())[list(dic.values()).index(value)]
+
+
+def format_pic(pic):
+    """"""
+    if re.search('https://', pic) or re.search('http://', pic):
+        return pic
+    return OSS_PIC_URL + pic
+
 
 class CachedProperty(object):
     """Decorator like python built-in ``property``, but it results only
@@ -661,6 +685,7 @@ def validate_phone_number(phone, zone=None):
     if len(phone) == 13:
         return phone
     return phone
+
 
 def normalize_cache_key(text):
     """

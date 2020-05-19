@@ -9,7 +9,7 @@ from copy import deepcopy
 import logging
 from qiniu import Auth, QiniuMacAuth, http
 from ..service import GlobalizationService, AliLogService
-from ..const import BLOCK_PIC, REVIEW_PIC
+from ..const import BLOCK_PIC, REVIEW_PIC, OSS_PIC_URL
 from litatom.model import (
     SpamWord,
     Feed,
@@ -20,7 +20,7 @@ from litatom.model import (
 from ..redis import (
     RedisClient,
 )
-from ..util import date_from_unix_ts
+from ..util import date_from_unix_ts, format_pic
 
 logger = logging.getLogger(__name__)
 redis_client = RedisClient()['lit']
@@ -64,12 +64,6 @@ class ForbidCheckService(object):
                 if reason:
                     res_pics[pic] = [reason, advice]
         return res_words, res_pics
-
-    @classmethod
-    def check_unknown_source_pics(cls, pic):
-        if re.search('https://', pic):
-            return PicCheckService.check_pic_by_url(pic)
-        return PicCheckService.check_pic_by_fileid(pic)
 
     @classmethod
     def distinguish_pic_from_chat_record(cls, chat_record):
@@ -218,7 +212,7 @@ class PicCheckService(object):
         原因分为：'pulp','terror','politician','ads',目前只打开了pulp
         建议：'b':block, 'r':review
         """
-        return cls.check_pic_by_url("http://www.litatom.com/api/sns/v1/lit/image/" + fileid)
+        return cls.check_pic_by_url(OSS_PIC_URL + fileid)
 
     @classmethod
     def record_fail(cls, file_id, scenes, result):

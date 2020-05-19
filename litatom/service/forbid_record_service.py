@@ -24,7 +24,7 @@ from ..service import (
     SpamWordCheckService
 )
 from ..util import (
-    unix_ts_string
+    unix_ts_string, format_pic
 )
 
 
@@ -182,7 +182,7 @@ class TrackSpamRecordService(object):
         records = TrackSpamRecord.get_review_pic(num)
         res = []
         for record in records:
-            temp = {'pic': record.pic, 'record_id': str(record.id)}
+            temp = {'pic': format_pic(record.pic), 'record_id': str(record.id)}
             res.append(temp)
         return res
 
@@ -192,5 +192,5 @@ class TrackSpamRecordService(object):
         if record.word:
             tmp['word'] = {'word': record.word, 'hit_word': SpamWordCheckService.get_spam_word(record.word, GlobalizationService.get_region_by_user_id(record.user_id))}
         elif record.pic:
-            tmp['pic'] = {'pic': record.pic}
+            tmp['pic'] = {'pic': format_pic(record.pic)}
         return tmp
