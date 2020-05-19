@@ -7,7 +7,7 @@ from ..const import (
     OSS_AUDIO_URL,
     OSS_PIC_URL,
     FEED_NOT_FOUND_ERROR,
-    SPAM_RECORD_UNKNOWN_SOURCE
+    SPAM_RECORD_UNKNOWN_SOURCE, ERROR_RANGE
 )
 from ..model import (
     Report,
@@ -59,7 +59,7 @@ class ForbidRecordService(object):
         user_record = UserRecord.objects(user_id=user_id).order_by('-create_time').first()
         forbidden_from = user_record.create_time
 
-        is_sensitive = ForbidCheckService.check_sensitive_user(user_id)
+        is_sensitive = ForbidCheckService.check_sensitive_user(user_id,forbidden_from-ERROR_RANGE)
 
         reports = Report.get_report_by_time_and_uid(user_id, forbidden_from - SYS_FORBID_TIME, forbidden_from,
                                                     True)

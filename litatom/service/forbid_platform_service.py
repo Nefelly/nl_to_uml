@@ -9,7 +9,7 @@ from litatom.const import (
     MANUAL_FORBID,
     SYS_FORBID_TIME,
     OSS_AUDIO_URL,
-    OSS_PIC_URL, FEED_NOT_FOUND_ERROR,
+    OSS_PIC_URL, FEED_NOT_FOUND_ERROR, ERROR_RANGE,
 )
 from litatom.model import (
     Feed,
@@ -98,7 +98,7 @@ class ForbidPlatformService(object):
             temp_res[uid]['device_forbidden_num'] = ForbidRecordService.get_device_forbidden_num_by_uid(uid)
             temp_res[uid]['forbid_score'] = ForbidActionService.accum_illegal_credit(uid)
             temp_res[uid]['nickname'] = User.get_by_id(uid).nickname
-            temp_res[uid]['forbid_history'] = {'sensitive': ForbidCheckService.check_sensitive_user(uid),
+            temp_res[uid]['forbid_history'] = {'sensitive': ForbidCheckService.check_sensitive_user(uid, forbidden_from-ERROR_RANGE),
                                                'blocker_num': Blocked.get_blocker_num_by_time(uid,
                                                                                               forbidden_from - SYS_FORBID_TIME,
                                                                                               forbidden_from),

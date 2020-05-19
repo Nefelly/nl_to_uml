@@ -8,7 +8,7 @@ import traceback
 from copy import deepcopy
 import logging
 from qiniu import Auth, QiniuMacAuth, http
-from . import GlobalizationService, AliLogService
+from ..service import GlobalizationService, AliLogService
 from ..const import BLOCK_PIC, REVIEW_PIC
 from litatom.model import (
     SpamWord,
@@ -20,6 +20,7 @@ from litatom.model import (
 from ..redis import (
     RedisClient,
 )
+from ..util import date_from_unix_ts
 
 logger = logging.getLogger(__name__)
 redis_client = RedisClient()['lit']
@@ -82,18 +83,18 @@ class ForbidCheckService(object):
         return words, pics
 
     @classmethod
-    def check_sensitive_user(cls, user_id):
+    def check_sensitive_user(cls, user_id, ts=int(time.time())):
         """判断用户及其设备是否是敏感设备"""
         if UserRecord.has_been_forbidden(user_id):
             return True
-        return cls.check_sensitive_device(user_id)
+        return cls.check_sensitive_device(user_id, date_from_unix_ts(ts))
 
     @classmethod
-    def check_sensitive_device(cls, user_id):
+    def check_sensitive_device(cls, user_id, to_time=datetime.datetime.now()):
         user_setting = UserSetting.get_by_user_id(user_id)
         if not user_setting:
             return False
-        return BlockedDevices.is_device_sensitive(user_setting.uuid)
+        return BlockedDevices.is_device_sensitive(user_setting.uuid, to_time)
 
 
 class SpamWordCheckService(object):
