@@ -178,11 +178,11 @@ class ForbidPlatformService(object):
         if match_type and match_type not in {cls.MATCH_REPORT, cls.OTHER_REPORT}:
             return 'invalid match type', False
         if not region and not match_type:
-            reports = Report.objetcs(create_ts__gte=from_ts, create_ts__lte=to_ts).order_by('-create_ts').limit(num)
+            reports = Report.objects(create_ts__gte=from_ts, create_ts__lte=to_ts).order_by('-create_ts').limit(num)
         elif region and match_type == cls.MATCH_REPORT:
             reports = Report.objects(create_ts__gte=from_ts, create_ts__lte=to_ts, region=region, reason=match_type).order_by('-create_ts').limit(num)
         elif region and match_type == cls.OTHER_REPORT:
-            reports = Report.objetcs(create_ts__gte=from_ts, create_ts__lte=to_ts, region=region,
+            reports = Report.objects(create_ts__gte=from_ts, create_ts__lte=to_ts, region=region,
                                      reason__ne=cls.MATCH_REPORT).order_by('-create_ts').limit(num)
         elif region and not match_type:
             reports = Report.objects(create_ts__gte=from_ts, create_ts__lte=to_ts, region=region).order_by('-create_ts').limit(num)
