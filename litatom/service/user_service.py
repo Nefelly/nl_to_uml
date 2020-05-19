@@ -16,6 +16,7 @@ from ..util import (
     parse_standard_date,
     format_standard_date,
     get_zero_today,
+    filter_emoji
 )
 from ..const import (
     TWO_WEEKS,
@@ -66,12 +67,13 @@ from ..service import (
     FollowService,
     GlobalizationService,
     MqService,
+    AvatarService
 )
 
 logger = logging.getLogger(__name__)
 sys_rnd = random.SystemRandom()
 redis_client = RedisClient()['lit']
-
+volatile_redis = RedisClient()['volatile']
 
 class UserService(object):
     FORBID_TIME = ONE_MIN
@@ -82,7 +84,8 @@ class UserService(object):
 
     @classmethod
     def get_all_ids(cls):
-        return [el.user_id for el in UserSetting.objects().only('user_id')]
+        # return [el.user_id for el in UserSetting.objects().only('user_id')]
+        return list(volatile_redis.smembers('all_user_ids'))
 
     @classmethod
     def _trans_session_2_forbidden(cls, user):
@@ -202,6 +205,7 @@ class UserService(object):
     @classmethod
     def _get_words_loc(cls, words):
         for word in words:
+            word = filter_emoji(word)
             lang, score = langid.classify(word)
             loc = GlobalizationService.loc_by_lang(lang)
             if loc:
@@ -280,18 +284,34 @@ class UserService(object):
                 ForbidActionService.resolve_spam_word(uid,bio,SPAM_RECORD_BIO_SOURCE)
                 return GlobalizationService.get_region_word('alert_msg'), False
             # if (bio or nickname) and GlobalizationService.get_region() == GlobalizationService.DEFAULT_REGION:
-            if (bio or nickname) and GlobalizationService.get_region() not in GlobalizationService.BIG_REGIONS:
-                loc = cls._get_words_loc([nickname, bio])
-                if loc in GlobalizationService.BIG_REGIONS.values():
-                    userSetting = UserSetting.get_by_user_id(uid)
-                    if not userSetting or userSetting.loc_change_times <= 1:
-                        GlobalizationService.change_loc(uid, loc)
-                        userSetting = UserSetting.get_by_user_id(uid)
-                        if userSetting:
-                            userSetting.loc_change_times += 1
-                            userSetting.save()
+            if (bio or nickname):
+                cls.check_and_move_to_big(uid, [nickname, bio])
+            # if (bio or nickname) and GlobalizationService.get_region() not in GlobalizationService.BIG_REGIONS:
+            #     loc = cls._get_words_loc([nickname, bio])
+            #     if loc in GlobalizationService.BIG_REGIONS.values():
+            #         userSetting = UserSetting.get_by_user_id(uid)
+            #         if not userSetting or userSetting.loc_change_times <= 1:
+            #             GlobalizationService.change_loc(uid, loc)
+            #             userSetting = UserSetting.get_by_user_id(uid)
+            #             if userSetting:
+            #                 userSetting.loc_change_times += 1
+            #                 userSetting.save()
         return None, True
-
+    
+    @classmethod
+    def check_and_move_to_big(cls, user_id, words):
+        if GlobalizationService.get_region() in GlobalizationService.BIG_REGIONS:
+            return 
+        loc = cls._get_words_loc(words)
+        if loc in GlobalizationService.BIG_REGIONS.values():
+            userSetting = UserSetting.get_by_user_id(user_id)
+            if not userSetting or userSetting.loc_change_times <= 1:
+                GlobalizationService.change_loc(user_id, loc)
+                userSetting = UserSetting.get_by_user_id(user_id)
+                if userSetting:
+                    userSetting.loc_change_times += 1
+                    userSetting.save()
+    
     @classmethod
     def uids_age(cls, user_ids):
         res = {}
@@ -592,7 +612,9 @@ class UserService(object):
             #         return u'nickname already exists', False
             data['nickname'] = nick_name
         if data.get('avatar', ''):
-            if not Avatar.valid_avatar(data.get('avatar')):
+            avatar_err = AvatarService.can_change(user_id, data.get('avatar'))
+            if avatar_err:
+            # if not Avatar.valid_avatar(data.get('avatar')):
                 data.pop('avatar')
         gender = data.get('gender', '').strip().replace('\n', '')
         if gender:
@@ -956,7 +978,7 @@ class UserService(object):
             return basic_info, True
         login_info = target_user.get_login_info()
         basic_info.update(login_info)
-        basic_info.update({"account_info": UserAccount.get_account_info(user_id)})
+        basic_info.update({"account_info": UserAccount.get_account_info(user_id), "vip_time": target_user.vip_time})
         return basic_info, True
 
     @classmethod
@@ -972,7 +994,7 @@ class UserService(object):
 
     @classmethod
     def get_avatars(cls):
-        return Avatar.get_avatars()
+        return AvatarService.get_avatars(request.user_id)
 
     @classmethod
     def _delete_user(cls, user):

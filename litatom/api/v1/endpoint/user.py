@@ -1,3 +1,4 @@
+# coding: utf-8
 import logging
 
 from flask import (
@@ -35,7 +36,8 @@ from ....service import (
     AccostService,
     ConversationService,
     TokenBucketService,
-    AntiSpamRateService
+    AntiSpamRateService,
+    VisitService
 )
 from ....const import (
     MAX_TIME
@@ -48,6 +50,12 @@ logger = logging.getLogger(__name__)
 # logger.addHandler(handler)
 
 def dela_login_fail(data, status):
+    '''
+    封禁用户返回体
+    :param data:
+    :param status:
+    :return:
+    '''
     if not status:
         if not getattr(request, 'is_banned', False):
             return jsonify({
@@ -113,7 +121,9 @@ def update_info():
 def get_user_info(target_user_id):
     user_id = request.user_id
     data, status = UserService.get_user_info(user_id, target_user_id)
-    UserMessageService.visit_message(target_user_id, user_id)
+    if user_id != target_user_id:
+        VisitService.visit(user_id, target_user_id)
+        UserMessageService.visit_message(target_user_id, user_id)
     if not status:
         return fail(data)
     return success(data)
@@ -131,6 +141,32 @@ def add_conversation():
     if not other_user_id or not conversation_id:
         return fail(u'lake of field')
     data, status = ConversationService.add_conversation(request.user_id, other_user_id, conversation_id, from_type)
+    if not status:
+        return fail(data)
+    return success(data)
+
+
+@session_required
+def pin_conversation():
+    data = request.json
+    other_user_id = data.get('other_user_id')
+    conversation_id = data.get('conversation_id')
+    if not other_user_id or not conversation_id:
+        return fail(u'lake of field')
+    data, status = ConversationService.pin_conversation(request.user_id, other_user_id, conversation_id)
+    if not status:
+        return fail(data)
+    return success(data)
+
+
+@session_required
+def unpin_conversation():
+    data = request.json
+    other_user_id = data.get('other_user_id')
+    conversation_id = data.get('conversation_id')
+    if not other_user_id or not conversation_id:
+        return fail(u'lake of field')
+    data, status = ConversationService.unpin_conversation(request.user_id, other_user_id, conversation_id)
     if not status:
         return fail(data)
     return success(data)

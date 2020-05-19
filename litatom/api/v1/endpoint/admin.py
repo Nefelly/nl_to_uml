@@ -202,6 +202,17 @@ def admin_words():
     return current_app.send_static_file('region_info.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
 
 
+def upsert_region_word():
+    data = request.json
+    tag = data.get('tag')
+    word = data.get('word')
+    en = data.get('en')
+    data, status = GlobalizationService.add_or_modify_region_word(tag, word, en)
+    if status:
+        return success(data)
+    return fail(data)
+
+
 def get_official_feed():
     start_ts = request.args.get('start_ts')
     num = request.args.get('num')
@@ -654,7 +665,9 @@ def journal_cal(item_id):
 
 
 def get_log(user_id):
-    msg, status = FirebaseService.command_to_user(user_id, {"type": 1000, "data": {"code": 0}})
+    code = request.values.get("code", "0")
+    code = int(code)
+    msg, status = FirebaseService.command_to_user(user_id, {"type": 1000, "data": {"code": code}})
     if status:
         return success()
     return fail(msg)

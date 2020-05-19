@@ -84,6 +84,29 @@ def pay_inform():
         return success(data)
 
 
+@forbidden_session_required
+def buy_vip():
+    payload = request.json
+    user_id = request.user_id
+    print 'aaaaaaaa'
+    try:
+        if setting.IS_DEV:
+            data, status = None, True
+        else:
+            TrackActionService.create_action(request.user_id, 'buy_vip', None, None, json.dumps(payload))
+            data, status = GoogleService.judge_order_online(payload, user_id)
+    except Exception as e:
+        logger.error('pay_inform error:%s', e)
+        status = True
+    finally:
+        if not status:
+            return fail(data)
+        data, status = AccountService.buy_vip(user_id, payload)
+        if not status:
+            return fail(data)
+        return success(data)
+
+
 @session_required
 def deposit_by_activity():
     data = request.json
@@ -108,9 +131,24 @@ def reset_rate_by_diamonds():
     return success(data)
 
 
+def membership_badges():
+    data, status = AccountService.membership_badges()
+    if not status:
+        return fail(data)
+    return success(data)
+
+
 @forbidden_session_required
 def unban_by_diamonds():
     data, status = AccountService.unban_by_diamonds(request.forbidden_user_id)
+    if not status:
+        return fail(data)
+    return success(data)
+
+
+@session_required
+def buy_avatar(fileid):
+    data, status = AccountService.buy_avatar(request.user_id, fileid)
     if not status:
         return fail(data)
     return success(data)

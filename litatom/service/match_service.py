@@ -10,6 +10,7 @@ from ..key import (
     REDIS_USER_MATCH_LEFT,
     REDIS_FAKE_ID_UID,
     REDIS_UID_FAKE_ID,
+    REDIS_LIKE_EACH_OTHER_IN_MATCH,
     REDIS_FAKE_START,
     REDIS_ANOY_CHECK_POOL,
     REDIS_MATCH_BEFORE,
@@ -37,7 +38,8 @@ from ..const import (
     ONE_MIN,
     CAN_MATCH_ONLINE,
     USER_MODEL_EXCHANGE,
-    ALL_FILTER
+    ALL_FILTER,
+    ONE_HOUR
 )
 from ..service import (
     UserService,
@@ -48,7 +50,8 @@ from ..service import (
     StatisticService,
     StatisticService,
     MqService,
-    ExperimentService
+    ExperimentService,
+    MatchHistoryService
 )
 from ..model import (
     User,
@@ -155,8 +158,10 @@ class MatchService(object):
             quit_user = None
         else:
             quit_user = user_id1 if leave_fake_id == fake_id else user_id2
-        obj = MatchRecord.create(user_id1, user_id2, cls.MATCH_TYPE, quit_user, match_time, int(time.time()) - match_time)
-        MqService.push(USER_MODEL_EXCHANGE, {'model_type': 'match', 'data': str(cPickle.dumps(obj))})
+        is_friend = redis_client.get(REDIS_LIKE_EACH_OTHER_IN_MATCH.format(user_id_pair=low_high_pair(user_id1, user_id2)))
+        MatchHistoryService.add_match_record(user_id1, user_id2, cls.MATCH_TYPE, quit_user, match_time, int(time.time()) - match_time, is_friend)
+        # obj = MatchRecord.create(user_id1, user_id2, cls.MATCH_TYPE, quit_user, match_time, int(time.time()) - match_time)
+        # MqService.push(USER_MODEL_EXCHANGE, {'model_type': 'match', 'data': str(cPickle.dumps(obj))})
         redis_client.delete(key)
 
     @classmethod
@@ -412,7 +417,7 @@ class MatchService(object):
     @classmethod
     def _match_left_verify(cls, user_id):
         # 匹配次数验证
-        if cls._is_member(user_id):
+        if cls._is_member(user_id) or User.is_vip_by_user_id(user_id):
             return cls.FAKE_MAX_TIME, True
         now_date = now_date_key()
         match_left_key = cls.TYPE_USER_MATCH_LEFT.format(user_date=user_id + now_date)
@@ -693,7 +698,9 @@ class MatchService(object):
         like_eachother = False
         if redis_client.get(cls.TYPE_FAKE_LIKE.format(fake_id=other_fake_id)) == fake_id:
             like_eachother = True
-            FollowService.follow_eachother(cls._uid_by_fake_id(fake_id), cls._uid_by_fake_id(other_fake_id))
+            other_user_id = cls._uid_by_fake_id(other_fake_id)
+            FollowService.follow_eachother(cls._uid_by_fake_id(fake_id), other_user_id)
+            redis_client.set(REDIS_LIKE_EACH_OTHER_IN_MATCH.format(user_id_pair=low_high_pair(user_id, other_user_id)), 1, ONE_HOUR)
         return {'like_eachother': like_eachother}, True
 
     @classmethod
@@ -741,7 +748,6 @@ class MatchService(object):
         user.add_judge(judge)
         return None, True
 
-
     @classmethod
     def quit_match(cls, user_id):   # should delete match pair
         fake_id = cls._fakeid_by_uid(user_id)
@@ -761,6 +767,8 @@ class MatchService(object):
 
     @classmethod
     def _is_accelerate(cls, user_id):
+        if User.is_vip_by_user_id(user_id):
+            return True
         key = REDIS_ACCELERATE_CACHE.format(user_id=user_id)
         if not redis_client.get(key):
             return False

@@ -39,7 +39,8 @@ from ..key import (
     REDIS_USER_CACHE,
     REDIS_USER_SETTING_CACHE,
     REDIS_USER_MODEL_CACHE,
-    REDIS_KEY_FORBIDDEN_SESSION_USER
+    REDIS_KEY_FORBIDDEN_SESSION_USER,
+    REDIS_SAVE_LOCK
 )
 from ..const import (
     TWO_WEEKS,
@@ -250,6 +251,8 @@ class User(Document, UserSessionMixin):
     logined = BooleanField(default=False)
     platform = StringField(default='android')
     bio = StringField()
+    membership_time = IntField(required=True, default=0)
+    vip_time = IntField(required=True, default=0)
     phone = StringField()
     country = StringField()
     forbidden = BooleanField(required=True, default=False)
@@ -285,6 +288,23 @@ class User(Document, UserSessionMixin):
         # self.user_sig_expire_at = time_now + self.TENCENT_SIG_EXPIRE
         # self.save()
         return sig
+
+    @property
+    def is_member(self):
+        time_now = int(time.time())
+        return self.membership_time > time_now
+
+    @property
+    def is_vip(self):
+        time_now = int(time.time())
+        return self.vip_time > time_now
+
+    @classmethod
+    def is_vip_by_user_id(cls, user_id):
+        user = cls.get_by_id(user_id)
+        if not user:
+            return False
+        return user.is_vip
 
     @classmethod
     def get_user_id_by_session(cls, sid):
@@ -551,6 +571,7 @@ class User(Document, UserSessionMixin):
             'judged_like': self.judge[2],
             'follower': self.follower,
             'following': self.following,
+            'is_vip': self.is_vip,
             'age': self.age_by_user_id(str(self.id))
 
         }
@@ -657,6 +678,13 @@ class UserSetting(Document):
     def save(self, *args, **kwargs):
         if getattr(self, 'user_id', ''):
             self._disable_cache(str(self.user_id))
+        user_id = getattr(self, 'user_id', '')
+        if user_id:
+            user_setting_loc_key = REDIS_SAVE_LOCK.format(key=self.__class__.__name__ + user_id)
+            not_in_set = redis_client.setnx(user_setting_loc_key, 1)
+            if not not_in_set:   # 正在存储
+                return
+            redis_client.expire(user_setting_loc_key, 1)
         super(UserSetting, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
@@ -666,7 +694,7 @@ class UserSetting(Document):
 
     @classmethod
     def create_setting(cls, user_id, lang, uuid=None):
-        if cls.get_by_user_id(user_id):
+        if not user_id or cls.get_by_user_id(user_id):
             return True
         obj = cls()
         obj.user_id = user_id

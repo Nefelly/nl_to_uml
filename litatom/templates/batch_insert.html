@@ -37,7 +37,7 @@ var app7 = new Vue({
     items1: [],
     base_url: BASE_URL
   },
-created() {},
+created() {this.load_data()},
 
 methods: {
     // onload: function () {
@@ -51,8 +51,8 @@ methods: {
         main_key = document.getElementById('main_key').value;
         data = document.getElementById('insert_data').value;
         this.$http.post(BASE_URL + 'admin/batch_act', {"table_name":table_name, "fields":fields, "main_key":main_key, "data":data}).then(function(result){
-            if (result.data.result === 0){alert('success!');}
-            else{alert('failed');}
+            if (result.data.result === 0){alert('success!'); this.load_data();}
+            else{alert(result.data.msg);}
         })
     },
 
@@ -64,7 +64,7 @@ methods: {
         if (data.split('\n').length > 100) {
             if(confirm('you want to delete over 100 record?')){
                 this.$http.post(BASE_URL + 'admin/batch_act?is_delete=True', {"table_name":table_name, "fields":fields, "main_key":main_key, "data":data}).then(function(result){
-            if (result.data.result === 0){alert('success!');}
+            if (result.data.result === 0){alert('success!'); this.load_data();}
             else{alert(result.data.msg);}
         })
             }
@@ -72,7 +72,7 @@ methods: {
         else {
             if(confirm('you want to delete' + data.split('\n').length.toString() + 'records?')){
                 this.$http.post(BASE_URL + 'admin/batch_act?is_delete=True', {"table_name":table_name, "fields":fields, "main_key":main_key, "data":data}).then(function(result){
-            if (result.data.result === 0){alert('success!');}
+            if (result.data.result === 0){alert('success!'); this.load_data();}
             else{alert(result.data.msg);}
         })
         }
@@ -86,7 +86,7 @@ methods: {
         this.$http.post(BASE_URL + 'admin/load_table_data', {"table_name":table_name, "fields":fields, "query":query}).then(function(result) {
             if (result.data.result === 0){var data = result.data.data;
             document.getElementById('insert_data').value = data;}
-            else{alert('failed');}
+            else{alert(result.data.msg);}
 
         })
     }

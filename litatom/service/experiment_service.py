@@ -93,6 +93,8 @@ class ExperimentService(object):
     def get_exp_value(cls, exp_name, key=None):
         if not key:
             key = request.user_id
+        if not key:
+            return ExpBucket.DEFAULT
         return redis_client.get(cls._get_key(key, exp_name))
 
     @classmethod
@@ -129,6 +131,8 @@ class ExperimentService(object):
         '''
         # 判断传值是否准确
         total = sum([value_bucket_num_dict.get(e) for e in value_bucket_num_dict if e != ExpBucket.NOSET])
+        if not value_bucket_num_dict.get(ExpBucket.DEFAULT):
+            return u'default must in', False
         if total > cls.BUCKET_NUM:
             return u'wrong arguments, total bucket num exceed max:%d' % cls.BUCKET_NUM, False
 
@@ -148,7 +152,6 @@ class ExperimentService(object):
                 need_adjust[_] = -len(old_buckets[_])
         # release_num = -sum([el for el in need_adjust.values() if el < 0])
         add_num = sum([el for el in need_adjust.values() if el > 0])
-        old_noset = []
         old_noset = old_buckets[ExpBucket.NOSET]
         old_noset_num = len(old_noset)
 
@@ -290,15 +293,28 @@ class ExperimentService(object):
         pass
 
     @classmethod
-    def batch_get_id_values(cls, exp_name, ids):
+    def batch_get_value_ids(cls, exp_name, ids, value=None):
         '''
         批量获取用户对应实验的value
         :param exp_name:
         :param ids:
         :return:
+        先 查询桶对应的value
+        再 查询id 对应的桶
+        再 返回
         '''
-        id_values = {}
-        pass
+        bucket_values = cls.load_bucket_value_m(exp_name)
+        values_ids = {}
+        for _ in ids:
+            bucket = cls._get_bucket(exp_name, _)
+            value = bucket_values.get(bucket)
+            if values_ids.get(value, []):
+                values_ids[value].append(_)
+            else:
+                values_ids[value] = [_]
+        if value:
+            return values_ids.get(value, [])
+        return values_ids
 
     @classmethod
     def get_exp_bucket_values(cls, exp_name):

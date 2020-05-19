@@ -50,6 +50,7 @@ class Feed(Document):
     status = IntField(default=0)
     content = StringField()
     pics = ListField(default=[])
+    pics_size = ListField(default=[])
     audios = ListField(default=[])
     create_time = IntField(required=True, default=int(time.time()))
 

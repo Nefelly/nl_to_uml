@@ -10,7 +10,8 @@ from ..service import (
     TokenBucketService
 )
 from ..model import (
-    PalmResult
+    PalmResult,
+    User
 )
 sys.path.append('/data/opencv-3.3.0/build/palmprint_classification/pyboostcvconverter/build/')
 import cv2
@@ -198,6 +199,8 @@ class PalmService(object):
     @classmethod
     def times_left(cls, user_id):
         total_times = 2
+        if User.is_vip_by_user_id(user_id):
+            total_times = 10
         if setting.IS_DEV:
             total_times = 1000
         used = PalmResult.objects(user_id=user_id, create_time__gt=(datetime.datetime.now() - datetime.timedelta(days=1))).count()

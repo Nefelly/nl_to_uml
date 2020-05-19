@@ -32,6 +32,20 @@ def is_json(myjson):
         return False
     return True
 
+def filter_emoji(content):
+    '''
+    过滤content中的表情符
+    :param content:
+    :return:
+    '''
+    try:
+        # Wide UCS-4 build
+        cont = re.compile(u'['u'\U0001F300-\U0001F64F' u'\U0001F680-\U0001F6FF'u'\u2600-\u2B55]+')
+    except re.error:
+        # Narrow UCS-2 build
+        cont = re.compile(u'('u'\ud83c[\udf00-\udfff]|'u'\ud83d[\udc00-\ude4f\ude80-\udeff]|'u'[\u2600-\u2B55])+')
+    return cont.sub(u'', content)
+
 
 def get_args_from_db(db_name):
     db_m = setting.DB_SETTINGS.get(db_name)
@@ -772,20 +786,20 @@ def resize_pic_by_device(url, device_resolution, platform):
     :param device_resolution: 一个tuple，表示设备分辨率
     :param platform: ios / android
     """
-    short_edge, long_edge = device_resolution
-    if not (url and short_edge > 0 and long_edge > 0):
-        return url
-    if short_edge > long_edge:
-        short_edge, long_edge = long_edge, short_edge
-
-    for limit in (120, 240, 320, 640, 750, 1080, 1280):
-        if short_edge <= limit:
-            break
-    # 对iPhone特殊处理
-    if platform == const.PLATFORM_IOS and limit == 1280:
-        limit = 1080
-
-    return resize_ci_image(url, limit)
+    pass
+    # short_edge, long_edge = device_resolution
+    # if not (url and short_edge > 0 and long_edge > 0):
+    #     return url
+    # if short_edge > long_edge:
+    #     short_edge, long_edge = long_edge, short_edge
+    #
+    # for limit in (120, 240, 320, 640, 750, 1080, 1280):
+    #     if short_edge <= limit:
+    #         break
+    # # 对iPhone特殊处理
+    # if platform == const.PLATFORM_IOS and limit == 1280:
+    #     limit = 1080
+    # return resize_ci_image(url, limit)
 
 
 def remove_non_words(text):

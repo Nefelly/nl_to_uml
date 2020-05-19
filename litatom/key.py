@@ -17,6 +17,9 @@ REDIS_AD_TIMES_LEFT = 'ad_times_left:{user_date}'
 REDIS_REGION_FEED_TOP = 'region_feed_top:{region}'
 REDIS_ACCOUNT_ACTION = 'account:{key}'
 
+#distirbute_lock
+REDIS_SAVE_LOCK = 'mongo_save_loc:{key}'
+
 # share stat
 REDIS_SHARE_STAT = 'share_stat:{user_id}'
 REDIS_SHARE_KNOWN_NUM = 'share_known_num:{user_id}'
@@ -70,6 +73,10 @@ REDIS_FAKE_START = 'fake_start:{fake_id}'   # 开始进入匹配
 REDIS_USER_MATCH_LEFT = 'user_match_left:{user_date}'   # 过期时间一天
 REDIS_FAKE_ID_UID = 'fakeid_uid:{fake_id}'
 REDIS_UID_FAKE_ID = 'uid_fakeid:{user_id}'
+REDIS_LIKE_EACH_OTHER_IN_MATCH = 'like_each_other_in_match:{user_id_pair}'
+
+
+REDIS_REGION_WORLD_CACHE = 'region_world_cache:{region_tag}'   # 缓存用户的
 
 REDIS_ANOY_GENDER_ONLINE_REGION = 'anoy_online:{gender}:{region}'   # sorted set   # !!!
 REDIS_TYPE_GENDER_HOMO_ONLINE_REGION = '{match_type}_{homo}online:{gender}:{region}'
@@ -90,6 +97,8 @@ REDIS_JUDGE_LOCK = 'judge_lock:{fake_id}'   # 评价对方的接口, 用于防�
 REDIS_USER_MESSAGES = 'user_messages:{user_id}'   #sortedset
 REDIS_HUANXIN_ACCESS_TOKEN = 'huanxin_access_token'
 REDIS_HUANXIN_ACCESS_TOKEN_EXPIRE = 'huanxin_access_token_expire'
+REDIS_HUANXIN_SIG_ACCESS_TOKEN = 'huanxin_sig_access_token'
+REDIS_HUANXIN_SIG_ACCESS_TOKEN_EXPIRE = 'huanxin_sig_access_token_expire'
 REDIS_LOCK = 'redis_lock:{key}'
 
 # feed service
@@ -115,7 +124,8 @@ REDIS_VOICE_CHAT_WAIT = 'voice_chat_wait:{user_id}'
 REDIS_VOICE_CHAT_CALLED = 'voice_chat_called:{user_id}'
 REDIS_VOICE_CHAT_IN_CHAT = 'voice_chat_in_chat:{user_id}'
 
-
+#user visit
+REDIS_NEW_VISIT_NUM = 'new_visit_num:{user_id}'
 
 
 # video match

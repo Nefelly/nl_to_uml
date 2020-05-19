@@ -250,6 +250,7 @@ class FeedService(object):
                 ForbidActionService.resolve_spam_word(user_id, content, SPAM_RECORD_FEED_SOURCE)
                 return GlobalizationService.get_region_word('alert_msg'), False
         feed = Feed.create_feed(user_id, content, pics, audios)
+        UserService.check_and_move_to_big(user_id, [content])
         cls._on_add_feed(feed)
         UserModelService.add_comments_by_uid(user_id)
         # cls._add_to_feed_pool(feed)
