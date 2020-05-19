@@ -215,6 +215,7 @@ class ForbidPlatformService(object):
                 break
             have_read += len(records)
             for record in records:
+                print(record.id)
                 user_id = record.user_id
                 if region and GlobalizationService.get_region_by_user_id(user_id) != region:
                     continue
