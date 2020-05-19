@@ -125,14 +125,14 @@ class ForbidPlatformService(object):
                 'forbid_score': forbid_score, 'forbid_history': forbid_history}
 
     @classmethod
-    def get_feed(cls, from_ts, to_ts, loc=None, condition=None):
+    def get_feed(cls, from_ts, to_ts, loc=None, condition=None, num=100):
         """feed审核表"""
         if loc and loc not in cls.FORBID_LOCATIONS:
             return 'invalid location', False
         if condition and condition not in {cls.FEED_NEED_REVIEW, cls.FEED_RECOMMENDED, cls.FEED_USER_UNRELIABLE}:
             return 'invalid condition', False
         res = []
-        feeds = Feed.objects(status=FEED_NEED_CHECK, create_time__gte=from_ts, create_time__lte=to_ts)
+        feeds = Feed.objects(status=FEED_NEED_CHECK, create_time__gte=from_ts, create_time__lte=to_ts).order_by('-create_ts').limit(num)
         res_length = 0
         for feed in feeds:
             user_id = feed.user_id
@@ -172,24 +172,24 @@ class ForbidPlatformService(object):
         return res, True
 
     @classmethod
-    def get_report(cls, from_ts, to_ts, region=None, match_type=None):
+    def get_report(cls, from_ts, to_ts, region=None, match_type=None,num=100):
         if region and region not in cls.REPORT_REGIONS:
             return 'invalid region', False
         if match_type and match_type not in {cls.MATCH_REPORT, cls.OTHER_REPORT}:
             return 'invalid match type', False
         if not region and not match_type:
-            reports = Report.objetcs(create_ts__gte=from_ts, create_ts__lte=to_ts)
+            reports = Report.objetcs(create_ts__gte=from_ts, create_ts__lte=to_ts).order_by('-create_ts').limit(num)
         elif region and match_type == cls.MATCH_REPORT:
-            reports = Report.objects(create_ts__gte=from_ts, create_ts__lte=to_ts, region=region, reason=match_type)
+            reports = Report.objects(create_ts__gte=from_ts, create_ts__lte=to_ts, region=region, reason=match_type).order_by('-create_ts').limit(num)
         elif region and match_type == cls.OTHER_REPORT:
             reports = Report.objetcs(create_ts__gte=from_ts, create_ts__lte=to_ts, region=region,
-                                     reason__ne=cls.MATCH_REPORT)
+                                     reason__ne=cls.MATCH_REPORT).order_by('-create_ts').limit(num)
         elif region and not match_type:
-            reports = Report.objects(create_ts__gte=from_ts, create_ts__lte=to_ts, region=region)
+            reports = Report.objects(create_ts__gte=from_ts, create_ts__lte=to_ts, region=region).order_by('-create_ts').limit(num)
         elif not region and match_type == cls.MATCH_REPORT:
-            reports = Report.objects(create_ts__gte=from_ts, create_ts__lte=to_ts, reason=match_type)
+            reports = Report.objects(create_ts__gte=from_ts, create_ts__lte=to_ts, reason=match_type).order_by('-create_ts').limit(num)
         else:
-            reports = Report.objects(create_ts__gte=from_ts, create_ts__lte=to_ts, reason__ne=cls.MATCH_REPORT)
+            reports = Report.objects(create_ts__gte=from_ts, create_ts__lte=to_ts, reason__ne=cls.MATCH_REPORT).order_by('-create_ts').limit(num)
         res = []
         report_num = 0
         for report in reports:
@@ -212,10 +212,10 @@ class ForbidPlatformService(object):
         return res, True
 
     @classmethod
-    def get_spam_record(cls, from_ts, to_ts, region=None):
+    def get_spam_record(cls, from_ts, to_ts, region=None, num=100):
         if region and region not in cls.FORBID_LOCATIONS:
             return 'invalid region', False
-        records = TrackSpamRecord.objects(create_time__gte=from_ts, create_time__lte=to_ts, dealed=False)
+        records = TrackSpamRecord.objects(create_time__gte=from_ts, create_time__lte=to_ts, dealed=False).order_by('-create_time').limit(num)
         res = []
         res_len = 0
         for record in records:

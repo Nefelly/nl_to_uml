@@ -473,7 +473,8 @@ def review_feed():
         return fail('neither time nor user_id')
     loc = request.args.get('loc')
     condition = request.args.get('location')
-    data, status = ForbidPlatformService.get_feed(from_ts, to_ts, loc, condition)
+    num = request.args.get('num')
+    data, status = ForbidPlatformService.get_feed(from_ts, to_ts, loc, condition, num=num)
     if not status:
         return fail(data)
     return success(data)
@@ -490,7 +491,8 @@ def review_record():
     if not from_ts:
         return fail('neither time nor user_id')
     region = request.args.get('region')
-    data, status = ForbidPlatformService.get_spam_record(from_ts, to_ts, region)
+    num = request.args.get('num')
+    data, status = ForbidPlatformService.get_spam_record(from_ts, to_ts, region, num=num)
     if not status:
         return fail(data)
     return success(data)
@@ -508,7 +510,8 @@ def review_report():
         return fail('neither time nor user_id')
     region = request.args.get('region')
     match_type = request.args.get('match_type')
-    data, status = ForbidPlatformService.get_report(from_ts, to_ts, region, match_type)
+    num = request.args.get('num')
+    data, status = ForbidPlatformService.get_report(from_ts, to_ts, region, match_type, num=num)
     if not status:
         return fail(data)
     return success(data)
