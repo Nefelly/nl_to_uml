@@ -139,6 +139,7 @@ class ForbidPlatformService(object):
         res = []
         res_length = 0
         have_read = 0
+        print(from_ts,to_ts)
         while res_length < num:
             feeds = Feed.objects(status=FEED_NEED_CHECK, create_time__gte=from_ts, create_time__lte=to_ts).order_by(
                 '-create_time').skip(have_read).limit(num)
