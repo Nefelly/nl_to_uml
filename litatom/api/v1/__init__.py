@@ -127,7 +127,7 @@ b.add_url_rule('/lit/admin/get_feed','admin-get_feed',endpoint.admin.get_feed)
 b.add_url_rule('/lit/admin/review_record','admin-review_record',endpoint.admin.review_record)
 b.add_url_rule('/lit/admin/review_feed','admin-review_feed',endpoint.admin.review_feed)
 b.add_url_rule('/lit/admin/review_report','admin-review_report',endpoint.admin.review_report)
-b.add_url_rule('/lit/admin/forbid_record','admin-forbid_record',endpoint.admin.forbid_record)
+b.add_url_rule('/lit/admin/review_forbid_record','admin-review_forbid_record', endpoint.admin.review_forbid_record)
 b.add_url_rule('/lit/admin/resolve_review_record','admin-resolve_review_record',endpoint.admin.resolve_review_record)
 b.add_url_rule('/lit/admin/resolve_review_feed','admin-resolve_review_feed',endpoint.admin.resolve_review_feed)
 

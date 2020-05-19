@@ -443,7 +443,7 @@ def judge_lit_pic():
     })
 
 
-def forbid_record():
+def review_forbid_record():
     user_id = request.args.get('user_id')
     if user_id:
         data, status = ForbidPlatformService.get_forbid_record_atom(user_id)
