@@ -98,11 +98,12 @@ class ForbidPlatformService(object):
             temp_res[uid]['device_forbidden_num'] = ForbidRecordService.get_device_forbidden_num_by_uid(uid)
             temp_res[uid]['forbid_score'] = ForbidActionService.accum_illegal_credit(uid)
             temp_res[uid]['nickname'] = User.get_by_id(uid).nickname
-            temp_res[uid]['forbid_history'] = {'sensitive': ForbidCheckService.check_sensitive_user(uid, forbidden_from-ERROR_RANGE),
-                                               'blocker_num': Blocked.get_blocker_num_by_time(uid,
-                                                                                              forbidden_from - SYS_FORBID_TIME,
-                                                                                              forbidden_from),
-                                               'reports': [], 'records': []}
+            temp_res[uid]['forbid_history'] = {
+                'sensitive': ForbidCheckService.check_sensitive_user(uid, forbidden_from - ERROR_RANGE),
+                'blocker_num': Blocked.get_blocker_num_by_time(uid,
+                                                               forbidden_from - SYS_FORBID_TIME,
+                                                               forbidden_from),
+                'reports': [], 'records': []}
 
         cls._load_spam_record(temp_res, earliest_forbidden, to_ts)
         cls._load_report(temp_res, earliest_forbidden, to_ts)
@@ -132,7 +133,8 @@ class ForbidPlatformService(object):
         if condition and condition not in {cls.FEED_NEED_REVIEW, cls.FEED_RECOMMENDED, cls.FEED_USER_UNRELIABLE}:
             return 'invalid condition', False
         res = []
-        feeds = Feed.objects(status=FEED_NEED_CHECK, create_time__gte=from_ts, create_time__lte=to_ts).order_by('-create_ts').limit(num)
+        feeds = Feed.objects(status=FEED_NEED_CHECK, create_time__gte=from_ts, create_time__lte=to_ts).order_by(
+            '-create_ts').limit(num)
         res_length = 0
         for feed in feeds:
             user_id = feed.user_id
@@ -147,7 +149,7 @@ class ForbidPlatformService(object):
             tmp = {'user_id': user_id, 'word': feed.content, 'pics': [OSS_PIC_URL + pic for pic in feed.pics],
                    'audio': [OSS_AUDIO_URL + audio for audio in feed.audios],
                    'comment_num': feed.comment_num, 'like_num': feed.like_num, 'hq': is_hq,
-                   'forbid_score': forbid_score, 'feed_id':str(feed.id)}
+                   'forbid_score': forbid_score, 'feed_id': str(feed.id)}
             res.append(tmp)
             res_length += 1
             if res_length > FORBID_PAGE_SIZE:
@@ -157,85 +159,66 @@ class ForbidPlatformService(object):
     @classmethod
     def get_feed_atom(cls, user_id):
         feeds = Feed.objects(user_id=user_id, status=FEED_NEED_CHECK)
-        res = []
-        res_length = 0
         forbid_score = ForbidActionService.accum_illegal_credit(user_id)[0]
-        for feed in feeds:
-            tmp = {'user_id': user_id, 'word': feed.content, 'pics': [OSS_PIC_URL + pic for pic in feed.pics],
-                   'audio': [OSS_AUDIO_URL + audio for audio in feed.audios],
-                   'comment_num': feed.comment_num, 'like_num': feed.like_num, 'hq': feed.is_hq,
-                   'forbid_score': forbid_score, 'feed_id':str(feed.id)}
-            res.append(tmp)
-            res_length += 1
-            if res_length > FORBID_PAGE_SIZE:
-                break
-        return res, True
+        return [{'user_id': user_id, 'word': feed.content, 'pics': [OSS_PIC_URL + pic for pic in feed.pics],
+                 'audio': [OSS_AUDIO_URL + audio for audio in feed.audios],
+                 'comment_num': feed.comment_num, 'like_num': feed.like_num, 'hq': feed.is_hq,
+                 'forbid_score': forbid_score, 'feed_id': str(feed.id)} for feed in feeds], True
 
     @classmethod
-    def get_report(cls, from_ts, to_ts, region=None, match_type=None,num=100):
+    def get_report(cls, from_ts, to_ts, region=None, match_type=None, num=100):
         if region and region not in cls.REPORT_REGIONS:
             return 'invalid region', False
         if match_type and match_type not in {cls.MATCH_REPORT, cls.OTHER_REPORT}:
             return 'invalid match type', False
         if not region and not match_type:
-            reports = Report.objects(create_ts__gte=from_ts, create_ts__lte=to_ts, dealed=False, duplicated=False).order_by('-create_ts').limit(num)
+            reports = Report.objects(create_ts__gte=from_ts, create_ts__lte=to_ts, dealed=False,
+                                     duplicated=False).order_by('-create_ts').limit(num)
         elif region and match_type == cls.MATCH_REPORT:
-            reports = Report.objects(create_ts__gte=from_ts, create_ts__lte=to_ts, region=region, reason=match_type, dealed=False, duplicated=False).order_by('-create_ts').limit(num)
+            reports = Report.objects(create_ts__gte=from_ts, create_ts__lte=to_ts, region=region, reason=match_type,
+                                     dealed=False, duplicated=False).order_by('-create_ts').limit(num)
         elif region and match_type == cls.OTHER_REPORT:
             reports = Report.objects(create_ts__gte=from_ts, create_ts__lte=to_ts, region=region,
-                                     reason__ne=cls.MATCH_REPORT, dealed=False, duplicated=False).order_by('-create_ts').limit(num)
+                                     reason__ne=cls.MATCH_REPORT, dealed=False, duplicated=False).order_by(
+                '-create_ts').limit(num)
         elif region and not match_type:
-            reports = Report.objects(create_ts__gte=from_ts, create_ts__lte=to_ts, region=region, dealed=False, duplicated=False).order_by('-create_ts').limit(num)
+            reports = Report.objects(create_ts__gte=from_ts, create_ts__lte=to_ts, region=region, dealed=False,
+                                     duplicated=False).order_by('-create_ts').limit(num)
         elif not region and match_type == cls.MATCH_REPORT:
-            reports = Report.objects(create_ts__gte=from_ts, create_ts__lte=to_ts, reason=match_type, dealed=False, duplicated=False).order_by('-create_ts').limit(num)
+            reports = Report.objects(create_ts__gte=from_ts, create_ts__lte=to_ts, reason=match_type, dealed=False,
+                                     duplicated=False).order_by('-create_ts').limit(num)
         else:
-            reports = Report.objects(create_ts__gte=from_ts, create_ts__lte=to_ts, reason__ne=cls.MATCH_REPORT, dealed=False, duplicated=False).order_by('-create_ts').limit(num)
-        res = []
-        report_num = 0
-        for report in reports:
-            res.append(ReportService.get_report_info(report))
-            report_num += 1
-            if report_num > FORBID_PAGE_SIZE:
-                break
-        return res, True
+            reports = Report.objects(create_ts__gte=from_ts, create_ts__lte=to_ts, reason__ne=cls.MATCH_REPORT,
+                                     dealed=False, duplicated=False).order_by('-create_ts').limit(num)
+        return [ReportService.get_report_info(report) for report in reports], True
 
     @classmethod
     def get_report_atom(cls, user_id):
         reports = Report.objects(target_uid=user_id)
-        res = []
-        report_num = 0
-        for report in reports:
-            res.append(ReportService.get_report_info(report))
-            report_num += 1
-            if report_num > FORBID_PAGE_SIZE:
-                break
-        return res, True
+        return [ReportService.get_report_info(report) for report in reports], True
 
     @classmethod
     def get_spam_record(cls, from_ts, to_ts, region=None, num=100):
         if region and region not in cls.FORBID_LOCATIONS:
             return 'invalid region', False
-        records = TrackSpamRecord.objects(create_time__gte=from_ts, create_time__lte=to_ts, dealed=False).order_by('-create_time').limit(num)
         res = []
         res_len = 0
-        for record in records:
-            user_id = record.user_id
-            if region and GlobalizationService.get_region_by_user_id(user_id) != region:
-                continue
-            res.append(TrackSpamRecordService.get_spam_record_info(record))
-            res_len += 1
-            if res_len > FORBID_PAGE_SIZE:
-                break
+        have_read = 0
+        while res_len < num:
+            records = TrackSpamRecord.objects(create_time__gte=from_ts, create_time__lte=to_ts, dealed=False).order_by(
+                '-create_time').skip(have_read).limit(num)
+            have_read += num
+            for record in records:
+                user_id = record.user_id
+                if region and GlobalizationService.get_region_by_user_id(user_id) != region:
+                    continue
+                res.append(TrackSpamRecordService.get_spam_record_info(record))
+                res_len += 1
+                if res_len >= num:
+                    break
         return res, True
 
     @classmethod
     def get_spam_record_atom(cls, user_id):
         records = TrackSpamRecord.objects(user_id=user_id, dealed=False)
-        res = []
-        res_len = 0
-        for record in records:
-            res.append(TrackSpamRecordService.get_spam_record_info(record))
-            res_len += 1
-            if res_len > FORBID_PAGE_SIZE:
-                break
-        return res, True
+        return [TrackSpamRecordService.get_spam_record_info(record) for record in records], True
