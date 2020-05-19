@@ -502,6 +502,7 @@ def review_report():
     user_id = request.args.get('user_id')
     if user_id:
         data, status = ForbidPlatformService.get_report_atom(user_id)
+        print(data,status)
         if not status:
             return fail(data)
         return success(data)
