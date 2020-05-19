@@ -147,7 +147,7 @@ class ForbidPlatformService(object):
             tmp = {'user_id': user_id, 'word': feed.content, 'pics': [OSS_PIC_URL + pic for pic in feed.pics],
                    'audio': [OSS_AUDIO_URL + audio for audio in feed.audios],
                    'comment_num': feed.comment_num, 'like_num': feed.like_num, 'hq': is_hq,
-                   'forbid_score': forbid_score}
+                   'forbid_score': forbid_score, 'feed_id':str(feed.id)}
             res.append(tmp)
             res_length += 1
             if res_length > FORBID_PAGE_SIZE:
@@ -164,7 +164,7 @@ class ForbidPlatformService(object):
             tmp = {'user_id': user_id, 'word': feed.content, 'pics': [OSS_PIC_URL + pic for pic in feed.pics],
                    'audio': [OSS_AUDIO_URL + audio for audio in feed.audios],
                    'comment_num': feed.comment_num, 'like_num': feed.like_num, 'hq': feed.is_hq,
-                   'forbid_score': forbid_score}
+                   'forbid_score': forbid_score, 'feed_id':str(feed.id)}
             res.append(tmp)
             res_length += 1
             if res_length > FORBID_PAGE_SIZE:
