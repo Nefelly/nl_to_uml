@@ -23,7 +23,8 @@ from ...decorator import (
     get_page_info,
     set_exp_arg,
     set_user_id_by_phone,
-    check_time, check_int, get_num
+    check_time,
+    get_num
 )
 
 from ....util import write_data_to_xls
