@@ -83,6 +83,16 @@ def check_time():
     return from_ts, to_ts
 
 
+def check_int(num):
+    try:
+        res = int(num)
+        if res >= 0:
+            return res
+        return None
+    except Exception as e:
+        return None
+
+
 def get_page_info():
     page = request.args.get('page')
     page_size = request.args.get('page_size')

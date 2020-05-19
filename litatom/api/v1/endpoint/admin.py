@@ -23,7 +23,7 @@ from ...decorator import (
     get_page_info,
     set_exp_arg,
     set_user_id_by_phone,
-    check_time
+    check_time, check_int
 )
 
 from ....util import write_data_to_xls
@@ -474,6 +474,9 @@ def review_feed():
     loc = request.args.get('loc')
     condition = request.args.get('location')
     num = request.args.get('num')
+    num = check_int(num)
+    if not num:
+        return fail('invalid number')
     data, status = ForbidPlatformService.get_feed(from_ts, to_ts, loc, condition, num=num)
     if not status:
         return fail(data)
@@ -492,6 +495,9 @@ def review_record():
         return fail('neither time nor user_id')
     region = request.args.get('region')
     num = request.args.get('num')
+    num = check_int(num)
+    if not num:
+        return fail('invalid number')
     data, status = ForbidPlatformService.get_spam_record(from_ts, to_ts, region, num=num)
     if not status:
         return fail(data)
@@ -511,6 +517,9 @@ def review_report():
     region = request.args.get('region')
     match_type = request.args.get('match_type')
     num = request.args.get('num')
+    num = check_int(num)
+    if not num:
+        return fail('invalid number')
     data, status = ForbidPlatformService.get_report(from_ts, to_ts, region, match_type, num=num)
     if not status:
         return fail(data)

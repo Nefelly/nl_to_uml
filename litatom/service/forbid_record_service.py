@@ -188,7 +188,7 @@ class TrackSpamRecordService(object):
 
     @classmethod
     def get_spam_record_info(cls, record):
-        tmp = {'forbid_weight': record.forbid_weight,'record_id':str(record.id), 'create_time':unix_ts_string(record.create_time), 'source':record.source}
+        tmp = {'forbid_weight': record.forbid_weight,'user_id':record.user_id,'record_id':str(record.id), 'create_time':unix_ts_string(record.create_time), 'source':record.source}
         if record.word:
             tmp['word'] = {'word': record.word, 'hit_word': SpamWordCheckService.get_spam_word(record.word, GlobalizationService.get_region_by_user_id(record.user_id))}
         elif record.pic:
