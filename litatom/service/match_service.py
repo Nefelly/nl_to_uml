@@ -802,7 +802,7 @@ class MatchService(object):
     def accelerate_info(cls, user_id):
         is_accelerate = cls._is_accelerate(user_id)
         # print is_accelerate
-        GlobalizationService.set_current_region_for_script('th')
+        # GlobalizationService.set_current_region_for_script('th')
         queue_num = cls.get_queue_num(user_id, is_accelerate)
         # print queue_num
         # if cls._is_accelerate(user_id):
