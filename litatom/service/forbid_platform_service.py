@@ -110,7 +110,7 @@ class ForbidPlatformService(object):
             temp_res[uid]['nickname'] = User.get_by_id(uid).nickname
             temp_res[uid]['forbid_history'] = ForbidRecordService.get_forbid_history_by_uid(uid)
 
-        return temp_res.values()
+        return temp_res.values(), True
 
     @classmethod
     def get_forbid_record_atom(cls, user_id):
