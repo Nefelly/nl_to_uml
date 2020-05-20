@@ -20,7 +20,7 @@ from litatom.service import (
     ForbidActionService,
     ForbidRecordService,
     ReportService,
-    TrackSpamRecordService
+    TrackSpamRecordService, UserService
 )
 from litatom.util import (
     get_ts_from_str,
@@ -109,7 +109,6 @@ class ForbidPlatformService(object):
     @classmethod
     def get_forbid_record_atom(cls, user_id):
         """对于单个用户，如此查询"""
-        nickname = User.get_by_id(user_id).nickname
         forbidden_until = User.get_by_id(user_id).forbidden_ts
         if forbidden_until:
             forbidden_until = unix_ts_string(forbidden_until)
@@ -117,7 +116,7 @@ class ForbidPlatformService(object):
         device_forbidden_num = ForbidRecordService.get_device_forbidden_num_by_uid(user_id)
         forbid_score = ForbidActionService.accum_illegal_credit(user_id)[0]
         forbid_history = ForbidRecordService.get_forbid_history_by_uid(user_id)
-        return {'user_id': user_id, 'nickname': nickname, 'forbidden_until': forbidden_until,
+        return {'user_id': user_id, 'nickname': UserService.nickname_by_uid(user_id), 'forbidden_until': forbidden_until,
                 'forbidden_from': UserRecord.get_forbidden_time_by_uid(user_id),
                 'user_forbidden_num': user_forbidden_num, 'device_forbidden_num': device_forbidden_num,
                 'forbid_score': forbid_score, 'forbid_history': forbid_history}
@@ -149,7 +148,7 @@ class ForbidPlatformService(object):
                 forbid_score = ForbidActionService.accum_illegal_credit(user_id)[0]
                 if condition == cls.FEED_USER_UNRELIABLE and forbid_score <= 5:
                     continue
-                tmp = {'user_id': user_id, 'nickname':User.get_by_id(user_id).nickname, 'word': feed.content, 'pics': [OSS_PIC_URL + pic for pic in feed.pics],
+                tmp = {'user_id': user_id, 'nickname':UserService.nickname_by_uid(user_id), 'word': feed.content, 'pics': [OSS_PIC_URL + pic for pic in feed.pics],
                        'audio': [OSS_AUDIO_URL + audio for audio in feed.audios],
                        'comment_num': feed.comment_num, 'like_num': feed.like_num, 'hq': is_hq,
                        'forbid_score': forbid_score, 'feed_id': str(feed.id)}
@@ -163,7 +162,7 @@ class ForbidPlatformService(object):
     def get_feed_atom(cls, user_id):
         feeds = Feed.objects(user_id=user_id, status=FEED_NEED_CHECK)
         forbid_score = ForbidActionService.accum_illegal_credit(user_id)[0]
-        return [{'user_id': user_id,'nickname':User.get_by_id(user_id).nickname, 'word': feed.content, 'pics': [OSS_PIC_URL + pic for pic in feed.pics],
+        return [{'user_id': user_id,'nickname':UserService.nickname_by_uid(user_id), 'word': feed.content, 'pics': [OSS_PIC_URL + pic for pic in feed.pics],
                  'audio': [OSS_AUDIO_URL + audio for audio in feed.audios],
                  'comment_num': feed.comment_num, 'like_num': feed.like_num, 'hq': feed.is_hq,
                  'forbid_score': forbid_score, 'feed_id': str(feed.id)} for feed in feeds], True
