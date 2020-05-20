@@ -709,7 +709,10 @@ class UserService(object):
     @classmethod
     def create_huanxin(cls):
         huanxin_id, pwd = HuanxinService.gen_id_pwd()
-        return HuanxinAccount.create(huanxin_id, pwd)
+        if huanxin_id:
+            return HuanxinAccount.create(huanxin_id, pwd)
+        else:
+            return None
 
     @classmethod
     def uid_online_time(cls, uid):
@@ -806,7 +809,11 @@ class UserService(object):
             if not RedisLock.get_mutex(key):
                 return OPERATE_TOO_OFTEN, False
             user = User()
-            user.huanxin = cls.create_huanxin()
+            huanxin_res = cls.create_huanxin()
+            if huanxin_res:
+                user.huanxin = huanxin_res
+            else:
+                return "huanxin create error", False
             user.phone = zone_phone
             msg, status = cls._on_create_new_user(user)
             if not status:
@@ -839,7 +846,10 @@ class UserService(object):
             if not RedisLock.get_mutex(key):
                 return OPERATE_TOO_OFTEN, False
             user = User()
-            user.huanxin = cls.create_huanxin()
+            huanxin_res = cls.create_huanxin()
+            if not huanxin_res:
+                return "huanxin create error", False
+            user.huanxin = huanxin_res
             user.google = SocialAccountInfo.make(google_id, idinfo)
             user.create_time = datetime.datetime.now()
             msg, status = cls._on_create_new_user(user)
@@ -880,7 +890,10 @@ class UserService(object):
                         setattr(user, attr, getattr(oldUser, attr))
                 user.facebook = SocialAccountInfo.make(facebook_id, idinfo)
             else:
-                user.huanxin = cls.create_huanxin()
+                huanxin_res = cls.create_huanxin()
+                if not huanxin_res:
+                    return "huanxin create error", False
+                user.huanxin = huanxin_res
                 user.facebook = SocialAccountInfo.make(facebook_id, idinfo)
                 user.create_time = datetime.datetime.now()
             msg, status = cls._on_create_new_user(user)

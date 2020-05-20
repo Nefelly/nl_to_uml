@@ -51,6 +51,7 @@ class HuanxinService(object):
     def gen_id_pwd(cls):
         raw_id = None
         pwd = None
+        status = False
         for i in range(3):
             td = datetime.datetime.now() - datetime.datetime(1980, 1, 1)
             ss = (td.seconds + td.days * 24 * 3600)
@@ -60,6 +61,8 @@ class HuanxinService(object):
             status = cls.create_user(raw_id, pwd)
             if status:
                 break
+        if not status:
+            return None, None
         return raw_id, pwd
 
     @classmethod
