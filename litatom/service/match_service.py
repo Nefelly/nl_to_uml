@@ -421,9 +421,9 @@ class MatchService(object):
             return cls.FAKE_MAX_TIME, True
         now_date = now_date_key()
         match_left_key = cls.TYPE_USER_MATCH_LEFT.format(user_date=user_id + now_date)
-        default_match_times = cls.MATCH_TMS   #  if not cls._is_member(user_id) else cls.FAKE_MAX_TIME
-        if ExperimentService.get_exp_value('times_left_exp') == 'less':
-            default_match_times = 5
+        default_match_times = cls._match_times_less(user_id)   #  if not cls._is_member(user_id) else cls.FAKE_MAX_TIME
+        # if ExperimentService.get_exp_value('times_left_exp') == 'less':
+        #     default_match_times = 5
         redis_client.setnx(match_left_key, default_match_times)
         redis_client.expire(match_left_key, ONE_DAY)
         times_left = int(redis_client.get(match_left_key))
@@ -432,11 +432,18 @@ class MatchService(object):
         return times_left, True
 
     @classmethod
+    def _match_times_less(cls, user_id):
+        if ExperimentService.lit_exp_value('match_times_less', user_id) == 'less':
+            return 5
+        return cls.MATCH_TMS
+
+    @classmethod
     def _get_matched_times(cls, user_id):
         times, status = cls._match_left_verify(user_id)
         if not status:
-            return cls.MATCH_TMS
-        return max(cls.MATCH_TMS - times, 0)
+            # return cls.MATCH_TMS
+            return cls._match_times_less(user_id)
+        return max(cls._match_times_less(user_id) - times, 0)
 
     @classmethod
     def _decr_match_left(cls, user_id):
@@ -445,7 +452,7 @@ class MatchService(object):
         now_date = now_date_key()
         match_left_key = cls.TYPE_USER_MATCH_LEFT.format(user_date=user_id + now_date)
         if not redis_client.get(match_left_key):
-            default_match_times = cls.MATCH_TMS # if not cls._is_member(user_id) else cls.FAKE_MAX_TIME
+            default_match_times = cls._match_times_less(user_id) # if not cls._is_member(user_id) else cls.FAKE_MAX_TIME
             redis_client.setnx(match_left_key, default_match_times)
             # redis_client.setnx(match_left_key, cls.MATCH_TMS)
             redis_client.expire(match_left_key, ONE_DAY)
@@ -472,7 +479,7 @@ class MatchService(object):
         now_date = now_date_key()
         match_left_key = cls.TYPE_USER_MATCH_LEFT.format(user_date=user_id + now_date)
         if not redis_client.get(match_left_key):
-            default_match_times = cls.MATCH_TMS # if not cls._is_member(user_id) else cls.MATCH_TMS
+            default_match_times = cls._match_times_less(user_id) #
             redis_client.setnx(match_left_key, default_match_times)
             # redis_client.setnx(match_left_key, cls.MATCH_TMS)
             redis_client.expire(match_left_key, ONE_DAY)
@@ -608,13 +615,13 @@ class MatchService(object):
             return PROFILE_NOT_COMPLETE, False
 
         matched_id = None
-        if CAN_MATCH_ONLINE:
-            '''
-            这个十分危险，语音用户容易匹配错人
-            '''
-            times_left, status = cls._match_left_verify(user_id)
-            if status and (cls.MATCH_TMS - times_left) % 5 == 0 and cls.MATCH_TMS != times_left:
-                matched_id, has_matched = cls._match_yesterday(fake_id, gender)
+        # if CAN_MATCH_ONLINE:
+        #     '''
+        #     这个十分危险，语音用户容易匹配错人
+        #     '''
+        #     times_left, status = cls._match_left_verify(user_id)
+        #     if status and (cls.MATCH_TMS - times_left) % 5 == 0 and cls.MATCH_TMS != times_left:
+        #         matched_id, has_matched = cls._match_yesterday(fake_id, gender)
         if not matched_id:
             matched_id, has_matched = cls._match(fake_id, gender)
 
@@ -794,7 +801,10 @@ class MatchService(object):
     @classmethod
     def accelerate_info(cls, user_id):
         is_accelerate = cls._is_accelerate(user_id)
+        # print is_accelerate
+        # GlobalizationService.set_current_region_for_script('th')
         queue_num = cls.get_queue_num(user_id, is_accelerate)
+        # print queue_num
         # if cls._is_accelerate(user_id):
         #     queue_num = 1
         if queue_num < 3:

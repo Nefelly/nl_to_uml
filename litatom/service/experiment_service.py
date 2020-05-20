@@ -113,6 +113,8 @@ class ExperimentService(object):
         '''
         if not key:
             key = request.user_id
+        if not key:
+            return ExpBucket.DEFAULT
         bucket = cls._get_bucket(exp_name, key)
         return ExpBucket.get_by_exp_name_bucket_id(exp_name, bucket)
 
