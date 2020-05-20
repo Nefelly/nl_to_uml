@@ -15,7 +15,7 @@ from ..model import (
     TrackSpamRecord,
     UserSetting,
     BlockedDevices,
-    UserRecord, Blocked
+    UserRecord, Blocked, User
 )
 from ..service import (
     UserService,
@@ -121,7 +121,7 @@ class ReportService(object):
     @classmethod
     def get_report_info(cls, report):
         tmp = {'report_id': str(report.id),'forbid_weight': 2 if report.reason == 'match' else 4, 'reporter': report.uid, 'pics': [OSS_PIC_URL + pic for pic in report.pics],
-               'region': report.region, 'chat_record': None, 'reason': report.reason, 'feed': None,'user_id':report.target_uid,
+               'region': report.region, 'chat_record': None, 'reason': report.reason, 'feed': None,'user_id':report.target_uid,'nickname':User.get_by_id(report.target_uid).nickname,
                'reporter_ban_before': UserRecord.get_forbidden_num_by_uid(report.uid) > 0}
 
         if report.related_feed:
@@ -188,7 +188,7 @@ class TrackSpamRecordService(object):
 
     @classmethod
     def get_spam_record_info(cls, record):
-        tmp = {'forbid_weight': record.forbid_weight,'user_id':record.user_id,'record_id':str(record.id), 'create_time':unix_ts_string(record.create_time), 'source':record.source}
+        tmp = {'forbid_weight': record.forbid_weight,'user_id':record.user_id,'nickname':User.get_by_id(record.user_id).nickname,'record_id':str(record.id), 'create_time':unix_ts_string(record.create_time), 'source':record.source}
         if record.word:
             tmp['word'] = {'word': record.word, 'hit_word': SpamWordCheckService.get_spam_word(record.word, GlobalizationService.get_region_by_user_id(record.user_id))}
         elif record.pic:

@@ -79,7 +79,7 @@ class ForbidPlatformService(object):
                 user_id = user.user_id
                 if region and region != UserSetting.get_loc_by_uid(user_id):
                     continue
-                temp_res[user_id] = {'user_id': user_id, 'forbidden_from': time_str_by_ts(user.create_time)}
+                temp_res[user_id] = {'user_id': user_id,'nickname':user.nickname, 'forbidden_from': time_str_by_ts(user.create_time)}
                 user_num += 1
                 if user_num >= num:
                     break
@@ -102,7 +102,6 @@ class ForbidPlatformService(object):
             temp_res[uid]['user_forbidden_num'] = UserRecord.get_forbidden_num_by_uid(uid)
             temp_res[uid]['device_forbidden_num'] = ForbidRecordService.get_device_forbidden_num_by_uid(uid)
             temp_res[uid]['forbid_score'] = ForbidActionService.accum_illegal_credit(uid)[0]
-            temp_res[uid]['nickname'] = User.get_by_id(uid).nickname
             temp_res[uid]['forbid_history'] = ForbidRecordService.get_forbid_history_by_uid(uid)
 
         return temp_res.values(), True
@@ -150,7 +149,7 @@ class ForbidPlatformService(object):
                 forbid_score = ForbidActionService.accum_illegal_credit(user_id)[0]
                 if condition == cls.FEED_USER_UNRELIABLE and forbid_score <= 5:
                     continue
-                tmp = {'user_id': user_id, 'word': feed.content, 'pics': [OSS_PIC_URL + pic for pic in feed.pics],
+                tmp = {'user_id': user_id, 'nickname':User.get_by_id(user_id).nickname, 'word': feed.content, 'pics': [OSS_PIC_URL + pic for pic in feed.pics],
                        'audio': [OSS_AUDIO_URL + audio for audio in feed.audios],
                        'comment_num': feed.comment_num, 'like_num': feed.like_num, 'hq': is_hq,
                        'forbid_score': forbid_score, 'feed_id': str(feed.id)}
@@ -164,7 +163,7 @@ class ForbidPlatformService(object):
     def get_feed_atom(cls, user_id):
         feeds = Feed.objects(user_id=user_id, status=FEED_NEED_CHECK)
         forbid_score = ForbidActionService.accum_illegal_credit(user_id)[0]
-        return [{'user_id': user_id, 'word': feed.content, 'pics': [OSS_PIC_URL + pic for pic in feed.pics],
+        return [{'user_id': user_id,'nickname':User.get_by_id(user_id).nickname, 'word': feed.content, 'pics': [OSS_PIC_URL + pic for pic in feed.pics],
                  'audio': [OSS_AUDIO_URL + audio for audio in feed.audios],
                  'comment_num': feed.comment_num, 'like_num': feed.like_num, 'hq': feed.is_hq,
                  'forbid_score': forbid_score, 'feed_id': str(feed.id)} for feed in feeds], True

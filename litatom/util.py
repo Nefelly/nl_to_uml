@@ -255,6 +255,16 @@ def date_from_unix_ts(ts):
         return None
 
 
+def check_time():
+    from_ts = request.args.get('from_ts')
+    to_ts = request.args.get('to_ts')
+    if not from_ts and not to_ts:
+        return None, None
+    from_ts = get_ts_from_str(from_ts)
+    to_ts = get_ts_from_str(to_ts)
+    return from_ts, to_ts
+
+
 def is_emoji(schar):
     if u'\ud800' <= schar <= u'\udbff':
         return True

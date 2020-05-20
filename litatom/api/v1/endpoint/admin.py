@@ -23,11 +23,9 @@ from ...decorator import (
     get_page_info,
     set_exp_arg,
     set_user_id_by_phone,
-    check_time,
-    get_num
 )
 
-from ....util import write_data_to_xls
+from ....util import write_data_to_xls, check_time
 from flask_compress import Compress
 from ...error import (
     Success,
@@ -456,9 +454,7 @@ def review_forbid_record():
         return fail('neither time nor user_id')
     region = request.args.get('region')
     forbid_type = request.args.get('forbid_type')
-    num, status = get_num()
-    if not status:
-        return fail('invalid number')
+    num = request.num
     if num:
         data, status = ForbidPlatformService.get_forbid_record(from_ts, to_ts, region, forbid_type,num)
     else:
@@ -480,9 +476,7 @@ def review_feed():
         return fail('neither time nor user_id')
     loc = request.args.get('loc')
     condition = request.args.get('condition')
-    num, status = get_num()
-    if not status:
-        return fail('invalid number')
+    num = request.num
     if num:
         data, status = ForbidPlatformService.get_feed(from_ts, to_ts, loc, condition, num=num)
     else:
@@ -503,9 +497,7 @@ def review_record():
     if not from_ts:
         return fail('neither time nor user_id')
     region = request.args.get('region')
-    num, status = get_num()
-    if not status:
-        return fail('invalid number')
+    num = request.num
     if num:
         data, status = ForbidPlatformService.get_spam_record(from_ts, to_ts, region, num=num)
     else:
@@ -527,9 +519,7 @@ def review_report():
         return fail('neither time nor user_id')
     region = request.args.get('region')
     match_type = request.args.get('match_type')
-    num, status = get_num()
-    if not status:
-        return fail('invalid number')
+    num = request.num
     if num:
         data, status = ForbidPlatformService.get_report(from_ts, to_ts, region, match_type, num=num)
     else:
@@ -563,7 +553,6 @@ def resolve_review_record():
         res = True
     elif res == 'false':
         res = False
-    print(record_id,res,1)
     data, status = ForbidActionService.resolve_review_pic(record_id, res)
     if not status:
         return fail()

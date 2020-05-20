@@ -59,7 +59,7 @@ class TrackSpamRecord(Document):
     pic = StringField()
     dealed = BooleanField(required=True, default=False)
     create_time = IntField(required=True)
-    forbid_weight = IntField(required=True)
+    forbid_weight = IntField(required=True, default=0)
     source = StringField(required=True, default=SPAM_RECORD_UNKNOWN_SOURCE)
 
     @classmethod
