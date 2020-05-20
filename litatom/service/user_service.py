@@ -813,7 +813,7 @@ class UserService(object):
             if huanxin_res:
                 user.huanxin = huanxin_res
             else:
-                return "huanxin create error", False
+                return "user create error, please retry", False
             user.phone = zone_phone
             msg, status = cls._on_create_new_user(user)
             if not status:
@@ -848,7 +848,7 @@ class UserService(object):
             user = User()
             huanxin_res = cls.create_huanxin()
             if not huanxin_res:
-                return "huanxin create error", False
+                return "user create error, please retry", False
             user.huanxin = huanxin_res
             user.google = SocialAccountInfo.make(google_id, idinfo)
             user.create_time = datetime.datetime.now()
@@ -892,7 +892,7 @@ class UserService(object):
             else:
                 huanxin_res = cls.create_huanxin()
                 if not huanxin_res:
-                    return "huanxin create error", False
+                    return "user create error, please retry", False
                 user.huanxin = huanxin_res
                 user.facebook = SocialAccountInfo.make(facebook_id, idinfo)
                 user.create_time = datetime.datetime.now()
