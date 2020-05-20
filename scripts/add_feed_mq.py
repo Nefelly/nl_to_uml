@@ -48,7 +48,7 @@ def run():
         fcntl.flock(f,
                     fcntl.LOCK_EX|fcntl.LOCK_NB)
     except:
-        print 'program already in run'
+        print('program already in run')
         sys.exit(0)
     thread_num = 10
     threads = []

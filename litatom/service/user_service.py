@@ -30,7 +30,9 @@ from ..const import (
     USER_ACTIVE,
     OPERATE_TOO_OFTEN,
     REMOVE_EXCHANGE,
-    OFFICIAL_AVATAR
+    OFFICIAL_AVATAR,
+    SPAM_RECORD_NICKNAME_SOURCE,
+    SPAM_RECORD_BIO_SOURCE
 )
 
 from ..key import (
@@ -48,7 +50,6 @@ from ..model import (
     Avatar,
     SocialAccountInfo,
     UserRecord,
-    Follow,
     Blocked,
     FaceBookBackup,
     RedisLock,
@@ -276,11 +277,11 @@ class UserService(object):
             # nickname,bio spam word风险拦截
             res = SpamWordCheckService.is_spam_word(nickname)
             if res:
-                ForbidActionService.resolve_spam_word(uid,nickname)
+                ForbidActionService.resolve_spam_word(uid,nickname,SPAM_RECORD_NICKNAME_SOURCE)
                 return GlobalizationService.get_region_word('alert_msg'), False
             res = SpamWordCheckService.is_spam_word(bio)
             if res:
-                ForbidActionService.resolve_spam_word(uid,bio)
+                ForbidActionService.resolve_spam_word(uid,bio,SPAM_RECORD_BIO_SOURCE)
                 return GlobalizationService.get_region_word('alert_msg'), False
             # if (bio or nickname) and GlobalizationService.get_region() == GlobalizationService.DEFAULT_REGION:
             if (bio or nickname):
@@ -514,7 +515,7 @@ class UserService(object):
     # @classmethod
     # def _forbid(cls, user_id):
     #     forbid_time = cls.FORBID_TIME
-    #     if UserRecord.get_forbidden_times_user_id(user_id) > 0:
+    #     if UserRecord.get_forbidden_num_by_uid(user_id) > 0:
     #         forbid_time *= 10
     #     cls.forbid_user(user_id, forbid_time)
     #     return True
@@ -524,7 +525,7 @@ class UserService(object):
         user = User.get_by_id(user_id)
         if not user:
             return False
-        forbid_times = UserRecord.get_forbidden_times_user_id(user_id)
+        forbid_times = UserRecord.get_forbidden_num_by_uid(user_id)
         user.forbidden = True
         user.forbidden_ts = int(time.time()) + forbid_ts * (1 + 5 * forbid_times)
         cls._trans_session_2_forbidden(user)

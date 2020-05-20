@@ -2,9 +2,16 @@
 
 WHOSYOURDADDY = 'IAMYOURDADDY'
 
+ERROR_RANGE = 20
+
 FEED_NORMAL = 0
 FEED_NOT_SHOWN = 1
 FEED_NEED_CHECK = 2
+
+FORBID_PAGE_SIZE = 100
+
+OSS_PIC_URL = 'http://www.litatom.com/api/sns/v1/lit/simage/'
+OSS_AUDIO_URL = 'http://www.litatom.com/api/sns/v1/lit/audio/'
 
 ADMINISTRATORS = {
     '5e357b07f142533fff0049c2',         # 绿杨
@@ -18,6 +25,14 @@ ADMINISTRATORS = {
 
 SYS_FORBID = 'sysForbid'
 MANUAL_FORBID = 'manualForbid'
+
+SPAM_RECORD_UNKNOWN_SOURCE = 'unknown'
+SPAM_RECORD_FEED_SOURCE = 'feed'
+SPAM_RECORD_FEED_COMMENT_SOURCE = 'feed_comment'
+SPAM_RECORD_CHAT_RECORD_SOURCE = 'chat_record'
+SPAM_RECORD_IM_SOURCE = 'IM'
+SPAM_RECORD_NICKNAME_SOURCE = 'nickname'
+SPAM_RECORD_BIO_SOURCE = 'bio'
 
 REVIEW_PIC = 'R'
 BLOCK_PIC = 'B'
@@ -64,6 +79,7 @@ OFFICIAL_AVATAR = '5a6989ec-74a2-11e9-977f-00163e02deb4'
 
 
 # 提示消息
+FEED_NOT_FOUND_ERROR = 'FEED CAN NOT BE FOUND'
 OPERATE_TOO_OFTEN = u'you have operate too quick, please try later~'
 USER_NOT_EXISTS = u'user not exist, please register.'
 PROFILE_NOT_COMPLETE = u'you must complete your profile first.'
@@ -92,6 +108,8 @@ ONE_MONTH = 60 * 60 * 24 * 30
 FOREVER = 1200 * ONE_MONTH
 
 MAX_DIAMONDS = 99999999
+
+SYS_FORBID_TIME = 7 * ONE_DAY
 
 # redis中空集的占位符
 NAN = 'NAN'

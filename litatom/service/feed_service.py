@@ -25,7 +25,10 @@ from ..const import (
     ONE_HOUR,
     ONE_MIN,
     BLOCK_PIC,
-    REVIEW_PIC, FEED_NEED_CHECK
+    REVIEW_PIC,
+    FEED_NEED_CHECK,
+    SPAM_RECORD_FEED_SOURCE,
+    SPAM_RECORD_FEED_COMMENT_SOURCE
 )
 
 from ..service import (
@@ -118,7 +121,7 @@ class FeedService(object):
                 advice = pic_res[pic][1]
                 if advice == BLOCK_PIC:
                     GlobalizationService.set_current_region_for_script(GlobalizationService.get_region_by_user_id(feed.user_id))
-                    ForbidActionService.resolve_block_pic(feed.user_id, pic)
+                    ForbidActionService.resolve_block_pic(feed.user_id, pic, SPAM_RECORD_FEED_SOURCE)
                     FeedLike.del_by_feedid(feed_id)
                     FeedComment.objects(feed_id=feed_id).delete()
                     feed.delete()
@@ -244,7 +247,7 @@ class FeedService(object):
     def create_feed(cls, user_id, content, pics=None, audios=None):
         if content:
             if SpamWordCheckService.is_spam_word(content):
-                ForbidActionService.resolve_spam_word(user_id, content)
+                ForbidActionService.resolve_spam_word(user_id, content, SPAM_RECORD_FEED_SOURCE)
                 return GlobalizationService.get_region_word('alert_msg'), False
         feed = Feed.create_feed(user_id, content, pics, audios)
         UserService.check_and_move_to_big(user_id, [content])
@@ -462,7 +465,7 @@ class FeedService(object):
         # spam word comment will be stopped
         res = SpamWordCheckService.is_spam_word(content)
         if res:
-            ForbidActionService.resolve_spam_word(user_id, content)
+            ForbidActionService.resolve_spam_word(user_id, content, SPAM_RECORD_FEED_COMMENT_SOURCE)
             return GlobalizationService.get_region_word('alert_msg'), False
 
         if feed.user_id != user_id:

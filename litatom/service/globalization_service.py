@@ -135,6 +135,7 @@ class GlobalizationService(object):
         'VN': REGION_VN,
         'IN': REGION_IN,
         'ID': REGION_ID,
+        'id': REGION_ID,
         'th': REGION_TH,
         'CN': REGION_EN,
         #'INN': REGION_IN_NOCORE
@@ -322,7 +323,6 @@ class GlobalizationService(object):
             return region
         if getattr(request, 'region', ''):
             return request.region
-        loc = None
         user_id = request.user_id
         if user_id:
             region_key = REDIS_USER_REGION.format(user_id=user_id)

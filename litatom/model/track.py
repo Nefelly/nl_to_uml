@@ -14,6 +14,9 @@ from ..util import (
     date_from_unix_ts,
     format_standard_time
 )
+from ..const import (
+    SPAM_RECORD_UNKNOWN_SOURCE
+)
 
 
 class TrackChat(Document):
@@ -57,15 +60,16 @@ class TrackSpamRecord(Document):
     dealed = BooleanField(required=True, default=False)
     create_time = IntField(required=True)
     forbid_weight = IntField(required=True, default=0)
+    source = StringField(required=True, default=SPAM_RECORD_UNKNOWN_SOURCE)
 
     @classmethod
-    def create(cls, user_id, word=None, pic=None, dealed_tag=False, forbid_weight=0):
+    def create(cls, user_id, word=None, pic=None, dealed_tag=False, forbid_weight=0, source=SPAM_RECORD_UNKNOWN_SOURCE):
         if (not word and not pic) or (word and pic):
             return False
         if word:
-            obj = cls(user_id=user_id, word=word, dealed=dealed_tag)
+            obj = cls(user_id=user_id, word=word, dealed=dealed_tag, source=source)
         else:
-            obj = cls(user_id=user_id, pic=pic, dealed=dealed_tag)
+            obj = cls(user_id=user_id, pic=pic, dealed=dealed_tag, source=source)
         obj.create_time = int(time.time())
         obj.forbid_weight = forbid_weight
         obj.save()
@@ -80,6 +84,10 @@ class TrackSpamRecord(Document):
         return cls.objects(id=record_id).first()
 
     @classmethod
+    def get_records_by_uid_and_time(cls, user_id, from_ts, to_ts, dealed=True):
+        return cls.objects(user_id=user_id, create_time__gte=from_ts, create_time__lte=to_ts, dealed=dealed)
+
+    @classmethod
     def count_by_time_and_uid(cls, user_id, from_time, to_time, dealed=False):
         """统计user在一段时间范围内被警告次数"""
         return cls.objects(create_time__gte=from_time, create_time__lte=to_time, user_id=user_id, dealed=dealed).count()
@@ -90,7 +98,7 @@ class TrackSpamRecord(Document):
         objs = cls.objects(create_time__gte=from_time, create_time__lte=to_time, user_id=user_id, dealed=False)
         res = 0.0
         for obj in objs:
-                res += obj.forbid_weight
+            res += obj.forbid_weight
         return res
 
     @classmethod

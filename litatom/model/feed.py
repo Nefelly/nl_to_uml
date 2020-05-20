@@ -46,7 +46,6 @@ class Feed(Document):
     like_num = IntField(required=True, default=0)
     dislike_num = IntField(required=True, default=0)
     comment_num = IntField(required=True, default=0)
-    not_shown = BooleanField(default=False)
     status = IntField(default=0)
     content = StringField()
     pics = ListField(default=[])

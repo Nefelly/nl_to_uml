@@ -33,6 +33,10 @@ from ..const import (
     SYS_FORBID,
     MANUAL_FORBID,
     BLOCK_PIC,
+    SYS_FORBID_TIME,
+    SPAM_RECORD_UNKNOWN_SOURCE,
+    SPAM_RECORD_FEED_SOURCE,
+    SPAM_RECORD_CHAT_RECORD_SOURCE
 )
 
 redis_client = RedisClient()['lit']
@@ -48,7 +52,6 @@ class ForbidActionService(object):
     REVIEW_FEED_PIC_WEIGHTING = 2
     MATCH_REPORT_WEIGHTING = 2
     FORBID_THRESHOLD = 10
-    DEFAULT_SYS_FORBID_TIME = 7 * ONE_DAY
     COMPENSATION_PER_TEN_FOLLOWER = 2
     COMPENSATION_UPPER_THRESHOLD = 10
     RELIABLE_REPORTER_COMPENSATION = 1
@@ -60,7 +63,7 @@ class ForbidActionService(object):
     def _authenticate_reporter(cls, reporter, target_user_id, ts_now=int(time.time())):
         """一日内举报不可超过五次,三日内不可重复举报一人"""
         if AppAdmin.is_admin(reporter):
-            cls.forbid_user(target_user_id, cls.DEFAULT_SYS_FORBID_TIME, MANUAL_FORBID)
+            cls.forbid_user(target_user_id, SYS_FORBID_TIME, MANUAL_FORBID)
             return False, {'report_id': cls.ADMINISTRATOR_REPORT, MANUAL_FORBID: True}, True
         if setting.IS_DEV:
             return True, None, None
@@ -112,7 +115,7 @@ class ForbidActionService(object):
             reliable_reporter_compensation_score = 0
         res = cls._check_forbid(target_user_id, ts_now, -reliable_reporter_compensation_score)
         if res:
-            cls.forbid_user(target_user_id, cls.DEFAULT_SYS_FORBID_TIME, SYS_FORBID, ts_now)
+            cls.forbid_user(target_user_id, SYS_FORBID_TIME, SYS_FORBID, ts_now)
             return {"report_id": str(report_id), SYS_FORBID: True}, True
         return {"report_id": str(report_id), SYS_FORBID: False}, True
 
@@ -127,13 +130,13 @@ class ForbidActionService(object):
         if pic_res:
             for pic in pic_res:
                 if pic_res[pic][1] == BLOCK_PIC:
-                    TrackSpamRecordService.save_record(target_user_id, pic=pic, forbid_weight=cls.BLOCK_PIC_WEIGHTING)
+                    TrackSpamRecordService.save_record(target_user_id, pic=pic, forbid_weight=cls.BLOCK_PIC_WEIGHTING,source=SPAM_RECORD_FEED_SOURCE)
                     MsgService.alert_feed_delete(target_user_id, pic_res[pic][0])
                     return
 
         if word_res:
             TrackSpamRecordService.save_record(target_user_id, word=word_res.keys()[0],
-                                               forbid_weight=cls.SPAM_WORD_WEIGHTING)
+                                               forbid_weight=cls.SPAM_WORD_WEIGHTING, source=SPAM_RECORD_FEED_SOURCE)
             MsgService.alert_feed_delete(target_user_id, cls.SPAM_WORD_REASON)
             return
         Feed.change_to_review(feed_id)
@@ -148,28 +151,29 @@ class ForbidActionService(object):
         if pic_res:
             for pic in pic_res:
                 if pic_res[pic][1] == BLOCK_PIC:
-                    TrackSpamRecordService.save_record(target_user_id, pic=pic, forbid_weight=cls.BLOCK_PIC_WEIGHTING)
+                    TrackSpamRecordService.save_record(target_user_id, pic=pic, forbid_weight=cls.BLOCK_PIC_WEIGHTING, source=SPAM_RECORD_CHAT_RECORD_SOURCE)
                     MsgService.alert_basic(target_user_id)
                     return
         if word_res:
             TrackSpamRecordService.save_record(target_user_id, word=word_res.keys()[0],
-                                               forbid_weight=cls.SPAM_WORD_WEIGHTING)
+                                               forbid_weight=cls.SPAM_WORD_WEIGHTING,source=SPAM_RECORD_CHAT_RECORD_SOURCE)
             MsgService.alert_basic(target_user_id)
             return
         pic = pic_res.keys()[0]
-        TrackSpamRecordService.save_record(target_user_id, pic=pic, forbid_weight=cls.REVIEW_PIC_WEIGHTING)
+        TrackSpamRecordService.save_record(target_user_id, pic=pic, forbid_weight=cls.REVIEW_PIC_WEIGHTING,source=SPAM_RECORD_CHAT_RECORD_SOURCE)
         MsgService.alert_basic(target_user_id)
 
     @classmethod
-    def resolve_spam_word(cls, user_id, word):
+    def resolve_spam_word(cls, user_id, word, source=SPAM_RECORD_UNKNOWN_SOURCE):
         """已知spam word处理"""
-        TrackSpamRecordService.save_record(user_id, word=word, forbid_weight=cls.SPAM_WORD_WEIGHTING)
+        TrackSpamRecordService.save_record(user_id, word=word, forbid_weight=cls.SPAM_WORD_WEIGHTING, source=source)
         return cls._basic_alert_resolution(user_id)
 
     @classmethod
     def resolve_review_pic(cls, record_id, res):
         """对于需要review的track spam record，人工审核结果处理"""
         record = TrackSpamRecord.get_record_by_id(record_id)
+        print(record,2)
         if not record:
             return None, False
         if not res:
@@ -193,12 +197,12 @@ class ForbidActionService(object):
         # 理论上不可能出现
         if not feed.pics:
             return None, False
-        return cls.resolve_block_pic(user_id, feed.pics[0])
+        return cls.resolve_block_pic(user_id, feed.pics[0],source=SPAM_RECORD_FEED_SOURCE)
 
     @classmethod
-    def resolve_block_pic(cls, user_id, pic):
+    def resolve_block_pic(cls, user_id, pic, source=SPAM_RECORD_UNKNOWN_SOURCE):
         """已鉴定过的block图片处理接口服务函数"""
-        TrackSpamRecordService.save_record(user_id, pic=pic, forbid_weight=cls.BLOCK_PIC_WEIGHTING)
+        TrackSpamRecordService.save_record(user_id, pic=pic, forbid_weight=cls.BLOCK_PIC_WEIGHTING, source=source)
         return cls._basic_alert_resolution(user_id)
 
     @classmethod
@@ -207,7 +211,7 @@ class ForbidActionService(object):
         MsgService.alert_basic(user_id)
         res = cls._check_forbid(user_id)
         if res:
-            cls.forbid_user(user_id, cls.DEFAULT_SYS_FORBID_TIME)
+            cls.forbid_user(user_id, SYS_FORBID_TIME)
             return {SYS_FORBID: True}, True
         return {SYS_FORBID: False}, True
 
