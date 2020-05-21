@@ -167,7 +167,7 @@ class SpamWordCheckService(object):
     def is_spam_word(cls, word, region=None, online=True):
         if not word:
             return False
-        if online:
+        if not region and online:
             region = GlobalizationService.get_region()
         if cls.NOT_REGION:
             if cls.hit_word_in_chains(word, cls.DEFAULT_KEYWORD_CHAIN):
