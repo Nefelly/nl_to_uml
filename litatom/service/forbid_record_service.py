@@ -128,7 +128,8 @@ class ReportService(object):
             feed = Feed.objects(id=report.related_feed).first()
             if not feed:
                 tmp['feed'] = FEED_NOT_FOUND_ERROR
-            tmp['feed'] = {'content': feed.content, 'pics': [OSS_PIC_URL + pic for pic in feed.pics], 'audios':[OSS_AUDIO_URL + audio for audio in feed.audios]}
+            else:
+                tmp['feed'] = {'content': feed.content, 'pics': [OSS_PIC_URL + pic for pic in feed.pics], 'audios':[OSS_AUDIO_URL + audio for audio in feed.audios]}
 
         if report.chat_record:
             res_record = []
