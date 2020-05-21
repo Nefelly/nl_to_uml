@@ -158,7 +158,7 @@ class ReportService(object):
                'target_user_id': '%s\n%s' % (
                    report.target_uid, UserService.nickname_by_uid(report.target_uid)) if report.target_uid else '',
                'create_time': format_standard_time(date_from_unix_ts(report.create_ts)),
-               'reporter_ban_fefore': UserRecord.get_forbidden_times_user_id(report.uid) > 0}
+               'reporter_ban_fefore': UserRecord.has_been_forbidden(report.uid)}
 
         if report.chat_record:
             res_record = []
