@@ -24,7 +24,7 @@ from ..service import (
     SpamWordCheckService
 )
 from ..util import (
-    unix_ts_string, format_pic
+    unix_ts_string, format_pic, format_standard_time, date_from_unix_ts
 )
 
 
@@ -150,6 +150,44 @@ class ReportService(object):
         if not report:
             return u'worng id', False
         return cls.get_report_info(report), True
+
+    @classmethod
+    def get_report_info_tmp(cls, report):
+        res = {'reason': report.reason, 'report_id': str(report.id), 'user_id': report.uid, 'pics': report.pics,
+               'region': report.region, 'deal_result': report.deal_res if report.deal_res else '',
+               'target_user_id': '%s\n%s' % (
+                   report.target_uid, UserService.nickname_by_uid(report.target_uid)) if report.target_uid else '',
+               'create_time': format_standard_time(date_from_unix_ts(report.create_ts)),
+               'reporter_ban_fefore': UserRecord.get_forbidden_times_user_id(report.uid) > 0}
+
+        if report.chat_record:
+            res_record = []
+            record = json.loads(report.chat_record)
+            for el in record:
+                uid = UserService.uid_by_huanxin_id(el['id'])
+                # res_record.append({'content': el['content'], 'name': UserService.nickname_by_uid(uid)})
+                res_record.append("%s: %s" % (UserService.nickname_by_uid(uid), el['content']))
+            res['chat_record'] = '\n'.join(res_record)
+        else:
+            res['chat_record'] = ''
+        res['pic_from_feed'] = False
+        if report.related_feed:
+            feed = Feed.get_by_id(report.related_feed)
+            if feed:
+                res['pic_from_feed'] = True
+                res['content'] = feed.content if feed.content else ''
+                if feed.audios:
+                    res['audio_url'] = 'http://www.litatom.com/api/sns/v1/lit/mp3audio/%s' % feed.audios[0]
+                else:
+                    res['audio_url'] = ''
+                res['pics'] = feed.pics
+            else:
+                res['content'] = ''
+                res['audio_url'] = ''
+        else:
+            res['content'] = ''
+            res['audio_url'] = ''
+        return res
 
 
 class TrackSpamRecordService(object):
