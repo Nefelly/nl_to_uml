@@ -120,6 +120,8 @@ class ReportService(object):
 
     @classmethod
     def get_report_info(cls, report):
+        if not report:
+            return None
         target_uid = report.target_uid
         reportee = User.get_by_id(target_uid)
         tmp = {'report_id': str(report.id),'forbid_weight': 2 if report.reason == 'match' else 4, 'reporter': report.uid, 'pics': [OSS_PIC_URL + pic for pic in report.pics],
