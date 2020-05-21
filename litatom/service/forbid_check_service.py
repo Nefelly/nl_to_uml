@@ -15,7 +15,7 @@ from litatom.model import (
     Feed,
     BlockedDevices,
     UserSetting,
-    UserRecord
+    UserRecord, FakeSpamWord
 )
 from ..redis import (
     RedisClient,
@@ -94,22 +94,24 @@ class ForbidCheckService(object):
 class SpamWordCheckService(object):
     KEYWORD_CHAINS = {}
     DEFAULT_KEYWORD_CHAIN = {}
+    FAKE_KEYWORD_CHAINS = {}
+    DEFAULT_FAKE_KEYWORD_CHAIN = {}
     DELIMIT = '\x00'
     NOT_REGION = False
 
     @classmethod
-    def add(cls, keyword, region=None):
+    def add(cls, keyword, region=None, key_word_chains=None, default_key_word_chains=None):
         """以字典嵌套格式，将keyword的每个字母存入KEYWORD_CHAINS"""
         keyword = keyword.lower()
         chars = keyword.strip()
         if not chars:
             return
         if cls.NOT_REGION:
-            level = cls.DEFAULT_KEYWORD_CHAIN
+            level = default_key_word_chains
         else:
-            if not cls.KEYWORD_CHAINS.get(region):
-                cls.KEYWORD_CHAINS[region] = {}
-            level = cls.KEYWORD_CHAINS[region]
+            if not key_word_chains.get(region):
+                key_word_chains[region] = {}
+            level = key_word_chains[region]
         for i in range(len(chars)):
             if chars[i] in level:
                 level = level[chars[i]]
@@ -128,8 +130,10 @@ class SpamWordCheckService(object):
     @classmethod
     def load(cls):
         for region in GlobalizationService.REGIONS:
-            for _ in SpamWord.get_by_region(region):
-                cls.add(_.word, region)
+            for region_res in SpamWord.get_by_region(region):
+                cls.add(region_res.word, region, cls.KEYWORD_CHAINS, cls.DEFAULT_FAKE_KEYWORD_CHAIN)
+            for region_res in FakeSpamWord.get_by_region(region):
+                cls.add(region_res.word, region, cls.FAKE_KEYWORD_CHAINS, cls.DEFAULT_FAKE_KEYWORD_CHAIN)
 
     @classmethod
     def get_spam_word(cls, word, region=None):
@@ -161,16 +165,32 @@ class SpamWordCheckService(object):
 
     @classmethod
     def is_spam_word(cls, word, region=None, online=True):
-        """从word的某个位置开始连续匹配到了一个keyword，则判定为spam_word"""
         if not word:
             return False
         if online:
             region = GlobalizationService.get_region()
+        if cls.NOT_REGION:
+            if cls.hit_word_in_chains(word, cls.DEFAULT_KEYWORD_CHAIN):
+                return not cls.hit_word_in_chains(word, cls.DEFAULT_FAKE_KEYWORD_CHAIN)
+            else:
+                return False
+        else:
+            if cls.hit_word_in_chains(word, cls.KEYWORD_CHAINS, region):
+                return not cls.hit_word_in_chains(word, cls.FAKE_KEYWORD_CHAINS,region)
+            else:
+                return False
+
+    @classmethod
+    def hit_word_in_chains(cls, word, key_word_chain, region=None):
+        """从word的某个位置开始连续匹配到了一个keyword，则判定为spam_word"""
         word = word.lower()
         ret = []
         start = 0
         while start < len(word):
-            level = cls.KEYWORD_CHAINS.get(region, {}) if not cls.NOT_REGION else cls.DEFAULT_KEYWORD_CHAIN
+            if not region:
+                level = key_word_chain
+            else:
+                level = key_word_chain.get(region, {})
             step_ins = 0
             for char in word[start:]:
                 if char in level:
