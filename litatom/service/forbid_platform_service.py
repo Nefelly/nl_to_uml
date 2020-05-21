@@ -213,7 +213,6 @@ class ForbidPlatformService(object):
                 break
             have_read += len(records)
             for record in records:
-                print(record.id)
                 user_id = record.user_id
                 if region and UserSetting.get_loc_by_uid(user_id) != region:
                     continue
