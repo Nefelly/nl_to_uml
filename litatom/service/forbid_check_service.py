@@ -176,7 +176,7 @@ class SpamWordCheckService(object):
                 return False
         else:
             if cls.hit_word_in_chains(word, cls.KEYWORD_CHAINS, region):
-                print(1)
+                print(1,cls.hit_word_in_chains(word, cls.KEYWORD_CHAINS, region),cls.hit_word_in_chains(word, cls.FAKE_KEYWORD_CHAINS,region))
                 return not cls.hit_word_in_chains(word, cls.FAKE_KEYWORD_CHAINS,region)
             else:
                 print(2)
