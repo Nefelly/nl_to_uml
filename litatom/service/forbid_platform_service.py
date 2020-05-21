@@ -181,7 +181,7 @@ class ForbidPlatformService(object):
                                      dealed=False, duplicated=False).order_by('-create_ts').limit(num)
         elif region and match_type == cls.OTHER_REPORT:
             reports = Report.objects(create_ts__gte=from_ts, create_ts__lte=to_ts, region=region,
-                                     reason__ne=cls.MATCH_REPORT, dealed=False, duplicated=False).order_by(
+                                     reason__ne=cls.MtATCH_REPORT, dealed=False, duplicated=False).order_by(
                 '-create_ts').limit(num)
         elif region and not match_type:
             reports = Report.objects(create_ts__gte=from_ts, create_ts__lte=to_ts, region=region, dealed=False,
@@ -207,13 +207,12 @@ class ForbidPlatformService(object):
         res_len = 0
         have_read = 0
         while res_len < num:
-            records = TrackSpamRecord.objects(create_time__gte=from_ts, create_time__lte=to_ts, dealed=False).order_by(
+            records = TrackSpamRecord.objects(create_time__gte=from_ts, create_time__lte=to_ts, forbid_weight__lte=ForbidActionService.SPAM_WORD_WEIGHTING).order_by(
                 '-create_time').skip(have_read).limit(num)
             if not records:
                 break
             have_read += len(records)
             for record in records:
-                print(record.id)
                 user_id = record.user_id
                 if region and UserSetting.get_loc_by_uid(user_id) != region:
                     continue
