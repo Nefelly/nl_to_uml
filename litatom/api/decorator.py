@@ -79,14 +79,24 @@ def get_page_info():
     return page, page_size
 
 
-def get_user_id_by_phone():
-    phone = request.args.get('phone')
+def get_user_id_by_phone(phone=None):
+    phone = request.args.get('phone') if not phone else phone
     user_id = request.user_id
     if phone and phone.startswith('86'):
         user = User.get_by_phone(phone)
         if user:
             user_id = str(user.id)
             request.user_id = user_id
+    return user_id
+
+
+def get_user_id_by_nickname(nickname=None):
+    nickname = request.args.get('phone') if not nickname else nickname
+    user = User.get_by_nickname(nickname)
+    if not user:
+        return None
+    user_id = str(user.id)
+    request.user_id = user_id
     return user_id
 
 

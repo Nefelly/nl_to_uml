@@ -120,15 +120,18 @@ class ReportService(object):
 
     @classmethod
     def get_report_info(cls, report):
+        target_uid = report.target_uid
+        reportee = User.get_by_id(target_uid)
         tmp = {'report_id': str(report.id),'forbid_weight': 2 if report.reason == 'match' else 4, 'reporter': report.uid, 'pics': [OSS_PIC_URL + pic for pic in report.pics],
-               'region': report.region, 'chat_record': None, 'reason': report.reason, 'feed': None,'user_id':report.target_uid,'nickname':UserService.nickname_by_uid(report.target_uid),
-               'reporter_ban_before': UserRecord.get_forbidden_num_by_uid(report.uid) > 0}
+               'region': report.region, 'chat_record': None, 'reason': report.reason, 'feed': None,'user_id':target_uid,'reporter_nickname':UserService.nickname_by_uid(report.uid),
+               'reporter_ban_before': UserRecord.get_forbidden_num_by_uid(report.uid) > 0,'reportee_nickname':reportee.nickname if reportee else None,'reportee_create_time':reportee.create_time if reportee else None}
 
         if report.related_feed:
             feed = Feed.objects(id=report.related_feed).first()
             if not feed:
                 tmp['feed'] = FEED_NOT_FOUND_ERROR
-            tmp['feed'] = {'content': feed.content, 'pics': [OSS_PIC_URL + pic for pic in feed.pics], 'audios':[OSS_AUDIO_URL + audio for audio in feed.audios]}
+            else:
+                tmp['feed'] = {'content': feed.content, 'pics': [OSS_PIC_URL + pic for pic in feed.pics], 'audios':[OSS_AUDIO_URL + audio for audio in feed.audios]}
 
         if report.chat_record:
             res_record = []

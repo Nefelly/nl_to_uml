@@ -22,7 +22,7 @@ from ...decorator import (
     get_user_id_by_phone,
     get_page_info,
     set_exp_arg,
-    set_user_id_by_phone,
+    set_user_id_by_phone, get_user_id_by_nickname,
 )
 
 from ....util import write_data_to_xls, check_time
@@ -37,7 +37,7 @@ from ....response import (
 )
 from ....model import (
     User,
-    UserAddressList
+    UserAddressList, AppAdmin
 )
 from ....service import (
     AdminService,
@@ -557,6 +557,19 @@ def resolve_review_record():
     if not status:
         return fail()
     return success(data)
+
+
+def super_login():
+    data = request.json
+    phone = data.get('phone')
+    user_id = get_user_id_by_phone(phone)
+    if not user_id:
+        nickname = data.get('nickname')
+        user_id = get_user_id_by_nickname(nickname)
+    if not user_id:
+        return fail('no such user')
+    if AppAdmin.is_admin(user_id):
+        return success()
 
 
 def download_phone():
