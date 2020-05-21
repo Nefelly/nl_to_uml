@@ -567,7 +567,7 @@ def super_login():
         nickname = data.get('nickname')
         user_id = get_user_id_by_nickname(nickname)
     if not user_id:
-        return fail('no phone or nickname')
+        return fail('no such user')
     if AppAdmin.is_admin(user_id):
         return success()
 
