@@ -7,6 +7,7 @@ from flask import (
     request
 )
 
+from . import SpamWordCheckService
 from ..redis import RedisClient
 from ..key import (
     REDIS_FEED_SQUARE_REGION,
@@ -43,7 +44,6 @@ from ..service import (
     MqService,
     ForbidActionService,
     AntiSpamRateService,
-    SpamWordCheckService,
     ForbidCheckService
 )
 from ..model import (
