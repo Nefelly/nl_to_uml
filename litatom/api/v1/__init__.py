@@ -132,6 +132,8 @@ b.add_url_rule('/lit/admin/review_forbid_record','admin-review_forbid_record', e
 b.add_url_rule('/lit/admin/resolve_review_record','admin-resolve_review_record',endpoint.admin.resolve_review_record)
 b.add_url_rule('/lit/admin/resolve_review_feed','admin-resolve_review_feed',endpoint.admin.resolve_review_feed)
 b.add_url_rule('/lit/admin/super_login','admin-super_login',endpoint.admin.super_login, methods=['POST'])
+b.add_url_rule('/lit/admin/huanxin_by_uid','admin-huanxin_by_uid',endpoint.admin.huanxin_by_uid)
+
 
 # picture
 b.add_url_rule('/lit/image/upload', 'image-upload', endpoint.oss.upload_image_from_file, methods=['POST'])

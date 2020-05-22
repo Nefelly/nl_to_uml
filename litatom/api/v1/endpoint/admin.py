@@ -786,3 +786,10 @@ def get_feed():
     loc = request.args.get('loc')
     condition = request.args.get('condition')
     ForbidPlatformService.get_feed(loc, condition)
+
+def huanxin_by_uid():
+    uid = request.args.get('user_id')
+    user = User.get_by_id(uid)
+    if not user:
+        return fail('no such user')
+    return success(user.huanxin.user_id)
