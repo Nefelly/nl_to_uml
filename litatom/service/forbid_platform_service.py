@@ -181,7 +181,7 @@ class ForbidPlatformService(object):
                                      dealed=False, duplicated=False).order_by('-create_ts').limit(num)
         elif region and match_type == cls.OTHER_REPORT:
             reports = Report.objects(create_ts__gte=from_ts, create_ts__lte=to_ts, region=region,
-                                     reason__ne=cls.MtATCH_REPORT, dealed=False, duplicated=False).order_by(
+                                     reason__ne=cls.MATCH_REPORT, dealed=False, duplicated=False).order_by(
                 '-create_ts').limit(num)
         elif region and not match_type:
             reports = Report.objects(create_ts__gte=from_ts, create_ts__lte=to_ts, region=region, dealed=False,

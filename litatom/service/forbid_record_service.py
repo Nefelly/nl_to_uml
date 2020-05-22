@@ -24,7 +24,7 @@ from ..service import (
     SpamWordCheckService
 )
 from ..util import (
-    unix_ts_string, format_pic
+    unix_ts_string, format_pic, format_standard_time
 )
 
 
@@ -124,7 +124,7 @@ class ReportService(object):
         reportee = User.get_by_id(target_uid)
         tmp = {'report_id': str(report.id),'forbid_weight': 2 if report.reason == 'match' else 4, 'reporter': report.uid, 'pics': [OSS_PIC_URL + pic for pic in report.pics],
                'region': report.region, 'chat_record': None, 'reason': report.reason, 'feed': None,'user_id':target_uid,'reporter_nickname':UserService.nickname_by_uid(report.uid),
-               'reporter_ban_before': UserRecord.get_forbidden_num_by_uid(report.uid) > 0,'reportee_nickname':reportee.nickname if reportee else None,'reportee_create_time':reportee.create_time if reportee else None}
+               'reporter_ban_before': UserRecord.get_forbidden_num_by_uid(report.uid) > 0,'reportee_nickname':reportee.nickname if reportee else None,'reportee_create_time':format_standard_time(reportee.create_time) if reportee else None}
 
         if report.related_feed:
             feed = Feed.objects(id=report.related_feed).first()
