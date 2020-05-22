@@ -7,6 +7,7 @@ import logging
 import langid
 from dateutil.relativedelta import relativedelta
 from flask import request
+
 from ..redis import RedisClient
 from ..util import (
     validate_phone_number,
@@ -63,7 +64,7 @@ from ..service import (
     HuanxinService,
     GoogleService,
     FacebookService,
-    BlockService,
+    ForbidCheckService,
     FollowService,
     GlobalizationService,
     MqService,

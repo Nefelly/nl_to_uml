@@ -155,7 +155,7 @@ class AdminService(object):
             next_start = objs[-1].create_ts
             objs = objs[:-1]
         return {
-                   'objs': [ReportService.get_report_info(el) for el in objs],
+                   'objs': [ReportService.get_report_info_tmp(el) for el in objs],
                    'has_next': has_next,
                    'next_start': next_start
                }, True
