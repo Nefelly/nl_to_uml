@@ -140,7 +140,7 @@ class UserService(object):
             user.forbidden = False
             user.save()
             if user.huanxin and user.huanxin.user_id:
-                HuanxinService.active_user(user.huanxin.user_id)
+                unforbid_status = HuanxinService.active_user(user.huanxin.user_id)
             cls._trans_forbidden_2_session(user)
             return True
         return False

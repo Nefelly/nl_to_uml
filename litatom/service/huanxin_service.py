@@ -62,6 +62,7 @@ class HuanxinService(object):
             if status:
                 break
         if not status:
+            assert False
             return None, None
         return raw_id, pwd
 
@@ -398,6 +399,7 @@ class HuanxinService(object):
         except Exception, e:
             logger.error(traceback.format_exc())
             logger.error('Error active huanxin, user_id: %r, err: %r', user_name, e)
+            assert False
             return {}
 
     @classmethod
@@ -462,6 +464,7 @@ class HuanxinService(object):
             logger.error(traceback.format_exc())
             logger.error(e)
             logger.error('Error deactive huanxin response:%r , user_id: %r, err: %r', response, user_name, e)
+            # assert False
             return True
 
     @classmethod
