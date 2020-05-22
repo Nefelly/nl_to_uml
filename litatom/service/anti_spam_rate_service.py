@@ -33,6 +33,7 @@ logger = logging.getLogger(__name__)
 
 redis_client = RedisClient()['lit']
 
+
 class AntiSpamRateService(object):
     '''
 
@@ -61,7 +62,7 @@ class AntiSpamRateService(object):
             ],
             WORD_KEY: ['rate_conversation_diamonds', 'rate_conversation_stop']
         },
-        FOLLOW:  {
+        FOLLOW: {
             RATE_KEY: [
                 [5 * ONE_MIN, 10, 10],
                 [ONE_DAY, 50, 500],
@@ -69,7 +70,7 @@ class AntiSpamRateService(object):
             ],
             WORD_KEY: ['rate_follow_diamonds', 'rate_follow_stop']
         },
-        COMMENT:  {
+        COMMENT: {
             RATE_KEY: [
                 [5 * ONE_MIN, 10, 10],
                 [ONE_DAY, 50, 500],
@@ -82,11 +83,11 @@ class AntiSpamRateService(object):
     PROTECTED_D = {
         ACCOST: {
             RATE_KEY: [
-                          [5 * ONE_MIN, 5, 5],
-                          [ONE_DAY, 100, 5],
-                          [ONE_DAY, 10000]
-                      ],
-                      WORD_KEY: 'protected_conversation_diamonds'
+                [5 * ONE_MIN, 5, 5],
+                [ONE_DAY, 100, 5],
+                [ONE_DAY, 10000]
+            ],
+            WORD_KEY: 'protected_conversation_diamonds'
         }
     }
 
@@ -176,7 +177,6 @@ class AntiSpamRateService(object):
     @classmethod
     def _visit_before_key(cls, user_id, activity, other_id):
         return REDIS_RATE_VISITED.format(user_id_activity_other_id='%s_%s_%s' % (user_id, activity, other_id))
-
 
     @classmethod
     def is_protected_visit_before(cls, user_id, activity, other_id):

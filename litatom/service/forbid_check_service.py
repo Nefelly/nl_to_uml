@@ -8,18 +8,19 @@ import traceback
 from copy import deepcopy
 import logging
 from qiniu import Auth, QiniuMacAuth, http
-from . import GlobalizationService, AliLogService
-from ..const import BLOCK_PIC, REVIEW_PIC
+from ..service import GlobalizationService, AliLogService
+from ..const import BLOCK_PIC, REVIEW_PIC, OSS_PIC_URL
 from litatom.model import (
     SpamWord,
     Feed,
     BlockedDevices,
     UserSetting,
-    UserRecord
+    UserRecord, FakeSpamWord
 )
 from ..redis import (
     RedisClient,
 )
+from ..util import date_from_unix_ts, format_pic
 
 logger = logging.getLogger(__name__)
 redis_client = RedisClient()['lit']
@@ -65,12 +66,6 @@ class ForbidCheckService(object):
         return res_words, res_pics
 
     @classmethod
-    def check_unknown_source_pics(cls, pic):
-        if re.search('https://', pic):
-            return PicCheckService.check_pic_by_url(pic)
-        return PicCheckService.check_pic_by_fileid(pic)
-
-    @classmethod
     def distinguish_pic_from_chat_record(cls, chat_record):
         words = []
         pics = []
@@ -82,39 +77,41 @@ class ForbidCheckService(object):
         return words, pics
 
     @classmethod
-    def check_sensitive_user(cls, user_id):
+    def check_sensitive_user(cls, user_id, ts=int(time.time())):
         """判断用户及其设备是否是敏感设备"""
         if UserRecord.has_been_forbidden(user_id):
             return True
-        return cls.check_sensitive_device(user_id)
+        return cls.check_sensitive_device(user_id, date_from_unix_ts(ts))
 
     @classmethod
-    def check_sensitive_device(cls, user_id):
+    def check_sensitive_device(cls, user_id, to_time=datetime.datetime.now()):
         user_setting = UserSetting.get_by_user_id(user_id)
         if not user_setting:
             return False
-        return BlockedDevices.is_device_sensitive(user_setting.uuid)
+        return BlockedDevices.is_device_sensitive(user_setting.uuid, to_time)
 
 
 class SpamWordCheckService(object):
     KEYWORD_CHAINS = {}
     DEFAULT_KEYWORD_CHAIN = {}
+    FAKE_KEYWORD_CHAINS = {}
+    DEFAULT_FAKE_KEYWORD_CHAIN = {}
     DELIMIT = '\x00'
     NOT_REGION = False
 
     @classmethod
-    def add(cls, keyword, region=None):
+    def add(cls, keyword, region=None, key_word_chains=None, default_key_word_chains=None):
         """以字典嵌套格式，将keyword的每个字母存入KEYWORD_CHAINS"""
         keyword = keyword.lower()
         chars = keyword.strip()
         if not chars:
             return
         if cls.NOT_REGION:
-            level = cls.DEFAULT_KEYWORD_CHAIN
+            level = default_key_word_chains
         else:
-            if not cls.KEYWORD_CHAINS.get(region):
-                cls.KEYWORD_CHAINS[region] = {}
-            level = cls.KEYWORD_CHAINS[region]
+            if not key_word_chains.get(region):
+                key_word_chains[region] = {}
+            level = key_word_chains[region]
         for i in range(len(chars)):
             if chars[i] in level:
                 level = level[chars[i]]
@@ -133,12 +130,13 @@ class SpamWordCheckService(object):
     @classmethod
     def load(cls):
         for region in GlobalizationService.REGIONS:
-            for _ in SpamWord.get_by_region(region):
-                cls.add(_.word, region)
+            for region_res in SpamWord.get_by_region(region):
+                cls.add(region_res.word, region, cls.KEYWORD_CHAINS, cls.DEFAULT_FAKE_KEYWORD_CHAIN)
+            for region_res in FakeSpamWord.get_by_region(region):
+                cls.add(region_res.word, region, cls.FAKE_KEYWORD_CHAINS, cls.DEFAULT_FAKE_KEYWORD_CHAIN)
 
     @classmethod
     def get_spam_word(cls, word, region=None):
-        """从word的某个位置开始连续匹配到了一个keyword，则判定为spam_word"""
         if not word:
             return False
         word = word.lower()
@@ -167,16 +165,32 @@ class SpamWordCheckService(object):
 
     @classmethod
     def is_spam_word(cls, word, region=None, online=True):
-        """从word的某个位置开始连续匹配到了一个keyword，则判定为spam_word"""
         if not word:
             return False
-        if online:
+        if not region and online:
             region = GlobalizationService.get_region()
+        if cls.NOT_REGION:
+            if cls.hit_word_in_chains(word, cls.DEFAULT_KEYWORD_CHAIN):
+                return not cls.hit_word_in_chains(word, cls.DEFAULT_FAKE_KEYWORD_CHAIN)
+            else:
+                return False
+        else:
+            if cls.hit_word_in_chains(word, cls.KEYWORD_CHAINS, region):
+                return not cls.hit_word_in_chains(word, cls.FAKE_KEYWORD_CHAINS,region)
+            else:
+                return False
+
+    @classmethod
+    def hit_word_in_chains(cls, word, key_word_chain, region=None):
+        """从word的某个位置开始连续匹配到了一个keyword，则判定为spam_word"""
         word = word.lower()
         ret = []
         start = 0
         while start < len(word):
-            level = cls.KEYWORD_CHAINS.get(region, {}) if not cls.NOT_REGION else cls.DEFAULT_KEYWORD_CHAIN
+            if not region:
+                level = key_word_chain
+            else:
+                level = key_word_chain.get(region, {})
             step_ins = 0
             for char in word[start:]:
                 if char in level:
@@ -218,7 +232,7 @@ class PicCheckService(object):
         原因分为：'pulp','terror','politician','ads',目前只打开了pulp
         建议：'b':block, 'r':review
         """
-        return cls.check_pic_by_url("http://www.litatom.com/api/sns/v1/lit/image/" + fileid)
+        return cls.check_pic_by_url(OSS_PIC_URL + fileid)
 
     @classmethod
     def record_fail(cls, file_id, scenes, result):

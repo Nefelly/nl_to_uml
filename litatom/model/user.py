@@ -50,13 +50,9 @@ from ..const import (
     NO_SET,
     USER_ACTIVE,
     SYS_FORBID,
-    MANUAL_FORBID,
 )
 from ..redis import RedisClient
 from ..util import (
-    format_standard_time,
-    unix_ts_local,
-    passwdhash,
     date_to_int_time
 )
 
@@ -173,7 +169,7 @@ class BlockedDevices(Document):
 
     @classmethod
     def remove_forbidden_device(cls, uuid):
-        cls.objects(uuid=uuid,device_forbidden=True).delete()
+        cls.objects(uuid=uuid, device_forbidden=True).delete()
 
     @classmethod
     def get_by_device(cls, uuid):
@@ -196,8 +192,8 @@ class BlockedDevices(Document):
         obj.save()
 
     @classmethod
-    def is_device_sensitive(cls, uuid):
-        if cls.objects(uuid=uuid, device_forbidden=False):
+    def is_device_sensitive(cls, uuid, _time=datetime.datetime.now()):
+        if cls.objects(uuid=uuid, device_forbidden=False, create_time__lte=_time):
             return True
         return False
 
@@ -648,11 +644,22 @@ class UserSetting(Document):
         return obj
 
     @classmethod
+    def get_loc_by_uid(cls, user_id):
+        user = cls.get_by_user_id(user_id)
+        if not user:
+            return None
+        return user.lang
+
+    @classmethod
     def uuid_by_user_id(cls, user_id):
         obj = cls.get_by_user_id(user_id)
         if obj:
             return obj.uuid
         return ''
+
+    @classmethod
+    def get_uids_by_uuid(cls, uuid):
+        return cls.objects(uuid=uuid).distinct('user_id')
 
     @classmethod
     def batch_get_by_user_ids(cls, user_ids):
@@ -678,7 +685,7 @@ class UserSetting(Document):
         if user_id:
             user_setting_loc_key = REDIS_SAVE_LOCK.format(key=self.__class__.__name__ + user_id)
             not_in_set = redis_client.setnx(user_setting_loc_key, 1)
-            if not not_in_set:   # 正在存储
+            if not not_in_set:  # 正在存储
                 return
             redis_client.expire(user_setting_loc_key, 1)
         super(UserSetting, self).save(*args, **kwargs)
@@ -815,12 +822,22 @@ class UserRecord(Document):
     create_time = IntField(required=True)
 
     @classmethod
-    def get_forbidden_times_user_id(cls, user_id):
+    def get_forbidden_num_by_uid(cls, user_id):
         return cls.objects(user_id=user_id).count()
 
     @classmethod
-    def get_forbid_users_by_time(cls, from_ts, to_ts):
-        return cls.objects(create_time__gte=from_ts, create_time__lte=to_ts)
+    def get_forbidden_time_by_uid(cls, user_id):
+        return cls.objects(user_id=user_id).order_by('-create_time').first().create_time
+
+    @classmethod
+    def get_forbid_users_by_time(cls, from_ts, to_ts, forbid_type=None):
+        if not forbid_type:
+            return cls.objects(create_time__gte=from_ts, create_time__lte=to_ts)
+        return cls.objects(create_time__gte=from_ts, create_time__lte=to_ts, action=forbid_type)
+
+    @classmethod
+    def get_by_uid_and_time(cls, user_id, from_ts, to_ts):
+        return cls.objects(user_id=user_id, create_time__gte=from_ts, create_time__lte=to_ts).order_by()
 
     @classmethod
     def add_forbidden(cls, user_id, action=SYS_FORBID):
@@ -832,7 +849,7 @@ class UserRecord(Document):
         return True
 
     @classmethod
-    def has_been_forbidden(cls, user_id):
-        if cls.objects(user_id=user_id):
+    def has_been_forbidden(cls, user_id, ts=int(time.time())):
+        if cls.objects(user_id=user_id, create_time__lte=ts):
             return True
         return False

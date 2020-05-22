@@ -18,6 +18,7 @@ from .service import (
     UserService
 )
 
+
 class LitatomRequest(flask.Request):
     """
     Caveat: avoid logging in @property methods, they may be called by logger, which will catch you in endless loops
@@ -56,7 +57,7 @@ class LitatomRequest(flask.Request):
         # from .rpc import java_rus_client
         # from .rpc.serializers.base import context
         try:
-                return res.userId
+            return res.userId
         except:
             return None
 
@@ -163,6 +164,19 @@ class LitatomRequest(flask.Request):
         if not sid.startswith('session.'):
             return ''
         return sid
+
+    @cached_property
+    def num(self):
+        num = self.values.get('num', '')
+        if not num:
+            return None
+        try:
+            num = int(num)
+            if num and num > 0:
+                return num
+            return None
+        except Exception as e:
+            return None
 
     @cached_property
     def version(self):

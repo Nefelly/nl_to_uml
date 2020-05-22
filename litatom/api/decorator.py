@@ -13,6 +13,7 @@ from flask import (
 )
 from ..util import (
     time_str_by_ts,
+    get_ts_from_str,
 )
 from ..const import (
     ONE_DAY
@@ -72,14 +73,30 @@ def set_exp_arg(arg=7 * ONE_DAY):
     return _deco
 
 
-def get_user_id_by_phone():
-    phone = request.args.get('phone')
+def get_page_info():
+    page = request.args.get('page')
+    page_size = request.args.get('page_size')
+    return page, page_size
+
+
+def get_user_id_by_phone(phone=None):
+    phone = request.args.get('phone') if not phone else phone
     user_id = request.user_id
     if phone and phone.startswith('86'):
         user = User.get_by_phone(phone)
         if user:
             user_id = str(user.id)
             request.user_id = user_id
+    return user_id
+
+
+def get_user_id_by_nickname(nickname=None):
+    nickname = request.args.get('phone') if not nickname else nickname
+    user = User.get_by_nickname(nickname)
+    if not user:
+        return None
+    user_id = str(user.id)
+    request.user_id = user_id
     return user_id
 
 
@@ -90,6 +107,7 @@ def set_user_id_by_phone(view):
         return view(*args, **kwargs)
 
     return wrapper
+
 
 def test_required(view):
     @functools.wraps(view)
