@@ -477,9 +477,9 @@ class DiamStatService(object):
         if loc and loc != 'ALL':
             import re
             if stat_list == cls.STAT_QUERY_LIST:
-                loc_str = ' and loc:'
+                loc_str = ' and loc:' + loc
             elif stat_list == cls.STAT_ACTION_QUERY_LIST:
-                loc_str = ' and location:'
+                loc_str = ' and location:' + loc
             else:
                 print('ERROR ', stat_list)
                 return None
@@ -493,7 +493,6 @@ class DiamStatService(object):
                 item_str_list = list(query_list[item])
                 item_str_list.insert(mid_pos, loc_str)
                 query_list[item] = ''.join(item_str_list)
-        print(query_list)
         for item in query_list:
             print(item)
             resp = AliLogService.get_log_atom(from_time=from_time, to_time=to_time, query=query_list[item],
