@@ -2,6 +2,8 @@
 import time
 import random
 import datetime
+from copy import deepcopy
+
 from ..redis import RedisClient
 from ..util import (
     write_data_to_xls_col,
@@ -10,7 +12,7 @@ from ..util import (
     get_ts_from_str,
     format_standard_date,
     date_to_int_time,
-    next_date
+    next_date, write_data_to_multisheets
 )
 from ..key import (
     REDIS_ONLINE_CNT_CACHE
@@ -266,15 +268,13 @@ class StatisticService(object):
             uids = [UserSetting.get_by_user_id(str(el.id)) for el in
                     User.objects(create_time__gte=stat_date, create_time__lte=end)]
 
-
-
             ms = [el.uuid for el in uids if el]
 
             # 新增设备已注册的
             registered_uuid = 0
             for el in ms:
                 if el in m:
-                    registered_uuid +=1
+                    registered_uuid += 1
 
             print "install", "register", "rate"
             print len(ts), registered_uuid, registered_uuid * 1.0 / len(ts)
@@ -309,9 +309,9 @@ class DiamStatService(object):
         'diam_deposit_num': 'name:deposit|SELECT sum(diamonds) as res',
         'diam_deposit_people_num': 'name:deposit|SELECT COUNT(DISTINCT user_id) as res',
         'diam_deposit_man_time_num': 'name:deposit|SELECT COUNT(1) as res',
-        'free_diam_gain_people_num': 'name:watch_video or name:share_5 or name:share | SELECT COUNT(DISTINCT user_id) as res',
-        'free_diam_gain_man_time': 'name:watch_video or name:share_5 or name:share | SELECT COUNT(1) as res',
-        'free_diam_gain_num': 'name:watch_video or name:share_5 or name:share | SELECT sum(diamonds) as res',
+        'free_diam_gain_people_num': '(name:watch_video or name:share_5 or name:share) | SELECT COUNT(DISTINCT user_id) as res',
+        'free_diam_gain_man_time': '(name:watch_video or name:share_5 or name:share) | SELECT COUNT(1) as res',
+        'free_diam_gain_num': '(name:watch_video or name:share_5 or name:share) | SELECT sum(diamonds) as res',
         'diam_deposit50_people_num': 'name:deposit and diamonds=50|SELECT COUNT(DISTINCT user_id) as res',
         'diam_deposit50_man_time_num': 'name:deposit and diamonds=50|SELECT COUNT(1) as res',
         'diam_deposit100_people_num': 'name:deposit and diamonds=100|SELECT COUNT(DISTINCT user_id) as res',
@@ -364,6 +364,7 @@ class DiamStatService(object):
         200: 3.5,
         500: 6.99,
     }
+    STAT_LOCATIONS = ['VN', 'TH', 'ID']
     DEFAULT_PROJECT = 'litatom-account'
     DEFAULT_LOGSTORE = 'account_flow'
     USER_MEM_TIME = {}  # user_id:membership_time
@@ -374,7 +375,8 @@ class DiamStatService(object):
         members = UserAccount.objects(membership_time__ne=0)
         # members = User.objects(membership_time__ne=0)
         for member in members:
-            cls.USER_MEM_TIME[member.user_id] = member.membership_time
+            cls.USER_MEM_TIME[member.user_id] = [member.membership_time,
+                                                 GlobalizationService.loc_by_uid(member.user_id)]
 
     @classmethod
     def fetch_log(cls, from_time, to_time, query, size=-1, project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE):
@@ -390,11 +392,13 @@ class DiamStatService(object):
                                                            to_time=to_time, query=query)
 
     @classmethod
-    def cal_mem_num(cls, from_time):
+    def cal_mem_num(cls, from_time, loc=None):
         """计算会员总数"""
         res = 0
         for id in cls.USER_MEM_TIME:
-            if cls.USER_MEM_TIME[id] >= from_time:
+            if loc and loc != 'ALL' and cls.USER_MEM_TIME[id][1] != loc:
+                continue
+            if cls.USER_MEM_TIME[id][0] >= from_time:
                 res += 1
         return res
 
@@ -462,15 +466,34 @@ class DiamStatService(object):
         return data
 
     @classmethod
-    def cal_stats_from_list(cls, list, from_time, to_time, project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE):
+    def cal_stats_from_list(cls, stat_list, from_time, to_time, project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE,
+                            loc=None):
         """
         从阿里云日志中，计算list中所有项目
         :return: 一个tuple列表, (item_name,str(num))， 和一个字典，key为item_name, value为num
         """
-        data = []
-        data_dic = {}
-        for item in list:
-            resp = AliLogService.get_log_atom(from_time=from_time, to_time=to_time, query=list[item],
+        data = {}
+        query_list = deepcopy(stat_list)
+        if loc and loc != 'ALL':
+            import re
+            if stat_list == cls.STAT_QUERY_LIST:
+                loc_str = ' and loc:' + loc
+            elif stat_list == cls.STAT_ACTION_QUERY_LIST:
+                loc_str = ' and location:' + loc
+            else:
+                print('ERROR ', stat_list)
+                return None
+            for item in query_list:
+                mid_pos = re.search('\|', query_list[item])
+                if not mid_pos:
+                    print('ERROR QUERY ITEM')
+                    continue
+                mid_pos = mid_pos.span()[0]
+                item_str_list = list(query_list[item])
+                item_str_list.insert(mid_pos, loc_str)
+                query_list[item] = ''.join(item_str_list)
+        for item in query_list:
+            resp = AliLogService.get_log_atom(from_time=from_time, to_time=to_time, query=query_list[item],
                                               project=project, logstore=logstore)
             try:
                 if resp:
@@ -485,87 +508,114 @@ class DiamStatService(object):
             except KeyError or AttributeError:
                 res = 0
             finally:
-                data.append((item, str(res)))
-                data_dic[item] = int(res)
-        return data, data_dic
+                data[item] = int(res)
+        return data
 
     @classmethod
     def diam_stat_report(cls, date=datetime.datetime.now()):
-        cls._load_user_account()
+        """data是一个字典，key是region， value是一个list，记载该地区各项数据"""
         yesterday = date + datetime.timedelta(days=-1)
         time_yesterday = date_to_int_time(yesterday)
         from_time = AliLogService.datetime_to_alitime(yesterday)
         to_time = AliLogService.datetime_to_alitime(date)
-        data = []
-        excel_data = [format_standard_date(yesterday)]
+        data = {'ALL': [format_standard_date(yesterday)]}
+        for loc in cls.STAT_LOCATIONS:
+            data[loc] = [format_standard_date(yesterday)]
 
-        mem_num = cls.cal_mem_num(time_yesterday)
-        data.append(('member_num', str(mem_num)))
-        excel_data.append(mem_num)
-        data_next, excel_dic = cls.cal_stats_from_list(cls.STAT_QUERY_LIST, from_time, to_time)
-        data += data_next
-        data_next, action_excel_dic = cls.cal_stats_from_list(cls.STAT_ACTION_QUERY_LIST, from_time, to_time,
-                                                              AliLogService.DEFAULT_PROJECT,
-                                                              AliLogService.DEFAULT_LOGSTORE)
-        data += data_next
-        incoming = excel_dic['diam_deposit50_man_time_num'] * cls.DIAMOND_INCOMING[50] + \
-                   excel_dic['diam_deposit100_man_time_num'] * cls.DIAMOND_INCOMING[100] + \
-                   excel_dic['diam_deposit200_man_time_num'] * cls.DIAMOND_INCOMING[200] + \
-                   excel_dic['diam_deposit500_man_time_num'] * cls.DIAMOND_INCOMING[500]
-        data.append(('incoming', str(incoming)))
-        excel_data.append(incoming)
-        excel_data += [excel_dic['diam_cons_people_num'], excel_dic['diam_cons_num'],
-                       excel_dic['diam_cons_man_time_num'],
-                       excel_dic['diam_deposit_people_num'],
-                       excel_dic['diam_deposit_num'], excel_dic['diam_deposit_man_time_num'],
-                       excel_dic['free_diam_gain_people_num'], excel_dic['free_diam_gain_man_time'],
-                       excel_dic['free_diam_gain_num'],
-                       excel_dic['diam_deposit50_people_num'],
-                       excel_dic['diam_deposit50_man_time_num'], excel_dic['diam_deposit100_people_num'],
-                       excel_dic['diam_deposit100_man_time_num'],
-                       excel_dic['diam_deposit200_people_num'], excel_dic['diam_deposit200_man_time_num'],
-                       excel_dic['diam_deposit500_people_num'], excel_dic['diam_deposit500_man_time_num'],
-                       excel_dic['watch_video_people_num'], excel_dic['watch_video_man_time'],
-                       excel_dic['watch_video_diam_num'],
-                       # action_excel_dic['100_diam_share_man_time'],action_excel_dic['100_diam_share_people_num'],
-                       excel_dic['get_100_diam_by_share_link'],
-                       action_excel_dic['10_diam_share_man_time'], action_excel_dic['10_diam_share_people_num'],
-                       excel_dic['get_10_diam_by_share_link'],
-                       excel_dic['week_member_consumer_num'],
-                       excel_dic['week_member_cons_man_time_num'],
-                       excel_dic['week_member_diam_cons_num'], excel_dic['acce_consumer_num'],
-                       excel_dic['acce_con_man_time_num'], excel_dic['acce_diam_cons_num'],
-                       excel_dic['diam_unban_people_num'], excel_dic['diam_unban_man_time'],
-                       excel_dic['diam_unban_cons_num'],
-                       action_excel_dic['accost_people_num'], action_excel_dic['accost_man_time'],
-                       excel_dic['diam_accost_cons_num'],
-                       excel_dic['palm_unlock_people_num'], excel_dic['palm_unlock_man_time'],
-                       excel_dic['palm_unlock_diam_cons_num'],
-                       action_excel_dic['share_clicker_man_time'], action_excel_dic['share_clicker_people_num'],
-                       action_excel_dic['register_reason_by_share']]
-        return excel_data
+        for loc in data:
+            data[loc].append(cls.cal_mem_num(time_yesterday, loc))
+
+        for loc in data:
+            excel_dic = cls.cal_stats_from_list(cls.STAT_QUERY_LIST, from_time, to_time, loc=loc)
+            action_excel_dic = cls.cal_stats_from_list(cls.STAT_ACTION_QUERY_LIST, from_time, to_time,
+                                                       AliLogService.DEFAULT_PROJECT,
+                                                       AliLogService.DEFAULT_LOGSTORE, loc=loc)
+            incoming = excel_dic['diam_deposit50_man_time_num'] * cls.DIAMOND_INCOMING[50] + \
+                       excel_dic['diam_deposit100_man_time_num'] * cls.DIAMOND_INCOMING[100] + \
+                       excel_dic['diam_deposit200_man_time_num'] * cls.DIAMOND_INCOMING[200] + \
+                       excel_dic['diam_deposit500_man_time_num'] * cls.DIAMOND_INCOMING[500]
+            data[loc].append(incoming)
+            data[loc] += [excel_dic['diam_cons_people_num'], excel_dic['diam_cons_num'],
+                          excel_dic['diam_cons_man_time_num'],
+                          excel_dic['diam_deposit_people_num'],
+                          excel_dic['diam_deposit_num'], excel_dic['diam_deposit_man_time_num'],
+                          excel_dic['free_diam_gain_people_num'], excel_dic['free_diam_gain_man_time'],
+                          excel_dic['free_diam_gain_num'],
+                          excel_dic['diam_deposit50_people_num'],
+                          excel_dic['diam_deposit50_man_time_num'], excel_dic['diam_deposit100_people_num'],
+                          excel_dic['diam_deposit100_man_time_num'],
+                          excel_dic['diam_deposit200_people_num'], excel_dic['diam_deposit200_man_time_num'],
+                          excel_dic['diam_deposit500_people_num'], excel_dic['diam_deposit500_man_time_num'],
+                          excel_dic['watch_video_people_num'], excel_dic['watch_video_man_time'],
+                          excel_dic['watch_video_diam_num'],
+                          # action_excel_dic['100_diam_share_man_time'],action_excel_dic['100_diam_share_people_num'],
+                          excel_dic['get_100_diam_by_share_link'],
+                          action_excel_dic['10_diam_share_man_time'],
+                          action_excel_dic['10_diam_share_people_num'],
+                          excel_dic['get_10_diam_by_share_link'],
+                          excel_dic['week_member_consumer_num'],
+                          excel_dic['week_member_cons_man_time_num'],
+                          excel_dic['week_member_diam_cons_num'], excel_dic['acce_consumer_num'],
+                          excel_dic['acce_con_man_time_num'], excel_dic['acce_diam_cons_num'],
+                          excel_dic['diam_unban_people_num'], excel_dic['diam_unban_man_time'],
+                          excel_dic['diam_unban_cons_num'],
+                          action_excel_dic['accost_people_num'], action_excel_dic['accost_man_time'],
+                          excel_dic['diam_accost_cons_num'],
+                          excel_dic['palm_unlock_people_num'], excel_dic['palm_unlock_man_time'],
+                          excel_dic['palm_unlock_diam_cons_num'],
+                          action_excel_dic['share_clicker_man_time'],
+                          action_excel_dic['share_clicker_people_num'],
+                          action_excel_dic['register_reason_by_share']]
+        return [data['ALL'], data['VN'], data['TH'], data['ID']]
 
     @classmethod
     def diam_stat_report_7_days(cls, addr, date=datetime.datetime.now(), days_delta=7):
-        yesterday_res = cls.diam_stat_report(date)
-        # AliLogService.put_logs(yesterday_res, project='litatom-account', logstore='diamond_stat')
-        res = [yesterday_res]
-        for delta in range(1, days_delta):
+        res = []
+        cls._load_user_account()
+        for delta in range(days_delta):
             res.append(cls.diam_stat_report(date - datetime.timedelta(days=delta)))
         tb_head = [r'日期', r'会员数', r'收入', r'钻石消耗人数', r'钻石消耗数量', r'钻石消耗人次', r'钻石购买人数', r'钻石购买数量', r'钻石购买人次',
-                               r'免费钻石获取人数', r'免费钻石获取人次', r'免费钻石获取数量', r'50钻石购买人数',
-                               r'50钻石购买人次', r'100钻石购买人数', r'100钻石购买人次', r'200钻石购买人数', r'200钻石购买人次', r'500钻石购买人数',
-                               r'500钻石购买人次', r'观看激励视频人数', r'观看激励视频人次', r'激励视频钻石数量',
-                               # r'分享链接人数(100钻)',r'分享链接人次(100钻)',
-                               r'分享链接100钻石获取数量',
-                               r'分享链接人次(10钻)', r'分享链接人数(10钻)', r'分享链接10钻石获取数量', r'会员购买人数', r'会员购买人次', r'会员-钻石消耗数量',
-                               r'加速人数', r'加速购买人次', r'加速-钻石消耗数量',
-                               r'钻石解封人数', r'钻石解封人次', r'解封-钻石消耗数量',
-                               r'搭讪人数', r'搭讪人次', r'搭讪钻石消耗数量',
-                               r'手相解锁人数', r'手相解锁人次', r'手相解锁-钻石消耗数量',
-                               r'分享链接浏览人次', r'分享链接浏览人数', r'分享带来新用户数']
+                   r'免费钻石获取人数', r'免费钻石获取人次', r'免费钻石获取数量', r'50钻石购买人数',
+                   r'50钻石购买人次', r'100钻石购买人数', r'100钻石购买人次', r'200钻石购买人数', r'200钻石购买人次', r'500钻石购买人数',
+                   r'500钻石购买人次', r'观看激励视频人数', r'观看激励视频人次', r'激励视频钻石数量',
+                   # r'分享链接人数(100钻)',r'分享链接人次(100钻)',
+                   r'分享链接100钻石获取数量',
+                   r'分享链接人次(10钻)', r'分享链接人数(10钻)', r'分享链接10钻石获取数量', r'会员购买人数', r'会员购买人次', r'会员-钻石消耗数量',
+                   r'加速人数', r'加速购买人次', r'加速-钻石消耗数量',
+                   r'钻石解封人数', r'钻石解封人次', r'解封-钻石消耗数量',
+                   r'搭讪人数', r'搭讪人次', r'搭讪钻石消耗数量',
+                   r'手相解锁人数', r'手相解锁人次', r'手相解锁-钻石消耗数量',
+                   r'分享链接浏览人次', r'分享链接浏览人数', r'分享带来新用户数']
         # tb_head = [r'日期', r'member数', r'收入']
-        write_data_to_xls_col(addr, tb_head, res, 'utf-8')
+        cls.write_data(addr, ['ALL'] + cls.STAT_LOCATIONS, tb_head, res)
+
+    @classmethod
+    def write_data(cls, name, sheet_names, tb_heads, data):
+        """
+
+        :param name:
+        :param sheet_names:
+        :param tb_heads:
+        :param data:一个列表，列表中的每个元素也是一个列表，每个元素都是1个sheet中的数据
+        :return:
+        """
+        import xlwt
+        f = xlwt.Workbook(encoding='utf-8')
+        # 建表
+        sheets = [f.add_sheet(s) for s in sheet_names]
+        # 写表头
+        for sheet in sheets:
+            for i in range(len(tb_heads)):
+                sheet.write(i, 0, tb_heads[i])
+
+        for col_num in range(len(data)):
+            col_data = data[col_num]
+            for sheet_num in range(len(col_data)):
+                sheet_col_data = col_data[sheet_num]
+                sheet = sheets[sheet_num]
+                for row_num in range(len(sheet_col_data)):
+                    sheet.write(row_num, col_num + 1, sheet_col_data[row_num])
+        f.save(name)
 
     @classmethod
     def diam_free_report(cls, addr, date=datetime.datetime.now()):
