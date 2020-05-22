@@ -79,7 +79,7 @@ class ForbidPlatformService(object):
                 user_id = user.user_id
                 if region and region != UserSetting.get_loc_by_uid(user_id):
                     continue
-                temp_res[user_id] = {'user_id': user_id,'nickname':user.nickname, 'forbidden_from': time_str_by_ts(user.create_time)}
+                temp_res[user_id] = {'user_id': user_id,'nickname':UserService.nickname_by_uid(user_id), 'forbidden_from': time_str_by_ts(user.create_time)}
                 user_num += 1
                 if user_num >= num:
                     break
@@ -181,7 +181,7 @@ class ForbidPlatformService(object):
                                      dealed=False, duplicated=False).order_by('-create_ts').limit(num)
         elif region and match_type == cls.OTHER_REPORT:
             reports = Report.objects(create_ts__gte=from_ts, create_ts__lte=to_ts, region=region,
-                                     reason__ne=cls.MtATCH_REPORT, dealed=False, duplicated=False).order_by(
+                                     reason__ne=cls.MATCH_REPORT, dealed=False, duplicated=False).order_by(
                 '-create_ts').limit(num)
         elif region and not match_type:
             reports = Report.objects(create_ts__gte=from_ts, create_ts__lte=to_ts, region=region, dealed=False,
