@@ -235,5 +235,5 @@ class TrackSpamRecordService(object):
         if record.word:
             tmp['word'] = {'word': record.word, 'hit_word': SpamWordCheckService.get_spam_word(record.word, GlobalizationService.get_region_by_user_id(record.user_id))}
         elif record.pic:
-            tmp['pic'] = {'pic': format_pic(record.pic)}
+            tmp['pic'] = format_pic(record.pic)
         return tmp
