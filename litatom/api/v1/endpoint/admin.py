@@ -789,7 +789,18 @@ def get_feed():
 
 def huanxin_by_uid():
     uid = request.args.get('user_id')
-    user = User.get_by_id(uid)
+    nickname = request.args.get('nickname')
+    if not uid and not nickname:
+        return fail('no condition')
+    user = None
+    if uid:
+        user = User.get_by_id(uid)
+    if not user:
+        users = User.objects(nickname=nickname)
+        res = {}
+        for user in users:
+            res[str(user.id)] = {'birthdate':user.birthdate,'bio':user.bio,'huanxin':user.huanxin.user_id}
+        return success(res)
     if not user:
         return fail('no such user')
     return success(user.huanxin.user_id)
