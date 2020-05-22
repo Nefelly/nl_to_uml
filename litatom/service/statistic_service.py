@@ -365,6 +365,7 @@ class DiamStatService(object):
         500: 6.99,
     }
     STAT_LOCATIONS = ['VN', 'TH', 'ID']
+    LIST_LOC_MATCH = {STAT_ACTION_QUERY_LIST:' and location:',STAT_QUERY_LIST:' and loc:'}
     DEFAULT_PROJECT = 'litatom-account'
     DEFAULT_LOGSTORE = 'account_flow'
     USER_MEM_TIME = {}  # user_id:membership_time
@@ -476,13 +477,14 @@ class DiamStatService(object):
         query_list = deepcopy(stat_list)
         if loc and loc != 'ALL':
             import re
+            loc_str = cls.LIST_LOC_MATCH[stat_list] + loc
+            print(loc_str)
             for item in query_list:
                 mid_pos = re.search('\|', query_list[item])
                 if not mid_pos:
                     print('ERROR QUERY ITEM')
                     continue
                 mid_pos = mid_pos.span()[0]
-                loc_str = ' and loc:' + loc
                 item_str_list = list(query_list[item])
                 item_str_list.insert(mid_pos, loc_str)
                 query_list[item] = ''.join(item_str_list)
@@ -507,8 +509,7 @@ class DiamStatService(object):
 
     @classmethod
     def diam_stat_report(cls, date=datetime.datetime.now()):
-        """返回一个字典，key是region， value是一个list，记载该地区各项数据"""
-        cls._load_user_account()
+        """data是一个字典，key是region， value是一个list，记载该地区各项数据"""
         yesterday = date + datetime.timedelta(days=-1)
         time_yesterday = date_to_int_time(yesterday)
         from_time = AliLogService.datetime_to_alitime(yesterday)
@@ -571,6 +572,7 @@ class DiamStatService(object):
     @classmethod
     def diam_stat_report_7_days(cls, addr, date=datetime.datetime.now(), days_delta=7):
         res = []
+        cls._load_user_account()
         for delta in range(days_delta):
             print(delta)
             res.append(cls.diam_stat_report(date - datetime.timedelta(days=delta)))
