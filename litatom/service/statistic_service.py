@@ -567,6 +567,7 @@ class DiamStatService(object):
     def diam_stat_report_7_days(cls, addr, date=datetime.datetime.now(), days_delta=7):
         res = []
         for delta in range(days_delta):
+            print(delta)
             res.append(cls.diam_stat_report(date - datetime.timedelta(days=delta)))
         tb_head = [r'日期', r'会员数', r'收入', r'钻石消耗人数', r'钻石消耗数量', r'钻石消耗人次', r'钻石购买人数', r'钻石购买数量', r'钻石购买人次',
                    r'免费钻石获取人数', r'免费钻石获取人次', r'免费钻石获取数量', r'50钻石购买人数',
