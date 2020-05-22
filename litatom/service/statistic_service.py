@@ -364,6 +364,7 @@ class DiamStatService(object):
         200: 3.5,
         500: 6.99,
     }
+    STAT_LOCATIONS = ['VN', 'TH', 'ID']
     DEFAULT_PROJECT = 'litatom-account'
     DEFAULT_LOGSTORE = 'account_flow'
     USER_MEM_TIME = {}  # user_id:membership_time
@@ -374,7 +375,7 @@ class DiamStatService(object):
         members = UserAccount.objects(membership_time__ne=0)
         # members = User.objects(membership_time__ne=0)
         for member in members:
-            cls.USER_MEM_TIME[member.user_id] = member.membership_time
+            cls.USER_MEM_TIME[member.user_id] = [member.membership_time, GlobalizationService.loc_by_uid(member.user_id)]
 
     @classmethod
     def fetch_log(cls, from_time, to_time, query, size=-1, project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE):
@@ -390,11 +391,13 @@ class DiamStatService(object):
                                                            to_time=to_time, query=query)
 
     @classmethod
-    def cal_mem_num(cls, from_time):
+    def cal_mem_num(cls, from_time, loc=None):
         """计算会员总数"""
         res = 0
         for id in cls.USER_MEM_TIME:
-            if cls.USER_MEM_TIME[id] >= from_time:
+            if loc and cls.USER_MEM_TIME[id][1]!=loc:
+                continue
+            if cls.USER_MEM_TIME[id][0] >= from_time:
                 res += 1
         return res
 
@@ -499,34 +502,31 @@ class DiamStatService(object):
             except KeyError or AttributeError:
                 res = 0
             finally:
-                data.append((item, str(res)))
-                data_dic[item] = int(res)
-        return data, data_dic
+                data[item] = int(res)
+        return data
 
     @classmethod
     def diam_stat_report(cls, date=datetime.datetime.now()):
+        """返回一个字典，key是region， value是一个list，记载该地区各项数据"""
         cls._load_user_account()
         yesterday = date + datetime.timedelta(days=-1)
         time_yesterday = date_to_int_time(yesterday)
         from_time = AliLogService.datetime_to_alitime(yesterday)
         to_time = AliLogService.datetime_to_alitime(date)
-        data = []
-        excel_data = [format_standard_date(yesterday)]
+        excel_data = {'ALL': [format_standard_date(yesterday)]}
+        for loc in cls.STAT_LOCATIONS:
+            excel_data[loc] = [format_standard_date(yesterday)]
 
         mem_num = cls.cal_mem_num(time_yesterday)
-        data.append(('member_num', str(mem_num)))
         excel_data.append(mem_num)
-        data_next, excel_dic = cls.cal_stats_from_list(cls.STAT_QUERY_LIST, from_time, to_time)
-        data += data_next
-        data_next, action_excel_dic = cls.cal_stats_from_list(cls.STAT_ACTION_QUERY_LIST, from_time, to_time,
+        excel_dic = cls.cal_stats_from_list(cls.STAT_QUERY_LIST, from_time, to_time)
+        action_excel_dic = cls.cal_stats_from_list(cls.STAT_ACTION_QUERY_LIST, from_time, to_time,
                                                               AliLogService.DEFAULT_PROJECT,
                                                               AliLogService.DEFAULT_LOGSTORE)
-        data += data_next
         incoming = excel_dic['diam_deposit50_man_time_num'] * cls.DIAMOND_INCOMING[50] + \
                    excel_dic['diam_deposit100_man_time_num'] * cls.DIAMOND_INCOMING[100] + \
                    excel_dic['diam_deposit200_man_time_num'] * cls.DIAMOND_INCOMING[200] + \
                    excel_dic['diam_deposit500_man_time_num'] * cls.DIAMOND_INCOMING[500]
-        data.append(('incoming', str(incoming)))
         excel_data.append(incoming)
         excel_data += [excel_dic['diam_cons_people_num'], excel_dic['diam_cons_num'],
                        excel_dic['diam_cons_man_time_num'],
