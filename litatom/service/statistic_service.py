@@ -520,11 +520,16 @@ class DiamStatService(object):
         for loc in data:
             data[loc].append(cls.cal_mem_num(time_yesterday, loc))
 
+        print('!')
+
         for loc in data:
+            print(loc)
             excel_dic = cls.cal_stats_from_list(cls.STAT_QUERY_LIST, from_time, to_time, loc=loc)
+            print('!!')
             action_excel_dic = cls.cal_stats_from_list(cls.STAT_ACTION_QUERY_LIST, from_time, to_time,
                                                        AliLogService.DEFAULT_PROJECT,
                                                        AliLogService.DEFAULT_LOGSTORE, loc=loc)
+            print('!!!')
             incoming = excel_dic['diam_deposit50_man_time_num'] * cls.DIAMOND_INCOMING[50] + \
                        excel_dic['diam_deposit100_man_time_num'] * cls.DIAMOND_INCOMING[100] + \
                        excel_dic['diam_deposit200_man_time_num'] * cls.DIAMOND_INCOMING[200] + \
