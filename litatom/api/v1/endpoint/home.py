@@ -227,7 +227,7 @@ def report():
     #     return fail('lack of reason or picture')
     if not reason:
         return fail('lack of reason')
-    if reason != 'match' and not feed_id and not pics:
+    if reason != 'match' and not reason and not pics:
         return fail('lack of reason or picture')
     if feed_id:
         feed_info, status_feed = FeedService.get_feed_info(None, feed_id)
