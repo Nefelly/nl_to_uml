@@ -309,9 +309,9 @@ class DiamStatService(object):
         'diam_deposit_num': 'name:deposit|SELECT sum(diamonds) as res',
         'diam_deposit_people_num': 'name:deposit|SELECT COUNT(DISTINCT user_id) as res',
         'diam_deposit_man_time_num': 'name:deposit|SELECT COUNT(1) as res',
-        'free_diam_gain_people_num': 'name:watch_video or name:share_5 or name:share | SELECT COUNT(DISTINCT user_id) as res',
-        'free_diam_gain_man_time': 'name:watch_video or name:share_5 or name:share | SELECT COUNT(1) as res',
-        'free_diam_gain_num': 'name:watch_video or name:share_5 or name:share | SELECT sum(diamonds) as res',
+        'free_diam_gain_people_num': '(name:watch_video or name:share_5 or name:share) | SELECT COUNT(DISTINCT user_id) as res',
+        'free_diam_gain_man_time': '(name:watch_video or name:share_5 or name:share) | SELECT COUNT(1) as res',
+        'free_diam_gain_num': '(name:watch_video or name:share_5 or name:share) | SELECT sum(diamonds) as res',
         'diam_deposit50_people_num': 'name:deposit and diamonds=50|SELECT COUNT(DISTINCT user_id) as res',
         'diam_deposit50_man_time_num': 'name:deposit and diamonds=50|SELECT COUNT(1) as res',
         'diam_deposit100_people_num': 'name:deposit and diamonds=100|SELECT COUNT(DISTINCT user_id) as res',
@@ -483,7 +483,6 @@ class DiamStatService(object):
             else:
                 print('ERROR ', stat_list)
                 return None
-            print(loc_str)
             for item in query_list:
                 mid_pos = re.search('\|', query_list[item])
                 if not mid_pos:
@@ -527,16 +526,11 @@ class DiamStatService(object):
         for loc in data:
             data[loc].append(cls.cal_mem_num(time_yesterday, loc))
 
-        print('!')
-
         for loc in data:
-            print(loc)
             excel_dic = cls.cal_stats_from_list(cls.STAT_QUERY_LIST, from_time, to_time, loc=loc)
-            print('!!')
             action_excel_dic = cls.cal_stats_from_list(cls.STAT_ACTION_QUERY_LIST, from_time, to_time,
                                                        AliLogService.DEFAULT_PROJECT,
                                                        AliLogService.DEFAULT_LOGSTORE, loc=loc)
-            print('!!!')
             incoming = excel_dic['diam_deposit50_man_time_num'] * cls.DIAMOND_INCOMING[50] + \
                        excel_dic['diam_deposit100_man_time_num'] * cls.DIAMOND_INCOMING[100] + \
                        excel_dic['diam_deposit200_man_time_num'] * cls.DIAMOND_INCOMING[200] + \
