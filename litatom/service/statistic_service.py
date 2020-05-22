@@ -493,7 +493,6 @@ class DiamStatService(object):
                 item_str_list.insert(mid_pos, loc_str)
                 query_list[item] = ''.join(item_str_list)
         for item in query_list:
-            print(item)
             resp = AliLogService.get_log_atom(from_time=from_time, to_time=to_time, query=query_list[item],
                                               project=project, logstore=logstore)
             try:
@@ -574,7 +573,6 @@ class DiamStatService(object):
         res = []
         cls._load_user_account()
         for delta in range(days_delta):
-            print(delta)
             res.append(cls.diam_stat_report(date - datetime.timedelta(days=delta)))
         tb_head = [r'日期', r'会员数', r'收入', r'钻石消耗人数', r'钻石消耗数量', r'钻石消耗人次', r'钻石购买人数', r'钻石购买数量', r'钻石购买人次',
                    r'免费钻石获取人数', r'免费钻石获取人次', r'免费钻石获取数量', r'50钻石购买人数',
