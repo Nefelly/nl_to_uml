@@ -76,7 +76,7 @@ class ForbidRecordService(object):
         for record in spam_records:
             record_res.append(TrackSpamRecordService.get_spam_record_info(record))
 
-        return {'sensitive': is_sensitive, 'blocker_num': blocker_num, 'reports': reports_res, 'records': record_res}
+        return {'sensitive': is_sensitive, 'blocker_num': blocker_num, 'illegal_records':reports_res+record_res}
 
 
 class ReportService(object):
