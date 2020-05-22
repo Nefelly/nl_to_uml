@@ -208,9 +208,9 @@ class AdminService(object):
 
     @classmethod
     def ban_by_uid(cls, user_id):
-        num = Report.objects(uid=user_id).count()
-        if not setting.IS_DEV and num >= 2:
-            return u'user not reported too much', False
+        # num = Report.objects(uid=user_id).count()
+        # if not setting.IS_DEV and num >= 2:
+        #     return u'user not reported too much', False
         ForbidActionService.forbid_user(user_id, 20 * ONE_DAY, MANUAL_FORBID)
         return None, True
 
