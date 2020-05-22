@@ -365,7 +365,6 @@ class DiamStatService(object):
         500: 6.99,
     }
     STAT_LOCATIONS = ['VN', 'TH', 'ID']
-    LIST_LOC_MATCH = {STAT_ACTION_QUERY_LIST:' and location:',STAT_QUERY_LIST:' and loc:'}
     DEFAULT_PROJECT = 'litatom-account'
     DEFAULT_LOGSTORE = 'account_flow'
     USER_MEM_TIME = {}  # user_id:membership_time
@@ -477,7 +476,13 @@ class DiamStatService(object):
         query_list = deepcopy(stat_list)
         if loc and loc != 'ALL':
             import re
-            loc_str = cls.LIST_LOC_MATCH[stat_list] + loc
+            if stat_list == cls.STAT_QUERY_LIST:
+                loc_str = ' and loc:'
+            elif stat_list == cls.STAT_ACTION_QUERY_LIST:
+                loc_str = ' and location:'
+            else:
+                print('ERROR ', stat_list)
+                return None
             print(loc_str)
             for item in query_list:
                 mid_pos = re.search('\|', query_list[item])
@@ -537,37 +542,37 @@ class DiamStatService(object):
                        excel_dic['diam_deposit500_man_time_num'] * cls.DIAMOND_INCOMING[500]
             data[loc].append(incoming)
             data[loc] += [excel_dic['diam_cons_people_num'], excel_dic['diam_cons_num'],
-                                excel_dic['diam_cons_man_time_num'],
-                                excel_dic['diam_deposit_people_num'],
-                                excel_dic['diam_deposit_num'], excel_dic['diam_deposit_man_time_num'],
-                                excel_dic['free_diam_gain_people_num'], excel_dic['free_diam_gain_man_time'],
-                                excel_dic['free_diam_gain_num'],
-                                excel_dic['diam_deposit50_people_num'],
-                                excel_dic['diam_deposit50_man_time_num'], excel_dic['diam_deposit100_people_num'],
-                                excel_dic['diam_deposit100_man_time_num'],
-                                excel_dic['diam_deposit200_people_num'], excel_dic['diam_deposit200_man_time_num'],
-                                excel_dic['diam_deposit500_people_num'], excel_dic['diam_deposit500_man_time_num'],
-                                excel_dic['watch_video_people_num'], excel_dic['watch_video_man_time'],
-                                excel_dic['watch_video_diam_num'],
-                                # action_excel_dic['100_diam_share_man_time'],action_excel_dic['100_diam_share_people_num'],
-                                excel_dic['get_100_diam_by_share_link'],
-                                action_excel_dic['10_diam_share_man_time'],
-                                action_excel_dic['10_diam_share_people_num'],
-                                excel_dic['get_10_diam_by_share_link'],
-                                excel_dic['week_member_consumer_num'],
-                                excel_dic['week_member_cons_man_time_num'],
-                                excel_dic['week_member_diam_cons_num'], excel_dic['acce_consumer_num'],
-                                excel_dic['acce_con_man_time_num'], excel_dic['acce_diam_cons_num'],
-                                excel_dic['diam_unban_people_num'], excel_dic['diam_unban_man_time'],
-                                excel_dic['diam_unban_cons_num'],
-                                action_excel_dic['accost_people_num'], action_excel_dic['accost_man_time'],
-                                excel_dic['diam_accost_cons_num'],
-                                excel_dic['palm_unlock_people_num'], excel_dic['palm_unlock_man_time'],
-                                excel_dic['palm_unlock_diam_cons_num'],
-                                action_excel_dic['share_clicker_man_time'],
-                                action_excel_dic['share_clicker_people_num'],
-                                action_excel_dic['register_reason_by_share']]
-        return [data['ALL'],data['VN'],data['TH'],data['ID']]
+                          excel_dic['diam_cons_man_time_num'],
+                          excel_dic['diam_deposit_people_num'],
+                          excel_dic['diam_deposit_num'], excel_dic['diam_deposit_man_time_num'],
+                          excel_dic['free_diam_gain_people_num'], excel_dic['free_diam_gain_man_time'],
+                          excel_dic['free_diam_gain_num'],
+                          excel_dic['diam_deposit50_people_num'],
+                          excel_dic['diam_deposit50_man_time_num'], excel_dic['diam_deposit100_people_num'],
+                          excel_dic['diam_deposit100_man_time_num'],
+                          excel_dic['diam_deposit200_people_num'], excel_dic['diam_deposit200_man_time_num'],
+                          excel_dic['diam_deposit500_people_num'], excel_dic['diam_deposit500_man_time_num'],
+                          excel_dic['watch_video_people_num'], excel_dic['watch_video_man_time'],
+                          excel_dic['watch_video_diam_num'],
+                          # action_excel_dic['100_diam_share_man_time'],action_excel_dic['100_diam_share_people_num'],
+                          excel_dic['get_100_diam_by_share_link'],
+                          action_excel_dic['10_diam_share_man_time'],
+                          action_excel_dic['10_diam_share_people_num'],
+                          excel_dic['get_10_diam_by_share_link'],
+                          excel_dic['week_member_consumer_num'],
+                          excel_dic['week_member_cons_man_time_num'],
+                          excel_dic['week_member_diam_cons_num'], excel_dic['acce_consumer_num'],
+                          excel_dic['acce_con_man_time_num'], excel_dic['acce_diam_cons_num'],
+                          excel_dic['diam_unban_people_num'], excel_dic['diam_unban_man_time'],
+                          excel_dic['diam_unban_cons_num'],
+                          action_excel_dic['accost_people_num'], action_excel_dic['accost_man_time'],
+                          excel_dic['diam_accost_cons_num'],
+                          excel_dic['palm_unlock_people_num'], excel_dic['palm_unlock_man_time'],
+                          excel_dic['palm_unlock_diam_cons_num'],
+                          action_excel_dic['share_clicker_man_time'],
+                          action_excel_dic['share_clicker_people_num'],
+                          action_excel_dic['register_reason_by_share']]
+        return [data['ALL'], data['VN'], data['TH'], data['ID']]
 
     @classmethod
     def diam_stat_report_7_days(cls, addr, date=datetime.datetime.now(), days_delta=7):
@@ -589,7 +594,7 @@ class DiamStatService(object):
                    r'手相解锁人数', r'手相解锁人次', r'手相解锁-钻石消耗数量',
                    r'分享链接浏览人次', r'分享链接浏览人数', r'分享带来新用户数']
         # tb_head = [r'日期', r'member数', r'收入']
-        cls.write_data(addr, ['ALL']+cls.STAT_LOCATIONS, tb_head, res)
+        cls.write_data(addr, ['ALL'] + cls.STAT_LOCATIONS, tb_head, res)
 
     @classmethod
     def write_data(cls, name, sheet_names, tb_heads, data):
@@ -616,7 +621,7 @@ class DiamStatService(object):
                 sheet_col_data = col_data[sheet_num]
                 sheet = sheets[sheet_num]
                 for row_num in range(len(sheet_col_data)):
-                    sheet.write(row_num, col_num+1, sheet_col_data[row_num])
+                    sheet.write(row_num, col_num + 1, sheet_col_data[row_num])
         f.save(name)
 
     @classmethod
