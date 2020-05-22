@@ -136,7 +136,7 @@ class UserMessageService(object):
 
     @classmethod
     def read_all(cls, user_id):
-        UserMessage.get_by_id(uid=user_id).delete()
+        UserMessage.objects(uid=user_id).delete()
         return None, True
 
     @classmethod
