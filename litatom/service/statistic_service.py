@@ -2,6 +2,8 @@
 import time
 import random
 import datetime
+from copy import deepcopy
+
 from ..redis import RedisClient
 from ..util import (
     write_data_to_xls_col,
@@ -266,15 +268,13 @@ class StatisticService(object):
             uids = [UserSetting.get_by_user_id(str(el.id)) for el in
                     User.objects(create_time__gte=stat_date, create_time__lte=end)]
 
-
-
             ms = [el.uuid for el in uids if el]
 
             # 新增设备已注册的
             registered_uuid = 0
             for el in ms:
                 if el in m:
-                    registered_uuid +=1
+                    registered_uuid += 1
 
             print "install", "register", "rate"
             print len(ts), registered_uuid, registered_uuid * 1.0 / len(ts)
@@ -462,15 +462,29 @@ class DiamStatService(object):
         return data
 
     @classmethod
-    def cal_stats_from_list(cls, list, from_time, to_time, project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE):
+    def cal_stats_from_list(cls, stat_list, from_time, to_time, project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE,
+                            loc=None):
         """
         从阿里云日志中，计算list中所有项目
         :return: 一个tuple列表, (item_name,str(num))， 和一个字典，key为item_name, value为num
         """
         data = []
         data_dic = {}
-        for item in list:
-            resp = AliLogService.get_log_atom(from_time=from_time, to_time=to_time, query=list[item],
+        query_list = deepcopy(stat_list)
+        if loc:
+            import re
+            for item in query_list:
+                mid_pos = re.search('\|', query_list[item])
+                if not mid_pos:
+                    print('ERROR QUERY ITEM')
+                    continue
+                mid_pos = mid_pos.span()[0]
+                loc_str = ' and loc:' + loc
+                item_str_list = list(query_list[item])
+                item_str_list.insert(mid_pos, loc_str)
+                query_list[item] = ''.join(item_str_list)
+        for item in query_list:
+            resp = AliLogService.get_log_atom(from_time=from_time, to_time=to_time, query=query_list[item],
                                               project=project, logstore=logstore)
             try:
                 if resp:
@@ -553,17 +567,17 @@ class DiamStatService(object):
         for delta in range(1, days_delta):
             res.append(cls.diam_stat_report(date - datetime.timedelta(days=delta)))
         tb_head = [r'日期', r'会员数', r'收入', r'钻石消耗人数', r'钻石消耗数量', r'钻石消耗人次', r'钻石购买人数', r'钻石购买数量', r'钻石购买人次',
-                               r'免费钻石获取人数', r'免费钻石获取人次', r'免费钻石获取数量', r'50钻石购买人数',
-                               r'50钻石购买人次', r'100钻石购买人数', r'100钻石购买人次', r'200钻石购买人数', r'200钻石购买人次', r'500钻石购买人数',
-                               r'500钻石购买人次', r'观看激励视频人数', r'观看激励视频人次', r'激励视频钻石数量',
-                               # r'分享链接人数(100钻)',r'分享链接人次(100钻)',
-                               r'分享链接100钻石获取数量',
-                               r'分享链接人次(10钻)', r'分享链接人数(10钻)', r'分享链接10钻石获取数量', r'会员购买人数', r'会员购买人次', r'会员-钻石消耗数量',
-                               r'加速人数', r'加速购买人次', r'加速-钻石消耗数量',
-                               r'钻石解封人数', r'钻石解封人次', r'解封-钻石消耗数量',
-                               r'搭讪人数', r'搭讪人次', r'搭讪钻石消耗数量',
-                               r'手相解锁人数', r'手相解锁人次', r'手相解锁-钻石消耗数量',
-                               r'分享链接浏览人次', r'分享链接浏览人数', r'分享带来新用户数']
+                   r'免费钻石获取人数', r'免费钻石获取人次', r'免费钻石获取数量', r'50钻石购买人数',
+                   r'50钻石购买人次', r'100钻石购买人数', r'100钻石购买人次', r'200钻石购买人数', r'200钻石购买人次', r'500钻石购买人数',
+                   r'500钻石购买人次', r'观看激励视频人数', r'观看激励视频人次', r'激励视频钻石数量',
+                   # r'分享链接人数(100钻)',r'分享链接人次(100钻)',
+                   r'分享链接100钻石获取数量',
+                   r'分享链接人次(10钻)', r'分享链接人数(10钻)', r'分享链接10钻石获取数量', r'会员购买人数', r'会员购买人次', r'会员-钻石消耗数量',
+                   r'加速人数', r'加速购买人次', r'加速-钻石消耗数量',
+                   r'钻石解封人数', r'钻石解封人次', r'解封-钻石消耗数量',
+                   r'搭讪人数', r'搭讪人次', r'搭讪钻石消耗数量',
+                   r'手相解锁人数', r'手相解锁人次', r'手相解锁-钻石消耗数量',
+                   r'分享链接浏览人次', r'分享链接浏览人数', r'分享带来新用户数']
         # tb_head = [r'日期', r'member数', r'收入']
         write_data_to_xls_col(addr, tb_head, res, 'utf-8')
 
