@@ -119,7 +119,7 @@ class ForbidPlatformService(object):
         return {'user_id': user_id, 'nickname': UserService.nickname_by_uid(user_id), 'forbidden_until': forbidden_until,
                 'forbidden_from': UserRecord.get_forbidden_time_by_uid(user_id),
                 'user_forbidden_num': user_forbidden_num, 'device_forbidden_num': device_forbidden_num,
-                'forbid_score': forbid_score, 'forbid_history': forbid_history}
+                'forbid_score': forbid_score, 'forbid_history': forbid_history}, True
 
     @classmethod
     def get_feed(cls, from_ts, to_ts, loc=None, condition=None, num=100):
