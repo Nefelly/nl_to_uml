@@ -262,6 +262,8 @@ class PalmService(object):
             f.close()
         img = cv2.imread(f_name)
         res = pbcvt.OutputFate(img)
+        if not res:
+            return u'what you upload is not a palm, please retry', False
         res = res[:11]
         for _ in res:
             if _ not in [0, 1]:
