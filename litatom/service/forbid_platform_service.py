@@ -140,7 +140,6 @@ class ForbidPlatformService(object):
             for feed in feeds:
                 user_id = feed.user_id
                 if loc and loc != UserSetting.get_loc_by_uid(user_id):
-                    print(feed.id,user_id, loc,UserSetting.get_loc_by_uid(user_id))
                     continue
                 is_hq = feed.is_hq
                 if condition == cls.FEED_RECOMMENDED and not is_hq:
