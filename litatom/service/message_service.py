@@ -133,7 +133,12 @@ class UserMessageService(object):
         #     return NOT_AUTHORIZED, False
         obj.delete()
         return None, True
-    
+
+    @classmethod
+    def read_all(cls, user_id):
+        UserMessage.objects(uid=user_id).delete()
+        return None, True
+
     @classmethod
     def add_message(cls, user_id, related_user_id, m_type, related_feed_id=None, content=None):
         obj_id = UserMessage.add_message(user_id, related_user_id, m_type, related_feed_id, content)

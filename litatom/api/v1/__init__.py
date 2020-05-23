@@ -27,6 +27,7 @@ b.add_url_rule('/lit/user/avatars', 'user-get-avatars', endpoint.user.get_avatar
 b.add_url_rule('/lit/user/info_by_huanxin', 'user-info-by-huanxin', endpoint.user.user_info_by_huanxinids, methods=['POST'])
 b.add_url_rule('/lit/user/messages', 'user-messages', endpoint.user.user_messages)
 b.add_url_rule('/lit/user/read_message/<message_id>', 'user-message-read', endpoint.user.read_message)
+b.add_url_rule('/lit/user/read_all_messages', 'user-read_all_messages', endpoint.user.read_all_messages)
 b.add_url_rule('/lit/user/firebase_token', 'user-firebase-token', endpoint.user.register_firebase, methods=['POST'])
 b.add_url_rule('/lit/user/firebase_push', 'user-firebase-push', endpoint.user.firebase_push, methods=['POST'])
 b.add_url_rule('/lit/user/query_online', 'user-query-online', endpoint.user.query_online, methods=['POST'])
@@ -131,6 +132,8 @@ b.add_url_rule('/lit/admin/review_forbid_record','admin-review_forbid_record', e
 b.add_url_rule('/lit/admin/resolve_review_record','admin-resolve_review_record',endpoint.admin.resolve_review_record)
 b.add_url_rule('/lit/admin/resolve_review_feed','admin-resolve_review_feed',endpoint.admin.resolve_review_feed)
 b.add_url_rule('/lit/admin/super_login','admin-super_login',endpoint.admin.super_login, methods=['POST'])
+b.add_url_rule('/lit/admin/huanxin_by_uid','admin-huanxin_by_uid',endpoint.admin.huanxin_by_uid)
+
 
 # picture
 b.add_url_rule('/lit/image/upload', 'image-upload', endpoint.oss.upload_image_from_file, methods=['POST'])

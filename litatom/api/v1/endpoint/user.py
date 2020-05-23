@@ -256,6 +256,14 @@ def read_message(message_id):
 
 
 @session_required
+def read_all_messages():
+    data, status = UserMessageService.read_all(request.user_id)
+    if not status:
+        return fail(data)
+    return success()
+
+
+@session_required
 def register_firebase():
     token = request.json.get('token')
     if not token:

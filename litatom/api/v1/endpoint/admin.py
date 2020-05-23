@@ -206,6 +206,7 @@ def upsert_region_word():
     tag = data.get('tag')
     word = data.get('word')
     en = data.get('en')
+    print tag, word, en, '!' * 100
     data, status = GlobalizationService.add_or_modify_region_word(tag, word, en)
     if status:
         return success(data)
@@ -786,3 +787,21 @@ def get_feed():
     loc = request.args.get('loc')
     condition = request.args.get('condition')
     ForbidPlatformService.get_feed(loc, condition)
+
+def huanxin_by_uid():
+    uid = request.args.get('user_id')
+    nickname = request.args.get('nickname')
+    if not uid and not nickname:
+        return fail('no condition')
+    user = None
+    if uid:
+        user = User.get_by_id(uid)
+    if not user:
+        users = User.objects(nickname=nickname)
+        res = {}
+        for user in users:
+            res[str(user.id)] = {'birthdate':user.birthdate,'bio':user.bio,'huanxin':user.huanxin.user_id}
+        return success(res)
+    if not user:
+        return fail('no such user')
+    return success(user.huanxin.user_id)
