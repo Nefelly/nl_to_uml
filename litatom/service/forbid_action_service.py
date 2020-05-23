@@ -173,7 +173,6 @@ class ForbidActionService(object):
     def resolve_review_pic(cls, record_id, res):
         """对于需要review的track spam record，人工审核结果处理"""
         record = TrackSpamRecord.get_record_by_id(record_id)
-        print(record,2)
         if not record:
             return None, False
         if not res:

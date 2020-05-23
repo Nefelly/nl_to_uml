@@ -76,7 +76,7 @@ class ForbidRecordService(object):
         for record in spam_records:
             record_res.append(TrackSpamRecordService.get_spam_record_info(record))
 
-        return {'sensitive': is_sensitive, 'blocker_num': blocker_num, 'reports': reports_res, 'records': record_res}
+        return {'sensitive': is_sensitive, 'blocker_num': blocker_num, 'illegal_records':reports_res+record_res}
 
 
 class ReportService(object):
@@ -235,5 +235,5 @@ class TrackSpamRecordService(object):
         if record.word:
             tmp['word'] = {'word': record.word, 'hit_word': SpamWordCheckService.get_spam_word(record.word, GlobalizationService.get_region_by_user_id(record.user_id))}
         elif record.pic:
-            tmp['pic'] = {'pic': format_pic(record.pic)}
+            tmp['pic'] = format_pic(record.pic)
         return tmp
