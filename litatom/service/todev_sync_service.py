@@ -67,6 +67,7 @@ class ToDevSyncService(object):
                     continue
                 if f == StringField:
                    tmp = "%s='%s'" % (f, value)
+                   print 'get innnn'
                 else:
                     tmp = "%s=%s" % (f, value)
                 query_str.append(tmp)
