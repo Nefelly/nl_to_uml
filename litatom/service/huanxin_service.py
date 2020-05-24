@@ -14,11 +14,18 @@ from ..redis import RedisClient
 from ..model import (
     RedisLock
 )
+from ..const import (
+    ONE_MIN
+)
 from ..key import (
     REDIS_HUANXIN_ACCESS_TOKEN,
     REDIS_HUANXIN_ACCESS_TOKEN_EXPIRE,
     REDIS_HUANXIN_SIG_ACCESS_TOKEN,
     REDIS_HUANXIN_SIG_ACCESS_TOKEN_EXPIRE,
+)
+from ..service import (
+    TokenBucketService,
+    AliLogService
 )
 from ..util import (
     passwdhash
@@ -29,6 +36,7 @@ logger = logging.getLogger(__name__)
 redis_client = RedisClient()['lit']
 
 class HuanxinService(object):
+    CONTROL_RATE = 30
     HUANXIN_SETTING = setting.HUANXIN_ACCOUNT
     ORG_NAME = HUANXIN_SETTING.get('org_name', '1102190223222824')
     APP_NAME = HUANXIN_SETTING.get('app_name', 'lit')
@@ -48,6 +56,23 @@ class HuanxinService(object):
     '''
 
     @classmethod
+    def before_request(cls, can_stop=True):
+        '''
+        主要用来做频率控制
+        :param can_stop:
+        :return:
+        '''
+        status = TokenBucketService.get_token('huanxin_restful', 1, cls.CONTROL_RATE - 1, cls.CONTROL_RATE, 1, 1)
+        if can_stop:
+            contents = {
+                "name": "huanxin_voer_rate",
+            }
+            AliLogService.simplest_put_log(contents)
+            assert status
+        return True
+
+
+    @classmethod
     def gen_id_pwd(cls):
         raw_id = None
         pwd = None
@@ -62,6 +87,7 @@ class HuanxinService(object):
             if status:
                 break
         if not status:
+            assert False
             return None, None
         return raw_id, pwd
 
@@ -92,6 +118,7 @@ class HuanxinService(object):
             if not lock:
                 time.sleep(1)
                 return redis_client.get(access_token_key)
+            cls.before_request(False)
             response = requests.post(url, verify=False, json=data).json()
             access_token = response.get('access_token')
             expires_in = int(response.get('expires_in'))
@@ -182,6 +209,7 @@ class HuanxinService(object):
                 }
             for i in range(cls.TRY_TIMES):
                 try:
+                    cls.before_request()
                     response = requests.post(url, verify=False, headers=headers, json=data).json()
                     _ = response["data"]
                     for k in _:
@@ -227,12 +255,13 @@ class HuanxinService(object):
         }
         try:
             response = requests.post(url, verify=False, headers=headers, data=json.dumps({'usernames': [dest_user_name]})).json()
-            print response
+            cls.before_request()
             assert response.get('data')[0]
             return True
         except Exception, e:
             logger.error(traceback.format_exc())
             logger.error('Error block huanxin, user_id: %r, err: %r', source_user_name, e)
+            AliLogService.put_err_log({"msg": e})
             return {}
 
     @classmethod
@@ -359,6 +388,7 @@ class HuanxinService(object):
         except Exception, e:
             logger.error(traceback.format_exc())
             logger.error('!!!!!!!!!!!Error create huanxin user, user_name: %r, , response:%r, err: %r', user_name, response, e)
+            AliLogService.put_err_log({"msg": e, "response": json.dumps(response)})
             return False
 
     @classmethod
@@ -398,6 +428,8 @@ class HuanxinService(object):
         except Exception, e:
             logger.error(traceback.format_exc())
             logger.error('Error active huanxin, user_id: %r, err: %r', user_name, e)
+            AliLogService.put_err_log({"msg": e, "response": json.dumps(response)})
+            assert False
             return {}
 
     @classmethod
@@ -460,8 +492,9 @@ class HuanxinService(object):
             return True
         except Exception, e:
             logger.error(traceback.format_exc())
-            logger.error(e)
             logger.error('Error deactive huanxin response:%r , user_id: %r, err: %r', response, user_name, e)
+            AliLogService.put_err_log({"msg": e, "response": json.dumps(response)})
+            # assert False
             return True
 
     @classmethod
