@@ -16,5 +16,7 @@ redis_client = RedisClient()['lit']
 class ToDevSyncService(object):
     '''
     '''
-    with switch_db(UserSetting, 'dev_lit') as UserSetting:
-        print UserSetting.objects().count()
+    @classmethod
+    def test(cls):
+        with switch_db(UserSetting, 'dev_lit') as UserSetting:
+            print UserSetting.objects().count()
