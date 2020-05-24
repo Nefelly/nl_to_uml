@@ -69,12 +69,10 @@ class ToDevSyncService(object):
                 if value is None:
                     continue
                 if fields[f] == StringField:
-                   tmp = "%s='%s'" % (f, value)
-                   print 'get innnn'
+                    tmp = "%s='%s'" % (f, value)
                 else:
                     tmp = "%s=%s" % (f, value)
                 query_str.append(tmp)
-                print tmp
             real_query = '%s.objects(%s).first()' % (model.__name__, ','.join (query_str))
             res = eval(real_query)
             if not res:
