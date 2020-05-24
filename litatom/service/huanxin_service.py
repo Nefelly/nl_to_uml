@@ -14,11 +14,17 @@ from ..redis import RedisClient
 from ..model import (
     RedisLock
 )
+from ..const import (
+    ONE_MIN
+)
 from ..key import (
     REDIS_HUANXIN_ACCESS_TOKEN,
     REDIS_HUANXIN_ACCESS_TOKEN_EXPIRE,
     REDIS_HUANXIN_SIG_ACCESS_TOKEN,
     REDIS_HUANXIN_SIG_ACCESS_TOKEN_EXPIRE,
+)
+from ..service import (
+    TokenBucketService
 )
 from ..util import (
     passwdhash
@@ -29,6 +35,7 @@ logger = logging.getLogger(__name__)
 redis_client = RedisClient()['lit']
 
 class HuanxinService(object):
+    CONTROL_RATE = 30
     HUANXIN_SETTING = setting.HUANXIN_ACCOUNT
     ORG_NAME = HUANXIN_SETTING.get('org_name', '1102190223222824')
     APP_NAME = HUANXIN_SETTING.get('app_name', 'lit')
@@ -46,6 +53,19 @@ class HuanxinService(object):
     docs :http://docs-im.easemob.com/start/100serverintegration/20users
     download chat record:http://docs-im.easemob.com/im/server/basics/chatrecord
     '''
+
+    @classmethod
+    def before_request(cls, can_stop=True):
+        '''
+        主要用来做频率控制
+        :param can_stop:
+        :return:
+        '''
+        status = TokenBucketService.get_token('huanxin_restful', 1, cls.CONTROL_RATE - 1, cls.CONTROL_RATE, 1, 1)
+        if can_stop:
+            assert status
+        return True
+
 
     @classmethod
     def gen_id_pwd(cls):
