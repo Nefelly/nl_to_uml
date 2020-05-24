@@ -120,11 +120,16 @@ class AliLogService(object):
         cls._put_logs_atom(logitemList, project, logstore, topic, source, client)
 
     @classmethod
-    def simplest_put_log(cls, contents, project):
+    def simplest_put_log(cls, contents, project='failloglitatom'):
         topic = cls.DEFAULT_TOPIC
         source = cls.DEFAULT_SOURCE
         client = cls.DEFAULT_CLIENT
         logstore = project
+        if isinstance(contents, dict):
+            res = []
+            for _ in contents:
+                res.append((_, str(contents[_])))
+            contents = res
         logitemList = []  # LogItem list
         logItem = LogItem()
         logItem.set_time(int(time()))
