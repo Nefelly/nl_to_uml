@@ -71,6 +71,7 @@ class ToDevSyncService(object):
                 else:
                     tmp = "%s=%s" % (f, value)
                 query_str.append(tmp)
+                print tmp
             real_query = '%s.objects(%s).first()' % (model.__name__, ','.join (query_str))
             res =  eval(real_query)
             if not res:
