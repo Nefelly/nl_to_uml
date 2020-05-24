@@ -290,6 +290,14 @@ class RegionWord(Document):
                 return u'%%s number dismatch, please check'
         return None
 
+    def delete(self, *args, **kwargs):
+        self.disable_cache_word(self.region, self.tag)
+        super(RegionWord, self).delete(*args, **kwargs)
+
+    def save(self, *args, **kwargs):
+        self.disable_cache_word(self.region, self.tag)
+        super(RegionWord, self).save(*args, **kwargs)
+
     @classmethod
     def add_or_mod(cls,  region,  tag,  word):
         obj = cls.objects(region=region,  tag=tag).first()
