@@ -62,6 +62,8 @@ class ToDevSyncService(object):
         for obj in dev_objs:
             query_str = []
             for f in fields:
+                if f == 'create_time':
+                    continue
                 value = getattr(obj, f)
                 if value is None:
                     continue
