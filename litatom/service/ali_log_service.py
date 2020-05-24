@@ -137,6 +137,12 @@ class AliLogService(object):
         logitemList.append(logItem)
         cls._put_logs_atom(logitemList, project, logstore, topic, source, client)
 
+    @classmethod
+    def put_err_log(cls, contents):
+        if not contents:
+            contents = {}
+        contents['traceback'] = traceback.format_exc()
+        cls.simplest_put_log(contents)
 
     @classmethod
     def put_logs_batch(cls, contents_list, topic=DEFAULT_TOPIC, source=DEFAULT_SOURCE, project=DEFAULT_PROJECT,

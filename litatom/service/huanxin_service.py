@@ -118,6 +118,7 @@ class HuanxinService(object):
             if not lock:
                 time.sleep(1)
                 return redis_client.get(access_token_key)
+            cls.before_request(False)
             response = requests.post(url, verify=False, json=data).json()
             access_token = response.get('access_token')
             expires_in = int(response.get('expires_in'))
@@ -208,6 +209,7 @@ class HuanxinService(object):
                 }
             for i in range(cls.TRY_TIMES):
                 try:
+                    cls.before_request()
                     response = requests.post(url, verify=False, headers=headers, json=data).json()
                     _ = response["data"]
                     for k in _:
@@ -253,12 +255,13 @@ class HuanxinService(object):
         }
         try:
             response = requests.post(url, verify=False, headers=headers, data=json.dumps({'usernames': [dest_user_name]})).json()
-            print response
+            cls.before_request()
             assert response.get('data')[0]
             return True
         except Exception, e:
             logger.error(traceback.format_exc())
             logger.error('Error block huanxin, user_id: %r, err: %r', source_user_name, e)
+            AliLogService.put_err_log({"msg": e})
             return {}
 
     @classmethod
@@ -385,6 +388,7 @@ class HuanxinService(object):
         except Exception, e:
             logger.error(traceback.format_exc())
             logger.error('!!!!!!!!!!!Error create huanxin user, user_name: %r, , response:%r, err: %r', user_name, response, e)
+            AliLogService.put_err_log({"msg": e, "response": json.dumps(response)})
             return False
 
     @classmethod
@@ -424,6 +428,7 @@ class HuanxinService(object):
         except Exception, e:
             logger.error(traceback.format_exc())
             logger.error('Error active huanxin, user_id: %r, err: %r', user_name, e)
+            AliLogService.put_err_log({"msg": e, "response": json.dumps(response)})
             assert False
             return {}
 
@@ -487,8 +492,8 @@ class HuanxinService(object):
             return True
         except Exception, e:
             logger.error(traceback.format_exc())
-            logger.error(e)
             logger.error('Error deactive huanxin response:%r , user_id: %r, err: %r', response, user_name, e)
+            AliLogService.put_err_log({"msg": e, "response": json.dumps(response)})
             # assert False
             return True
 

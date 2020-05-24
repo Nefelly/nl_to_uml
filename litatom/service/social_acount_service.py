@@ -104,6 +104,7 @@ class GoogleService(object):
             # Invalid token
             # print e
             logger.error('log false token:%s, %s', token, e)
+            AliLogService.put_err_log({"msg": e, "idinfo": json.dumps(idinfo), "token": token})
             return None
 
     @classmethod
@@ -256,6 +257,7 @@ class FacebookService(object):
             logger.error(traceback.format_exc())
             # traceback.print_exc()
             logger.error('Error get , token: %r, err: %r', token, e)
+            AliLogService.put_err_log({"msg": e, "response": json.dumps(response), "token": token})
             return None
 
     @classmethod
@@ -293,4 +295,5 @@ class FacebookService(object):
                     time.sleep(0.3)
                     continue
                 logger.error('log false token:%s, %s', token, e)
+
                 return None
