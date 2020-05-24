@@ -65,7 +65,7 @@ class ToDevSyncService(object):
                 value = getattr(obj, f)
                 if value is None:
                     continue
-                if f == StringField:
+                if fields[f] == StringField:
                    tmp = "%s='%s'" % (f, value)
                    print 'get innnn'
                 else:
@@ -73,7 +73,7 @@ class ToDevSyncService(object):
                 query_str.append(tmp)
                 print tmp
             real_query = '%s.objects(%s).first()' % (model.__name__, ','.join (query_str))
-            res =  eval(real_query)
+            res = eval(real_query)
             if not res:
                 to_save = eval('%s(%s)' % (model.__name__, ','.join (query_str)))
                 to_save.save()
