@@ -19,8 +19,8 @@ def run(stat_date=get_zero_today()):
     #      '644513759@qq.com']
     recievers = ["litatomwang@gmail.com", "w326571@126.com"]
     EmailService.send_file(recievers, dst_addr, 'good job')
-    DiamStatService.diam_free_report(match_addr, stat_date)
-    EmailService.send_file(recievers, match_addr)
+    # DiamStatService.diam_free_report(match_addr, stat_date)
+    # EmailService.send_file(recievers, match_addr)
 
 
 if __name__ == "__main__":
