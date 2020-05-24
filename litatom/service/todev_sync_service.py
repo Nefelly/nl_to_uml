@@ -11,7 +11,15 @@ from ..util import (
 )
 import logging
 from mongoengine.context_managers import switch_db
-import mongoengine
+from mongoengine import (
+    BooleanField,
+    DateTimeField,
+    Document,
+    IntField,
+    ListField,
+    StringField,
+    EmbeddedDocumentField
+)
 from ..redis import RedisClient
 
 logger = logging.getLogger(__name__)
@@ -42,13 +50,34 @@ class ToDevSyncService(object):
         :return:
         '''
         dev_objs = []
-
         with switch_db(model, 'dev_lit') as Model:
             if judge_time:
                 real_judge = get_time_int_from_str(judge_time)
-                if isinstance(getattr(model, 'create_time'), mongoengine.fields.DateTimeField):
+                if isinstance(getattr(model, 'create_time'), DateTimeField):
                     real_judge = date_from_unix_ts(real_judge)
                 dev_objs = Model.objects(create_time__gte=real_judge)
             else:
                 dev_objs = [el for el in Model.objects()]
+        fields = cls.table_fields(model)
+        for obj in dev_objs:
+            query_str = []
+            for f in fields:
+                value = getattr(obj, f)
+                if value is None:
+                    continue
+                if f == StringField:
+                   tmp = "%s='%s'" % (f, value)
+                else:
+                    tmp = "%s=%s" % (f, value)
+                query_str.append(tmp)
+            real_query = '%s.objects(%s).first()' % (model.__name__, ','.join (query_str))
+            res =  eval(real_query)
+            if not res:
+                to_save = eval('%s(%s)' % (model.__name__, ','.join (query_str)))
+                to_save.save()
+
+
+
+
+
         return dev_objs
