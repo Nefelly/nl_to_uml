@@ -103,13 +103,13 @@ class MysqlSyncService(object):
         fs = cls.table_fields(c)
         for _ in check_fs:
             if fs.get(_):
-                return _ , fs.get(_)
+                return _, fs.get(_)
         assert False
 
     @classmethod
     def check_has_time(cls):
         check_fs = ['create_time', 'create_ts']
-        for n,v in cls.get_tables().items():
+        for n, v  in cls.get_tables().items():
             fs = cls.table_fields(v)
             r = False
             print n, fs
