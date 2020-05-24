@@ -20,3 +20,10 @@ class ToDevSyncService(object):
     def test(cls):
         with switch_db(UserSetting, 'dev_lit') as UserSetting:
             print UserSetting.objects().count()
+
+    @classmethod
+    def sync(cls, model):
+        dev_objs = []
+        with switch_db(model, 'dev_lit') as Model:
+            dev_objs = [el for el in  Model.objects()]
+        return dev_objs
