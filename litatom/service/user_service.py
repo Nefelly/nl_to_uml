@@ -97,6 +97,8 @@ class UserService(object):
     def _trans_forbidden_2_session(cls, user):
         if request.session_id:
             user.generate_new_session(request.session_id.replace("session.", ""))
+        elif user.session:
+            user.generate_new_session(user.session.replace("session.", ""))
 
     @classmethod
     def get_forbidden_time_by_uid(cls, user_id):
