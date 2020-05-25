@@ -21,6 +21,9 @@ from ....response import (
     fail,
     success
 )
+from ....key import (
+    REDIS_ACCOUNT_ACTION
+)
 from ..form import (
     PhoneLoginForm
 )
@@ -66,45 +69,26 @@ def diamond_products():
 def pay_inform():
     payload = request.json
     user_id = request.user_id
-    try:
-        if setting.IS_DEV:
-            data, status = None, True
-        else:
-            TrackActionService.create_action(request.user_id, 'pay_inform', None, None, json.dumps(payload))
-            data, status = GoogleService.judge_order_online(payload, user_id)
-    except Exception as e:
-        logger.error('pay_inform error:%s', e)
-        status = True
-    finally:
-        if not status:
-            return fail(data)
-        data, status = AccountService.deposit_diamonds(user_id, payload)
-        if not status:
-            return fail(data)
-        return success(data)
+    data, status = AccountService.check_token(user_id, payload)
+    if not status:
+        return fail(data)
+    data, status = AccountService.deposit_diamonds(user_id, payload)
+    if not status:
+        return fail(data)
+    return success(data)
 
 
 @forbidden_session_required
 def buy_vip():
     payload = request.json
     user_id = request.user_id
-    print 'aaaaaaaa'
-    try:
-        if setting.IS_DEV:
-            data, status = None, True
-        else:
-            TrackActionService.create_action(request.user_id, 'buy_vip', None, None, json.dumps(payload))
-            data, status = GoogleService.judge_order_online(payload, user_id)
-    except Exception as e:
-        logger.error('pay_inform error:%s', e)
-        status = True
-    finally:
-        if not status:
-            return fail(data)
-        data, status = AccountService.buy_vip(user_id, payload)
-        if not status:
-            return fail(data)
-        return success(data)
+    data, status = AccountService.check_token(user_id, payload)
+    if not status:
+        return fail(data)
+    data, status = AccountService.buy_vip(user_id, payload)
+    if not status:
+        return fail(data)
+    return success(data)
 
 
 @session_required

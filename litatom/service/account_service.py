@@ -34,12 +34,17 @@ from ..service import (
     AliLogService,
     AntiSpamRateService,
     AvatarService,
-    GlobalizationService
+    GlobalizationService,
+    TrackActionService,
+    GoogleService
 )
 from ..key import (
     REDIS_ACCOUNT_ACTION,
     REDIS_DEPOSIT_BY_ACTIVITY,
     REDIS_SHARE_LIMIT
+)
+from ..error import (
+    FailedTokenUsed
 )
 from ..redis import RedisClient
 from flask import (
@@ -349,17 +354,29 @@ class AccountService(object):
         return u'you are not forbid ~', False
 
     @classmethod
+    def check_token(cls, user_id, payload):
+        token = payload.get('payload', {}).get('token')
+        if setting.IS_DEV:
+            return None, True
+        key = REDIS_ACCOUNT_ACTION.format(key=('pay' + token))
+        r = redis_client.get(key)
+        if r:
+            return FailedTokenUsed, False
+        redis_client.setex(key, ONE_WEEK, 1)
+        try:
+            TrackActionService.create_action(user_id, 'pay_inform', None, None, json.dumps(payload))
+            data, status = GoogleService.judge_order_online(payload, user_id)
+            return data, status
+        except Exception as e:
+            logger.error('pay_inform error:%s', e)
+        return None, True
+
+    @classmethod
     def deposit_diamonds(cls, user_id, payload):
         token = payload.get('payload', {}).get('token')
         diamonds = payload.get('diamonds')
         if not token:
             AccountFlowRecord.create(user_id, AccountFlowRecord.WRONG, diamonds)
-        elif not setting.IS_DEV:
-            key = REDIS_ACCOUNT_ACTION.format(key=('pay' + token))
-            r = redis_client.get(key)
-            if r:
-                return 'Already deposit success', False
-            redis_client.setex(key, ONE_WEEK, 1)
         if not isinstance(diamonds, int):
             return u'error request diamonds', False
         # if diamonds >= 10000:

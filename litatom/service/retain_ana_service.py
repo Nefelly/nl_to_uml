@@ -68,7 +68,7 @@ class RetainAnaService(object):
         user_info = {}
         from_ts = date_to_int_time(date)
         to_ts = date_to_int_time(next_date(date, 1))
-        users = User.objects(create_time__gte=date,create_time__lte=next_date(date,1), platform='android')
+        users = User.objects(create_time__gte=date, create_time__lte=next_date(date,1), platform='android')
 
         for user in users:
             user_id = str(user.id)

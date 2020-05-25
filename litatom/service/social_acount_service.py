@@ -56,7 +56,7 @@ class GoogleService(object):
         diamonds = int(remark['diamonds'])
         token = remark['payload']['token']
         product_id = AccountService.get_product_name_by_diamonds(diamonds)
-        return token,product_id
+        return token, product_id
 
     @classmethod
     def ensure_cache(cls, access_token):
@@ -187,7 +187,7 @@ class GoogleService(object):
         token, product_id = cls._get_info_from_remark(payload)
         res = cls.judge_order_by_token(product_id, token)
         if not res:
-            contents = [('token',token),('product_id',product_id),('user_id',user_id)]
+            contents = [('token', token),('product_id', product_id),('user_id',user_id)]
             cls.put_invalid_log_to_ali_log(contents)
             return cls.ERR_INVALID_TOKEN, False
         return None, True
