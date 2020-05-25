@@ -65,10 +65,11 @@ class HuanxinService(object):
         status = TokenBucketService.get_token('huanxin_restful', 1, cls.CONTROL_RATE - 1, cls.CONTROL_RATE, 1, 1)
         if can_stop:
             contents = {
-                "name": "huanxin_voer_rate",
+                "name": "huanxin_over_rate",
             }
-            AliLogService.simplest_put_log(contents)
-            assert status
+            if not status:
+                AliLogService.simplest_put_log(contents)
+            # assert status
         return True
 
 
