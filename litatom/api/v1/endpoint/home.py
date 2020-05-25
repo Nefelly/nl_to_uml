@@ -323,7 +323,9 @@ def privacy():
 
 
 def rules():
-    f_name = 'rules_%s.html' % GlobalizationService.get_region()
+    region = GlobalizationService.get_region()
+    region = region if region in ['th', 'vi', 'id'] else 'en'
+    f_name = 'rules_%s.html' % region
     return render_template(f_name), 200, {'Content-Type': 'text/html; charset=utf-8'}
 
 
