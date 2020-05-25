@@ -254,7 +254,7 @@ class AntiSpamRateService(object):
         :param user_id:
         :param activity:
         :param other_id:
-        :param related_protcted: 用来防止对一个id进行多次频控
+        :param related_protcted: 用来防止对一个id进行多次频控 多次重复 只会计算一个
         :param other_protected:  另外的id所代表的是否要被频控；
         :return:
         '''
