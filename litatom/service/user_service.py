@@ -532,7 +532,8 @@ class UserService(object):
         user.forbidden = True
         user.forbidden_ts = int(time.time()) + forbid_ts * (1 + 5 * forbid_times)
         cls._trans_session_2_forbidden(user)
-        user.clear_session()
+        # user.clear_session()
+        user._purge_session_cache()
         for gender in GENDERS:
             # key = REDIS_ONLINE_GENDER.format(gender=gender)
             key = GlobalizationService._online_key_by_region_gender(gender)
