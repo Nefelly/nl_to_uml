@@ -69,7 +69,7 @@ class HuanxinService(object):
             }
             if not status:
                 AliLogService.simplest_put_log(contents)
-            # assert status
+            assert status
         return True
 
 
