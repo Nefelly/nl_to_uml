@@ -335,6 +335,19 @@ def unban():
 
 
 @set_user_id_by_phone
+def release_vip():
+    data, status = AccountService.release_vip(request.user_id)
+    if not status:
+        return fail(data)
+    return success(data)
+
+
+def unban_by_user_id(user_id):
+    UserService.unban_user(user_id)
+    return success()
+
+
+@set_user_id_by_phone
 def change_to_official_avatar():
     nickname = request.args.get('nickname')
     if nickname:

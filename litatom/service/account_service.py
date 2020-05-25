@@ -264,6 +264,15 @@ class AccountService(object):
         return None
 
     @classmethod
+    def release_vip(cls, user_id):
+        user = User.get_by_id(user_id)
+        if not user:
+            return u'user not exists', False
+        user.vip_time = 0
+        user.save()
+        return None, True
+
+    @classmethod
     def _buy_vip(cls, user_id, vip_type=VIP_MONTH):
         user = User.get_by_id(user_id)
         if not user:
