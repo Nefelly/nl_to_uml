@@ -323,10 +323,10 @@ class RegionWord(Document):
     def cache_word_by_region_tag(cls, region, tag):
         cache_key = cls.get_cache_key(region, tag)
         cached_res = redis_client.get(cache_key)
-        if cached_res:
+        if cached_res and cached_res != cls.NOTSET_WORLD:
             return cached_res
-        if cached_res == cls.NOTSET_WORLD:
-            return ''
+        # if cached_res == cls.NOTSET_WORLD:
+        #     return ''
         obj = cls.objects(region=region, tag=tag).first()
         word = ''
         if obj:
@@ -336,8 +336,8 @@ class RegionWord(Document):
                 word = cls.cache_word_by_region_tag(cls.REGION_BENCHMARK, tag)
         if word:
             redis_client.set(cache_key, word, ONE_MONTH)
-        else:
-            redis_client.set(cache_key, cls.NOTSET_WORLD, ONE_MONTH)
+        # else:
+        #     redis_client.set(cache_key, cls.NOTSET_WORLD, ONE_MONTH)
         return word
 
     @classmethod
