@@ -347,6 +347,10 @@ def unban_by_user_id(user_id):
     return success()
 
 
+def mannual_pay_diamond(user_id):
+    return success()
+
+
 @set_user_id_by_phone
 def change_to_official_avatar():
     nickname = request.args.get('nickname')
