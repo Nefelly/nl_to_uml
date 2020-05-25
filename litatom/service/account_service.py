@@ -100,31 +100,31 @@ class AccountService(object):
     def membership_badges(cls):
         meta = [
             [
-                "6b5a2158-9c2e-11ea-b2b8-00163e02deb4",
+                "7d128318-9e68-11ea-8213-00163e02deb4",
                 "acceleration_unlimited"
             ],
             [
-                "6b6b7110-9c2e-11ea-b2b8-00163e02deb4",
+                "7d335da4-9e68-11ea-8213-00163e02deb4",
                 "match_times_unlimited"
             ],
             [
-                "6b7e3e08-9c2e-11ea-b2b8-00163e02deb4",
+                "7d476d3a-9e68-11ea-8213-00163e02deb4",
                 "vip_remove_ads"
             ],
             [
-                "6b906786-9c2e-11ea-b2b8-00163e02deb4",
+                "7d5c8f80-9e68-11ea-8213-00163e02deb4",
                 "vip_match_record"
             ],
             [
-                "6ba24866-9c2e-11ea-b2b8-00163e02deb4",
+                "7d714e2a-9e68-11ea-8213-00163e02deb4",
                 "vip_visit_record"
             ],
             [
-                "6bb70bc0-9c2e-11ea-b2b8-00163e02deb4",
+                "7d9c98b4-9e68-11ea-8213-00163e02deb4",
                 "vip_badge"
             ],
             [
-                "6bc9d4d0-9c2e-11ea-b2b8-00163e02deb4",
+                "7dc33f96-9e68-11ea-8213-00163e02deb4",
                 "vip_palmistry"
             ]
 
