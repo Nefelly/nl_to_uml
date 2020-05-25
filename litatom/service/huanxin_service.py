@@ -72,7 +72,6 @@ class HuanxinService(object):
             assert status
         return True
 
-
     @classmethod
     def gen_id_pwd(cls):
         raw_id = None
