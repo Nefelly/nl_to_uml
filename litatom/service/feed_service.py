@@ -470,7 +470,7 @@ class FeedService(object):
 
         if feed.user_id != user_id:
             data, status = AntiSpamRateService.judge_stop(user_id, AntiSpamRateService.COMMENT, feed_id,
-                                                          related_protcted=False)
+                                                          related_protcted=True)
             if not status:
                 return data, False
 
