@@ -37,6 +37,8 @@ class ForbidRecordService(object):
     @classmethod
     def record_sensitive_device(cls, user_id):
         user_setting = UserSetting.get_by_user_id(user_id)
+        if not user_setting:
+            return
         if not BlockedDevices.get_by_device(user_setting.uuid):
             BlockedDevices.add_sensitive_device(user_setting.uuid)
 
