@@ -486,16 +486,22 @@ class HuanxinService(object):
         headers = {
             'Authorization':'Bearer %s' % access_token
         }
-        try:
-            response = requests.post(url, verify=False, headers=headers).json()
-            assert response.get('entities')[0]['username']
-            return True
-        except Exception, e:
-            logger.error(traceback.format_exc())
-            logger.error('Error deactive huanxin response:%r , user_id: %r, err: %r', response, user_name, e)
-            AliLogService.put_err_log({"msg": e, "response": json.dumps(response)})
-            # assert False
-            return True
+
+        for i in range(cls.TRY_TIMES):
+            try:
+                response = requests.post(url, verify=False, headers=headers).json()
+                assert response.get('entities')[0]['username']
+                return True
+            except Exception, e:
+                if i == cls.TRY_TIMES - 1:
+                    logger.error(traceback.format_exc())
+                    logger.error('Error deactive huanxin response:%r , user_id: %r, err: %r', response, user_name, e)
+                    AliLogService.put_err_log({"msg": e, "response": json.dumps(response)})
+                    # assert False
+                    return True
+                else:
+                    time.sleep(0.3)
+                    continue
 
     @classmethod
     def chat_msgs_by_hour(cls, YYMMDDHH):
