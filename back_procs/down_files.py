@@ -17,6 +17,8 @@ def down():
         print cmd
         os.system(cmd)
 
+# rs = ToDevSyncService.sync(RegionWord, '2020-05-10')
+
 
 if __name__ == '__main__':
     down()
