@@ -382,6 +382,7 @@ class GlobalizationService(object):
     def region_words(cls):
         trans = []
         no_trans = []
+        request.sid=''
         region = cls.get_region()
         en = RegionWord.REGION_BENCHMARK
         for obj in RegionWord.objects(region=en):
