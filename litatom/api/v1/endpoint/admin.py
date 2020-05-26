@@ -22,7 +22,9 @@ from ...decorator import (
     get_user_id_by_phone,
     get_page_info,
     set_exp_arg,
-    set_user_id_by_phone, get_user_id_by_nickname,
+    set_user_id_by_phone,
+    get_user_id_by_nickname,
+    reset_admin_env
 )
 
 from ....util import write_data_to_xls, check_time
@@ -200,7 +202,7 @@ def official_feed():
 def admin_words():
     return current_app.send_static_file('region_info.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
 
-
+@reset_admin_env
 def upsert_region_word():
     data = request.json
     tag = data.get('tag')
@@ -740,6 +742,7 @@ def deal_feedback(feedback_id):
     return fail(data)
 
 
+@reset_admin_env
 def region_words():
     data, status = GlobalizationService.region_words()
     if status:

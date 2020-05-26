@@ -90,6 +90,8 @@ def get_user_id_by_phone(phone=None):
     return user_id
 
 
+
+
 def get_user_id_by_nickname(nickname=None):
     nickname = request.args.get('phone') if not nickname else nickname
     user = User.get_by_nickname(nickname)
@@ -108,6 +110,14 @@ def set_user_id_by_phone(view):
 
     return wrapper
 
+
+def reset_admin_env(view):
+    @functools.wraps(view)
+    def wrapper(*args, **kwargs):
+        request.session_id = ''
+        return view(*args, **kwargs)
+
+    return wrapper
 
 def test_required(view):
     @functools.wraps(view)
