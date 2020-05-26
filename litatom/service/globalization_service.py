@@ -383,7 +383,7 @@ class GlobalizationService(object):
         trans = []
         no_trans = []
         region = cls.get_region()
-        print region
+        print region, 'asfdfd'
         en = RegionWord.REGION_BENCHMARK
         for obj in RegionWord.objects(region=en):
             tag = obj.tag
