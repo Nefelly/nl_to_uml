@@ -30,6 +30,7 @@ redis_client = RedisClient()['lit']
 class ToDevSyncService(object):
     '''
     '''
+
     @classmethod
     def test(cls):
         with switch_db(UserSetting, 'dev_lit') as UserSetting:
@@ -79,9 +80,4 @@ class ToDevSyncService(object):
                 res.delete()
             to_save = eval('%s(%s)' % (model.__name__, ','.join (query_str)))
             to_save.save()
-
-
-
-
-
         return dev_objs
