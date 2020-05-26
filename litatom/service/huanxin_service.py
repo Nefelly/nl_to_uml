@@ -421,16 +421,20 @@ class HuanxinService(object):
         headers = {
             'Authorization':'Bearer %s' % access_token
         }
-        try:
-            response = requests.post(url, verify=False, headers=headers, data=json.dumps({})).json()
-            assert response.get('action')
-            return True
-        except Exception, e:
-            logger.error(traceback.format_exc())
-            logger.error('Error active huanxin, user_id: %r, err: %r', user_name, e)
-            AliLogService.put_err_log({"msg": e, "response": json.dumps(response)})
-            assert False
-            return {}
+        for i in range(cls.TRY_TIMES):
+            try:
+                response = requests.post(url, verify=False, headers=headers, data=json.dumps({})).json()
+                assert response.get('action')
+                return True
+            except Exception, e:
+                if i < cls.TRY_TIMES - 1:
+                    time.sleep(0.3)
+                    continue
+                logger.error(traceback.format_exc())
+                logger.error('Error active huanxin, user_id: %r, err: %r', user_name, e)
+                AliLogService.put_err_log({"msg": e, "response": json.dumps(response)})
+                assert False
+                return {}
 
     @classmethod
     def is_user_online(cls, user_names):
