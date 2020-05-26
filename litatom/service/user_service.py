@@ -181,13 +181,13 @@ class UserService(object):
         cnt = 0
         max_num = 10
         objs = []
-        if len(nickname) <= 3:
-            for obj in User.get_users_by_nickname(nickname):
-                objs.append(obj)
-                cnt += 1
-                if cnt >= max_num:
-                    break
-        else:
+        # if len(nickname) <= 3:
+        for obj in User.get_users_by_nickname(nickname):
+            objs.append(obj)
+            cnt += 1
+            if cnt >= max_num:
+                break
+        if len(nickname) >= 3 and cnt <= max_num:
             for _ in User.objects(nickname__contains=nickname):
                 objs.append(_)
                 cnt += 1
