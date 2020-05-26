@@ -369,7 +369,8 @@ class GlobalizationService(object):
     @classmethod
     def add_or_modify_region_word(cls, tag, word, en=None):
         region = cls.get_region()
-        if not RegionWord.benchmark_word_exists(tag) and en:
+        # if not RegionWord.benchmark_word_exists(tag) and en:
+        if en:
             RegionWord.add_or_mod(RegionWord.REGION_BENCHMARK, tag, en)
         fail_reason = RegionWord.is_valid_word(region, tag, word)
         if fail_reason:
