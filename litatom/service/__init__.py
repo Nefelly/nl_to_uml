@@ -64,6 +64,7 @@ from .visit_service import VisitService
 from .share_stat_service import ShareStatService
 from .maintain_service import MaintainService
 from .chat_record_service import ChatRecordService
+from .todev_sync_service import ToDevSyncService
 from .statistic_service import ForbidStatService
 from .test_clean_service import TestCleanService
 # from .mysql_sync_service import MysqlSyncService

@@ -75,9 +75,10 @@ class ToDevSyncService(object):
                 query_str.append(tmp)
             real_query = '%s.objects(%s).first()' % (model.__name__, ','.join (query_str))
             res = eval(real_query)
-            if not res:
-                to_save = eval('%s(%s)' % (model.__name__, ','.join (query_str)))
-                to_save.save()
+            if res:
+                res.delete()
+            to_save = eval('%s(%s)' % (model.__name__, ','.join (query_str)))
+            to_save.save()
 
 
 
