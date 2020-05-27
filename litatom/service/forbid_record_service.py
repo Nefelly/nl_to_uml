@@ -165,6 +165,7 @@ class ReportService(object):
         if report.chat_record:
             res_record = []
             record = json.loads(report.chat_record)
+            record = record[-20:]
             for el in record:
                 uid = UserService.uid_by_huanxin_id(el['id'])
                 # res_record.append({'content': el['content'], 'name': UserService.nickname_by_uid(uid)})
