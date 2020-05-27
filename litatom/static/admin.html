@@ -18,7 +18,7 @@
     <td><pre>{{item.user_id}}</pre><hr /> {{item.create_time}} <hr/> <pre v-if="item.reporter_ban_fefore" style="background:red"> reporter banned before</pre></td>
 <td><pre>{{item.target_user_id}}</pre>
 </td>
-    <td>reason: {{item.reason}}<hr /> content:<pre>{{item.content}}</pre><hr />chat:<div v-html="item.chat_record">{{item.chat_record}}</div> <hr />picture_from_feed: <pre style="background:lightpink" >{{item.pic_from_feed}}</pre></td>
+    <td>reason: {{item.reason}}<hr /> content:<pre>{{item.content}}</pre><hr />chat:<pre>{{item.chat_record}}</pre> <hr />picture_from_feed: <pre style="background:lightpink" >{{item.pic_from_feed}}</pre></td>
 <td
   v-if="item.pics.length > 0" width="900"
    >
