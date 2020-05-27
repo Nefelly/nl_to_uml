@@ -330,6 +330,12 @@ class User(Document, UserSessionMixin):
         key = REDIS_KEY_FORBIDDEN_SESSION_USER.format(session=pure_session)
         user_id = redis_client.get(key)
         if user_id:
+            ''' 已经过了解封时间 '''
+            user = cls.get_by_id(user_id)
+            if user:
+                if not user.is_forbidden:
+                    user.generate_new_session(sid.replace("session.", ""))
+                    redis_client.delete(key)
             return user_id
         return None
 

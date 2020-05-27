@@ -192,7 +192,6 @@ def get_conversations():
 @session_required
 def search_user():
     nickname = request.values.get('nickname')
-    # print nickname
     data, status = UserService.search_user(nickname, request.user_id)
     if not status:
         return fail(data)
