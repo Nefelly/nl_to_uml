@@ -402,14 +402,7 @@ class AccountService(object):
         product_name = payload.get('product_name', 'vip')
         if not token:
             AccountFlowRecord.create(user_id, AccountFlowRecord.WRONG_VIP, product_name)
-        elif not setting.IS_DEV:
-            key = REDIS_ACCOUNT_ACTION.format(key=('pay' + token))
-            r = redis_client.get(key)
-            if r:
-                return 'Already deposit success', False
-            redis_client.setex(key, ONE_WEEK, 1)
         err_msg = cls._buy_vip(user_id)
-        print err_msg
         if err_msg:
             return err_msg, False
         AccountFlowRecord.create(user_id, AccountFlowRecord.SUCCESS_VIP)
