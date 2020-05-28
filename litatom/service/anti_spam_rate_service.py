@@ -331,13 +331,18 @@ class AntiSpamRateService(object):
 
     @classmethod
     def how_much_should_pay(cls, user_id, activity, other_id):
+        m = cls.PROTECTED_D if other_id else cls.RATE_D
+        if not m.get(activity):
+            other_id = ''
         check_id = other_id if other_id else user_id
         forbid_level = cls.get_forbid_level(check_id, activity, other_id)
         if forbid_level:
             if forbid_level == cls.LEVEL_STOP:
                 return MAX_DIAMONDS
-            m = cls.PROTECTED_D if other_id else cls.RATE_D
+            # m = cls.PROTECTED_D if other_id else cls.RATE_D
             return m.get(activity).get(cls.RATE_KEY)[forbid_level - 1][2]
+        if other_id:
+            return cls.how_much_should_pay(user_id, activity)
         return 0
 
     @classmethod
