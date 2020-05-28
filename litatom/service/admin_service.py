@@ -64,7 +64,7 @@ class AdminService(object):
         name = model.__name__
         data = []
         for el in model.objects():
-            data.append(pickle.dumps(el))
+            data.append(el.to_json())
         OperateRecord.add(name, json.dumps(data, encoding='utf8'), True)
         return None, True
 
