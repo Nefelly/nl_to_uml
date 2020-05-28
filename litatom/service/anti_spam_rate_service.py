@@ -334,6 +334,7 @@ class AntiSpamRateService(object):
         m = cls.PROTECTED_D if other_id else cls.RATE_D
         if not m.get(activity):
             other_id = ''
+            m = cls.RATE_D
         check_id = other_id if other_id else user_id
         forbid_level = cls.get_forbid_level(check_id, activity, other_id)
         if forbid_level:
