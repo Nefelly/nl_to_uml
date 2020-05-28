@@ -476,7 +476,7 @@ def review_forbid_record():
     forbid_type = request.args.get('forbid_type')
     num = request.num
     if num:
-        data, status = ForbidPlatformService.get_forbid_record(from_ts, to_ts, region, forbid_type,num)
+        data, status = ForbidPlatformService.get_forbid_record(from_ts, to_ts, region, forbid_type, num)
     else:
         data, status = ForbidPlatformService.get_forbid_record(from_ts, to_ts, region, forbid_type)
     if not status:
