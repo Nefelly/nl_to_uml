@@ -322,7 +322,8 @@ class AntiSpamRateService(object):
         is_protected = True if other_id else False
         for el in [cls.LEVEL_STOP, cls.LEVEL_SECCOND, cls.LEVEL_FIRST]:
             key = cls.get_key(check_id, activity, el, is_protected)
-            print m.get(activity), activity, cls.RATE_KEY
+            if not m.get(activity):
+                m = cls.RATE_D
             num = m.get(activity).get(cls.RATE_KEY)[el - 1][1]
             if cls.out_of_times(key, num):
                 return el
