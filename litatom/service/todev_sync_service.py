@@ -73,8 +73,8 @@ class ToDevSyncService(object):
                 if value is None:
                     continue
                 if fields[f] == StringField:
-                    value = value.replace('\n', '\\\n')
-                    value = value.replace('\r', '\\\r')
+                    value = value.replace('\n', '\\n')
+                    value = value.replace('\r', '\\r')
                     print value
                     tmp = "%s='%s'" % (f, str(value))
                 else:
