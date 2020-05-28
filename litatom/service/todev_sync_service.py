@@ -80,7 +80,8 @@ class ToDevSyncService(object):
                     tmp = "%s=%s" % (f, value)
                 query_str[f] = tmp
             if not query_field:
-                query_field = f
+                query_field = fields
+            print query_str, query_field
             real_query = '%s.objects(%s).first()' % (model.__name__, ','.join([query_str[f] for el in query_field]))
             print real_query
             res = eval(real_query)
