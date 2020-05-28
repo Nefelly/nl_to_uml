@@ -57,6 +57,7 @@ from .video_match_service import VideoMatchService
 from .feed_service import FeedService
 from .debug_helper_service import DebugHelperService
 from .feedback_service import FeedbackService
+from .todev_sync_service import ToDevSyncService
 from .admin_service import AdminService
 from .palm_service import PalmService
 from .account_service import AccountService
@@ -64,7 +65,6 @@ from .visit_service import VisitService
 from .share_stat_service import ShareStatService
 from .maintain_service import MaintainService
 from .chat_record_service import ChatRecordService
-from .todev_sync_service import ToDevSyncService
 from .statistic_service import ForbidStatService
 from .test_clean_service import TestCleanService
 # from .mysql_sync_service import MysqlSyncService
