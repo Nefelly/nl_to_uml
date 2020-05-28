@@ -322,6 +322,7 @@ class AntiSpamRateService(object):
         is_protected = True if other_id else False
         for el in [cls.LEVEL_STOP, cls.LEVEL_SECCOND, cls.LEVEL_FIRST]:
             key = cls.get_key(check_id, activity, el, is_protected)
+            print m.get(activity), activity, cls.RATE_KEY
             num = m.get(activity).get(cls.RATE_KEY)[el - 1][1]
             if cls.out_of_times(key, num):
                 return el
@@ -335,7 +336,6 @@ class AntiSpamRateService(object):
             if forbid_level == cls.LEVEL_STOP:
                 return MAX_DIAMONDS
             m = cls.PROTECTED_D if other_id else cls.RATE_D
-            print m.get(activity), activity, cls.RATE_KEY
             return m.get(activity).get(cls.RATE_KEY)[forbid_level - 1][2]
         return 0
 
