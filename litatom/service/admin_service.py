@@ -63,7 +63,7 @@ class AdminService(object):
     def add_operate_record_table(cls, model):
         name = model.__name__
         data = []
-        for el in model.object():
+        for el in model.objects():
             data.append(pickle.dumps(el))
         OperateRecord.add(name, data, True)
         return None, True
