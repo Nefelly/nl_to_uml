@@ -288,7 +288,8 @@ class MsgService(object):
 
     @classmethod
     def alert_basic(cls, user_id):
-        cls.alert_atom(user_id, GlobalizationService.get_region_word(cls.DEFAULT_ALERT_WORDS))
+        # cls.alert_atom(user_id, GlobalizationService.get_region_word(cls.DEFAULT_ALERT_WORDS))
+        cls.alert_atom(user_id, GlobalizationService.get_cached_region_word(cls.DEFAULT_ALERT_WORDS))
 
     @classmethod
     def alert_feed_delete(cls, user_id, reason):
