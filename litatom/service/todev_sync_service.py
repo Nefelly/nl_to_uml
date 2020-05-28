@@ -45,7 +45,7 @@ class ToDevSyncService(object):
         return res
 
     @classmethod
-    def sync(cls, model, judge_time=None, escape_filed=[]):
+    def sync(cls, model, judge_time=None, query_field=[]):
         '''
         :param model:
         :param judge_time: create_time__gte=
@@ -66,14 +66,16 @@ class ToDevSyncService(object):
             for f in fields:
                 if f == 'create_time':
                     continue
-                if escape_filed:
-                    if f in escape_filed:
-                        continue
+                # if escape_filed:
+                #     if f in escape_filed:
+                #         continue
                 value = getattr(obj, f)
                 if value is None:
                     continue
                 if fields[f] == StringField:
-                    tmp = "%s='%s'" % (f, value)
+                    # value = value.replace('\n', '\\\n')
+                    # value = value.replace('\r', '\\\r')
+                    tmp = "%s='%s'" % (f, str(value))
                 else:
                     tmp = "%s=%s" % (f, value)
                 query_str.append(tmp)
@@ -85,3 +87,16 @@ class ToDevSyncService(object):
             to_save = eval('%s(%s)' % (model.__name__, ','.join (query_str)))
             to_save.save()
         return dev_objs
+
+    @classmethod
+    def sync_region_word(cls):
+        dev_objs = []
+        with switch_db(RegionWord, 'dev_lit') as Model:
+            dev_objs = [el for el in Model.objects()]
+        fields = cls.table_fields(RegionWord)
+        fields = ['tag', ]
+        for obj in dev_objs:
+            query_str = []
+            for f in fields:
+                if f == 'create_time':
+                    continue
