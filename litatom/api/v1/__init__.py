@@ -135,6 +135,7 @@ b.add_url_rule('/lit/admin/resolve_review_record','admin-resolve_review_record',
 b.add_url_rule('/lit/admin/resolve_review_feed','admin-resolve_review_feed',endpoint.admin.resolve_review_feed)
 b.add_url_rule('/lit/admin/super_login','admin-super_login',endpoint.admin.super_login, methods=['POST'])
 b.add_url_rule('/lit/admin/huanxin_by_uid','admin-huanxin_by_uid',endpoint.admin.huanxin_by_uid)
+b.add_url_rule('/lit/admin/sync_region_to_online','admin-sync_region_to_online',endpoint.admin.sync_region_to_online)
 
 
 # picture

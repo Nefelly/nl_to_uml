@@ -33,6 +33,7 @@ class OperateRecord(Document):
 
     data = StringField(required=True)
     name = StringField(required=True)
+    is_table = BooleanField(default=False)
     user_id = StringField()
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
 
@@ -43,6 +44,6 @@ class OperateRecord(Document):
         return cls.objects(name=name, create_time__gte=real_date, create_time__lte=next)
 
     @classmethod
-    def add(cls, name, data, user_id=None):
-        obj = cls(name=name, data=data, user_id=user_id)
+    def add(cls, name, data, is_table=False, user_id=None):
+        obj = cls(name=name, data=data, is_table=is_table, user_id=user_id)
         obj.save()

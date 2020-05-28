@@ -4,6 +4,8 @@ import string
 import time
 import os
 import datetime
+import pickle
+import json
 from flask import (
     request
 )
@@ -14,7 +16,8 @@ from ..model import (
     Report,
     Feed,
     User,
-    Avatar
+    Avatar,
+    OperateRecord
 )
 from ..util import (
     get_args_from_db
@@ -26,7 +29,8 @@ from ..service import (
     FeedService,
     ReportService,
     GlobalizationService,
-    AliOssService
+    AliOssService,
+    ToDevSyncService
 )
 from ..const import (
     MAX_TIME,
@@ -54,6 +58,22 @@ class AdminService(object):
     @classmethod
     def get_user_name_by_session(cls, session):
         return redis_client.get(REDIS_ADMIN_USER.format(session=session))
+
+    @classmethod
+    def add_operate_record_table(cls, model):
+        name = model.__name__
+        data = []
+        for el in model.object():
+            data.append(pickle.dumps(el))
+        OperateRecord.add(name, data, True)
+        return None, True
+
+    @classmethod
+    def add_operate_record(cls, name, data):
+        if isinstance(data, dict):
+            data = json.dumps(data)
+        OperateRecord.add(name, data)
+        return None, True
 
     @classmethod
     def gen_session(cls):
@@ -99,6 +119,11 @@ class AdminService(object):
     def remove_from_top(cls, feed_id):
         redis_client.delete(REDIS_REGION_FEED_TOP.format(region=GlobalizationService.get_region()))
         return None, True
+
+    @classmethod
+    def sync_reigon_word(cls):
+        cls.add_operate_record_table(RegionWord)
+        return ToDevSyncService.sync_reigon_word()
 
     @classmethod
     def get_official_feed(cls, user_id, start_ts, num):

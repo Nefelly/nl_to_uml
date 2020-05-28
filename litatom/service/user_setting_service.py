@@ -85,6 +85,9 @@ class UserSettingService(object):
         setting_string = json.dumps(data)
         if not cls._valid_cache_str(setting_string):
             return 'Not valid setting', False
+        from ..service import AdminService
+        setting_key = cls.get_setting_key()
+        AdminService.add_operate_record('user_setting_' + setting_key, setting_key)
         redis_client.set(cls.get_setting_key(), setting_string)
         return None, True
 

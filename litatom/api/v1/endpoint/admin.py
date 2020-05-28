@@ -801,7 +801,7 @@ def journal():
 
 
 def sync_region_to_online():
-    data, status = ToDevSyncService.sync_reigon_word()
+    data, status = AdminService.sync_reigon_word()
     if status:
         return success(data)
     return fail(data)
