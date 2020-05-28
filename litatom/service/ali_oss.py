@@ -153,7 +153,7 @@ class AliOssService(object):
                 x_s = first_xs + (seccond_xs - first_xs) * first_rate + (x - seccond_xs) * seccond_rate
                 x_s = min(x_s, max_width)
         else:
-            x_s = x if x < 300 else 300
+            x_s = x if x < 600 else 600
         return x_s, y * x_s / x
         # judge_x = 300
         # if from_gm:

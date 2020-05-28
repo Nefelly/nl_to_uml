@@ -90,6 +90,7 @@ from .match_record import (
     MatchRecord,
     MatchHistory
 )
+from .operate_record import OperateRecord
 from .anoy_online import AnoyOnline
 from ..db import DBManager
 

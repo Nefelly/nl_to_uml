@@ -58,7 +58,8 @@ from ....service import (
     FeedbackService,
     AliOssService,
     ExperimentService,
-    TestCleanService
+    TestCleanService,
+    ToDevSyncService
 )
 from ....const import (
     MAX_TIME,
@@ -797,6 +798,13 @@ def mongo_gen_csv_page():
 
 def journal():
     return current_app.send_static_file('journal.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
+
+
+def sync_region_to_online():
+    data, status = ToDevSyncService.sync_reigon_word()
+    if status:
+        return success(data)
+    return fail(data)
 
 
 def get_feed():

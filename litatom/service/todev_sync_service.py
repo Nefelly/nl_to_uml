@@ -82,9 +82,7 @@ class ToDevSyncService(object):
             if not query_field:
                 query_field = fields
             real_query = '%s.objects(%s).first()' % (model.__name__, ','.join([query_str[el] for el in query_field]))
-            print real_query
             res = eval(real_query)
-            print res, '!!!!'
             if res:
                 res.delete()
             to_save = eval('%s(%s)' % (model.__name__, ','.join (query_str.values())))
@@ -92,14 +90,6 @@ class ToDevSyncService(object):
         return dev_objs
 
     @classmethod
-    def sync_region_word(cls):
-        dev_objs = []
-        with switch_db(RegionWord, 'dev_lit') as Model:
-            dev_objs = [el for el in Model.objects()]
-        fields = cls.table_fields(RegionWord)
-        fields = ['tag', ]
-        for obj in dev_objs:
-            query_str = []
-            for f in fields:
-                if f == 'create_time':
-                    continue
+    def sync_reigon_word(cls):
+        rs = ToDevSyncService.sync(RegionWord, None, ['region', 'tag'])
+        return {'sync_num': len(rs)}, True
