@@ -62,7 +62,7 @@ class ToDevSyncService(object):
                 dev_objs = [el for el in Model.objects()]
         fields = cls.table_fields(model)
         for obj in dev_objs:
-            query_str = []
+            query_str = {}
             for f in fields:
                 if f == 'create_time':
                     continue
@@ -75,17 +75,18 @@ class ToDevSyncService(object):
                 if fields[f] == StringField:
                     value = value.replace('\n', '\\n')
                     value = value.replace('\r', '\\r')
-                    print value
                     tmp = "%s='%s'" % (f, str(value))
                 else:
                     tmp = "%s=%s" % (f, value)
-                query_str.append(tmp)
-            real_query = '%s.objects(%s).first()' % (model.__name__, ','.join (query_str))
+                query_str[f] = tmp
+            if not query_field:
+                query_field = f
+            real_query = '%s.objects(%s).first()' % (model.__name__, ','.join([query_str[f] for el in query_field]))
             print real_query
             res = eval(real_query)
             if res:
                 res.delete()
-            to_save = eval('%s(%s)' % (model.__name__, ','.join (query_str)))
+            to_save = eval('%s(%s)' % (model.__name__, ','.join (query_str.values())))
             to_save.save()
         return dev_objs
 
