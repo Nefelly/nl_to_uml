@@ -45,7 +45,7 @@ class ToDevSyncService(object):
         return res
 
     @classmethod
-    def sync(cls, model, judge_time=None):
+    def sync(cls, model, judge_time=None, escape_filed=[]):
         '''
         :param model:
         :param judge_time: create_time__gte=
@@ -66,6 +66,9 @@ class ToDevSyncService(object):
             for f in fields:
                 if f == 'create_time':
                     continue
+                if escape_filed:
+                    if f in escape_filed:
+                        continue
                 value = getattr(obj, f)
                 if value is None:
                     continue
