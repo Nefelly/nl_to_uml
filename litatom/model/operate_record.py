@@ -33,7 +33,6 @@ class OperateRecord(Document):
 
     data = StringField(required=True)
     name = StringField(required=True)
-    is_table
     user_id = StringField()
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
 
