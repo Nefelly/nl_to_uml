@@ -262,7 +262,7 @@ class UserService(object):
             user.platform = request.platform
         loc = '' if not loc else loc
         if user_id:
-            print 'get innnnn'
+            print 'get innnnn', user_id, 'aasdas'
             UserSetting.create_setting(user_id, loc, request.uuid)
         if not request.uuid:
             return u'your version is too low!', False
