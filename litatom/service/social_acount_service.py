@@ -268,7 +268,7 @@ class FacebookService(object):
                     setattr(request, 'login_error', error_info)
                 else:
                     assert False
-            # assert response.get('data')['is_valid']
+            assert response.get('data')['is_valid']
             return response.get('data', {}).get('user_id', None)
         except Exception as e:
             logger.error(traceback.format_exc())
