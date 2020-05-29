@@ -385,7 +385,7 @@ class AntiSpamRateService(object):
     def record_accost(cls, user_id, other_user_id):
         loc = '' if not request.loc else request.loc
         version = '' if not request.version else request.version
-        session_id = '' if not request.session else request.session
+        session_id = '' if not request.session_id else request.session_id
         contents = [('action', 'accost'), ('other_user_id', other_user_id), ('location', loc),
                     ('remark', 'accost_pass'), ('session_id', str(session_id)),
                     ('user_id', str(user_id)), ('version', version)]
