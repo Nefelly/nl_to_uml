@@ -257,7 +257,7 @@ class UserService(object):
     @classmethod
     def _on_create_new_user(cls, user):
         loc = request.loc
-        if user.id:
+        if user.id: # 不然 容易None
             user_id = str(user.id)
         else:
             user.save()
@@ -266,7 +266,6 @@ class UserService(object):
             user.platform = request.platform
         loc = '' if not loc else loc
         if user_id:
-            print 'get innnnn', user_id, 'aasdas', type(user_id)
             UserSetting.create_setting(user_id, loc, request.uuid)
         if not request.uuid:
             return u'your version is too low!', False

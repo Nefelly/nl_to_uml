@@ -262,7 +262,6 @@ class FacebookService(object):
             if not response.get('data', {}).get('is_valid', ''):
                 msg = response['data']['error']['message']
                 error_info = {}
-                print msg
                 if 'not authorized application' in msg:
                     error_info = FailedFacebookNeedToAuth
                 elif 'session has been invalidated' in msg:
