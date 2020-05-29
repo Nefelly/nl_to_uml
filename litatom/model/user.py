@@ -589,7 +589,8 @@ class User(Document, UserSessionMixin):
             'is_first_login': not self.logined,
             'create_time': date_to_int_time(self.create_time),
             'huanxin': HuanxinAccount.get_info(self.huanxin),
-            'user_sig': self.user_sig
+            'user_sig': self.user_sig,
+            'country': self.country
         }
 
 
