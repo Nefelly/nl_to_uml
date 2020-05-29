@@ -271,7 +271,6 @@ class FacebookService(object):
                     setattr(request, 'login_error', error_info)
                 else:
                     assert False
-            assert response.get('data')['is_valid']
             if not response.get('data')['is_valid']:
                 '''
                 注册过， 且现有的登录的uuid与之前不一样；判断为恶意用户

@@ -37,7 +37,8 @@ def insert_records():
 
 
 if __name__ == "__main__":
-    print "started at", time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
-    clean_old_records()
-    insert_records()
-    print "ended at", time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
+    assert False
+    # print "started at", time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
+    # clean_old_records()
+    # insert_records()
+    # print "ended at", time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))

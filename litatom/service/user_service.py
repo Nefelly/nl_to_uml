@@ -884,7 +884,6 @@ class UserService(object):
     @classmethod
     def facebook_login(cls, token):
         idinfo = FacebookService.login_info(token)
-        print idinfo, '!' * 100
         if not idinfo:
             error_info = getattr(request, 'login_error', {})
             if error_info:
