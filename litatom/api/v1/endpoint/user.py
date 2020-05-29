@@ -58,11 +58,7 @@ def dela_login_fail(data, status):
     '''
     if not status:
         if not getattr(request, 'is_banned', False):
-            return jsonify({
-                'success': False,
-                'result': -1,
-                'message': data
-            })
+            return fail(data)
         return jsonify(UserService.get_forbidden_error(data, FailedUserBanned))
     return jsonify({
         'success': True,
