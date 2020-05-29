@@ -255,10 +255,11 @@ class FacebookService(object):
             s = rq.session()
             s.keep_alive = False  # 关闭多余连接
             response = s.get(url, verify=False).json()
-            # print response
+            print response
             if not response.get('data', {}).get('is_valid', ''):
                 msg = response['data']['error']['message']
                 error_info = {}
+                print msg
                 if 'not authorized application' in msg:
                     error_info = FailedFacebookNeedToAuth
                 elif 'session has been invalidated' in msg:
