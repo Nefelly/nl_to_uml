@@ -9,12 +9,17 @@ import requests as rq
 import traceback
 from urllib2 import urlopen
 import oss2
+from flask import request
 import requests as req
 from google.oauth2 import id_token
 from google.auth.transport import requests
 
 from ..key import (
     REDIS_ACCESS_TOKEN,
+)
+from ..error import (
+    FailedFacebookNeedToAuth,
+    FailedFacebookNeedToRelogin
 )
 from ..const import (
     ONE_HOUR,
@@ -251,7 +256,18 @@ class FacebookService(object):
             s.keep_alive = False  # 关闭多余连接
             response = s.get(url, verify=False).json()
             # print response
-            assert response.get('data')['is_valid']
+            if not response.get('data', {}).get('is_valid', ''):
+                msg = response['data']['error']['message']
+                error_info = {}
+                if 'not authorized application' in msg:
+                    error_info = FailedFacebookNeedToAuth
+                elif 'session has been invalidated' in msg:
+                    error_info = FailedFacebookNeedToRelogin
+                if error_info:
+                    setattr(request, 'login_error', error_info)
+                else:
+                    assert False
+            # assert response.get('data')['is_valid']
             return response.get('data', {}).get('user_id', None)
         except Exception as e:
             logger.error(traceback.format_exc())

@@ -885,7 +885,10 @@ class UserService(object):
     def facebook_login(cls, token):
         idinfo = FacebookService.login_info(token)
         if not idinfo:
-            return u'facebook login check false', False
+            error_info = getattr(request, 'error_info', {})
+            if error_info:
+                return error_info, False
+            return u'facebook login error, please relogin your facebook and try to login our app again', False
         facebook_id = idinfo.get('id', '')
         if not facebook_id:
             return u'facebook login get wrong facebook id', False
