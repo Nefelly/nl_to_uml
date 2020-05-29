@@ -278,6 +278,7 @@ class FacebookService(object):
                 facebook_user_id = response.get('data', {}).get('user_id', None)
                 user = User.get_by_social_account_id(User.FACEBOOK_TYPE, facebook_user_id)
                 if user:
+                    print UserSetting.uuid_by_user_id(str(user.id)), request.uuid, '*' * 100
                     if UserSetting.uuid_by_user_id(str(user.id)) != request.uuid:
                         assert False
             return response.get('data', {}).get('user_id', None)
