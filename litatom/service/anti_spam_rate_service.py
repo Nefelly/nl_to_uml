@@ -56,24 +56,24 @@ class AntiSpamRateService(object):
     RATE_D = {
         ACCOST: {
             RATE_KEY: [
-                [5 * ONE_MIN, 5, 10],
-                [ONE_DAY, 30, 500],
+                [5 * ONE_MIN, 5, 1],
+                [ONE_DAY, 30, 50],
                 [ONE_DAY, 100]
             ],
             WORD_KEY: ['rate_conversation_diamonds', 'rate_conversation_stop']
         },
         FOLLOW: {
             RATE_KEY: [
-                [5 * ONE_MIN, 10, 10],
-                [ONE_DAY, 50, 500],
+                [5 * ONE_MIN, 10, 1],
+                [ONE_DAY, 50, 50],
                 [ONE_DAY, 200]
             ],
             WORD_KEY: ['rate_follow_diamonds', 'rate_follow_stop']
         },
         COMMENT: {
             RATE_KEY: [
-                [5 * ONE_MIN, 10, 10],
-                [ONE_DAY, 50, 500],
+                [5 * ONE_MIN, 10, 1],
+                [ONE_DAY, 50, 50],
                 [ONE_DAY, 100]
             ],
             WORD_KEY: ['rate_comment_diamonds', 'rate_comment_stop']
@@ -313,6 +313,8 @@ class AntiSpamRateService(object):
                     redis_client.decr(second_key)
                     redis_client.decr(stop_key)
                     return data, False
+        if activity == cls.ACCOST:
+            cls.record_accost(user_id, other_id)
         return None, True
 
     @classmethod
@@ -377,4 +379,14 @@ class AntiSpamRateService(object):
             activity = '%s_%s' % (activity, 'reset')
         contents = [('action', 'spam_rate_control'), ('location', loc), ('user_id', str(user_id)), ('version', version),
                     ('activity_level', '%s_%d' % (activity, stop_level))]
+        AliLogService.put_logs(contents)
+
+    @classmethod
+    def record_accost(cls, user_id, other_user_id):
+        loc = '' if not request.loc else request.loc
+        version = '' if not request.version else request.version
+        session_id = '' if not request.session else request.session
+        contents = [('action', 'accost'), ('other_user_id', other_user_id), ('location', loc),
+                    ('remark', 'accost_pass'), ('session_id', str(session_id)),
+                    ('user_id', str(user_id)), ('version', version)]
         AliLogService.put_logs(contents)

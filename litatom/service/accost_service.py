@@ -37,7 +37,7 @@ class AccostService(object):
     ACCOST_RATE = 5
     ACCOST_STOP_INTER = 10 * ONE_MIN
     ACCOST_STOP_RATE = 19
-    DAY_STOP_RATE = 100
+    DAY_STOP_RATE = 30
 
     @classmethod
     def can_accost(cls, user_id, other_user_id, session_id, loc, version):
@@ -62,14 +62,14 @@ class AccostService(object):
                 redis_client.decr(stop_key)
                 return False
 
-        if ExperimentService.get_exp_value('accost') == 'limit':
-            exp_key = REDIS_EXP_ACCOST.format(user_id=user_id)
-            num = redis_client.incr(exp_key)
-            if num == 1:
-                redis_client.expire(exp_key, ONE_DAY)
-            if num > 5:
-                return cls.ACCOST_NEED_VIDEO
-            return cls.ACCOST_PASS
+        # if ExperimentService.get_exp_value('accost') == 'limit':
+        #     exp_key = REDIS_EXP_ACCOST.format(user_id=user_id)
+        #     num = redis_client.incr(exp_key)
+        #     if num == 1:
+        #         redis_client.expire(exp_key, ONE_DAY)
+        #     if num > 5:
+        #         return cls.ACCOST_NEED_VIDEO
+        #     return cls.ACCOST_PASS
 
         key = REDIS_ACCOST_RATE.format(user_id=user_id)
         rate = cls.ACCOST_RATE - 1  # the first time is used
