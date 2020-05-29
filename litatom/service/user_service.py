@@ -261,6 +261,7 @@ class UserService(object):
             user_id = str(user.id)
         else:
             user.save()
+            user_id = str(user.id) if user.id else ''
         if request.platform:
             user.platform = request.platform
         loc = '' if not loc else loc
