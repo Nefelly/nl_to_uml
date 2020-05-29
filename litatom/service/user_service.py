@@ -257,7 +257,10 @@ class UserService(object):
     @classmethod
     def _on_create_new_user(cls, user):
         loc = request.loc
-        user_id = str(user.id)
+        if user.id:
+            user_id = str(user.id)
+        else:
+            user.save()
         if request.platform:
             user.platform = request.platform
         loc = '' if not loc else loc
