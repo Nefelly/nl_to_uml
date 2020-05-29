@@ -295,5 +295,4 @@ class FacebookService(object):
                     time.sleep(0.3)
                     continue
                 logger.error('log false token:%s, %s', token, e)
-
                 return None
