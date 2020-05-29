@@ -29,6 +29,10 @@ from ..const import (
 from ..service import (
     AliLogService,
 )
+from ..model import (
+    UserSetting,
+    User
+)
 from ..redis import RedisClient
 
 redis_client = RedisClient()['lit']
@@ -255,7 +259,6 @@ class FacebookService(object):
             s = rq.session()
             s.keep_alive = False  # 关闭多余连接
             response = s.get(url, verify=False).json()
-            print response
             if not response.get('data', {}).get('is_valid', ''):
                 msg = response['data']['error']['message']
                 error_info = {}
@@ -269,6 +272,15 @@ class FacebookService(object):
                 else:
                     assert False
             assert response.get('data')['is_valid']
+            if not response.get('data')['is_valid']:
+                '''
+                注册过， 且现有的登录的uuid与之前不一样；判断为恶意用户
+                '''
+                facebook_user_id = response.get('data', {}).get('user_id', None)
+                user = User.get_by_social_account_id(User.FACEBOOK_TYPE, facebook_user_id)
+                if user:
+                    if UserSetting.uuid_by_user_id(str(user.id)) != request.uuid:
+                        assert False
             return response.get('data', {}).get('user_id', None)
         except Exception as e:
             logger.error(traceback.format_exc())
