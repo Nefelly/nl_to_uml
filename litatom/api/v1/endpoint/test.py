@@ -38,6 +38,7 @@ def test():
 
 
 def ack(filename):
+    assert False
     return success()
 
 
