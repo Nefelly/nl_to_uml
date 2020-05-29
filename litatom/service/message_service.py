@@ -83,7 +83,8 @@ class UserMessageService(object):
             'content': obj.content if obj.content else '',
             'message_id': str(obj.id),
             'feed_id': obj.related_feedid if obj.related_feedid else '',
-            'message_type': obj.m_type
+            'message_type': obj.m_type,
+            'no_show_info': True if obj.m_type == cls.MSG_VISIT_HOME else False
         }
 
     @classmethod
