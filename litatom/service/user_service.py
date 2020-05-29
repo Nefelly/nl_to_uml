@@ -112,6 +112,11 @@ class UserService(object):
     def device_blocked(cls, uuid):
         return BlockedDevices.is_device_forbidden(uuid)
 
+
+    @classmethod
+    def uuid_by_user_id(cls, user_id):
+        return UserSetting.uuid_by_user_id(user_id)
+
     @classmethod
     def user_device_blocked(cls, user_id):
         user_setting = UserSetting.get_by_user_id(user_id)

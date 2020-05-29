@@ -592,6 +592,15 @@ def super_login():
         return success()
 
 
+def get_user_info(user_id):
+    data, status = UserService.get_user_info(user_id, user_id)
+    if status:
+        data.pop('session')
+        data['uuid'] = UserService.uuid_by_user_id(user_id)
+        return success(data)
+    return fail(data)
+
+
 def download_phone():
     date = request.args.get('date')
     time_low = int(time.mktime(time.strptime(date, '%Y%m%d')))
