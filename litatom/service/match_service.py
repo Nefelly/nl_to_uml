@@ -667,7 +667,10 @@ class MatchService(object):
 
     @classmethod
     def _uid_by_fake_id(cls, fake_id):
-        return redis_client.get(cls.TYPE_FAKE_ID_UID.format(fake_id=fake_id))
+        uid = redis_client.get(cls.TYPE_FAKE_ID_UID.format(fake_id=fake_id))
+        if uid:
+            return uid
+        return UserService.uid_by_huanxin_id(fake_id)
 
     @classmethod
     def ordered_batch_uids_by_fake_id(cls, fake_ids):
