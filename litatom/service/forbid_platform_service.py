@@ -56,7 +56,7 @@ class ForbidPlatformService(object):
     #         temp_res[user_id]['forbid_history']['reports'].append(ReportService.get_report_info(report))
 
     @classmethod
-    def get_forbid_record(cls, from_ts, to_ts, region=None, forbid_type=None, num=100):
+    def get_forbid_record(cls, from_ts, to_ts, region=None, forbid_type=None, num=10):
         """封号记录表"""
         if region and region not in cls.FORBID_LOCATIONS:
             return 'invalid region', False
