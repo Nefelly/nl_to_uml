@@ -343,7 +343,7 @@ class AntiSpamRateService(object):
             # m = cls.PROTECTED_D if other_id else cls.RATE_D
             return m.get(activity).get(cls.RATE_KEY)[forbid_level - 1][2]
         if other_id:
-            return cls.how_much_should_pay(user_id, activity)
+            return cls.how_much_should_pay(user_id, activity, '')
         return 0
 
     @classmethod
