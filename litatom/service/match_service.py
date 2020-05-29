@@ -490,9 +490,9 @@ class MatchService(object):
         user = User.get_by_id(user_id)
         if not user:
             return USER_NOT_EXISTS, False
-        gender = UserService.get_gender(user_id)
-        if not gender:
-            return PROFILE_NOT_COMPLETE, False
+        # gender = UserService.get_gender(user_id)
+        # if not gender:
+        #     return PROFILE_NOT_COMPLETE, False
         fake_id, pwd = cls._get_anoy_id(user)
         return fake_id, True
 
