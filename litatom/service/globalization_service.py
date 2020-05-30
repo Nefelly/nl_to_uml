@@ -87,6 +87,7 @@ class GlobalizationService(object):
         LOC_INN,
         # LOC_KR,
         # LOC_JP,
+        LOC_EN,
         LOC_PH,
         LOC_TESTO,
         LOC_US

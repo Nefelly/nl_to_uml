@@ -31,6 +31,10 @@ from ..key import (
     REDIS_ACCELERATE_REGION_TYPE_GENDER,
     REDIS_FEED_SQUARE_REGION,
     REDIS_FEED_HQ_REGION,
+    REDIS_LOC_USER_ACTIVE
+)
+from ..util import (
+    now_date_key
 )
 from ..const import (
     GENDERS,
@@ -43,6 +47,8 @@ from ..redis import RedisClient
 logger = logging.getLogger(__name__)
 
 redis_client = RedisClient()['lit']
+volatile_redis = RedisClient()['volatile']
+
 
 class MaintainService(object):
     JUDGE_CNT = 10000
@@ -121,6 +127,14 @@ class MaintainService(object):
                 continue
 
     @classmethod
+    def clear_user_active_cache(cls):
+        retain_days = 8
+        date_key = now_date_key(datetime.timedelta(days=-retain_days))
+        for loc in GlobalizationService.LOCS:
+            to_rem_key = REDIS_LOC_USER_ACTIVE(date_loc=date_key + loc)
+            volatile_redis.delete(to_rem_key)
+
+    @classmethod
     def clear_user_conversations(cls):
         yestoday = datetime.datetime.now() - datetime.timedelta(days=1)
         try:
@@ -162,4 +176,6 @@ class MaintainService(object):
         cls.clear_huanxin()
         cls.clear_online()
         cls.clear_suqare()
+        cls.clear_user_active_cache()
+
 

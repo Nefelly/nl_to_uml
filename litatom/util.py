@@ -214,9 +214,12 @@ def get_time_info(int_time, user_mode=False):
     }
 
 
-def now_date_key():
+def now_date_key(time_delta=None):
     """今日日期str"""
-    return datetime.datetime.now().strftime('%Y-%m-%d')  # for time latency reason
+    date_to_format = datetime.datetime.now()
+    if time_delta:
+        date_to_format = date_to_format + time_delta
+    return date_to_format.strftime('%Y-%m-%d')  # for time latency reason
 
 
 def low_high_pair(id1, id2):

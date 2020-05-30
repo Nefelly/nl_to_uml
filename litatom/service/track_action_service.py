@@ -5,16 +5,26 @@ import cPickle
 from flask import (
     request
 )
+
 from ..const import (
     USER_ACTION_EXCHANGE
 )
 from ..model import (
     UserAction
 )
+from ..key import (
+    REDIS_LOC_USER_ACTIVE
+)
 from ..service import (
     MqService,
-    AliLogService
+    AliLogService,
+    GlobalizationService
 )
+from ..util import (
+    now_date_key
+)
+from ..redis import RedisClient
+volatile_redis = RedisClient()['volatile']
 
 
 class TrackActionService(object):
@@ -28,9 +38,18 @@ class TrackActionService(object):
     '''
 
     @classmethod
+    def stat_active_user(cls, user_id, loc):
+        if loc not in GlobalizationService.BIG_REGIONS.values():
+            loc = GlobalizationService.LOC_EN
+        key = REDIS_LOC_USER_ACTIVE.format(date_loc=now_date_key() + loc)
+        volatile_redis.sadd(key, user_id)
+
+
+    @classmethod
     def create_action(cls, user_id, action, other_user_id=None, amount=None, remark=None, version=None):
         if cls.ALI_LOG_INSERT:
             contents = [('user_id', user_id), ('session_id', request.session_id), ('location', request.loc), ('action', action)]
+            cls.stat_active_user(user_id, request.loc)
             if other_user_id:
                 contents += [('other_user_id', other_user_id)]
             if amount:

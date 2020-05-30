@@ -150,6 +150,8 @@ REDIS_VIDEO_CHAT_IN_CHAT = 'video_chat_in_chat:{user_id}'
 ## volatile
 # experiment
 REDIS_EXP_BUCKET_VALUE = 'exp_bucket:{exp_bucket}'
+REDIS_LOC_USER_ACTIVE = 'user_active:{date_loc}'
+
 
 # dev owned
 REDIS_SETTINGS_KEYS = 'dev_settings'
