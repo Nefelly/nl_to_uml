@@ -795,7 +795,7 @@ class MatchService(object):
         gender = UserService.get_gender(user_id)
         if is_accelerated:
             rank = redis_client.zrank(cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender), fake_id)
-            return rank if rank is not None else redis_client.zcount(cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender), judge_time, MAX_TIME)
+            return rank if rank is not None else min(redis_client.zcount(cls.ACCELERATE_KEY_BY_TYPE_REGION_GENDER(cls.MATCH_TYPE, gender), judge_time, MAX_TIME), 5)
         rank = redis_client.zrank(cls.MATCH_KEY_BY_REGION_GENDER(cls.MATCH_TYPE, gender), fake_id)
         if rank is None:
             rank = cls.get_anoy_count(gender)
