@@ -451,9 +451,9 @@ class UserService(object):
         officail_user = User.get_by_nickname(from_name)
         if not officail_user:
             return False
-        huanxin_ids = ['love123871399047999']
-        res = HuanxinService.batch_send_msgs(msg, huanxin_ids, officail_user.huanxin.user_id)
-        return True
+        # huanxin_ids = ['love123871399047999']
+        # res = HuanxinService.batch_send_msgs(msg, huanxin_ids, officail_user.huanxin.user_id)
+        # return True
 
         num = User.objects().count()
         if num >= 2000000:
