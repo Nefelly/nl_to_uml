@@ -476,18 +476,18 @@ class UserService(object):
         officail_user = User.get_by_nickname(from_name)
         if not officail_user:
             return False
-        # huanxin_ids = ['love123871399047999']
-        # res = HuanxinService.batch_send_msgs(msg, huanxin_ids, officail_user.huanxin.user_id)
-        # return True
 
-        num = User.objects().count()
-        if num >= 2000000:
-            logger.error('you have too many users, you need to redesign this func')
-            return False
-        huanxin_ids = cls._huanxin_ids_by_region(region, 3 * number)
-        if number and number > 0:
-            number = min(len(huanxin_ids), number)
-            huanxin_ids = random.sample(huanxin_ids, number)
+        # num = User.objects().count()
+        # if num >= 2000000:
+        #     logger.error('you have too many users, you need to redesign this func')
+        #     return False
+        # huanxin_ids = cls._huanxin_ids_by_region(region, 3 * number)
+        # if number and number > 0:
+        #     number = min(len(huanxin_ids), number)
+        #     huanxin_ids = random.sample(huanxin_ids, number)
+
+        loc = GlobalizationService.biggest_loc_by_region(region)
+        huanxin_ids = cls.active_huanxinids_by_loc(loc, number)
         huanxin_ids = [u'love123879348711830'] + huanxin_ids
         # huanxin_ids = [u'love123879348711830']   # joey
         res = HuanxinService.batch_send_msgs(msg, huanxin_ids, officail_user.huanxin.user_id)

@@ -172,6 +172,13 @@ class GlobalizationService(object):
         return loc
 
     @classmethod
+    def biggest_loc_by_region(cls, region):
+        res = cls.KNOWN_REGION_LOC.get(region, '')
+        if isinstance(res, list):
+            return res[0]
+        return res
+
+    @classmethod
     def region_by_loc(cls, loc):
         return cls.LOC_REGION.get(loc, cls.REGION_EN)
 
