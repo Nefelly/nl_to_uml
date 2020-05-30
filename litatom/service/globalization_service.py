@@ -222,6 +222,10 @@ class GlobalizationService(object):
         ctx.push()
         request.region = region
         request.is_homo = True if ALL_FILTER else False
+        request.version = '3.4.5'
+        request.gender = 'boy'
+        request.session_id = 'session.1234254365654675'
+
 
     @classmethod
     def rem_from_region(cls, user_id, region):
