@@ -117,6 +117,7 @@ b.add_url_rule('/lit/admin/feedback_page', 'admin-feedback_page', endpoint.admin
 b.add_url_rule('/lit/admin/unban_by_nickname', 'admin-unban_by_nickname', endpoint.admin.unban_by_nickname)
 b.add_url_rule('/lit/admin/unban_by_user_id/<user_id>', 'admin-unban_by_user_id', endpoint.admin.unban_by_user_id)
 b.add_url_rule('/lit/admin/release_vip', 'admin-release_vip', endpoint.admin.release_vip)
+b.add_url_rule('/lit/admin/buy_vip', 'admin-buy_vip', endpoint.admin.buy_vip)
 b.add_url_rule('/lit/admin/restart_test', 'admin-restart_test', endpoint.admin.restart_test)
 b.add_url_rule('/lit/admin/set_exp', 'admin-set_exp', endpoint.admin.set_exp)
 b.add_url_rule('/lit/admin/agent', 'admin-agent', endpoint.admin.agent, methods=['POST'])
