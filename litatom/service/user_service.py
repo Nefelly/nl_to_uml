@@ -456,7 +456,7 @@ class UserService(object):
     @classmethod
     def active_huanxinids_by_loc(cls, loc, num):
         if not getattr(cls, 'user_id_huanxin', {}):
-            cls.user_id_huanxin = MongoSyncService.load_table_map()
+            cls.user_id_huanxin = MongoSyncService.load_table_map(User, '_id', 'huanxin')
         user_ids = cls.active_users_by_loc(loc)
         huanxin_ids = []
         if num < len(user_ids):
