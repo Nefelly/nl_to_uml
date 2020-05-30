@@ -71,7 +71,8 @@ from ..service import (
     FollowService,
     GlobalizationService,
     MqService,
-    AvatarService
+    AvatarService,
+    MongoSyncService
 )
 
 logger = logging.getLogger(__name__)
@@ -450,6 +451,22 @@ class UserService(object):
             for _ in User.objects():
                 if _.country and _.country not in all_known_locs and _.huanxin.user_id:
                     huanxin_ids.append(_.huanxin.user_id)
+        return huanxin_ids
+
+    @classmethod
+    def active_huanxinids_by_loc(cls, loc, num):
+        if not getattr(cls, 'user_id_huanxin', {}):
+            cls.user_id_huanxin = MongoSyncService.load_table_map()
+        user_ids = cls.active_users_by_loc(loc)
+        huanxin_ids = []
+        if num < len(user_ids):
+            sampled_user_ids = random.sample(user_ids, num)
+        else:
+            sampled_user_ids = user_ids
+        for _ in sampled_user_ids:
+            tmp_huanxin = cls.user_id_huanxin.get(_, {}).get('user_id')
+            if tmp_huanxin:
+                huanxin_ids.append(tmp_huanxin)
         return huanxin_ids
 
     @classmethod
