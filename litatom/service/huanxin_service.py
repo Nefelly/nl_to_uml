@@ -212,6 +212,7 @@ class HuanxinService(object):
                 try:
                     cls.before_request()
                     response = requests.post(url, verify=False, headers=headers, json=data).json()
+                    print response
                     _ = response["data"]
                     for k in _:
                         if _[k] == u'success':
