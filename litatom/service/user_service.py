@@ -17,7 +17,8 @@ from ..util import (
     parse_standard_date,
     format_standard_date,
     get_zero_today,
-    filter_emoji
+    filter_emoji,
+    now_date_key
 )
 from ..const import (
     TWO_WEEKS,
@@ -41,7 +42,9 @@ from ..key import (
     REDIS_ONLINE_GENDER_REGION,
     REDIS_UID_GENDER,
     REDIS_HUANXIN_ONLINE,
-    REDIS_KEY_FORBIDDEN_SESSION_USER
+    REDIS_KEY_FORBIDDEN_SESSION_USER,
+    REDIS_ALL_USER_ID_SET,
+    REDIS_LOC_USER_ACTIVE
 )
 from ..model import (
     User,
@@ -84,9 +87,14 @@ class UserService(object):
     ERROR_DEVICE_FORBIDDEN = u'Your device has been blocked'
 
     @classmethod
+    def active_users_by_loc(cls, loc):
+        key = REDIS_LOC_USER_ACTIVE.format(date_loc=now_date_key() + loc)
+        return list(volatile_redis.smembers(key))
+
+    @classmethod
     def get_all_ids(cls):
         # return [el.user_id for el in UserSetting.objects().only('user_id')]
-        return list(volatile_redis.smembers('all_user_ids'))
+        return list(volatile_redis.smembers(REDIS_ALL_USER_ID_SET))
 
     @classmethod
     def _trans_session_2_forbidden(cls, user):
