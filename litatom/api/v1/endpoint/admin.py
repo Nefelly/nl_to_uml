@@ -345,6 +345,14 @@ def release_vip():
     return success(data)
 
 
+@set_user_id_by_phone
+def buy_vip():
+    msg = AccountService._buy_vip(request.user_id)
+    if msg:
+        return fail(msg)
+    return success()
+
+
 def unban_by_user_id(user_id):
     UserService.unban_user(user_id)
     return success()
