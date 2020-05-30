@@ -488,7 +488,7 @@ class UserService(object):
 
         loc = GlobalizationService.biggest_loc_by_region(region)
         huanxin_ids = cls.active_huanxinids_by_loc(loc, number)
-        huanxin_ids = [u'love123879348711830'] # + huanxin_ids
+        huanxin_ids = [u'love123879348711830'] + huanxin_ids
         # huanxin_ids = [u'love123879348711830']   # joey
         res = HuanxinService.batch_send_msgs(msg, huanxin_ids, officail_user.huanxin.user_id)
         # print res
