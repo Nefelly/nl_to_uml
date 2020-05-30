@@ -133,6 +133,7 @@ class ExperimentService(object):
         '''
         # 判断传值是否准确
         total = sum([value_bucket_num_dict.get(e) for e in value_bucket_num_dict if e != ExpBucket.NOSET])
+        print value_bucket_num_dict.get(ExpBucket.DEFAULT)
         if not value_bucket_num_dict.get(ExpBucket.DEFAULT):
             return u'default must in', False
         if total > cls.BUCKET_NUM:
