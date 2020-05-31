@@ -163,10 +163,10 @@ class RegionWord(Document):
             'id': {'newcomer': [u'Dia pendatang baru', u'Dia pendatang baru'], 'mystierious': [u'Dia misterius', u'Dia misterius']},
         },
         'alert_word': {
-            'en': u'Warning,Our system has noticed inappropriate behavior on your account. Please keep positive. If you are warned three times,you will be banned. If you believe you’ve been incorrectly flagged, please send your litmatch name in your email to litatomwang@gmail.com',
-            'vi': u'Hệ thống chúng tôi thông báo tài khoản của bạn có hành vi không phù hợp. Hãy cư xử văn minh trong cuộc trò chuyện của bạn. Nếu báo cáo này sai bạn có thể liên lạc với chúng tôi qua email litatomwang@gmail.com',
-            'th': u'ระบบของเราสังเกตเห็นพฤติกรรมที่ไม่เหมาะสมในบัญชีของคุณโปรดประพฤติตามความเหมาะสมหากคุณคิดว่าคุณถูกตั้งค่าสถานะไม่ถูกต้อง คุณสามารถติดต่อเราอยู่ที่litatomwang@gmail.com',
-            # 'id': u'',
+            'en': u'Warning,Our system has noticed inappropriate behavior on your account. please keep positive. If you are warned three times, you will be banned If you believe you’ve been incorrectly flagged, please send your litmatch name via facebook: Litmatch',
+            'vi': u'Cảnh báo, hệ thống chúng tôi phát hiện tài khoản bạn có hành vi không phù hợp. Hãy giữ hành vi văn minh. Nếu bạn bị cảnh báo 3 lần sẽ bị khoá nick. Nếu báo cáo là sai hãy gửi tên nick Litmatch của bạn cho chúng tôi qua trang Facebook Litmatch Vietnam',
+            'th': u'คำเตือน : ระบบของเราสังเกตเห็นพฤติกรรมที่ไม่เหมาะสมในบัญชีของคุณ โปรดยืนยัน หากคุณถูกเตือนสามครั้งคุณจะถูกแบน หากคุณเชื่อว่าคุณถูกตั้งค่าสถานะไม่ถูกต้อง โปรดส่งชื่อLitmatchของคุณผ่านทาง Facebook: Litmatch Thailand',
+            'id': u'Peringatan, Sistem kami telah mendeteksi perilaku yang tidak pantas pada akun Anda. Mohon untuk tetap bersikap positif. Jika Anda diperingatkan tiga kali maka akun Anda akan diblokir Jika Anda merasa telah terjadi kesalahpahaman, silahkan kirimkan nama litmatch Anda melalui facebook: LitMatchid',
         },
         'alert_msg':{
             'en': u'Contains inappropriate information, please modify，If you continue to behave badly, you may be banned',
@@ -260,6 +260,12 @@ class RegionWord(Document):
                   u'\n\n• Anda dapat melaporkan profil atau perilaku yang tidak pantas: tim peninjau kami akan memeriksa 😮'
                   u'\n\n• Hanya gunakan gambar pribadi Anda ✌'
                   u'\n\n• Gambar dengan pakaian dalam atau tanpa pakaian tidak diperbolehkan 👮 "'
+        },
+        'report_feedback_unresolved':{
+            'en':u'Your report has been submitted for review. We will  send you the result in 12 hours. Thanks  for your support.',
+            'vi':u'Báo cáo của bạn đã được gửi để xem xét. Chúng tôi sẽ gửi cho bạn kết quả trong 12 giờ. Cảm ơn sự hỗ trợ của bạn',
+            'th':u'รายงานของคุณถูกส่งไปตรวจสอบแล้ว  เราจะแจ้งผลให้คุณภายใน 12 ชั่วโมง  ขอบคุณสำหรับการสนับสนุน',
+            'id':u'Laporan Anda sudah diserahkan untuk ditinjau. Kami akan mengirimkan hasilnya dalam waktu 12 jam. Terima kasih atas dukungan Anda.'
         }
 
 
