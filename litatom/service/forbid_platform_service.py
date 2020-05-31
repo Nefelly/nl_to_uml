@@ -56,34 +56,37 @@ class ForbidPlatformService(object):
     #         temp_res[user_id]['forbid_history']['reports'].append(ReportService.get_report_info(report))
 
     @classmethod
-    def get_forbid_record(cls, from_ts, to_ts, region=None, forbid_type=None, num=10):
+    def get_forbid_record(cls, from_ts, to_ts, loc=None, forbid_type=None, num=20):
         """封号记录表"""
-        if region and region not in cls.FORBID_LOCATIONS:
+        if loc and loc not in cls.FORBID_LOCATIONS:
             return 'invalid region', False
         if forbid_type and forbid_type not in {SYS_FORBID, MANUAL_FORBID}:
             return 'invalid forbid type', False
 
         temp_res = {}
-        user_num = 0
         have_read = 0
+        if not forbid_type:
+            user_records = UserRecord.get_forbid_users_by_time(from_ts, to_ts)
+        else:
+            user_records = UserRecord.get_forbid_users_by_time(from_ts, to_ts, forbid_type)
+        if not user_records:
+            return None, False
         # 从UserRecord中加载封号用户和封号时间
-        while user_num < num:
-            if not forbid_type:
-                users = UserRecord.get_forbid_users_by_time(from_ts, to_ts).skip(have_read).limit(num)
-            else:
-                users = UserRecord.get_forbid_users_by_time(from_ts, to_ts, forbid_type).skip(have_read).limit(num)
-            if not users:
+        next_ts = 0
+        for user_record in user_records:
+            user_id = user_record.user_id
+            if loc and loc != UserSetting.get_loc_by_uid(user_id):
+                continue
+            forbidden_from = user_record.create_time
+            temp_res[user_id] = {'user_id': user_id,'nickname': UserService.nickname_by_uid(user_id), 'forbidden_from': time_str_by_ts(forbidden_from)}
+            if forbidden_from > next_ts:
+                next_ts = forbidden_from
+            have_read += 1
+            if have_read > num:
                 break
-            have_read += len(users)
-            for user in users:
-                user_id = user.user_id
-                if region and region != UserSetting.get_loc_by_uid(user_id):
-                    continue
-                temp_res[user_id] = {'user_id': user_id,'nickname': UserService.nickname_by_uid(user_id), 'forbidden_from': time_str_by_ts(user.create_time)}
-                user_num += 1
-                if user_num >= num:
-                    break
-
+        has_next = False
+        if have_read > num:
+            has_next = True
         # 从TrackSpamRecord中导入次数和命中历史,从Report中导入次数和命中历史
         earliest_forbidden = int(time.time())
         for uid in temp_res.keys():
@@ -102,9 +105,9 @@ class ForbidPlatformService(object):
             temp_res[uid]['user_forbidden_num'] = UserRecord.get_forbidden_num_by_uid(uid)
             temp_res[uid]['device_forbidden_num'] = ForbidRecordService.get_device_forbidden_num_by_uid(uid)
             temp_res[uid]['forbid_score'] = ForbidActionService.accum_illegal_credit(uid)[0]
-            # temp_res[uid]['forbid_history'] = ForbidRecordService.get_forbid_history_by_uid(uid)
+            temp_res[uid]['forbid_history'] = ForbidRecordService.get_forbid_history_by_uid(uid)
 
-        return temp_res.values(), True
+        return {'records':temp_res.values(),'has_next':has_next, 'next_ts':next_ts}, True
 
     @classmethod
     def get_forbid_record_atom(cls, user_id):

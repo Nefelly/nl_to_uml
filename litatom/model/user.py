@@ -841,8 +841,8 @@ class UserRecord(Document):
     @classmethod
     def get_forbid_users_by_time(cls, from_ts, to_ts, forbid_type=None):
         if not forbid_type:
-            return cls.objects(create_time__gte=from_ts, create_time__lte=to_ts)
-        return cls.objects(create_time__gte=from_ts, create_time__lte=to_ts, action=forbid_type)
+            return cls.objects(create_time__gte=from_ts, create_time__lt=to_ts).order_by('create_time')
+        return cls.objects(create_time__gte=from_ts, create_time__lt=to_ts, action=forbid_type).order_by('create_time')
 
     @classmethod
     def get_by_uid_and_time(cls, user_id, from_ts, to_ts):
