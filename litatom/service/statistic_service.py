@@ -34,6 +34,7 @@ from ..service import (
     GlobalizationService,
     UserFilterService,
     AliLogService,
+    ExperimentService
 )
 from ..model import (
     User,
@@ -144,6 +145,15 @@ class StatisticService(object):
         return raw_uids
 
     @classmethod
+    def user_in_age_control(cls, user_age, other_age):
+        if user_age < 17:
+            return other_age < 17
+        elif user_age <= 25:
+            return other_age >= 17
+        else:
+            return other_age >= 20
+
+    @classmethod
     def get_online_users(cls, gender=None, start_p=0, num=10):
         key = GlobalizationService._online_key_by_region_gender(gender)
         online_cnt = cls.get_online_cnt(gender)
@@ -203,15 +213,28 @@ class StatisticService(object):
                         break
                     start_p = start_p + num
             else:
+                user_age = User.age_by_user_id(temp_uid)
+                exp = True
+                if exp:
+                    user_gender = UserService.get_gender(temp_uid)
                 for i in range(max_loop_tms):
                     temp_uids = redis_client.zrevrange(key, start_p, start_p + num)
                     has_next = False
                     if len(temp_uids) == num + 1:
                         has_next = True
                         temp_uids = temp_uids[:-1]
-                    user_age = User.age_by_user_id(temp_uid)
                     next_start = start_p + num if has_next else - 1
-                    uids += [el for el in temp_uids if abs(User.age_by_user_id(el) - user_age) <= 4]
+                    if ExperimentService.lit_exp_value('home_age_control') == 'exp':
+                        tmp_uids = []
+                        for el in temp_uids:
+                            if user_gender == BOY:
+                                if UserService.get_gender(el) == BOY:
+                                    continue
+                            if cls.user_in_age_control(user_age, User.age_by_user_id(el)):
+                                tmp_uids.append(el)
+                        uids += tmp_uids
+                    else:
+                        uids += [el for el in temp_uids if abs(User.age_by_user_id(el) - user_age) <= 4]
                     if len(uids) >= max(num - 3, 1) or not has_next:
                         break
                     start_p = start_p + num

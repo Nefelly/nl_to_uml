@@ -44,7 +44,8 @@ from ..service import (
     MqService,
     ForbidActionService,
     AntiSpamRateService,
-    ForbidCheckService
+    ForbidCheckService,
+    ExperimentService
 )
 from ..model import (
     Feed,
@@ -320,6 +321,15 @@ class FeedService(object):
         return res, True
 
     @classmethod
+    def feed_in_age_control(cls, user_age, feed_age):
+        if user_age < 17:
+            return feed_age < 17
+        elif user_age <= 25:
+            return feed_age >= 17
+        else:
+            return feed_age >= 20
+
+    @classmethod
     def _feeds_by_pool(cls, redis_key, user_id, start_p, num, pool_type=None):
         if request.ip_should_filter:
             return {
@@ -342,7 +352,11 @@ class FeedService(object):
                 has_next = True
                 tmp_feeds = tmp_feeds[:-1]
             next_start = start_p + num if has_next else -1
-            feeds += [el for el in tmp_feeds if UserService.age_in_user_range(user_id, cls.age_by_feed_id(el))]
+            user_age = UserService.uid_age(user_id)
+            if ExperimentService.lit_exp_value('feed_age_control') == 'hard':
+                feeds += [el for el in tmp_feeds if cls.feed_in_age_control(user_age, cls.age_by_feed_id(el))]
+            else:
+                feeds += [el for el in tmp_feeds if UserService.age_in_user_range(user_age, cls.age_by_feed_id(el))]
             if len(feeds) >= max(num - 3, 1) or not has_next:
                 break
             start_p = start_p + num
