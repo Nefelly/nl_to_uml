@@ -297,6 +297,8 @@ class ForbidActionService(object):
     @classmethod
     def _get_high_value_compensation(cls, user_id):
         """根据用户粉丝数量，获得一些补偿违规积分，避免高价值用户被举报封号"""
+        if User.get_by_id(user_id).is_vip:
+            return 0
         followers = UserService.get_followers_by_uid(user_id)
         res = floor(followers / 10) * cls.COMPENSATION_PER_TEN_FOLLOWER
         res = res if res >= 0 else 0
