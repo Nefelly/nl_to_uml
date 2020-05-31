@@ -67,7 +67,6 @@ from ..service import (
     HuanxinService,
     GoogleService,
     FacebookService,
-    ForbidCheckService,
     FollowService,
     GlobalizationService,
     MqService,
@@ -120,7 +119,6 @@ class UserService(object):
     @classmethod
     def device_blocked(cls, uuid):
         return BlockedDevices.is_device_forbidden(uuid)
-
 
     @classmethod
     def uuid_by_user_id(cls, user_id):
