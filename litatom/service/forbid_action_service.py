@@ -119,6 +119,7 @@ class ForbidActionService(object):
             cls.forbid_user(target_user_id, SYS_FORBID_TIME, SYS_FORBID, ts_now)
             return {"report_id": str(report_id), SYS_FORBID: True}, True
         if not alert_res:
+            print(1)
             MsgService.feedback_to_reporters_unresolved(user_id)
         return {"report_id": str(report_id), SYS_FORBID: False}, True
 
