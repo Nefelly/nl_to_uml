@@ -22,5 +22,7 @@ for user in UserSetting.objects():
     num += 1
     if get_device_forbidden_num_by_uid(uuid) >= 3:
         res += 1
+        if res % 10000 ==0:
+            print(num,res)
 
 print(num, res)
