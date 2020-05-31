@@ -102,12 +102,13 @@ class ForbidActionService(object):
         Report.set_same_report_to_dealed(user_id, target_user_id)
         report_id = ReportService.save_report(user_id, reason, pics, target_user_id, related_feed_id, match_type,
                                               chat_record)
+        alert_res = False
         # feed, chat record不会同时在一条举报中
         if related_feed_id:
-            cls._resolve_feed_report(related_feed_id, target_user_id, user_id)
+            alert_res = cls._resolve_feed_report(related_feed_id, target_user_id, user_id)
 
         if chat_record:
-            cls._resolve_chat_record_report(chat_record, target_user_id, user_id)
+            alert_res = cls._resolve_chat_record_report(chat_record, target_user_id, user_id)
 
         if cls._is_reliable_reporter(user_id):
             reliable_reporter_compensation_score = 1
@@ -117,6 +118,8 @@ class ForbidActionService(object):
         if res:
             cls.forbid_user(target_user_id, SYS_FORBID_TIME, SYS_FORBID, ts_now)
             return {"report_id": str(report_id), SYS_FORBID: True}, True
+        if not alert_res:
+            MsgService.feedback_to_reporters_unresolved(user_id)
         return {"report_id": str(report_id), SYS_FORBID: False}, True
 
     @classmethod
@@ -124,7 +127,7 @@ class ForbidActionService(object):
         """由于举报feed中，无论文字命中还是图片命中，只入库第一个"""
         word_res, pic_res = ForbidCheckService.check_feed(feed_id)
         if not word_res and not pic_res:
-            return
+            return False
         if word_res or pic_res:
             MsgService.feedback_to_reporters(target_user_id, [user_id], is_warn=True)
         if pic_res:
@@ -132,20 +135,22 @@ class ForbidActionService(object):
                 if pic_res[pic][1] == BLOCK_PIC:
                     TrackSpamRecordService.save_record(target_user_id, pic=pic, forbid_weight=cls.BLOCK_PIC_WEIGHTING,source=SPAM_RECORD_FEED_SOURCE)
                     MsgService.alert_feed_delete(target_user_id, pic_res[pic][0])
-                    return
+                    return True
 
         if word_res:
             TrackSpamRecordService.save_record(target_user_id, word=word_res.keys()[0],
                                                forbid_weight=cls.SPAM_WORD_WEIGHTING, source=SPAM_RECORD_FEED_SOURCE)
             MsgService.alert_feed_delete(target_user_id, cls.SPAM_WORD_REASON)
-            return
+            return True
+        # 只有疑似图片
         Feed.change_to_review(feed_id)
+        return False
 
     @classmethod
     def _resolve_chat_record_report(cls, chat_record, target_user_id, user_id):
         word_res, pic_res = ForbidCheckService.check_chat_record(chat_record)
         if not word_res and not pic_res:
-            return
+            return False
         if word_res or pic_res:
             MsgService.feedback_to_reporters(target_user_id, [user_id], is_warn=True)
         if pic_res:
@@ -153,15 +158,16 @@ class ForbidActionService(object):
                 if pic_res[pic][1] == BLOCK_PIC:
                     TrackSpamRecordService.save_record(target_user_id, pic=pic, forbid_weight=cls.BLOCK_PIC_WEIGHTING, source=SPAM_RECORD_CHAT_RECORD_SOURCE)
                     MsgService.alert_basic(target_user_id)
-                    return
+                    return True
         if word_res:
             TrackSpamRecordService.save_record(target_user_id, word=word_res.keys()[0],
                                                forbid_weight=cls.SPAM_WORD_WEIGHTING,source=SPAM_RECORD_CHAT_RECORD_SOURCE)
             MsgService.alert_basic(target_user_id)
-            return
+            return True
         pic = pic_res.keys()[0]
         TrackSpamRecordService.save_record(target_user_id, pic=pic, forbid_weight=cls.REVIEW_PIC_WEIGHTING,source=SPAM_RECORD_CHAT_RECORD_SOURCE)
-        MsgService.alert_basic(target_user_id)
+        # MsgService.alert_basic(target_user_id)
+        return False
 
     @classmethod
     def resolve_spam_word(cls, user_id, word, source=SPAM_RECORD_UNKNOWN_SOURCE):
@@ -279,6 +285,7 @@ class MsgService(object):
     BAN_FEEDBACK_WORDS = 'other_ban_inform'
     FIREBASE_FEEDBACK_WORDS = u'your report succeed'
     DEFAULT_ALERT_WORDS = 'alert_word'
+    REPORT_FEEDBACK_UNRESOLVED = 'report_feedback_unresolved'
     FEED_DELETE_ALERT_WORDS = u'Your post have been deleted due to reason: %s. Please keep your feed positive.'
 
     @classmethod
@@ -307,3 +314,9 @@ class MsgService(object):
         for reporter in report_user_ids:
             UserService.msg_to_user(to_user_info, reporter)
             FirebaseService.send_to_user(reporter, cls.FIREBASE_FEEDBACK_WORDS, to_user_info)
+
+    @classmethod
+    def feedback_to_reporters_unresolved(cls, reporter):
+        to_reporter_info = GlobalizationService.get_region_word(cls.REPORT_FEEDBACK_UNRESOLVED)
+        UserService.msg_to_user(to_reporter_info, reporter)
+
