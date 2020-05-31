@@ -103,6 +103,7 @@ class ForbidActionService(object):
         report_id = ReportService.save_report(user_id, reason, pics, target_user_id, related_feed_id, match_type,
                                               chat_record)
         alert_res = False
+        print(alert_res)
         # feed, chat record不会同时在一条举报中
         if related_feed_id:
             alert_res = cls._resolve_feed_report(related_feed_id, target_user_id, user_id)
