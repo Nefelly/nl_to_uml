@@ -66,9 +66,9 @@ class ForbidPlatformService(object):
         temp_res = {}
         have_read = 0
         if not forbid_type:
-            user_records = UserRecord.get_forbid_users_by_time(from_ts, to_ts).skip(have_read).limit(num)
+            user_records = UserRecord.get_forbid_users_by_time(from_ts, to_ts)
         else:
-            user_records = UserRecord.get_forbid_users_by_time(from_ts, to_ts, forbid_type).skip(have_read).limit(num)
+            user_records = UserRecord.get_forbid_users_by_time(from_ts, to_ts, forbid_type)
         if not user_records:
             return None, False
         # 从UserRecord中加载封号用户和封号时间
