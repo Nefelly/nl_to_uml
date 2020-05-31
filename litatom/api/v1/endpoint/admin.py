@@ -60,7 +60,7 @@ from ....service import (
     AliOssService,
     ExperimentService,
     TestCleanService,
-    ToDevSyncService
+    ForbidRecordService
 )
 from ....const import (
     MAX_TIME,
@@ -599,6 +599,11 @@ def super_login():
         return fail('no such user')
     if AppAdmin.is_admin(user_id):
         return success()
+
+
+def get_forbid_history_by_uid():
+    user_id = request.args.get('user_id')
+    return success(ForbidRecordService.get_forbid_history_by_uid(user_id))
 
 
 def get_user_info(user_id):
