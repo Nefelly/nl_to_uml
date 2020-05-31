@@ -61,7 +61,7 @@ class ForbidRecordService(object):
         user_record = UserRecord.objects(user_id=user_id).order_by('-create_time').first()
         forbidden_from = user_record.create_time
 
-        is_sensitive = ForbidCheckService.check_sensitive_user(user_id,forbidden_from-ERROR_RANGE)
+        is_sensitive = ForbidCheckService.check_sensitive_user(user_id, forbidden_from - ERROR_RANGE)
 
         reports = Report.get_report_by_time_and_uid(user_id, forbidden_from - SYS_FORBID_TIME, forbidden_from,
                                                     True)
@@ -78,14 +78,14 @@ class ForbidRecordService(object):
         for record in spam_records:
             record_res.append(TrackSpamRecordService.get_spam_record_info(record))
 
-        return {'sensitive': is_sensitive, 'blocker_num': blocker_num, 'illegal_records':reports_res+record_res}
+        return {'sensitive': is_sensitive, 'blocker_num': blocker_num, 'illegal_records': reports_res + record_res}
 
 
 class ReportService(object):
 
     @classmethod
     def save_report(cls, user_id, reason, pics=None, target_user_id=None, related_feed_id=None, match_type=None,
-                    chat_record=None, dealed=False):
+                    chat_record=None, dealed=False, forbid_weight=4):
         """举报内容入库"""
         report = Report()
         report.uid = user_id
@@ -100,6 +100,7 @@ class ReportService(object):
             report.dealed = dealed
         report.target_uid = target_user_id
         report.create_ts = int(time.time())
+        report.forbid_weight = forbid_weight
         report.save()
         return report.id
 
@@ -126,16 +127,21 @@ class ReportService(object):
             return None
         target_uid = report.target_uid
         reportee = User.get_by_id(target_uid)
-        tmp = {'report_id': str(report.id),'forbid_weight': 2 if report.reason == 'match' else 4, 'reporter': report.uid, 'pics': [OSS_PIC_URL + pic for pic in report.pics],
-               'region': report.region, 'chat_record': None, 'reason': report.reason, 'feed': None,'user_id':target_uid,'reporter_nickname':UserService.nickname_by_uid(report.uid),
-               'reporter_ban_before': UserRecord.get_forbidden_num_by_uid(report.uid) > 0,'reportee_nickname':reportee.nickname if reportee else None,'reportee_create_time':format_standard_time(reportee.create_time) if reportee else None}
+        tmp = {'report_id': str(report.id), 'forbid_weight': 2 if report.reason == 'match' else 4,
+               'reporter': report.uid, 'pics': [OSS_PIC_URL + pic for pic in report.pics],
+               'region': report.region, 'chat_record': None, 'reason': report.reason, 'feed': None,
+               'user_id': target_uid, 'reporter_nickname': UserService.nickname_by_uid(report.uid),
+               'reporter_ban_before': UserRecord.get_forbidden_num_by_uid(report.uid) > 0,
+               'reportee_nickname': reportee.nickname if reportee else None,
+               'reportee_create_time': format_standard_time(reportee.create_time) if reportee else None}
 
         if report.related_feed:
             feed = Feed.objects(id=report.related_feed).first()
             if not feed:
                 tmp['feed'] = FEED_NOT_FOUND_ERROR
             else:
-                tmp['feed'] = {'content': feed.content, 'pics': [OSS_PIC_URL + pic for pic in feed.pics], 'audios':[OSS_AUDIO_URL + audio for audio in feed.audios]}
+                tmp['feed'] = {'content': feed.content, 'pics': [OSS_PIC_URL + pic for pic in feed.pics],
+                               'audios': [OSS_AUDIO_URL + audio for audio in feed.audios]}
 
         if report.chat_record:
             res_record = []
@@ -201,7 +207,7 @@ class TrackSpamRecordService(object):
             return False
         if cls.check_spam_word_in_one_minute(user_id, int(time.time())):
             return False
-        return TrackSpamRecord.create(user_id, word, pic, forbid_weight=forbid_weight,source=source)
+        return TrackSpamRecord.create(user_id, word, pic, forbid_weight=forbid_weight, source=source)
 
     @classmethod
     def check_spam_word_in_one_minute(cls, user_id, ts):
@@ -234,9 +240,13 @@ class TrackSpamRecordService(object):
 
     @classmethod
     def get_spam_record_info(cls, record):
-        tmp = {'forbid_weight': record.forbid_weight,'user_id':record.user_id,'nickname':UserService.nickname_by_uid(record.user_id),'record_id':str(record.id), 'create_time':unix_ts_string(record.create_time), 'source':record.source}
+        tmp = {'forbid_weight': record.forbid_weight, 'user_id': record.user_id,
+               'nickname': UserService.nickname_by_uid(record.user_id), 'record_id': str(record.id),
+               'create_time': unix_ts_string(record.create_time), 'source': record.source}
         if record.word:
-            tmp['word'] = {'word': record.word, 'hit_word': SpamWordCheckService.get_spam_word(record.word, GlobalizationService.get_region_by_user_id(record.user_id))}
+            tmp['word'] = {'word': record.word, 'hit_word': SpamWordCheckService.get_spam_word(record.word,
+                                                                                               GlobalizationService.get_region_by_user_id(
+                                                                                                   record.user_id))}
         elif record.pic:
             tmp['pic'] = format_pic(record.pic)
         return tmp

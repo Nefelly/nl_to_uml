@@ -44,6 +44,8 @@ redis_client = RedisClient()['lit']
 
 class ForbidActionService(object):
     REPORT_WEIGHTING = 4
+    RELIABLE_REPORTER_COMPENSATION = 1
+    UNRELIABLE_REPORTER_COMPENSATION = -2
     SPAM_WORD_WEIGHTING = 2
     REVIEW_PIC_WEIGHTING = 0
     BLOCK_PIC_WEIGHTING = 4
@@ -52,9 +54,9 @@ class ForbidActionService(object):
     REVIEW_FEED_PIC_WEIGHTING = 2
     MATCH_REPORT_WEIGHTING = 2
     FORBID_THRESHOLD = 10
+    VIP_FORBID_THRESHOLD = 40
     COMPENSATION_PER_TEN_FOLLOWER = 2
     COMPENSATION_UPPER_THRESHOLD = 10
-    RELIABLE_REPORTER_COMPENSATION = 1
     NEW_BLOCKER_DAYS = 7
     SPAM_WORD_REASON = 'spam word existence'
     ADMINISTRATOR_REPORT = 'administrator report'
@@ -100,19 +102,21 @@ class ForbidActionService(object):
             return msg, res
         # 举报不过5次，均入库存档
         Report.set_same_report_to_dealed(user_id, target_user_id)
+        report_weight = cls.REPORT_WEIGHTING if reason != 'match' else cls.MATCH_REPORT_WEIGHTING
+        if cls._is_reliable_reporter(user_id):
+            report_weight += cls.RELIABLE_REPORTER_COMPENSATION
+        if UserRecord.get_forbidden_time_by_uid(user_id) > 0:
+            report_weight += cls.UNRELIABLE_REPORTER_COMPENSATION
         report_id = ReportService.save_report(user_id, reason, pics, target_user_id, related_feed_id, match_type,
-                                              chat_record)
+                                              chat_record, forbid_weight=report_weight)
         alert_res = False
         # feed, chat record不会同时在一条举报中
         if related_feed_id:
             alert_res = cls._resolve_feed_report(related_feed_id, target_user_id, user_id)
         if chat_record:
             alert_res = cls._resolve_chat_record_report(chat_record, target_user_id, user_id)
-        if cls._is_reliable_reporter(user_id):
-            reliable_reporter_compensation_score = 1
-        else:
-            reliable_reporter_compensation_score = 0
-        res = cls._check_forbid(target_user_id, ts_now, -reliable_reporter_compensation_score)
+
+        res = cls._check_forbid(target_user_id, ts_now)
         if res:
             cls.forbid_user(target_user_id, SYS_FORBID_TIME, SYS_FORBID, ts_now)
             return {"report_id": str(report_id), SYS_FORBID: True}, True
@@ -131,7 +135,8 @@ class ForbidActionService(object):
         if pic_res:
             for pic in pic_res:
                 if pic_res[pic][1] == BLOCK_PIC:
-                    TrackSpamRecordService.save_record(target_user_id, pic=pic, forbid_weight=cls.BLOCK_PIC_WEIGHTING,source=SPAM_RECORD_FEED_SOURCE)
+                    TrackSpamRecordService.save_record(target_user_id, pic=pic, forbid_weight=cls.BLOCK_PIC_WEIGHTING,
+                                                       source=SPAM_RECORD_FEED_SOURCE)
                     MsgService.alert_feed_delete(target_user_id, pic_res[pic][0])
                     return True
 
@@ -154,16 +159,19 @@ class ForbidActionService(object):
         if pic_res:
             for pic in pic_res:
                 if pic_res[pic][1] == BLOCK_PIC:
-                    TrackSpamRecordService.save_record(target_user_id, pic=pic, forbid_weight=cls.BLOCK_PIC_WEIGHTING, source=SPAM_RECORD_CHAT_RECORD_SOURCE)
+                    TrackSpamRecordService.save_record(target_user_id, pic=pic, forbid_weight=cls.BLOCK_PIC_WEIGHTING,
+                                                       source=SPAM_RECORD_CHAT_RECORD_SOURCE)
                     MsgService.alert_basic(target_user_id)
                     return True
         if word_res:
             TrackSpamRecordService.save_record(target_user_id, word=word_res.keys()[0],
-                                               forbid_weight=cls.SPAM_WORD_WEIGHTING,source=SPAM_RECORD_CHAT_RECORD_SOURCE)
+                                               forbid_weight=cls.SPAM_WORD_WEIGHTING,
+                                               source=SPAM_RECORD_CHAT_RECORD_SOURCE)
             MsgService.alert_basic(target_user_id)
             return True
         pic = pic_res.keys()[0]
-        TrackSpamRecordService.save_record(target_user_id, pic=pic, forbid_weight=cls.REVIEW_PIC_WEIGHTING,source=SPAM_RECORD_CHAT_RECORD_SOURCE)
+        TrackSpamRecordService.save_record(target_user_id, pic=pic, forbid_weight=cls.REVIEW_PIC_WEIGHTING,
+                                           source=SPAM_RECORD_CHAT_RECORD_SOURCE)
         # MsgService.alert_basic(target_user_id)
         return True
 
@@ -200,7 +208,7 @@ class ForbidActionService(object):
         # 理论上不可能出现
         if not feed.pics:
             return None, False
-        return cls.resolve_block_pic(user_id, feed.pics[0],source=SPAM_RECORD_FEED_SOURCE)
+        return cls.resolve_block_pic(user_id, feed.pics[0], source=SPAM_RECORD_FEED_SOURCE)
 
     @classmethod
     def resolve_block_pic(cls, user_id, pic, source=SPAM_RECORD_UNKNOWN_SOURCE):
@@ -219,46 +227,46 @@ class ForbidActionService(object):
         return {SYS_FORBID: False}, True
 
     @classmethod
-    def _check_forbid(cls, target_user_id, ts_now=None, additional_score=0):
+    def _check_forbid(cls, target_user_id, ts_now=None):
         """进行封号检查，应该封号返回True，未达到封号阈值返回False"""
         ts_now = int(time.time()) if not ts_now else ts_now
         # 官方账号不会被检查封号
-        credit, res = cls.accum_illegal_credit(target_user_id, ts_now, additional_score)
+        credit, res = cls.accum_illegal_credit(target_user_id, ts_now)
         if not res or UserService.is_official_account(target_user_id):
             return False
         # 违规积分达到上限，非高价值用户，要被封号
         return True
 
     @classmethod
-    def accum_illegal_credit(cls, user_id, timestamp_now=None, additional_score=0):
+    def accum_illegal_credit(cls, user_id, timestamp_now=None):
         """计算违规积分，查看user_id是否应该被封号"""
         if not timestamp_now:
             time_now = datetime.datetime.now()
             timestamp_now = unix_ts_local(time_now)
-            time_3days_ago = unix_ts_local(time_now - datetime.timedelta(days=3))
+            time_7days_ago = unix_ts_local(time_now - datetime.timedelta(days=7))
         else:
             time_now = date_from_unix_ts(timestamp_now)
-            time_3days_ago = timestamp_now - 3 * ONE_DAY
+            time_7days_ago = timestamp_now - 7 * ONE_DAY
 
-        alert_score = TrackSpamRecord.get_alert_score_by_time_and_uid(user_id, time_3days_ago, timestamp_now)
-        report_total_num = Report.count_by_time_and_uid_distinct(user_id, time_3days_ago, timestamp_now)
-        report_match_num = Report.count_match_by_time_and_uid(user_id, time_3days_ago, timestamp_now)
+        alert_score = TrackSpamRecord.get_alert_score_by_time_and_uid(user_id, time_7days_ago, timestamp_now)
+        report_score = Report.get_report_score_by_time_and_uid(user_id, time_7days_ago, timestamp_now)
         blocker_num = Blocked.get_blocker_num_by_time(user_id, time_now - datetime.timedelta(days=cls.NEW_BLOCKER_DAYS),
                                                       time_now)
         history_forbidden_credit = 0
         if ForbidCheckService.check_sensitive_user(user_id):
             history_forbidden_credit = cls.HISTORY_FORBID_WEIGHTING
-        illegal_credit = alert_score + (report_total_num - report_match_num) * cls.REPORT_WEIGHTING \
-                         + report_match_num * cls.MATCH_REPORT_WEIGHTING + additional_score + history_forbidden_credit \
+        illegal_credit = alert_score + report_score + history_forbidden_credit \
                          + blocker_num * cls.BLOCKER_WEIGHTING - cls._get_high_value_compensation(user_id)
-        if illegal_credit >= cls.FORBID_THRESHOLD:
+
+        forbid_threshold = cls.FORBID_THRESHOLD if not User.get_by_id(user_id).is_vip else cls.VIP_FORBID_THRESHOLD
+        if illegal_credit >= forbid_threshold:
             return illegal_credit, True
         if illegal_credit < 0:
             return 0, False
         return illegal_credit, False
 
     @classmethod
-    def forbid_user(cls, user_id, forbid_ts, forbid_type=SYS_FORBID, ts=int(time.time())):
+    def forbid_user(cls, user_id, forbid_ts, forbid_type=SYS_FORBID):
         """封号服务统一接口"""
         if not UserService.is_forbbiden(user_id):
             UserService.forbid_action(user_id, forbid_ts)
@@ -317,4 +325,3 @@ class MsgService(object):
     def feedback_to_reporters_unresolved(cls, reporter):
         to_reporter_info = GlobalizationService.get_region_word(cls.REPORT_FEEDBACK_UNRESOLVED)
         UserService.msg_to_user(to_reporter_info, reporter)
-

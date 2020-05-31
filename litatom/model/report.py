@@ -37,6 +37,7 @@ class Report(Document):
     # passed = StringField()
     create_ts = IntField(required=True)
     deal_ts = IntField()
+    forbid_weight = IntField(required=True, default=4)
 
     @classmethod
     def get_by_id(cls, report_id):
@@ -52,7 +53,8 @@ class Report(Document):
 
     @classmethod
     def is_dup_report(cls, uid, target_uid, ts_now):
-        if cls.objects(uid=uid,target_uid=target_uid,create_ts__gte=ts_now-3*ONE_DAY, create_ts__lte=ts_now,dealed=False):
+        if cls.objects(uid=uid, target_uid=target_uid, create_ts__gte=ts_now - 3 * ONE_DAY, create_ts__lte=ts_now,
+                       dealed=False):
             return True
         return False
 
@@ -102,20 +104,29 @@ class Report(Document):
         self.save()
         return True
 
-    @classmethod
-    def count_by_time_and_uid_distinct(cls, user_id, from_time, to_time):
-        """返回用户一段时间内被不同人举报次数"""
-        return len(cls.objects(target_uid=user_id, create_ts__gte=from_time, create_ts__lte=to_time,dealed=False).distinct("uid"))
+    # @classmethod
+    # def count_by_time_and_uid_distinct(cls, user_id, from_time, to_time):
+    #     """返回用户一段时间内被不同人举报次数"""
+    #     return len(
+    #         cls.objects(target_uid=user_id, create_ts__gte=from_time, create_ts__lte=to_time, dealed=False).distinct(
+    #             "uid"))
 
-    @classmethod
-    def count_match_by_time_and_uid(cls, user_id, from_time, to_time):
-        """返回用户一段时间内因match被不同人举报次数"""
-        return len(cls.objects(target_uid=user_id, create_ts__gte=from_time, create_ts__lte=to_time, reason="match",dealed=False).distinct("uid"))
+    # @classmethod
+    # def count_match_by_time_and_uid(cls, user_id, from_time, to_time):
+    #     """返回用户一段时间内因match被不同人举报次数"""
+    #     return len(cls.objects(target_uid=user_id, create_ts__gte=from_time, create_ts__lte=to_time, reason="match",
+    #                            dealed=False).distinct("uid"))
 
-    @classmethod
-    def count_by_time_and_uid(cls, user_id, from_ts, to_ts, dealed=False):
-        """返回用户一段时间内被其他人举报次数，不去重"""
-        return cls.objects(target_uid=user_id, create_ts__gte=from_ts, create_ts__lte=to_ts, dealed=dealed).count()
+    # @classmethod
+    # def count_by_time_and_uid(cls, user_id, from_ts, to_ts, dealed=False):
+    #     """返回用户一段时间内被其他人举报次数，不去重"""
+    #     return cls.objects(target_uid=user_id, create_ts__gte=from_ts, create_ts__lte=to_ts, dealed=dealed).count()
+
+    # @classmethod
+    # def get_report_with_pic_by_time(cls, target_uid, from_ts, to_ts, dealed=False):
+    #     """找出带有feed的举报"""
+    #     return cls.objects(target_uid=target_uid, create_ts__gte=from_ts, create_ts__lte=to_ts, related_feed__ne='',
+    #                        dealed=dealed)
 
     @classmethod
     def count_by_uid(cls, user_id):
@@ -128,11 +139,6 @@ class Report(Document):
         return cls.objects(create_ts__gte=from_ts, create_ts__lte=to_ts, dealed=dealed, duplicated=duplicated)
 
     @classmethod
-    def get_report_with_pic_by_time(cls, target_uid, from_ts, to_ts, dealed=False):
-        """找出带有feed的举报"""
-        return cls.objects(target_uid=target_uid, create_ts__gte=from_ts, create_ts__lte=to_ts, related_feed__ne='', dealed=dealed)
-
-    @classmethod
     def count_report_by_uid(cls, user_id, from_time, to_time):
         """返回用户一段时间内主动举报别人的次数"""
         return cls.objects(uid=user_id, create_ts__gte=from_time, create_ts__lte=to_time).count()
@@ -140,4 +146,12 @@ class Report(Document):
     @classmethod
     def get_report_by_time_and_uid(cls, user_id, from_ts, to_ts, dealed=True):
         """返回用户一段时间内的被举报记录"""
-        return cls.objects(target_uid=user_id, create_ts__gte=from_ts, create_ts__lte=to_ts, dealed=dealed, duplicated=False)
+        return cls.objects(target_uid=user_id, create_ts__gte=from_ts, create_ts__lte=to_ts, dealed=dealed,
+                           duplicated=False)
+
+    @classmethod
+    def get_report_score_by_time_and_uid(cls,user_id, from_ts, to_ts):
+        res = 0.0
+        for report in cls.objects(target_uid=user_id, create_ts__gte=from_ts, create_ts__lte=to_ts, dealed=False,duplicated=False):
+            res += report.forbid_weight
+        return res
