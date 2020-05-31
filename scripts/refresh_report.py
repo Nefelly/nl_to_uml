@@ -7,7 +7,7 @@ def run():
     for report in reports:
         if report.reason == 'match':
             report.forbid_weight = 2
-        else:
+        elif report.reason != 'match':
             report.forbid_weight = 4
         report.save()
         deal_num+=1
