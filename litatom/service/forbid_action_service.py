@@ -103,14 +103,11 @@ class ForbidActionService(object):
         report_id = ReportService.save_report(user_id, reason, pics, target_user_id, related_feed_id, match_type,
                                               chat_record)
         alert_res = False
-        print(alert_res)
         # feed, chat record不会同时在一条举报中
         if related_feed_id:
             alert_res = cls._resolve_feed_report(related_feed_id, target_user_id, user_id)
-        print(alert_res)
         if chat_record:
             alert_res = cls._resolve_chat_record_report(chat_record, target_user_id, user_id)
-        print(alert_res)
         if cls._is_reliable_reporter(user_id):
             reliable_reporter_compensation_score = 1
         else:
@@ -145,7 +142,7 @@ class ForbidActionService(object):
             return True
         # 只有疑似图片
         Feed.change_to_review(feed_id)
-        return False
+        return True
 
     @classmethod
     def _resolve_chat_record_report(cls, chat_record, target_user_id, user_id):
@@ -168,7 +165,7 @@ class ForbidActionService(object):
         pic = pic_res.keys()[0]
         TrackSpamRecordService.save_record(target_user_id, pic=pic, forbid_weight=cls.REVIEW_PIC_WEIGHTING,source=SPAM_RECORD_CHAT_RECORD_SOURCE)
         # MsgService.alert_basic(target_user_id)
-        return False
+        return True
 
     @classmethod
     def resolve_spam_word(cls, user_id, word, source=SPAM_RECORD_UNKNOWN_SOURCE):
