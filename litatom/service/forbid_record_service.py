@@ -29,6 +29,8 @@ from ..util import (
 
 
 class ForbidRecordService(object):
+    DEVICE_FORBID_THRESHOLD = 5
+
     @classmethod
     def mark_record(cls, user_id, from_ts=None, to_ts=None):
         TrackSpamRecordService.mark_spam_word(user_id, from_ts, to_ts)
