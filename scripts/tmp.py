@@ -12,7 +12,7 @@ def get_device_forbidden_num_by_uid(uuid):
 
 num=0
 res=0
-for uuid in UserSetting.object().distinct('uuid'):
+for uuid in UserSetting.objects().distinct('uuid'):
     num+=1
     if get_device_forbidden_num_by_uid(uuid) >=3:
         res+=1
