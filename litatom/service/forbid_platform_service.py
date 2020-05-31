@@ -84,7 +84,6 @@ class ForbidPlatformService(object):
             have_read += 1
             if have_read > num:
                 break
-        print(have_read, num)
         has_next = False
         if have_read > num:
             has_next = True
