@@ -106,10 +106,10 @@ class ForbidActionService(object):
         # feed, chat record不会同时在一条举报中
         if related_feed_id:
             alert_res = cls._resolve_feed_report(related_feed_id, target_user_id, user_id)
-
+        print(alert_res)
         if chat_record:
             alert_res = cls._resolve_chat_record_report(chat_record, target_user_id, user_id)
-
+        print(alert_res)
         if cls._is_reliable_reporter(user_id):
             reliable_reporter_compensation_score = 1
         else:
@@ -119,7 +119,6 @@ class ForbidActionService(object):
             cls.forbid_user(target_user_id, SYS_FORBID_TIME, SYS_FORBID, ts_now)
             return {"report_id": str(report_id), SYS_FORBID: True}, True
         if not alert_res:
-            print(1)
             MsgService.feedback_to_reporters_unresolved(user_id)
         return {"report_id": str(report_id), SYS_FORBID: False}, True
 
