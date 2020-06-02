@@ -108,9 +108,12 @@ class ForbidPlatformService(object):
             if forbidden_until:
                 forbidden_until = unix_ts_string(forbidden_until)
             temp_res[uid]['forbidden_until'] = forbidden_until
+            print 'before cal', time.time() - l_r
             temp_res[uid]['user_forbidden_num'] = UserRecord.get_forbidden_num_by_uid(uid)
             temp_res[uid]['device_forbidden_num'] = ForbidRecordService.get_device_forbidden_num_by_uid(uid)
+            print 'get nums', time.time() - l_r
             temp_res[uid]['forbid_score'] = ForbidActionService.accum_illegal_credit(uid)[0]
+            print 'get score', time.time() - l_r
             temp_res[uid]['forbid_history'] = ForbidRecordService.get_forbid_history_by_uid(uid)
             print 'load one using', time.time() - l_r
         return {'records': temp_res.values(), 'has_next': has_next, 'next_ts': next_ts}, True

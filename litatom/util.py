@@ -265,7 +265,6 @@ def check_time():
         return None, None
     from_ts = get_ts_from_str(from_ts)
     to_ts = get_ts_from_str(to_ts)
-    print from_ts, to_ts
     return from_ts, to_ts
 
 
