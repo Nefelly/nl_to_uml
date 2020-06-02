@@ -12,7 +12,7 @@ from ..util import (
     get_ts_from_str,
     format_standard_date,
     date_to_int_time,
-    next_date, write_data_to_multisheets
+    next_date, write_data_to_multisheets, get_zero_today
 )
 from ..key import (
     REDIS_ONLINE_CNT_CACHE
@@ -326,6 +326,8 @@ class DiamStatService(object):
     2.diam_stat_report函数中，excel_dict位置补充，对应顺序补充excel内字段描述
     """
     STAT_QUERY_LIST = {
+        'consumer_num': 'diamonds<0| SELECT COUNT(DISTINCT user_id) as res',
+        'vip_income_diamonds': 'name:success_vip | SELECT -sum(diamonds) as res',
         'diam_cons_num': 'diamonds<0 |SELECT -sum(diamonds) as res',
         'diam_cons_people_num': 'diamonds<0 |SELECT COUNT(DISTINCT user_id) as res',
         'diam_cons_man_time_num': 'diamonds<0|SELECT COUNT(1) as res',
@@ -361,6 +363,8 @@ class DiamStatService(object):
         'palm_unlock_people_num': 'name:palm_result |select count(DISTINCT user_id) as res',
         'palm_unlock_man_time': 'name:palm_result |select count(*) as res',
         'palm_unlock_diam_cons_num': 'name:palm_result |select -sum(diamonds) as res',
+        'vip_consume_people_num':'name:success_vip | SELECT COUNT(DISTINCT user_id) as res',
+        'vip_consume_man_time':'name:success_vip | SELECT COUNT(*) as res',
     }
     STAT_ACTION_QUERY_LIST = {
         '10_diam_share_man_time': 'remark:share\ prepare | select count(*) as res',
@@ -387,6 +391,7 @@ class DiamStatService(object):
         200: 3.5,
         500: 6.99,
     }
+    VIP_INCOMING = 4.99
     STAT_LOCATIONS = ['VN', 'TH', 'ID']
     DEFAULT_PROJECT = 'litatom-account'
     DEFAULT_LOGSTORE = 'account_flow'
@@ -553,15 +558,21 @@ class DiamStatService(object):
             action_excel_dic = cls.cal_stats_from_list(cls.STAT_ACTION_QUERY_LIST, from_time, to_time,
                                                        AliLogService.DEFAULT_PROJECT,
                                                        AliLogService.DEFAULT_LOGSTORE, loc=loc)
-            incoming = excel_dic['diam_deposit50_man_time_num'] * cls.DIAMOND_INCOMING[50] + \
-                       excel_dic['diam_deposit100_man_time_num'] * cls.DIAMOND_INCOMING[100] + \
-                       excel_dic['diam_deposit200_man_time_num'] * cls.DIAMOND_INCOMING[200] + \
-                       excel_dic['diam_deposit500_man_time_num'] * cls.DIAMOND_INCOMING[500]
-            data[loc].append(incoming)
-            data[loc] += [excel_dic['diam_cons_people_num'], excel_dic['diam_cons_num'],
+            diam_incoming = excel_dic['diam_deposit50_man_time_num'] * cls.DIAMOND_INCOMING[50] + \
+                            excel_dic['diam_deposit100_man_time_num'] * cls.DIAMOND_INCOMING[100] + \
+                            excel_dic['diam_deposit200_man_time_num'] * cls.DIAMOND_INCOMING[200] + \
+                            excel_dic['diam_deposit500_man_time_num'] * cls.DIAMOND_INCOMING[500]
+            data[loc].append(diam_incoming)
+            vip_incoming = excel_dic['vip_income_diamonds'] * cls.VIP_INCOMING
+            data[loc].append(vip_incoming)
+            vip_num = User.objects(vip_time__gte=date_to_int_time(date)).count()
+            data[loc].append(vip_num)
+            data[loc] += [excel_dic['consumer_num'],
+                          excel_dic['diam_cons_people_num'], excel_dic['diam_cons_num'],
                           excel_dic['diam_cons_man_time_num'],
                           excel_dic['diam_deposit_people_num'],
                           excel_dic['diam_deposit_num'], excel_dic['diam_deposit_man_time_num'],
+                          excel_dic['vip_consume_people_num'], excel_dic['vip_consume_man_time'],
                           excel_dic['free_diam_gain_people_num'], excel_dic['free_diam_gain_man_time'],
                           excel_dic['free_diam_gain_num'],
                           excel_dic['diam_deposit50_people_num'],
@@ -597,7 +608,8 @@ class DiamStatService(object):
         cls._load_user_account()
         for delta in range(days_delta):
             res.append(cls.diam_stat_report(date - datetime.timedelta(days=delta)))
-        tb_head = [r'日期', r'会员数', r'收入', r'钻石消耗人数', r'钻石消耗数量', r'钻石消耗人次', r'钻石购买人数', r'钻石购买数量', r'钻石购买人次',
+        tb_head = [r'日期', r'会员数', r'钻石收入', r'VIP收入', r'',r'付费人数', r'钻石消耗人数', r'钻石消耗数量', r'钻石消耗人次', r'钻石购买人数', r'钻石购买数量',
+                   r'钻石购买人次',r'vip购买人数',r'vip购买人次',
                    r'免费钻石获取人数', r'免费钻石获取人次', r'免费钻石获取数量', r'50钻石购买人数',
                    r'50钻石购买人次', r'100钻石购买人数', r'100钻石购买人次', r'200钻石购买人数', r'200钻石购买人次', r'500钻石购买人数',
                    r'500钻石购买人次', r'观看激励视频人数', r'观看激励视频人次', r'激励视频钻石数量',
