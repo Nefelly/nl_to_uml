@@ -5,7 +5,7 @@ from litatom.service import (
 
 from litatom.util import (
     parse_standard_time,
-    next_date,
+    next_date, format_standard_date,
 )
 
 
@@ -41,7 +41,7 @@ def get_active_uids(from_date, to_date):
     return uids
 
 
-def load_uid_payment(default_uids, exp_uids,from_time,to_time):
+def load_uid_payment(default_uids, exp_uids, from_time, to_time):
     resp = AliLogService.get_log_atom(project='litatom-account', logstore='account_flow',
                                       from_time=AliLogService.datetime_to_alitime(from_time),
                                       to_time=AliLogService.datetime_to_alitime(to_time),
@@ -68,13 +68,16 @@ def get_exp_res(default_uids, exp_uids, from_date, to_date):
     len_default_uids = len(default_uids)
     len_exp_uids = len(exp_uids)
 
-    default_pay_sum, exp_pay_sum, default_pay_num, exp_pay_num = load_uid_payment(default_uids, exp_uids, from_date, to_date)
+    default_pay_sum, exp_pay_sum, default_pay_num, exp_pay_num = load_uid_payment(default_uids, exp_uids, from_date,
+                                                                                  to_date)
 
     print('payment average of default group:', default_pay_sum / len_default_uids,
           'payment user rate average of default group:', default_pay_num / len_default_uids)
     print('payment average of experiment group:', exp_pay_sum / len_exp_uids,
           'payment user rate average of experiment group:', exp_pay_num / len_exp_uids)
 
+    payment_res = [[default_pay_sum / len_default_uids, default_pay_num / len_default_uids],
+                   [exp_pay_sum / len_exp_uids, exp_pay_num / len_exp_uids]]
 
     i = 0
 
@@ -83,8 +86,9 @@ def get_exp_res(default_uids, exp_uids, from_date, to_date):
 
     origin_len_default_uids = len_default_uids
     origin_len_exp_uids = len_exp_uids
-    default_retain_res = [(origin_len_default_uids,1)]
-    exp_retain_res = [(origin_len_exp_uids,1)]
+    default_retain_res = [(from_date, origin_len_default_uids, 1)]
+    exp_retain_res = [(to_date, origin_len_exp_uids, 1)]
+    origin_from_date = from_date
     while from_date <= next_date(to_date, -1):
         i += 1
         nextdate = next_date(from_date)
@@ -92,9 +96,9 @@ def get_exp_res(default_uids, exp_uids, from_date, to_date):
         default_uids = active_uids & set(default_uids)
         new_len_default_uids = len(default_uids)
         default_retain_rate = new_len_default_uids / len_default_uids
-        print(from_date, nextdate, 'retain rate of default group: ', new_len_default_uids, '/', len_default_uids, '=',
+        print(nextdate, 'retain rate of default group: ', new_len_default_uids, '/', len_default_uids, '=',
               default_retain_rate,)
-        default_retain_res.append((new_len_default_uids,default_retain_rate))
+        default_retain_res.append((new_len_default_uids, default_retain_rate))
         len_default_uids = float(new_len_default_uids)
 
         exp_uids = active_uids & set(exp_uids)
@@ -102,7 +106,7 @@ def get_exp_res(default_uids, exp_uids, from_date, to_date):
         exp_retain_rate = new_len_exp_uids / len_exp_uids
         print(from_date, nextdate, 'retain rate of experiment group: ', new_len_exp_uids, '/', len_exp_uids, '=',
               exp_retain_rate,)
-        exp_retain_res.append((new_len_exp_uids,exp_retain_rate))
+        exp_retain_res.append((new_len_exp_uids, exp_retain_rate))
         len_exp_uids = float(new_len_exp_uids)
 
         sum_default_rate += default_retain_rate
@@ -114,10 +118,10 @@ def get_exp_res(default_uids, exp_uids, from_date, to_date):
     print('average retain rate of default group:', sum_default_rate / i)
     print('average retain rate of experiment group:', sum_exp_rate / i)
 
-    write_data('')
+    write_data('/data/exp', payment_res, [default_retain_res, exp_retain_res], origin_from_date, next_date(to_date, -1))
 
 
-def write_data(name, sheet_names, tb_heads, data):
+def write_data(name, payment_data, retain_data, from_date, to_date):
     """
 
     :param name:
@@ -128,21 +132,37 @@ def write_data(name, sheet_names, tb_heads, data):
     """
     import xlwt
     f = xlwt.Workbook(encoding='utf-8')
+    sheet_names = [u'付费', u'留存']
     # 建表
     sheets = [f.add_sheet(s) for s in sheet_names]
     # 写表头
-    for sheet in sheets:
-        for i in range(len(tb_heads)):
-            sheet.write(i, 0, tb_heads[i])
+    payment_sheet = sheet_names[0]
+    retain_sheet = sheet_names[1]
 
-    for col_num in range(len(data)):
-        col_data = data[col_num]
-        for sheet_num in range(len(col_data)):
-            sheet_col_data = col_data[sheet_num]
-            sheet = sheets[sheet_num]
-            for row_num in range(len(sheet_col_data)):
-                sheet.write(row_num, col_num + 1, sheet_col_data[row_num])
+    i = 1
+    while from_date <= to_date:
+        retain_sheet.write(i, 0, format_standard_date(from_date))
+        i += 1
+        from_date = next_date(from_date, 1)
+
+    payment_sheet.write(0, 1, u'对照组')
+    payment_sheet.write(0, 2, u'实验组')
+    payment_sheet.write(1, 0, u'人均付费')
+    payment_sheet.write(2, 0, u'付费比例')
+
+    for col_num in payment_data:
+        col_data = payment_data[col_num]
+        for row_num in col_data:
+            payment_sheet.write(row_num + 1, col_num + 1, col_data[row_num])
+
+    retain_sheet.write(0, 1, u'对照组')
+    retain_sheet.write(0, 2, u'实验组')
+    for col_num in retain_data:
+        col_data = retain_data[col_num]
+        for row_num in col_data:
+            retain_sheet.write(row_num + 1, col_num + 1, col_data[row_num])
     f.save(name)
+
 
 def run():
     exp_uids = read_uids_from_file('/data/exp/match-428/exp_ids')
@@ -164,7 +184,6 @@ def run():
     default_uids = set(default_uids)
     len_default_uids = float(len(default_uids))
     print(len_default_uids)
-
 
 
 if __name__ == '__main__':
