@@ -135,7 +135,8 @@ class ReportService(object):
                'user_id': target_uid, 'reporter_nickname': UserService.nickname_by_uid(report.uid),
                'reporter_ban_before': UserRecord.get_forbidden_num_by_uid(report.uid) > 0,
                'reportee_nickname': reportee.nickname if reportee else None,
-               'reportee_create_time': format_standard_time(reportee.create_time) if reportee else None}
+               'reportee_create_time': format_standard_time(reportee.create_time) if reportee else None,
+               'report_weight':report.forbid_weight}
 
         if report.related_feed:
             feed = Feed.objects(id=report.related_feed).first()
