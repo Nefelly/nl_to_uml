@@ -554,6 +554,12 @@ class DiamStatService(object):
             data[loc].append(cls.cal_mem_num(time_yesterday, loc))
 
         for loc in data:
+            if loc == 'ALL':
+                data[loc].append(User.objects(vip_time__gte=date_to_int_time(date)).count())
+            else:
+                data[loc].append(User.objects(vip_time__gte=date_to_int_time(date),country=loc).count())
+
+        for loc in data:
             excel_dic = cls.cal_stats_from_list(cls.STAT_QUERY_LIST, from_time, to_time, loc=loc)
             action_excel_dic = cls.cal_stats_from_list(cls.STAT_ACTION_QUERY_LIST, from_time, to_time,
                                                        AliLogService.DEFAULT_PROJECT,
@@ -565,8 +571,6 @@ class DiamStatService(object):
             data[loc].append(diam_incoming)
             vip_incoming = excel_dic['vip_income_diamonds'] * cls.VIP_INCOMING
             data[loc].append(vip_incoming)
-            vip_num = User.objects(vip_time__gte=date_to_int_time(date)).count()
-            data[loc].append(vip_num)
             data[loc] += [excel_dic['consumer_num'],
                           excel_dic['diam_cons_people_num'], excel_dic['diam_cons_num'],
                           excel_dic['diam_cons_man_time_num'],
@@ -608,7 +612,7 @@ class DiamStatService(object):
         cls._load_user_account()
         for delta in range(days_delta):
             res.append(cls.diam_stat_report(date - datetime.timedelta(days=delta)))
-        tb_head = [r'日期', r'会员数', r'钻石收入', r'VIP收入', r'',r'付费人数', r'钻石消耗人数', r'钻石消耗数量', r'钻石消耗人次', r'钻石购买人数', r'钻石购买数量',
+        tb_head = [r'日期', r'会员数',  r'VIP数',r'钻石收入', r'VIP收入',r'付费人数', r'钻石消耗人数', r'钻石消耗数量', r'钻石消耗人次', r'钻石购买人数', r'钻石购买数量',
                    r'钻石购买人次',r'vip购买人数',r'vip购买人次',
                    r'免费钻石获取人数', r'免费钻石获取人次', r'免费钻石获取数量', r'50钻石购买人数',
                    r'50钻石购买人次', r'100钻石购买人数', r'100钻石购买人次', r'200钻石购买人数', r'200钻石购买人次', r'500钻石购买人数',
