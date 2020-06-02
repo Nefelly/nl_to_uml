@@ -66,11 +66,12 @@ class ForbidPlatformService(object):
         temp_res = {}
         have_read = 0
         if not forbid_type:
-            user_records = UserRecord.get_forbid_users_by_time(from_ts, to_ts)
+            user_records = UserRecord.get_forbid_users_by_time(from_ts, to_ts).limit(3*num)
         else:
-            user_records = UserRecord.get_forbid_users_by_time(from_ts, to_ts, forbid_type)
+            user_records = UserRecord.get_forbid_users_by_time(from_ts, to_ts, forbid_type).limit(5*num)
         if not user_records:
             return None, False
+
         # 从UserRecord中加载封号用户和封号时间
         next_ts = 0
         for user_record in user_records:
@@ -94,6 +95,7 @@ class ForbidPlatformService(object):
             if forbidden_from < earliest_forbidden:
                 earliest_forbidden = forbidden_from
             user = User.get_by_id(uid)
+
             # 并不知道为什么某些uid查不到
             if not user:
                 del temp_res[uid]
@@ -106,7 +108,6 @@ class ForbidPlatformService(object):
             temp_res[uid]['device_forbidden_num'] = ForbidRecordService.get_device_forbidden_num_by_uid(uid)
             temp_res[uid]['forbid_score'] = ForbidActionService.accum_illegal_credit(uid)[0]
             temp_res[uid]['forbid_history'] = ForbidRecordService.get_forbid_history_by_uid(uid)
-
         return {'records': temp_res.values(), 'has_next': has_next, 'next_ts': next_ts}, True
 
     @classmethod

@@ -74,6 +74,7 @@ class AccountService(object):
     SHARE = 'share'
     WATCH_AD = 'watch_video'
     SHARE_5 = 'share_5'     # 链接分享，被5个人点开
+    VIP_EQUAL_DIAMONDS = 357
     PAY_ACTIVITIES = {
         SHARE: 1,
         WATCH_AD: 1,
@@ -171,7 +172,6 @@ class AccountService(object):
     def get_unban_diamonds_by_user_id(cls, user_id):
         device_blocked = UserService.user_device_blocked(user_id)
         if device_blocked:
-            print 'get inn', request.uuid
             return 50 * cls.UNBAN_DIAMONDS
         forbid_times = UserRecord.get_forbidden_num_by_uid(user_id)
         if forbid_times <= 1:
@@ -405,6 +405,7 @@ class AccountService(object):
         err_msg = cls._buy_vip(user_id)
         if err_msg:
             return err_msg, False
+        cls.record_to_ali(user_id, AccountFlowRecord.SUCCESS_VIP, -cls.VIP_EQUAL_DIAMONDS)
         AccountFlowRecord.create(user_id, AccountFlowRecord.SUCCESS_VIP)
         return None, True
 
