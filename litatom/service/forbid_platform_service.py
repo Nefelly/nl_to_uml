@@ -71,6 +71,7 @@ class ForbidPlatformService(object):
             user_records = UserRecord.get_forbid_users_by_time(from_ts, to_ts, forbid_type)
         if not user_records:
             return None, False
+
         # 从UserRecord中加载封号用户和封号时间
         next_ts = 0
         for user_record in user_records:
