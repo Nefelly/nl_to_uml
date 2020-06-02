@@ -73,7 +73,6 @@ class ForbidPlatformService(object):
         if not user_records:
             return None, False
         l = time.time()
-        print 'loading using ', l - s
         # 从UserRecord中加载封号用户和封号时间
         next_ts = 0
         for user_record in user_records:
@@ -89,8 +88,6 @@ class ForbidPlatformService(object):
             temp_res[user_id] = {'user_id': user_id, 'nickname': UserService.nickname_by_uid(user_id),
                                  'forbidden_from': time_str_by_ts(forbidden_from)}
 
-        l_r = time.time()
-        print 'loading record using', l_r - l
         has_next = True if have_read > num else False
         # 从TrackSpamRecord中导入次数和命中历史,从Report中导入次数和命中历史
         earliest_forbidden = int(time.time())
@@ -108,14 +105,10 @@ class ForbidPlatformService(object):
             if forbidden_until:
                 forbidden_until = unix_ts_string(forbidden_until)
             temp_res[uid]['forbidden_until'] = forbidden_until
-            print 'before cal', time.time() - l_r
             temp_res[uid]['user_forbidden_num'] = UserRecord.get_forbidden_num_by_uid(uid)
             temp_res[uid]['device_forbidden_num'] = ForbidRecordService.get_device_forbidden_num_by_uid(uid)
-            print 'get nums', time.time() - l_r
             temp_res[uid]['forbid_score'] = ForbidActionService.accum_illegal_credit(uid)[0]
-            print 'get score', time.time() - l_r
             temp_res[uid]['forbid_history'] = ForbidRecordService.get_forbid_history_by_uid(uid)
-            print 'load one using', time.time() - l_r
         return {'records': temp_res.values(), 'has_next': has_next, 'next_ts': next_ts}, True
 
     @classmethod
