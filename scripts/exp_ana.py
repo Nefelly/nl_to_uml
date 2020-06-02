@@ -27,6 +27,7 @@ def deal_uids_tail(uids):
         uids[i] = uids[i][:-1]
     return uids
 
+
 def get_active_uids(from_date, to_date):
     resp_set = AliLogService.get_log_by_time_and_topic(from_time=AliLogService.datetime_to_alitime(from_date),
                                                        to_time=AliLogService.datetime_to_alitime(to_date),
