@@ -74,6 +74,7 @@ class AccountService(object):
     SHARE = 'share'
     WATCH_AD = 'watch_video'
     SHARE_5 = 'share_5'     # 链接分享，被5个人点开
+    VIP_EQUL_DIAMONDS = 250
     PAY_ACTIVITIES = {
         SHARE: 1,
         WATCH_AD: 1,
@@ -404,6 +405,7 @@ class AccountService(object):
         err_msg = cls._buy_vip(user_id)
         if err_msg:
             return err_msg, False
+        cls.record_to_ali(user_id, AccountFlowRecord.SUCCESS_VIP, cls.VIP_EQUL_DIAMONDS)
         AccountFlowRecord.create(user_id, AccountFlowRecord.SUCCESS_VIP)
         return None, True
 
