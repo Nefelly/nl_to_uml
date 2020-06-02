@@ -74,7 +74,7 @@ class AccountService(object):
     SHARE = 'share'
     WATCH_AD = 'watch_video'
     SHARE_5 = 'share_5'     # 链接分享，被5个人点开
-    VIP_EQUAL_DIAMONDS = 250
+    VIP_EQUAL_DIAMONDS = 357
     PAY_ACTIVITIES = {
         SHARE: 1,
         WATCH_AD: 1,
