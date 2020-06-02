@@ -836,7 +836,10 @@ class UserRecord(Document):
 
     @classmethod
     def get_forbidden_time_by_uid(cls, user_id):
-        return cls.objects(user_id=user_id).order_by('-create_time').first().create_time
+        obj = cls.objects(user_id=user_id).order_by('-create_time').first()
+        if obj:
+            return obj.create_time
+        return 0
 
     @classmethod
     def get_forbid_users_by_time(cls, from_ts, to_ts, forbid_type=None):
