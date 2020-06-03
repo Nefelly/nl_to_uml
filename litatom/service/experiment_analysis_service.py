@@ -90,7 +90,7 @@ class ExperimentAnalysisService(object):
             return res
         date_key = date_time.strftime('%Y-%m-%d')
         for loc in GlobalizationService.LOCS:
-            key = REDIS_LOC_USER_ACTIVE(date_loc=date_key + loc)
+            key = REDIS_LOC_USER_ACTIVE.format(date_loc=date_key + loc)
             tmp = volatile_redis.smembers(key)
             res += tmp
         return res
