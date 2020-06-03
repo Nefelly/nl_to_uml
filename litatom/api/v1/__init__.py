@@ -220,6 +220,7 @@ b.add_url_rule('/lit/experiment/get_experiments', 'experiment-get_experiments', 
 b.add_url_rule('/lit/experiment/get_exp_value', 'experiment-get_exp_value', endpoint.experiment.get_exp_value)
 b.add_url_rule('/lit/experiment/all_experiments', 'experiment-all_experiments', endpoint.experiment.get_all_experiments)
 b.add_url_rule('/lit/experiment/delete_experiment', 'experiment-delete_experiment', endpoint.experiment.delete_experiment)
+b.add_url_rule('/lit/experiment/exp_result/<exp_name>', 'experiment-exp_result', endpoint.experiment.exp_result)
 
 # debug
 b.add_url_rule('/lit/debug/redis_status', 'debug-redis-status', endpoint.debug.redis_status)
