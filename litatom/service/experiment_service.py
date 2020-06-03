@@ -231,11 +231,10 @@ class ExperimentService(object):
         buckets, status = cls.get_buckets(exp_name)
         res = {}
         for value in buckets:
-            if value in cls.DEFAULT_VAULES:
-                value = cls.DEFAULT_VALUE
             for bucket in buckets[value]:
+                if value in cls.DEFAULT_VAULES:
+                    value = cls.DEFAULT_VALUE
                 res[bucket] = value
-
         return res
 
     @classmethod
