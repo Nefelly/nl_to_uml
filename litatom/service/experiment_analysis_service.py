@@ -16,7 +16,8 @@ from ..key import (
 from ..util import (
     now_date_key,
     next_date,
-    date_from_str
+    date_from_str,
+    format_standard_date
 )
 from ..const import (
     ONE_DAY,
@@ -227,4 +228,14 @@ class ExperimentAnalysisService(object):
 
     @classmethod
     def exp_json_result(cls, exp_name):
-        pass
+        dates = ExperimentResult.desc_dates()
+        res = []
+        for date_el in dates:
+            tmp = {
+                'date_str': format_standard_date(date_el),
+            }
+            for name in cls.STAT_NAMES:
+                objs = ExperimentResult.get_by_exp_name_date_name(exp_name, date_el, name)
+                tmp[name] = {}
+                compare_items = {}
+                tags = list(set([obj.tag for obj in objs]))
