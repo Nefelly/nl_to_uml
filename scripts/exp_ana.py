@@ -66,7 +66,7 @@ def load_uid_payment(default_uids, exp_uids, from_time, to_time):
         elif user_id in exp_uids:
             exp_pay_sum += int(res)
             exp_pay_num.add(user_id)
-
+    print default_pay_sum, exp_pay_sum, len(default_pay_num), len(exp_pay_num)
     return default_pay_sum, exp_pay_sum, len(default_pay_num), len(exp_pay_num)
 
 
