@@ -7,10 +7,11 @@ import time
 
 
 def foo():
-    print time.time()
+    start = time.time()
+    print start
     AliLogService.get_loglst('"get_fakeid" and "experiment_name"', '20200412', '20200428', 'litatom', 'litatomstore',
                              save_add='/data/alilog/exp1.txt')
-    print time.time()
+    print 'using:', time.time() - start
 
 def run():
     mutex_f = '/var/run/%s.mutex' % __file__.split('/')[-1].replace('.py', '')
