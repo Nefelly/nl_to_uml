@@ -138,7 +138,7 @@ b.add_url_rule('/lit/admin/super_login', 'admin-super_login', endpoint.admin.sup
 b.add_url_rule('/lit/admin/huanxin_by_uid', 'admin-huanxin_by_uid', endpoint.admin.huanxin_by_uid)
 b.add_url_rule('/lit/admin/sync_region_to_online', 'admin-sync_region_to_online', endpoint.admin.sync_region_to_online)
 b.add_url_rule('/lit/admin/user/<user_id>', 'admin-get_user_info', endpoint.admin.get_user_info)
-b.add_url_rule('/lit/admin/get_forbid_history_by_uid','admin-get_forbid_history_by_uid', endpoint.admin.get_forbid_history_by_uid)
+b.add_url_rule('/lit/admin/get_forbid_history_by_uid', 'admin-get_forbid_history_by_uid', endpoint.admin.get_forbid_history_by_uid)
 
 # picture
 b.add_url_rule('/lit/image/upload', 'image-upload', endpoint.oss.upload_image_from_file, methods=['POST'])
