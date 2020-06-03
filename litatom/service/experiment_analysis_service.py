@@ -228,7 +228,7 @@ class ExperimentAnalysisService(object):
 
     @classmethod
     def exp_json_result(cls, exp_name):
-        dates = ExperimentResult.desc_dates()
+        dates = ExperimentResult.desc_dates(exp_name)
         res = []
         for date_el in dates:
             tmp = {
@@ -236,6 +236,16 @@ class ExperimentAnalysisService(object):
             }
             for name in cls.STAT_NAMES:
                 objs = ExperimentResult.get_by_exp_name_date_name(exp_name, date_el, name)
-                tmp[name] = {}
                 compare_items = {}
-                tags = list(set([obj.tag for obj in objs]))
+                for obj in objs:
+                    obj_res = obj.get_res()
+                    for res_key in obj_res:
+                        if compare_items.get(res_key):
+                            compare_items[res_key][obj.tag] = obj_res.get(res_key)
+                        else:
+                            compare_items[res_key] = {
+                                objs.tag: obj_res.get(res_key)
+                            }
+                tmp[name] = compare_items
+            res.append(tmp)
+        return res, True
