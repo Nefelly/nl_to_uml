@@ -106,6 +106,21 @@ class ExperimentAnalysisService(object):
         return None
 
     @classmethod
+    def get_set_name(cls, name, value=None):
+        '''
+        缓存机制， 用于一次性变量的设置
+        :param name:
+        :param value:
+        :return:
+        '''
+        if not value:
+            res = getattr(cls, name, None)
+            if res:
+                return res
+            return False
+        setattr(cls, name, value)
+
+    @classmethod
     def load_uid_payment(cls, tag_uids, from_time, to_time):
         resp = AliLogService.get_log_atom(project='litatom-account', logstore='account_flow',
                                           from_time=AliLogService.datetime_to_alitime(from_time),
@@ -191,3 +206,7 @@ class ExperimentAnalysisService(object):
         exp_names = ExperimentService.get_experiment_names()
         for exp_name in exp_names:
             cls.cal_day_result(date_str, exp_name)
+
+    @classmethod
+    def exp_json_result(cls, exp_name):
+        pass
