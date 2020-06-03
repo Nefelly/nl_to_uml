@@ -62,6 +62,8 @@ class ExperimentAnalysisService(object):
         for _ in ids:
             bucket = ExperimentService._get_bucket(exp_name, _)
             value = bucket_values.get(bucket)
+            if not value:
+                print bucket
             if values_ids.get(value, []):
                 values_ids[value].append(_)
             else:
