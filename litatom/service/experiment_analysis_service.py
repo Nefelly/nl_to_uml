@@ -122,10 +122,21 @@ class ExperimentAnalysisService(object):
 
     @classmethod
     def load_uid_payment(cls, tag_uids, from_time, to_time):
-        resp = AliLogService.get_log_atom(project='litatom-account', logstore='account_flow',
-                                          from_time=AliLogService.datetime_to_alitime(from_time),
-                                          to_time=AliLogService.datetime_to_alitime(to_time),
-                                          query="name:deposit | SELECT user_id,sum(diamonds) as res GROUP by user_id limit %d" % ALILOG_GET_LIMIT_NUM)
+        key = 'payment%s%s' % (str(from_time), str(to_time))
+        pay_m = cls.get_set_name(key)
+        if not pay_m:
+            resp = AliLogService.get_log_atom(
+                project='litatom-account', logstore='account_flow',
+                from_time=AliLogService.datetime_to_alitime(from_time),
+                to_time=AliLogService.datetime_to_alitime(to_time),
+                query="name:deposit | SELECT user_id,sum(diamonds) as res GROUP by user_id limit %d" % ALILOG_GET_LIMIT_NUM)
+            pay_m = {}
+            for log in resp.logs:
+                content = log.get_contents()
+                user_id = content['user_id']
+                log_res = content['res']
+                pay_m[user_id] = log_res
+            cls.get_set_name(key, pay_m)
         help_set = {}
         res = {}
         for tag in tag_uids:
@@ -133,11 +144,8 @@ class ExperimentAnalysisService(object):
             res[tag] = {
                 'pay_sum': 0.0
             }
-        for log in resp.logs:
-            content = log.get_contents()
-            user_id = content['user_id']
-            log_res = content['res']
 
+        for user_id, log_res in pay_m:
             tag = cls.get_tag_by_uid(tag_uids, user_id)
             if tag:
                 res[tag]['pay_sum'] += int(log_res)
