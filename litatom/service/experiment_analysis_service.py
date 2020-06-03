@@ -20,15 +20,17 @@ from ..util import (
 )
 from ..const import (
     ONE_DAY,
-    VOLATILE_USER_ACTIVE_RETAIN_DAYS
+    VOLATILE_USER_ACTIVE_RETAIN_DAYS,
+    ALILOG_GET_LIMIT_NUM
 )
 from ..model import (
-    ExpBucket
+    ExperimentResult
 )
 from ..service import (
     ExperimentService,
     GlobalizationService,
-    UserService
+    UserService,
+    AliLogService
 )
 
 from ..redis import RedisClient
@@ -44,6 +46,7 @@ class ExperimentAnalysisService(object):
 
     USER_EXP_TTL = ONE_DAY
     WHITE_LIST_TTL = 30 * ONE_DAY
+    STAT_NAMES = [ExperimentResult.RETAIN, ExperimentResult.PAYMENT]
 
     @classmethod
     def default_exp_values(cls, exp_name):
@@ -62,12 +65,10 @@ class ExperimentAnalysisService(object):
         for _ in ids:
             bucket = ExperimentService._get_bucket(exp_name, _)
             value = bucket_values.get(bucket)
-            if not value:
-                print bucket
             if values_ids.get(value, []):
-                values_ids[value].append(_)
+                values_ids[value].add(_)
             else:
-                values_ids[value] = [_]
+                values_ids[value] = set([_])
         values = values_ids.keys()
         other_values = [el for el in values if el != ExperimentService.DEFAULT_VALUE]
         exp_values = []
@@ -76,7 +77,7 @@ class ExperimentAnalysisService(object):
             exp_values = values_ids.get(other_values[0])
         elif other_values_len > 1:
             exp_values = [values_ids.get(el) for el in other_values]
-        return values_ids.get(ExperimentService.DEFAULT_VALUE), exp_values
+        return values_ids.get(ExperimentService.DEFAULT_VALUE), exp_values, values_ids
 
     @classmethod
     def get_active_users_by_date(cls, date_time):
@@ -96,3 +97,66 @@ class ExperimentAnalysisService(object):
             tmp = volatile_redis.smembers(key)
             res += tmp
         return res
+
+    @classmethod
+    def get_tag_by_uid(cls, tag_uids, uid):
+        for tag in tag_uids:
+            if uid in tag_uids[tag]:
+                return tag
+        return None
+
+    @classmethod
+    def load_uid_payment(cls, tag_uids, from_time, to_time):
+        resp = AliLogService.get_log_atom(project='litatom-account', logstore='account_flow',
+                                          from_time=AliLogService.datetime_to_alitime(from_time),
+                                          to_time=AliLogService.datetime_to_alitime(to_time),
+                                          query="name:deposit | SELECT user_id,sum(diamonds) as res GROUP by user_id limit %d" % ALILOG_GET_LIMIT_NUM)
+        help_set = {}
+        res = {}
+        for tag in tag_uids:
+            help_set[tag]['pay_num'] = set()
+            res[tag]['pay_sum'] = 0.0
+            res[tag]['total_num'] = len(tag_uids[tag])
+        for log in resp.logs:
+            content = log.get_contents()
+            user_id = content['user_id']
+            res = content['res']
+
+            tag = cls.get_tag_by_uid(tag_uids, user_id)
+            if tag:
+                res[tag]['pay_sum'] += int(res)
+                help_set[tag].add(user_id)
+
+        for tag in res:
+            res['pay_num'] = len(help_set[tag])
+        return res
+
+    @classmethod
+    def get_exp_active_uids(cls, exp_name, date_str):
+        '''
+        :param exp_name:
+        :param date_str:
+        :return:{'default': set(1, 2, 3)}
+        '''
+        default, exp, tag_ids = cls.default_exp_values(exp_name)
+        active_uids = cls.get_active_users_by_date(date_str)
+        res = {}
+        for tag in tag_ids:
+            res[tag] = tag_ids[tag] & active_uids
+        return res
+
+    @classmethod
+    def tag_retains(cls, tag_uids, stat_date):
+        pass
+
+    @classmethod
+    def cal_day_result(cls, date_str, exp_name):
+        date_time = date_from_str(date_str)
+        anchor_yestoday = next_date(date_time, -1)
+        anchor_tomorrow = next_date(date_time)
+
+        today_exp_actives = cls.get_exp_active_uids(exp_name, date_str)
+        payment_res = cls.load_uid_payment(today_exp_actives, date_time, anchor_tomorrow)
+
+        yestoday_exp_actives = cls.get_exp_active_uids(exp_name, anchor_yestoday)
+        retain_res = cls.tag_retains(yestoday_exp_actives, date_time)

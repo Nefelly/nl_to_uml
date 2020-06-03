@@ -190,7 +190,7 @@ def run():
     # default_uids = set(default_uids)
     # len_default_uids = float(len(default_uids))
     # print(len_default_uids)
-    default_uids, exp_uids = ExperimentAnalysisService.default_exp_values('feed_age_control')
+    default_uids, exp_uids, value_ids = ExperimentAnalysisService.default_exp_values('feed_age_control')
     from_date = date_from_str('2020-05-31')
     to_date = date_from_str('2020-06-02')
     get_exp_res(default_uids, exp_uids, from_date, to_date)

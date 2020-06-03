@@ -24,12 +24,15 @@ class ExperimentResult(Document):
         'strict': False,
         'alias': 'db_alias'
     }
+    RETAIN = 'retain'
+    PAYMENT = 'payment'
 
     exp_name = StringField(required=True)
     tag = StringField()
     result_date = DateTimeField()
     stat_name = StringField()
     res = StringField()
+    active_user = IntField(default=0)
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
 
     @classmethod
