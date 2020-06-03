@@ -114,7 +114,7 @@ class ExperimentAnalysisService(object):
         help_set = {}
         res = {}
         for tag in tag_uids:
-            help_set[tag]['pay_num'] = set()
+            help_set[tag] = set()
             res[tag]['pay_sum'] = 0.0
         for log in resp.logs:
             content = log.get_contents()
