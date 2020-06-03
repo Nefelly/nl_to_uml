@@ -66,9 +66,15 @@ class ExperimentAnalysisService(object):
                 values_ids[value].append(_)
             else:
                 values_ids[value] = [_]
-        if value:
-            return values_ids.get(value, [])
-        return values_ids
+        values = values_ids.keys()
+        other_values = [el for el in values if el != ExperimentService.DEFAULT_VALUE]
+        exp_values = []
+        other_values_len = len(other_values)
+        if other_values_len == 1:
+            exp_values = values_ids.get(exp_values[0])
+        elif other_values_len > 1:
+            exp_values = [values_ids.get(el) for el in other_values]
+        return values_ids.get(ExperimentService.DEFAULT_VALUE), exp_values
 
     @classmethod
     def get_active_users_by_date(cls, date_time):
