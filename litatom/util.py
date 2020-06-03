@@ -177,6 +177,8 @@ def get_times_from_str(time_data_str):
 
 
 def date_from_str(time_str):
+    if isinstance(time_str, datetime.datetime):
+        return time_str
     time_str = time_str.strip()
     len_ts = len(time_str)
     form = ''

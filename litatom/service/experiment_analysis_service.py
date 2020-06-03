@@ -116,7 +116,6 @@ class ExperimentAnalysisService(object):
         for tag in tag_uids:
             help_set[tag]['pay_num'] = set()
             res[tag]['pay_sum'] = 0.0
-            res[tag]['total_num'] = len(tag_uids[tag])
         for log in resp.logs:
             content = log.get_contents()
             user_id = content['user_id']
@@ -128,7 +127,7 @@ class ExperimentAnalysisService(object):
                 help_set[tag].add(user_id)
 
         for tag in res:
-            res['pay_num'] = len(help_set[tag])
+            res[tag]['pay_num'] = len(help_set[tag])
         return res
 
     @classmethod
@@ -147,7 +146,23 @@ class ExperimentAnalysisService(object):
 
     @classmethod
     def tag_retains(cls, tag_uids, stat_date):
-        pass
+        stat_actives = cls.get_active_users_by_date(stat_date)
+        res = {}
+        for tag in tag_uids:
+            active_num = len(tag_uids[tag] & stat_actives)
+            res[tag] = {
+                'active_num': active_num,
+                'retain_rate': active_num * 1.0 / len(tag_uids[tag])
+            }
+        return res
+
+    @classmethod
+    def record_result(cls, tag_uids, cal_ress, exp_name, date_str, name):
+        for tag in tag_uids:
+            res = cal_ress[tag]
+            res['total_num'] = len(tag_uids[tag])
+            result_date = date_from_str(date_str)
+            ExperimentResult.create(exp_name, tag, result_date, name, res)
 
     @classmethod
     def cal_day_result(cls, date_str, exp_name):
@@ -157,6 +172,8 @@ class ExperimentAnalysisService(object):
 
         today_exp_actives = cls.get_exp_active_uids(exp_name, date_str)
         payment_res = cls.load_uid_payment(today_exp_actives, date_time, anchor_tomorrow)
+        cls.record_result(today_exp_actives, payment_res, exp_name, date_time, ExperimentResult.PAYMENT)
 
         yestoday_exp_actives = cls.get_exp_active_uids(exp_name, anchor_yestoday)
         retain_res = cls.tag_retains(yestoday_exp_actives, date_time)
+        cls.record_result(yestoday_exp_actives, retain_res, exp_name, date_time, ExperimentResult.RETAIN)
