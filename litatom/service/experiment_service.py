@@ -235,6 +235,7 @@ class ExperimentService(object):
                 value = cls.DEFAULT_VALUE
             for bucket in buckets[value]:
                 res[bucket] = value
+
         return res
 
     @classmethod
