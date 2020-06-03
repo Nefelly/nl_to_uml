@@ -244,7 +244,7 @@ class ExperimentAnalysisService(object):
                             compare_items[res_key][obj.tag] = obj_res.get(res_key)
                         else:
                             compare_items[res_key] = {
-                                objs.tag: obj_res.get(res_key)
+                                obj.tag: obj_res.get(res_key)
                             }
                 tmp[name] = compare_items
             res.append(tmp)
