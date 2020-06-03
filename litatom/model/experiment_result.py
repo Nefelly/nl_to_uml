@@ -58,7 +58,10 @@ class ExperimentResult(Document):
 
     @classmethod
     def desc_dates(cls, exp_name):
-        return cls.objects(exp_name=exp_name).order_by('result_date').distinct('result_date')
+        tmp = cls.objects(exp_name=exp_name).distinct('result_date')
+        tmp = sorted(tmp)
+        tmp.reverse()
+        return tmp
 
     def get_res(self):
         return json.loads(self.res)
