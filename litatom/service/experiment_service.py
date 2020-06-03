@@ -36,7 +36,7 @@ class ExperimentService(object):
     '''
     BUCKET_NUM = 100
     DEFAULT_VAULES = [ExpBucket.DEFAULT, ExpBucket.NOSET]
-
+    DEFAULT_VALUE = ExpBucket.DEFAULT
     USER_EXP_TTL = ONE_DAY
     WHITE_LIST_TTL = 30 * ONE_DAY
 
@@ -231,6 +231,8 @@ class ExperimentService(object):
         buckets, status = cls.get_buckets(exp_name)
         res = {}
         for value in buckets:
+            if value in cls.DEFAULT_VAULES:
+                value = cls.DEFAULT_VALUE
             for bucket in buckets[value]:
                 res[bucket] = value
         return res
