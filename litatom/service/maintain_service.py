@@ -40,7 +40,8 @@ from ..const import (
     GENDERS,
     ONE_DAY,
     ONE_MIN,
-    ONE_HOUR
+    ONE_HOUR,
+    VOLATILE_USER_ACTIVE_RETAIN_DAYS
 )
 from ..redis import RedisClient
 
@@ -128,8 +129,7 @@ class MaintainService(object):
 
     @classmethod
     def clear_user_active_cache(cls):
-        retain_days = 8
-        date_key = now_date_key(datetime.timedelta(days=-retain_days))
+        date_key = now_date_key(datetime.timedelta(days=-VOLATILE_USER_ACTIVE_RETAIN_DAYS))
         for loc in GlobalizationService.LOCS:
             to_rem_key = REDIS_LOC_USER_ACTIVE(date_loc=date_key + loc)
             volatile_redis.delete(to_rem_key)
