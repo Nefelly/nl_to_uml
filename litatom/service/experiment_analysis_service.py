@@ -59,7 +59,11 @@ class ExperimentAnalysisService(object):
         再 查询id 对应的桶
         再 返回
         '''
-        ids = UserService.get_all_ids()
+        ids_key = 'all_ids'
+        ids = cls.get_set_name(ids_key)
+        if not ids:
+            ids = UserService.get_all_ids()
+            cls.get_set_name(ids_key, ids)
         bucket_values = ExperimentService.load_bucket_value_m(exp_name)
         values_ids = {}
         for _ in ids:
@@ -81,6 +85,10 @@ class ExperimentAnalysisService(object):
 
     @classmethod
     def get_active_users_by_date(cls, date_time):
+        key = 'active' + str(date_time)
+        actives = cls.get_set_name(key)
+        if actives:
+            return actives
         if isinstance(date_time, str):
             date_time = date_from_str(date_time)
         if not isinstance(date_time, datetime.datetime):
@@ -96,7 +104,9 @@ class ExperimentAnalysisService(object):
             key = REDIS_LOC_USER_ACTIVE.format(date_loc=date_key + loc)
             tmp = volatile_redis.smembers(key)
             res += tmp
-        return set(res)
+        res = set(res)
+        cls.get_set_name(key, res)
+        return res
 
     @classmethod
     def get_tag_by_uid(cls, tag_uids, uid):
