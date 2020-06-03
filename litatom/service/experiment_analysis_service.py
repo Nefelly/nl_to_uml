@@ -69,7 +69,6 @@ class ExperimentAnalysisService(object):
             else:
                 values_ids[value] = [_]
         values = values_ids.keys()
-        print values
         other_values = [el for el in values if el != ExperimentService.DEFAULT_VALUE]
         exp_values = []
         other_values_len = len(other_values)
@@ -77,7 +76,6 @@ class ExperimentAnalysisService(object):
             exp_values = values_ids.get(other_values[0])
         elif other_values_len > 1:
             exp_values = [values_ids.get(el) for el in other_values]
-        print other_values
         return values_ids.get(ExperimentService.DEFAULT_VALUE), exp_values
 
     @classmethod
