@@ -145,7 +145,7 @@ class ExperimentAnalysisService(object):
                 'pay_sum': 0.0
             }
 
-        for user_id, log_res in pay_m:
+        for user_id, log_res in pay_m.items():
             tag = cls.get_tag_by_uid(tag_uids, user_id)
             if tag:
                 res[tag]['pay_sum'] += int(log_res)
