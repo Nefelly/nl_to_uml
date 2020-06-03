@@ -35,6 +35,7 @@ class Report(Document):
     related_feed = StringField()
     region = StringField()
     # passed = StringField()
+    fobid_weight = IntField(default=0)
     create_ts = IntField(required=True)
     deal_ts = IntField()
 
@@ -52,7 +53,7 @@ class Report(Document):
 
     @classmethod
     def is_dup_report(cls, uid, target_uid, ts_now):
-        if cls.objects(uid=uid,target_uid=target_uid,create_ts__gte=ts_now-3*ONE_DAY, create_ts__lte=ts_now,dealed=False):
+        if cls.objects(uid=uid, target_uid=target_uid, create_ts__gte=ts_now-3*ONE_DAY, create_ts__lte=ts_now, dealed=False):
             return True
         return False
 
