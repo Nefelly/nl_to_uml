@@ -142,8 +142,8 @@ def write_data(name, payment_data, retain_data, from_date, to_date):
     # 建表
     sheets = [f.add_sheet(s) for s in sheet_names]
     # 写表头
-    payment_sheet = sheet_names[0]
-    retain_sheet = sheet_names[1]
+    payment_sheet = sheets[0]
+    retain_sheet = sheets[1]
 
     i = 1
     while from_date <= to_date:
