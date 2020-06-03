@@ -80,7 +80,7 @@ class ExperimentAnalysisService(object):
     def get_active_users_by_date(cls, date_time):
         if isinstance(date_time, str):
             date_time = date_from_str(date_time)
-        if not isinstance(date_time, datetime):
+        if not isinstance(date_time, datetime.datetime):
             assert False, u'wrong argument of date_time'
         res = []
         date_now = datetime.datetime.now()
