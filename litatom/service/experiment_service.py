@@ -35,7 +35,8 @@ class ExperimentService(object):
               马蜂窝  https://blog.csdn.net/weixin_43846997/article/details/90512001
     '''
     BUCKET_NUM = 100
-
+    DEFAULT_VAULES = [ExpBucket.DEFAULT, ExpBucket.NOSET]
+    DEFAULT_VALUE = ExpBucket.DEFAULT
     USER_EXP_TTL = ONE_DAY
     WHITE_LIST_TTL = 30 * ONE_DAY
 
@@ -231,6 +232,8 @@ class ExperimentService(object):
         res = {}
         for value in buckets:
             for bucket in buckets[value]:
+                if value in cls.DEFAULT_VAULES:
+                    value = cls.DEFAULT_VALUE
                 res[bucket] = value
         return res
 
