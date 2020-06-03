@@ -129,7 +129,13 @@ class ExperimentAnalysisService(object):
                 help_set[tag].add(user_id)
 
         for tag in res:
-            res[tag]['pay_num'] = len(help_set[tag])
+            pay_num = len(help_set[tag])
+            total_num = len(tag_uids[tag])
+            res[tag].update({
+                'pay_num': pay_num,
+                'pay_ratio': pay_num * 1.0 / total_num,
+                'everage_pay': res[tag]['pay_sum'] * 1.0 / total_num
+            })
         return res
 
     @classmethod

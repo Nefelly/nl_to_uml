@@ -38,10 +38,13 @@ class ExperimentResult(Document):
     @classmethod
     def create(cls, exp_name, tag, result_date, stat_name, res):
         obj = cls.get_by_args(exp_name, tag, result_date, stat_name)
-        if obj:
-            return obj
         res = json.dumps(res)
-        obj = cls(exp_name=exp_name, tag=tag, result_date=result_date, stat_name=stat_name, res=res)
+        if obj:
+            obj.res = res
+            # obj.save()
+            # return obj
+        else:
+            obj = cls(exp_name=exp_name, tag=tag, result_date=result_date, stat_name=stat_name, res=res)
         obj.save()
         return obj
 
