@@ -11,11 +11,12 @@ from flask import (
 )
 from hendrix.conf import setting
 from ..key import (
-    REDIS_EXP,
-
+    REDIS_LOC_USER_ACTIVE
 )
 from ..util import (
-
+    now_date_key,
+    next_date,
+    date_from_str
 )
 from ..const import (
     ONE_DAY,
@@ -26,7 +27,8 @@ from ..model import (
 )
 from ..service import (
     ExperimentService,
-    GlobalizationService
+    GlobalizationService,
+    UserService
 )
 
 from ..redis import RedisClient
@@ -44,7 +46,7 @@ class ExperimentAnalysisService(object):
     WHITE_LIST_TTL = 30 * ONE_DAY
 
     @classmethod
-    def batch_get_value_ids(cls, exp_name, ids, value=None):
+    def default_exp_values(cls, exp_name):
         '''
         批量获取用户对应实验的value
         :param exp_name:
@@ -54,10 +56,11 @@ class ExperimentAnalysisService(object):
         再 查询id 对应的桶
         再 返回
         '''
-        bucket_values = cls.load_bucket_value_m(exp_name)
+        ids = UserService.get_all_ids()
+        bucket_values = ExperimentService.load_bucket_value_m(exp_name)
         values_ids = {}
         for _ in ids:
-            bucket = cls._get_bucket(exp_name, _)
+            bucket = ExperimentService._get_bucket(exp_name, _)
             value = bucket_values.get(bucket)
             if values_ids.get(value, []):
                 values_ids[value].append(_)
@@ -69,7 +72,19 @@ class ExperimentAnalysisService(object):
 
     @classmethod
     def get_active_users_by_date(cls, date_time):
+        if isinstance(date_time, str):
+            date_time = date_from_str(date_time)
+        if not isinstance(date_time, datetime):
+            assert False, u'wrong argument of date_time'
+        res = []
         date_now = datetime.datetime.now()
-        date_key = now_date_key(datetime.timedelta(days=-VOLATILE_USER_ACTIVE_RETAIN_DAYS))
+        time_diff = (date_now - date_time).total_seconds()
+        if time_diff < 0 or time_diff > (VOLATILE_USER_ACTIVE_RETAIN_DAYS - 1) * ONE_DAY:
+            print(u'too long to retrieve daily active')
+            return res
+        date_key = date_time.strftime('%Y-%m-%d')
         for loc in GlobalizationService.LOCS:
-            to_rem_key = REDIS_LOC_USER_ACTIVE(date_loc=date_key + loc)
+            key = REDIS_LOC_USER_ACTIVE(date_loc=date_key + loc)
+            tmp = volatile_redis.smembers(key)
+            res += tmp
+        return res

@@ -176,6 +176,19 @@ def get_times_from_str(time_data_str):
     return date_to_int_time(d_time), d_time
 
 
+def date_from_str(time_str):
+    time_str = time_str.strip()
+    len_ts = len(time_str)
+    form = ''
+    if len_ts == len('20200101'):
+        form = '%Y%m%d'
+    elif len_ts == len('2020-01-01') and '-' in time_str:
+        form = '%Y-%m-%d'
+    elif len_ts == len('2020-01-01 12:00:00') and ':' in time_str:
+        form = '%Y-%m-%d %H:%M:%S'
+    return datetime.datetime.strptime(time_str, form)
+
+
 def parse_standard_date(time_data_str):
     """str -> datetime"""
     return datetime.datetime.strptime(time_data_str, '%Y-%m-%d')
