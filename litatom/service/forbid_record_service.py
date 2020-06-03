@@ -59,6 +59,9 @@ class ForbidRecordService(object):
     def get_forbid_history_by_uid(cls, user_id):
         # 4个位置影响forbid_score，1.敏感用户 2.举报 3.警告 4.其他用户拉黑
         user_record = UserRecord.objects(user_id=user_id).order_by('-create_time').first()
+        if not user_record:
+            return u'this user has no benn forbid', False
+
         forbidden_from = user_record.create_time
 
         is_sensitive = ForbidCheckService.check_sensitive_user(user_id,forbidden_from-ERROR_RANGE)
@@ -77,8 +80,12 @@ class ForbidRecordService(object):
         record_res = []
         for record in spam_records:
             record_res.append(TrackSpamRecordService.get_spam_record_info(record))
-
-        return {'sensitive': is_sensitive, 'blocker_num': blocker_num, 'illegal_records':reports_res+record_res}
+        res = {
+            'sensitive': is_sensitive,
+            'blocker_num': blocker_num,
+            'illegal_records': reports_res + record_res
+        }
+        return res, True
 
 
 class ReportService(object):
