@@ -85,7 +85,7 @@ class ExperimentAnalysisService(object):
             date_time = date_from_str(date_time)
         if not isinstance(date_time, datetime.datetime):
             assert False, u'wrong argument of date_time'
-        res = []
+        res = set()
         date_now = datetime.datetime.now()
         time_diff = (date_now - date_time).total_seconds()
         if time_diff < 0 or time_diff > (VOLATILE_USER_ACTIVE_RETAIN_DAYS - 1) * ONE_DAY:
@@ -96,7 +96,7 @@ class ExperimentAnalysisService(object):
             key = REDIS_LOC_USER_ACTIVE.format(date_loc=date_key + loc)
             tmp = volatile_redis.smembers(key)
             res += tmp
-        return res
+        return set(res)
 
     @classmethod
     def get_tag_by_uid(cls, tag_uids, uid):
