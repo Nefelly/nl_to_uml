@@ -1,11 +1,14 @@
 # encoding:utf-8
 from litatom.service import (
     AliLogService,
+    ExperimentAnalysisService
 )
 
 from litatom.util import (
     parse_standard_time,
-    next_date, format_standard_date,
+    next_date,
+    format_standard_date,
+    date_from_str
 )
 
 
@@ -29,6 +32,9 @@ def deal_uids_tail(uids):
 
 
 def get_active_uids(from_date, to_date):
+    res = ExperimentAnalysisService.get_active_users_by_date(from_date)
+    if res:
+        return set(res)
     resp_set = AliLogService.get_log_by_time_and_topic(from_time=AliLogService.datetime_to_alitime(from_date),
                                                        to_time=AliLogService.datetime_to_alitime(to_date),
                                                        query='*|select distinct user_id limit 500000')
@@ -165,25 +171,29 @@ def write_data(name, payment_data, retain_data, from_date, to_date):
 
 
 def run():
-    exp_uids = read_uids_from_file('/data/exp/match-428/exp_ids')
-    exp_uids = deal_uids_pos(exp_uids)
-    another_exp_uids = read_uids_from_file('/data/exp/match-428/exp')
-    another_exp_uids = deal_uids_tail(another_exp_uids)
-    print('experiment group: first size', len(exp_uids), 'second size', len(another_exp_uids))
-    exp_uids += another_exp_uids
-    exp_uids = set(exp_uids)
-    len_exp_uids = float(len(exp_uids))
-    print(len_exp_uids)
-
-    default_uids = read_uids_from_file('/data/exp/match-428/default_ids')
-    default_uids = deal_uids_pos(default_uids)
-    another_default_uids = read_uids_from_file('/data/exp/match-428/default')
-    another_default_uids = deal_uids_tail(another_default_uids)
-    print('default group:first size', len(default_uids), 'second size', len(another_default_uids))
-    default_uids += another_default_uids
-    default_uids = set(default_uids)
-    len_default_uids = float(len(default_uids))
-    print(len_default_uids)
+    # exp_uids = read_uids_from_file('/data/exp/match-428/exp_ids')
+    # exp_uids = deal_uids_pos(exp_uids)
+    # another_exp_uids = read_uids_from_file('/data/exp/match-428/exp')
+    # another_exp_uids = deal_uids_tail(another_exp_uids)
+    # print('experiment group: first size', len(exp_uids), 'second size', len(another_exp_uids))
+    # exp_uids += another_exp_uids
+    # exp_uids = set(exp_uids)
+    # len_exp_uids = float(len(exp_uids))
+    # print(len_exp_uids)
+    #
+    # default_uids = read_uids_from_file('/data/exp/match-428/default_ids')
+    # default_uids = deal_uids_pos(default_uids)
+    # another_default_uids = read_uids_from_file('/data/exp/match-428/default')
+    # another_default_uids = deal_uids_tail(another_default_uids)
+    # print('default group:first size', len(default_uids), 'second size', len(another_default_uids))
+    # default_uids += another_default_uids
+    # default_uids = set(default_uids)
+    # len_default_uids = float(len(default_uids))
+    # print(len_default_uids)
+    default_uids, exp_uids = ExperimentAnalysisService.default_exp_values('feed_age_control')
+    from_date = date_from_str('2020-05-31')
+    to_date = date_from_str('2020-06-02')
+    get_exp_res(default_uids, exp_uids, from_date, to_date)
 
 
 if __name__ == '__main__':
