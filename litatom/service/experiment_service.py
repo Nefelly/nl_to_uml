@@ -238,8 +238,12 @@ class ExperimentService(object):
         return res
 
     @classmethod
+    def get_experiment_names(cls):
+        return ExpBucket.objects().distinct('exp_name')
+
+    @classmethod
     def get_all_experiments(cls):
-        exp_names = ExpBucket.objects().distinct('exp_name')
+        exp_names = cls.get_experiment_names()
         total_num = len(exp_names)
         res = {
             'total_num': total_num,

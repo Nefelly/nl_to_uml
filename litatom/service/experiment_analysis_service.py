@@ -115,15 +115,17 @@ class ExperimentAnalysisService(object):
         res = {}
         for tag in tag_uids:
             help_set[tag] = set()
-            res[tag]['pay_sum'] = 0.0
+            res[tag] = {
+                'pay_sum': 0.0
+            }
         for log in resp.logs:
             content = log.get_contents()
             user_id = content['user_id']
-            res = content['res']
+            log_res = content['res']
 
             tag = cls.get_tag_by_uid(tag_uids, user_id)
             if tag:
-                res[tag]['pay_sum'] += int(res)
+                res[tag]['pay_sum'] += int(log_res)
                 help_set[tag].add(user_id)
 
         for tag in res:
@@ -177,3 +179,9 @@ class ExperimentAnalysisService(object):
         yestoday_exp_actives = cls.get_exp_active_uids(exp_name, anchor_yestoday)
         retain_res = cls.tag_retains(yestoday_exp_actives, date_time)
         cls.record_result(yestoday_exp_actives, retain_res, exp_name, date_time, ExperimentResult.RETAIN)
+
+    @classmethod
+    def cal_all_result(cls, date_str):
+        exp_names = ExperimentService.get_experiment_names()
+        for exp_name in exp_names:
+            cls.cal_day_result(date_str, exp_name)
