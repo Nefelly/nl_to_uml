@@ -79,15 +79,15 @@ class ForbidPlatformService(object):
             if loc and loc != UserSetting.get_loc_by_uid(user_id):
                 continue
             forbidden_from = user_record.create_time
-            temp_res[user_id] = {'user_id': user_id,'nickname': UserService.nickname_by_uid(user_id), 'forbidden_from': time_str_by_ts(forbidden_from)}
             if forbidden_from > next_ts:
                 next_ts = forbidden_from
             have_read += 1
             if have_read > num:
                 break
-        has_next = False
-        if have_read > num:
-            has_next = True
+            temp_res[user_id] = {'user_id': user_id, 'nickname': UserService.nickname_by_uid(user_id),
+                                 'forbidden_from': time_str_by_ts(forbidden_from)}
+
+        has_next = True if have_read > num else False
         # 从TrackSpamRecord中导入次数和命中历史,从Report中导入次数和命中历史
         earliest_forbidden = int(time.time())
         for uid in temp_res.keys():
@@ -95,6 +95,7 @@ class ForbidPlatformService(object):
             if forbidden_from < earliest_forbidden:
                 earliest_forbidden = forbidden_from
             user = User.get_by_id(uid)
+
             # 并不知道为什么某些uid查不到
             if not user:
                 del temp_res[uid]
@@ -120,7 +121,8 @@ class ForbidPlatformService(object):
         device_forbidden_num = ForbidRecordService.get_device_forbidden_num_by_uid(user_id)
         forbid_score = ForbidActionService.accum_illegal_credit(user_id)[0]
         forbid_history = ForbidRecordService.get_forbid_history_by_uid(user_id)
-        return {'user_id': user_id, 'nickname': UserService.nickname_by_uid(user_id), 'forbidden_until': forbidden_until,
+        return {'user_id': user_id, 'nickname': UserService.nickname_by_uid(user_id),
+                'forbidden_until': forbidden_until,
                 'forbidden_from': UserRecord.get_forbidden_time_by_uid(user_id),
                 'user_forbidden_num': user_forbidden_num, 'device_forbidden_num': device_forbidden_num,
                 'forbid_score': forbid_score, 'forbid_history': forbid_history}, True
@@ -151,7 +153,8 @@ class ForbidPlatformService(object):
                 forbid_score = ForbidActionService.accum_illegal_credit(user_id)[0]
                 if condition == cls.FEED_USER_UNRELIABLE and forbid_score <= 5:
                     continue
-                tmp = {'user_id': user_id, 'nickname':UserService.nickname_by_uid(user_id), 'word': feed.content, 'pics': [OSS_PIC_URL + pic for pic in feed.pics],
+                tmp = {'user_id': user_id, 'nickname': UserService.nickname_by_uid(user_id), 'word': feed.content,
+                       'pics': [OSS_PIC_URL + pic for pic in feed.pics],
                        'audio': [OSS_AUDIO_URL + audio for audio in feed.audios],
                        'comment_num': feed.comment_num, 'like_num': feed.like_num, 'hq': is_hq,
                        'forbid_score': forbid_score, 'feed_id': str(feed.id)}
@@ -165,7 +168,8 @@ class ForbidPlatformService(object):
     def get_feed_atom(cls, user_id):
         feeds = Feed.objects(user_id=user_id, status=FEED_NEED_CHECK)
         forbid_score = ForbidActionService.accum_illegal_credit(user_id)[0]
-        return [{'user_id': user_id,'nickname':UserService.nickname_by_uid(user_id), 'word': feed.content, 'pics': [OSS_PIC_URL + pic for pic in feed.pics],
+        return [{'user_id': user_id, 'nickname': UserService.nickname_by_uid(user_id), 'word': feed.content,
+                 'pics': [OSS_PIC_URL + pic for pic in feed.pics],
                  'audio': [OSS_AUDIO_URL + audio for audio in feed.audios],
                  'comment_num': feed.comment_num, 'like_num': feed.like_num, 'hq': feed.is_hq,
                  'forbid_score': forbid_score, 'feed_id': str(feed.id)} for feed in feeds], True
@@ -210,7 +214,8 @@ class ForbidPlatformService(object):
         res_len = 0
         have_read = 0
         while res_len < num:
-            records = TrackSpamRecord.objects(create_time__gte=from_ts, create_time__lte=to_ts, forbid_weight__lte=ForbidActionService.SPAM_WORD_WEIGHTING).order_by(
+            records = TrackSpamRecord.objects(create_time__gte=from_ts, create_time__lte=to_ts,
+                                              forbid_weight__lte=ForbidActionService.SPAM_WORD_WEIGHTING).order_by(
                 '-create_time').skip(have_read).limit(num)
             if not records:
                 break
