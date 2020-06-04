@@ -185,9 +185,15 @@ class ExperimentAnalysisService(object):
         res = {}
         new_register_users = set()
         if is_new:
-            UserService.get_all_ids()
+            key = 'new_users' + str(date_str)
+            new_users = cls.get_set_name(key)
+            if not new_users:
+                new_users = set(UserService.new_register_users(date_str))
+                cls.get_set_name(key, new_users)
         for tag in tag_ids:
             res[tag] = tag_ids[tag] & active_uids
+            if is_new:
+                res[tag] = res[tag] & new_users
         return res
 
     @classmethod
@@ -216,13 +222,14 @@ class ExperimentAnalysisService(object):
         anchor_yestoday = next_date(date_time, -1)
         anchor_tomorrow = next_date(date_time)
         for is_new in [False, True]:
+            name_prefix = 'new_' if is_new else ''
             today_exp_actives = cls.get_exp_active_uids(exp_name, date_str, is_new)
             payment_res = cls.load_uid_payment(today_exp_actives, date_time, anchor_tomorrow)
-            cls.record_result(today_exp_actives, payment_res, exp_name, date_time, ExperimentResult.PAYMENT)
+            cls.record_result(today_exp_actives, payment_res, exp_name, date_time, name_prefix + ExperimentResult.PAYMENT)
 
             yestoday_exp_actives = cls.get_exp_active_uids(exp_name, anchor_yestoday, is_new)
             retain_res = cls.tag_retains(yestoday_exp_actives, date_time)
-            cls.record_result(yestoday_exp_actives, retain_res, exp_name, date_time, ExperimentResult.RETAIN)
+            cls.record_result(yestoday_exp_actives, retain_res, exp_name, date_time, name_prefix + ExperimentResult.RETAIN)
 
     @classmethod
     def cal_all_result(cls, date_str):
