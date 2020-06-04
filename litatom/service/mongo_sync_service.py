@@ -448,7 +448,7 @@ class MongoSynchronizer(object):
         op = oplog['op'] # 'n' or 'i' or 'u' or 'c' or 'd'
         ns = oplog['ns']
         dbname = ns.split('.', 1)[0]
-        if op == 'i': # insert
+        if op == 'i':  # insert
             collname = ns.split('.', 1)[1]
             self._dst_mc[dbname][collname].insert_one(oplog['o'])
             # self._dst_mc[dbname][collname].replace_one({'_id': oplog['o']['_id']}, oplog['o'], upsert=True)
