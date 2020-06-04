@@ -188,7 +188,7 @@ class MongoSyncService(object):
 
     @classmethod
     def real_time_sync_userids(cls):
-        cls.load_user_ids_to_redis()
+        # cls.load_user_ids_to_redis()
         timestamp_save_add = '/data/tmp/userid_sync.time'
         ensure_path(timestamp_save_add)
         host, port, user, pwd, db, auth_db, host_url = cls.get_args_from_alias(User)
