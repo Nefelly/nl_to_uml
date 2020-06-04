@@ -66,9 +66,9 @@ class ForbidPlatformService(object):
         temp_res = {}
         have_read = 0
         if not forbid_type:
-            user_records = UserRecord.get_forbid_users_by_time(from_ts, to_ts).limit(3*num)
+            user_records = UserRecord.get_forbid_users_by_time(from_ts, to_ts)
         else:
-            user_records = UserRecord.get_forbid_users_by_time(from_ts, to_ts, forbid_type).limit(5*num)
+            user_records = UserRecord.get_forbid_users_by_time(from_ts, to_ts, forbid_type)
         if not user_records:
             return None, False
 
