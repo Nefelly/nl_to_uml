@@ -29,6 +29,8 @@ from ..util import (
 
 
 class ForbidRecordService(object):
+    DEVICE_FORBID_THRESHOLD = 5
+
     @classmethod
     def mark_record(cls, user_id, from_ts=None, to_ts=None):
         TrackSpamRecordService.mark_spam_word(user_id, from_ts, to_ts)
@@ -64,7 +66,7 @@ class ForbidRecordService(object):
 
         forbidden_from = user_record.create_time
 
-        is_sensitive = ForbidCheckService.check_sensitive_user(user_id,forbidden_from-ERROR_RANGE)
+        is_sensitive = ForbidCheckService.check_sensitive_user(user_id, forbidden_from - ERROR_RANGE)
 
         reports = Report.get_report_by_time_and_uid(user_id, forbidden_from - SYS_FORBID_TIME, forbidden_from,
                                                     True)
@@ -80,6 +82,7 @@ class ForbidRecordService(object):
         record_res = []
         for record in spam_records:
             record_res.append(TrackSpamRecordService.get_spam_record_info(record))
+
         res = {
             'sensitive': is_sensitive,
             'blocker_num': blocker_num,
@@ -88,11 +91,12 @@ class ForbidRecordService(object):
         return res, True
 
 
+
 class ReportService(object):
 
     @classmethod
     def save_report(cls, user_id, reason, pics=None, target_user_id=None, related_feed_id=None, match_type=None,
-                    chat_record=None, dealed=False):
+                    chat_record=None, dealed=False, forbid_weight=4):
         """举报内容入库"""
         report = Report()
         report.uid = user_id
@@ -107,6 +111,7 @@ class ReportService(object):
             report.dealed = dealed
         report.target_uid = target_user_id
         report.create_ts = int(time.time())
+        report.forbid_weight = forbid_weight
         report.save()
         return report.id
 
@@ -154,7 +159,8 @@ class ReportService(object):
             if not feed:
                 tmp['feed'] = FEED_NOT_FOUND_ERROR
             else:
-                tmp['feed'] = {'content': feed.content, 'pics': [OSS_PIC_URL + pic for pic in feed.pics], 'audios':[OSS_AUDIO_URL + audio for audio in feed.audios]}
+                tmp['feed'] = {'content': feed.content, 'pics': [OSS_PIC_URL + pic for pic in feed.pics],
+                               'audios': [OSS_AUDIO_URL + audio for audio in feed.audios]}
 
         if report.chat_record:
             res_record = []
@@ -220,7 +226,7 @@ class TrackSpamRecordService(object):
             return False
         if cls.check_spam_word_in_one_minute(user_id, int(time.time())):
             return False
-        return TrackSpamRecord.create(user_id, word, pic, forbid_weight=forbid_weight,source=source)
+        return TrackSpamRecord.create(user_id, word, pic, forbid_weight=forbid_weight, source=source)
 
     @classmethod
     def check_spam_word_in_one_minute(cls, user_id, ts):
@@ -253,9 +259,13 @@ class TrackSpamRecordService(object):
 
     @classmethod
     def get_spam_record_info(cls, record):
-        tmp = {'forbid_weight': record.forbid_weight,'user_id':record.user_id,'nickname':UserService.nickname_by_uid(record.user_id),'record_id':str(record.id), 'create_time':unix_ts_string(record.create_time), 'source':record.source}
+        tmp = {'forbid_weight': record.forbid_weight, 'user_id': record.user_id,
+               'nickname': UserService.nickname_by_uid(record.user_id), 'record_id': str(record.id),
+               'create_time': unix_ts_string(record.create_time), 'source': record.source}
         if record.word:
-            tmp['word'] = {'word': record.word, 'hit_word': SpamWordCheckService.get_spam_word(record.word, GlobalizationService.get_region_by_user_id(record.user_id))}
+            tmp['word'] = {'word': record.word, 'hit_word': SpamWordCheckService.get_spam_word(record.word,
+                                                                                               GlobalizationService.get_region_by_user_id(
+                                                                                                   record.user_id))}
         elif record.pic:
             tmp['pic'] = format_pic(record.pic)
         return tmp

@@ -69,7 +69,6 @@ from ..service import (
     HuanxinService,
     GoogleService,
     FacebookService,
-    ForbidCheckService,
     FollowService,
     GlobalizationService,
     MqService,
@@ -129,7 +128,6 @@ class UserService(object):
     def device_blocked(cls, uuid):
         return BlockedDevices.is_device_forbidden(uuid)
 
-
     @classmethod
     def uuid_by_user_id(cls, user_id):
         return UserSetting.uuid_by_user_id(user_id)
@@ -137,6 +135,8 @@ class UserService(object):
     @classmethod
     def user_device_blocked(cls, user_id):
         user_setting = UserSetting.get_by_user_id(user_id)
+        if not user_setting:
+            return False
         uuid = user_setting.uuid
         return cls.device_blocked(uuid)
 
@@ -286,7 +286,8 @@ class UserService(object):
             UserSetting.create_setting(user_id, loc, request.uuid)
         if not request.uuid:
             return u'your version is too low!', False
-        if cls.device_blocked(request.uuid):
+        from litatom.service import ForbidRecordService
+        if cls.device_blocked(request.uuid) or ForbidRecordService.get_device_forbidden_num_by_uid(user_id) > 5:
             return cls.ERROR_DEVICE_FORBIDDEN, False
         return None, True
 

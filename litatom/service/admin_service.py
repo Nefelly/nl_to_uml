@@ -50,6 +50,7 @@ from ..key import (
 sys_rnd = random.SystemRandom()
 redis_client = RedisClient()['lit']
 
+
 class AdminService(object):
     UID_PWDS = {
         'joey': 'hypercycle'
@@ -93,8 +94,8 @@ class AdminService(object):
         if admin_user and admin_user.pwd == pwd:
             session = admin_user.gen_session()
             return {
-                'session': session
-            }, True
+                       'session': session
+                   }, True
         return None, False
 
     @classmethod
@@ -166,7 +167,8 @@ class AdminService(object):
                 # objs = Report.objects(create_ts__lte=start_ts, dealed=dealed, duplicated=False, region=GlobalizationService.get_region()).filter((Q(reason__ne='match') & Q(reason__ne='video_match') & Q(reason__ne='voice_match')) | Q(chat_record__ne=None)).order_by('-create_ts').limit(num + 1)
                 objs = Report.objects(create_ts__lte=start_ts, dealed=dealed, duplicated=False,
                                       region=GlobalizationService.get_region()).filter(
-                    Q(reason__ne='match') & Q(reason__ne='video_match') & Q(reason__ne='voice_match')).order_by('-create_ts').limit(num + 1)
+                    Q(reason__ne='match') & Q(reason__ne='video_match') & Q(reason__ne='voice_match')).order_by(
+                    '-create_ts').limit(num + 1)
             else:
                 objs = Report.objects(create_ts__lte=start_ts, dealed=dealed, duplicated=False,
                                       region=GlobalizationService.get_region()).order_by('-create_ts').limit(num + 1)
@@ -218,14 +220,14 @@ class AdminService(object):
         return data, status
 
     @classmethod
-    def ban_device_by_uid(cls, uid):
-        res = ForbidActionService.forbid_user(uid, FOREVER, MANUAL_FORBID)
+    def ban_device_by_uid(cls, uid, forbid_time=FOREVER):
+        res = ForbidActionService.forbid_user(uid, forbid_time, MANUAL_FORBID)
         user_setting = UserSetting.get_by_user_id(uid)
         if not user_setting or not user_setting.uuid:
             return u'has not device_id', False
         for obj in UserSetting.objects(uuid=user_setting.uuid):
             if obj.user_id != uid:
-                ForbidActionService.forbid_user(obj.user_id, FOREVER, MANUAL_FORBID)
+                ForbidActionService.forbid_user(obj.user_id, forbid_time, MANUAL_FORBID)
         BlockedDevices.add_forbidden_device(user_setting.uuid)
         if not res:
             return 'forbid error', False
@@ -273,8 +275,9 @@ class AdminService(object):
         dir_name = '/tmp/'
         save_add = os.path.join(dir_name, '%s_%d.csv' % (table_name, int(time.time())))
         host, port, user, pwd, db, auth_db = get_args_from_db('DB_LIT')
-        sql = '''mongoexport -h {host} --port {port} -u {user} -p {pwd} --authenticationDatabase {auth_db} -d {db} -c {collection} -f {fileds} --type=csv -q '{query}' --out {save_add}''' .format(
-        host=host, port=port, user=user, pwd=pwd, auth_db=auth_db, db=db, collection=table_name, fields=fields, query=query, save_add=save_add)
+        sql = '''mongoexport -h {host} --port {port} -u {user} -p {pwd} --authenticationDatabase {auth_db} -d {db} -c {collection} -f {fileds} --type=csv -q '{query}' --out {save_add}'''.format(
+            host=host, port=port, user=user, pwd=pwd, auth_db=auth_db, db=db, collection=table_name, fields=fields,
+            query=query, save_add=save_add)
         os.system(sql)
         return save_add, True
 
@@ -286,6 +289,7 @@ class AdminService(object):
                 if chr not in chars:
                     return False
             return True
+
         NOT_ALLOWED = ["User", "Feed"]
         table_name = table_name.strip()
         fields = fields.strip().split("|")

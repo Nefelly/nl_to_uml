@@ -15,7 +15,8 @@ from litatom.model import (
     Feed,
     BlockedDevices,
     UserSetting,
-    UserRecord, FakeSpamWord
+    UserRecord,
+    FakeSpamWord
 )
 from ..redis import (
     RedisClient,
