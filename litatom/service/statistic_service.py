@@ -327,7 +327,7 @@ class DiamStatService(object):
     """
     STAT_QUERY_LIST = {
         'consumer_num': 'diamonds>0 or name:success_vip| SELECT COUNT(DISTINCT user_id) as res',
-        'vip_income_diamonds': 'name:success_vip | SELECT -sum(diamonds) as res',
+        'vip_income_diamonds': 'name:success_vip | SELECT COUNT(1) as res',
         'diam_cons_num': 'diamonds<0 and not success_vip |SELECT -sum(diamonds) as res',
         'diam_cons_people_num': 'diamonds<0 and not success_vip |SELECT COUNT(DISTINCT user_id) as res',
         'diam_cons_man_time_num': 'diamonds<0 and not success_vip|SELECT COUNT(1) as res',
