@@ -63,5 +63,10 @@ class ExperimentResult(Document):
         tmp.reverse()
         return tmp
 
+    @classmethod
+    def distinct_names(cls, exp_name, result_date):
+        names = cls.objects(exp_name=exp_name, result_date=result_date).distinct('stat_name')
+        return names
+
     def get_res(self):
         return json.loads(self.res)
