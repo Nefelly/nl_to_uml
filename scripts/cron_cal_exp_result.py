@@ -14,6 +14,7 @@ def foo():
     print time.time()
     today = get_zero_today()
     date_str = next_date(today, -1).strftime('%Y-%m-%d')
+    date_str = today.strftime('%Y-%m-%d')
     ExperimentAnalysisService.cal_all_result(date_str)
     print time.time()
 
