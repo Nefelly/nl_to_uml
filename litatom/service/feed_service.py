@@ -330,7 +330,7 @@ class FeedService(object):
             return feed_age >= 20
 
     @classmethod
-    def _feeds_by_pool(cls, redis_key, user_id, start_p, num, pool_type=None):
+    def _feeds_by_pool(cls, redis_key, user_id, start_p, num, pool_type=None, show_all=False):
         if request.ip_should_filter:
             return {
                 'feeds': [],
@@ -353,10 +353,13 @@ class FeedService(object):
                 tmp_feeds = tmp_feeds[:-1]
             next_start = start_p + num if has_next else -1
             user_age = UserService.uid_age(user_id)
-            if ExperimentService.lit_exp_value('feed_age_control') == 'hard':
-                feeds += [el for el in tmp_feeds if cls.feed_in_age_control(user_age, cls.age_by_feed_id(el))]
+            if show_all:
+                feeds += tmp_feeds
             else:
-                feeds += [el for el in tmp_feeds if UserService.age_in_user_range(user_age, cls.age_by_feed_id(el))]
+                if ExperimentService.lit_exp_value('feed_age_control') == 'hard':
+                    feeds += [el for el in tmp_feeds if cls.feed_in_age_control(user_age, cls.age_by_feed_id(el))]
+                else:
+                    feeds += [el for el in tmp_feeds if UserService.age_in_user_range(user_age, cls.age_by_feed_id(el))]
             if len(feeds) >= max(num - 3, 1) or not has_next:
                 break
             start_p = start_p + num
@@ -372,9 +375,9 @@ class FeedService(object):
         }
 
     @classmethod
-    def feeds_by_square(cls, user_id, start_p=0, num=10):
+    def feeds_by_square(cls, user_id, start_p=0, num=10, show_all=False):
         return cls._feeds_by_pool(cls._redis_feed_region_key(REDIS_FEED_SQUARE_REGION), user_id, start_p, num,
-                                  cls.LATEST_TYPE)
+                                  cls.LATEST_TYPE, show_all)
 
     @classmethod
     def age_by_feed_id(cls, feed_id):
@@ -391,7 +394,7 @@ class FeedService(object):
 
     @classmethod
     def feeds_square_for_admin(cls, user_id, start_p=0, num=10):
-        res = cls.feeds_by_square(user_id, start_p, num)
+        res = cls.feeds_by_square(user_id, start_p, num, show_all=True)
         for feed in res['feeds']:
             if feed:
                 feed.update(in_hq=cls._in_hq(feed['id']))
