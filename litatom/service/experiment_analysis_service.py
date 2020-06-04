@@ -246,7 +246,7 @@ class ExperimentAnalysisService(object):
                 'date_str': format_standard_date(date_el),
             }
             names = ExperimentResult.distinct_names(exp_name, date_el)
-            for name in cls.STAT_NAMES:
+            for name in names:
                 objs = ExperimentResult.get_by_exp_name_date_name(exp_name, date_el, name)
                 compare_items = {}
                 for obj in objs:
