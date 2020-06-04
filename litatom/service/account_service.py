@@ -276,7 +276,7 @@ class AccountService(object):
     def _buy_vip(cls, user_id, vip_type=VIP_MONTH):
         user = User.get_by_id(user_id)
         if not user:
-            return u'user account not exists'
+            return u'user not exists'
         old_vip_time = user.vip_time
         # old_vip_time = user_account.vip_time
         time_now = int(time.time())
@@ -398,7 +398,7 @@ class AccountService(object):
 
     @classmethod
     def buy_vip(cls, user_id, payload):
-        token = payload.get('payload', {}).get('token')
+        token = payload.get('payload', {}).get('token', '')
         product_name = payload.get('product_name', 'vip')
         if not token:
             AccountFlowRecord.create(user_id, AccountFlowRecord.WRONG_VIP, product_name)

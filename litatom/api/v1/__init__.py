@@ -138,7 +138,7 @@ b.add_url_rule('/lit/admin/super_login', 'admin-super_login', endpoint.admin.sup
 b.add_url_rule('/lit/admin/huanxin_by_uid', 'admin-huanxin_by_uid', endpoint.admin.huanxin_by_uid)
 b.add_url_rule('/lit/admin/sync_region_to_online', 'admin-sync_region_to_online', endpoint.admin.sync_region_to_online)
 b.add_url_rule('/lit/admin/user/<user_id>', 'admin-get_user_info', endpoint.admin.get_user_info)
-b.add_url_rule('/lit/admin/get_forbid_history_by_uid','admin-get_forbid_history_by_uid', endpoint.admin.get_forbid_history_by_uid)
+b.add_url_rule('/lit/admin/get_forbid_history_by_uid', 'admin-get_forbid_history_by_uid', endpoint.admin.get_forbid_history_by_uid)
 
 # picture
 b.add_url_rule('/lit/image/upload', 'image-upload', endpoint.oss.upload_image_from_file, methods=['POST'])
@@ -220,6 +220,7 @@ b.add_url_rule('/lit/experiment/get_experiments', 'experiment-get_experiments', 
 b.add_url_rule('/lit/experiment/get_exp_value', 'experiment-get_exp_value', endpoint.experiment.get_exp_value)
 b.add_url_rule('/lit/experiment/all_experiments', 'experiment-all_experiments', endpoint.experiment.get_all_experiments)
 b.add_url_rule('/lit/experiment/delete_experiment', 'experiment-delete_experiment', endpoint.experiment.delete_experiment)
+b.add_url_rule('/lit/experiment/exp_result/<exp_name>', 'experiment-exp_result', endpoint.experiment.exp_result)
 
 # debug
 b.add_url_rule('/lit/debug/redis_status', 'debug-redis-status', endpoint.debug.redis_status)

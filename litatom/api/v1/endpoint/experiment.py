@@ -21,7 +21,8 @@ from flask import (
 )
 
 from ....service import (
-    ExperimentService
+    ExperimentService,
+    ExperimentAnalysisService
 )
 
 
@@ -45,6 +46,12 @@ def set_experiments():
         return success(data)
     return fail(data)
 
+
+def exp_result(exp_name):
+    data, status = ExperimentAnalysisService.exp_json_result(exp_name)
+    if status:
+        return success(data)
+    return fail(data)
 
 def get_experiments():
     exp_name = request.values.get('exp_name')

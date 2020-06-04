@@ -107,8 +107,14 @@ class ForbidPlatformService(object):
             temp_res[uid]['user_forbidden_num'] = UserRecord.get_forbidden_num_by_uid(uid)
             temp_res[uid]['device_forbidden_num'] = ForbidRecordService.get_device_forbidden_num_by_uid(uid)
             temp_res[uid]['forbid_score'] = ForbidActionService.accum_illegal_credit(uid)[0]
+<<<<<<< HEAD
             temp_res[uid]['forbid_history'] = ForbidRecordService.get_forbid_history_by_uid(uid)
         return {'records': temp_res.values(), 'has_next': has_next, 'next_ts': next_ts}, True
+=======
+            forbid_history, status = ForbidRecordService.get_forbid_history_by_uid(uid)
+            temp_res[uid]['forbid_history'] = forbid_history if status else {}
+        return {'records':temp_res.values(),'has_next':has_next, 'next_ts':next_ts}, True
+>>>>>>> master
 
     @classmethod
     def get_forbid_record_atom(cls, user_id):

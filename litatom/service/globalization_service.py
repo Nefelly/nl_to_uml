@@ -233,6 +233,7 @@ class GlobalizationService(object):
         request.is_homo = True if ALL_FILTER else False
         request.version = '3.4.5'
         request.gender = 'boy'
+        request.loc = 'TH'
         request.session_id = 'session.1234254365654675'
 
 

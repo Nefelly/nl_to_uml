@@ -603,7 +603,10 @@ def super_login():
 
 def get_forbid_history_by_uid():
     user_id = request.args.get('user_id')
-    return success(ForbidRecordService.get_forbid_history_by_uid(user_id))
+    data, status = ForbidRecordService.get_forbid_history_by_uid(user_id)
+    if not status:
+        return fail(data)
+    return success(data)
 
 
 def get_user_info(user_id):
