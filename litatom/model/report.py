@@ -38,7 +38,6 @@ class Report(Document):
     forbid_weight = IntField(default=0)
     create_ts = IntField(required=True)
     deal_ts = IntField()
-    forbid_weight = IntField(default=0)
 
     @classmethod
     def get_by_id(cls, report_id):
