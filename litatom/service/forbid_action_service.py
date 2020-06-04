@@ -24,7 +24,7 @@ from ..model import (
     UserRecord,
     Blocked,
     AppAdmin,
-    Feed
+    Feed, UserSetting
 )
 from ..util import (
     unix_ts_local,
@@ -121,9 +121,9 @@ class ForbidActionService(object):
         res = cls._check_forbid(target_user_id, ts_now)
         if res:
             cls.forbid_user(target_user_id, SYS_FORBID_TIME, SYS_FORBID)
-            if ForbidRecordService.get_device_forbidden_num_by_uid(user_id) >= ForbidRecordService.DEVICE_FORBID_THRESHOLD:
+            if ForbidRecordService.get_device_forbidden_num_by_uid(user_id) > ForbidRecordService.DEVICE_FORBID_THRESHOLD:
                 from litatom.service import AdminService
-                AdminService.ban_device_by_uid(target_user_id, SYS_FORBID_TIME)
+                cls.forbid_device(target_user_id,SYS_FORBID_TIME)
             return {"report_id": str(report_id), SYS_FORBID: True}, True
         if not alert_res:
             MsgService.feedback_to_reporters_unresolved(user_id)
@@ -228,9 +228,9 @@ class ForbidActionService(object):
         res = cls._check_forbid(user_id)
         if res:
             cls.forbid_user(user_id, SYS_FORBID_TIME)
-            if ForbidRecordService.get_device_forbidden_num_by_uid(user_id) >= ForbidRecordService.DEVICE_FORBID_THRESHOLD:
-                from litatom.service import AdminService
-                AdminService.ban_device_by_uid(user_id, SYS_FORBID_TIME)
+            if ForbidRecordService.get_device_forbidden_num_by_uid(
+                    user_id) >= ForbidRecordService.DEVICE_FORBID_THRESHOLD:
+                cls.forbid_device(user_id, SYS_FORBID_TIME)
             return {SYS_FORBID: True}, True
         return {SYS_FORBID: False}, True
 
@@ -284,15 +284,16 @@ class ForbidActionService(object):
         if not ForbidCheckService.check_sensitive_device(user_id):
             ForbidRecordService.record_sensitive_device(user_id)
         return True
-    #
-    # @classmethod
-    # def forbid_device(cls, user_id, forbid_ts, forbid_type = SYS_FORBID):
-    #     uuid = UserSetting.uuid_by_user_id(user_id)
-    #     if not uuid:
-    #         return 0
-    #     uids = UserSetting.get_uids_by_uuid(uuid)
-    #     for uid in uids:
-    #         cls.forbid_user(uid,forbid_ts,forbid_type)
+
+    @classmethod
+    def forbid_device(cls, user_id, forbid_ts, forbid_type=SYS_FORBID):
+        uuid = UserSetting.uuid_by_user_id(user_id)
+        if not uuid:
+            return 0
+        uids = UserSetting.get_uids_by_uuid(uuid)
+        for uid in uids:
+            if uid != user_id:
+                cls.forbid_user(uid, forbid_ts, forbid_type)
 
     @classmethod
     def _get_high_value_compensation(cls, user_id):

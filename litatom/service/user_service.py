@@ -278,7 +278,8 @@ class UserService(object):
             UserSetting.create_setting(user_id, loc, request.uuid)
         if not request.uuid:
             return u'your version is too low!', False
-        if cls.device_blocked(request.uuid):
+        from litatom.service import ForbidRecordService
+        if cls.device_blocked(request.uuid) or ForbidRecordService.get_device_forbidden_num_by_uid(user_id) > 5:
             return cls.ERROR_DEVICE_FORBIDDEN, False
         return None, True
 
