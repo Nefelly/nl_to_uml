@@ -176,7 +176,8 @@ class AccountService(object):
         forbid_times = UserRecord.get_forbidden_num_by_uid(user_id)
         if forbid_times <= 1:
             return cls.UNBAN_DIAMONDS
-        return max((forbid_times - 1) * 5 * cls.UNBAN_DIAMONDS, 500)
+        return max(cls.UNBAN_DIAMONDS * (2 ** (forbid_times - 1)), 200)
+        # return max((forbid_times - 1) * 5 * cls.UNBAN_DIAMONDS, 500)
 
     @classmethod
     def unban_by_diamonds(cls, user_id):
