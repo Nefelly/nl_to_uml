@@ -127,6 +127,8 @@ class UserService(object):
     @classmethod
     def user_device_blocked(cls, user_id):
         user_setting = UserSetting.get_by_user_id(user_id)
+        if not user_setting:
+            return False
         uuid = user_setting.uuid
         return cls.device_blocked(uuid)
 
