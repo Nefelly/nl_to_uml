@@ -173,8 +173,9 @@ class ExperimentAnalysisService(object):
         return res
 
     @classmethod
-    def get_exp_active_uids(cls, exp_name, date_str):
+    def get_exp_active_uids(cls, exp_name, date_str, is_new=False):
         '''
+        :param is_new: 是否只提取新增用户
         :param exp_name:
         :param date_str:
         :return:{'default': set(1, 2, 3)}
@@ -182,6 +183,9 @@ class ExperimentAnalysisService(object):
         default, exp, tag_ids = cls.default_exp_values(exp_name)
         active_uids = cls.get_active_users_by_date(date_str)
         res = {}
+        new_register_users = set()
+        if is_new:
+            UserService.get_all_ids()
         for tag in tag_ids:
             res[tag] = tag_ids[tag] & active_uids
         return res
@@ -211,14 +215,14 @@ class ExperimentAnalysisService(object):
         date_time = date_from_str(date_str)
         anchor_yestoday = next_date(date_time, -1)
         anchor_tomorrow = next_date(date_time)
+        for is_new in [False, True]:
+            today_exp_actives = cls.get_exp_active_uids(exp_name, date_str, is_new)
+            payment_res = cls.load_uid_payment(today_exp_actives, date_time, anchor_tomorrow)
+            cls.record_result(today_exp_actives, payment_res, exp_name, date_time, ExperimentResult.PAYMENT)
 
-        today_exp_actives = cls.get_exp_active_uids(exp_name, date_str)
-        payment_res = cls.load_uid_payment(today_exp_actives, date_time, anchor_tomorrow)
-        cls.record_result(today_exp_actives, payment_res, exp_name, date_time, ExperimentResult.PAYMENT)
-
-        yestoday_exp_actives = cls.get_exp_active_uids(exp_name, anchor_yestoday)
-        retain_res = cls.tag_retains(yestoday_exp_actives, date_time)
-        cls.record_result(yestoday_exp_actives, retain_res, exp_name, date_time, ExperimentResult.RETAIN)
+            yestoday_exp_actives = cls.get_exp_active_uids(exp_name, anchor_yestoday, is_new)
+            retain_res = cls.tag_retains(yestoday_exp_actives, date_time)
+            cls.record_result(yestoday_exp_actives, retain_res, exp_name, date_time, ExperimentResult.RETAIN)
 
     @classmethod
     def cal_all_result(cls, date_str):

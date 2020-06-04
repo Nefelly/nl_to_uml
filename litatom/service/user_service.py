@@ -18,7 +18,9 @@ from ..util import (
     format_standard_date,
     get_zero_today,
     filter_emoji,
-    now_date_key
+    now_date_key,
+    date_from_str,
+    next_date
 )
 from ..const import (
     TWO_WEEKS,
@@ -96,6 +98,12 @@ class UserService(object):
     def get_all_ids(cls):
         # return [el.user_id for el in UserSetting.objects().only('user_id')]
         return list(volatile_redis.smembers(REDIS_ALL_USER_ID_SET))
+
+    @classmethod
+    def new_register_users(cls, date_str):
+        date_time = date_from_str(date_str)
+        objs = User.objects(create_time__gte=date_time, create_tiem__lte=next_date(date_time))
+        return [str(obj.id) for obj in objs]
 
     @classmethod
     def _trans_session_2_forbidden(cls, user):
