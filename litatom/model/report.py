@@ -54,12 +54,7 @@ class Report(Document):
 
     @classmethod
     def is_dup_report(cls, uid, target_uid, ts_now):
-<<<<<<< HEAD
-        if cls.objects(uid=uid, target_uid=target_uid, create_ts__gte=ts_now - 3 * ONE_DAY, create_ts__lte=ts_now,
-                       dealed=False):
-=======
         if cls.objects(uid=uid, target_uid=target_uid, create_ts__gte=ts_now-3*ONE_DAY, create_ts__lte=ts_now, dealed=False):
->>>>>>> master
             return True
         return False
 
