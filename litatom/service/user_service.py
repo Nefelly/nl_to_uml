@@ -102,7 +102,7 @@ class UserService(object):
     @classmethod
     def new_register_users(cls, date_str):
         date_time = date_from_str(date_str)
-        objs = User.objects(create_time__gte=date_time, create_tiem__lte=next_date(date_time))
+        objs = User.objects(create_time__gte=date_time, create_time__lt=next_date(date_time))
         return [str(obj.id) for obj in objs]
 
     @classmethod
