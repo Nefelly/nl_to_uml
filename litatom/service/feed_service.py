@@ -394,7 +394,6 @@ class FeedService(object):
 
     @classmethod
     def feeds_square_for_admin(cls, user_id, start_p=0, num=10):
-        print user_id, '!' * 100
         res = cls.feeds_by_square(user_id, start_p, num, show_all=True)
         for feed in res['feeds']:
             if feed:
