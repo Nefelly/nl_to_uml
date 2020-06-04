@@ -326,8 +326,8 @@ class DiamStatService(object):
     2.diam_stat_report函数中，excel_dict位置补充，对应顺序补充excel内字段描述
     """
     STAT_QUERY_LIST = {
-        'consumer_num': 'diamonds>0 or name:success_vip| SELECT COUNT(DISTINCT user_id) as res',
-        'vip_income_diamonds': 'name:success_vip | SELECT -sum(diamonds) as res',
+        'consumer_num': 'name:deposit or name:success_vip| SELECT COUNT(DISTINCT user_id) as res',
+        'vip_income_diamonds': 'name:success_vip | SELECT COUNT(1) as res',
         'diam_cons_num': 'diamonds<0 and not success_vip |SELECT -sum(diamonds) as res',
         'diam_cons_people_num': 'diamonds<0 and not success_vip |SELECT COUNT(DISTINCT user_id) as res',
         'diam_cons_man_time_num': 'diamonds<0 and not success_vip|SELECT COUNT(1) as res',
