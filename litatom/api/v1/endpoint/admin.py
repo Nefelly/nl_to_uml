@@ -618,6 +618,16 @@ def get_user_info(user_id):
     return fail(data)
 
 
+def lock_us_feed():
+    lock_time = request.args.get('lock_time', '-1')
+    if lock_time.isdigit() and int(lock_time) > 0:
+        lock_time = int(lock_time)
+    else:
+        lock_time = 3 * ONE_DAY
+    FeedService.set_us_loc(lock_time)
+    return success('lock %d secconds' % lock_time)
+
+
 def download_phone():
     date = request.args.get('date')
     time_low = int(time.mktime(time.strptime(date, '%Y%m%d')))

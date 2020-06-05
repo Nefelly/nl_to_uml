@@ -13,7 +13,8 @@ from ..key import (
     REDIS_FEED_SQUARE_REGION,
     REDIS_FEED_HQ_REGION,
     REDIS_FEED_ID_AGE,
-    REDIS_REGION_FEED_TOP
+    REDIS_REGION_FEED_TOP,
+    REDIS_US_FEED_LOCK
 )
 from ..util import (
     get_time_info,
@@ -99,7 +100,18 @@ class FeedService(object):
         return None, True
 
     @classmethod
+    def set_us_loc(cls, expire=3*ONE_DAY):
+        redis_client.set(REDIS_US_FEED_LOCK, 1, expire)
+
+    @classmethod
+    def is_us_locked(cls):
+        return redis_client.get(REDIS_US_FEED_LOCK)
+
+    @classmethod
     def _on_add_feed(cls, feed):
+        if request.region == GlobalizationService.REGION_US:
+            if cls.is_us_locked():
+                return
         if not feed.pics:
             if cls.should_add_to_square(feed):
                 cls._add_to_feed_pool(feed)
@@ -134,7 +146,7 @@ class FeedService(object):
 
             #  need region to send to this because of request env
             if feed.pics and cls.should_add_to_square(feed):
-                redis_client.zadd(region_key,{str(feed.id): feed.create_time})
+                redis_client.zadd(region_key, {str(feed.id): feed.create_time})
         FollowingFeedService.add_feed(feed)
 
     @classmethod

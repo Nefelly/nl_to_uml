@@ -683,7 +683,21 @@ class UserService(object):
                 user.avatar = random.choice(random_avatars.get(gender))
         if data.get('birthdate', ''):
             User.change_age(user_id)
-            user.birthdate = cls.check_valid_birthdate(data.get('birthdate'))
+            original_birthdate = data.get('birthdate')
+
+            #  检查是否是泰国佛历, 泰国佛历 - 公历 = 543
+            year = original_birthdate.split('-')[0]
+            year_now = datetime.datetime.now().year
+            year_diff = 543
+            if year.isdigit() and year_diff - 100 < int(year) - year_now < year_diff:
+                real_year = str(int(year) - year_diff)
+                original_birthdate = original_birthdate.replace(year, real_year)
+
+            new_birthdate = cls.check_valid_birthdate(original_birthdate)
+            if new_birthdate != original_birthdate:
+                data['birthdate'] = new_birthdate
+                msg = u'Your setted birthdate: %s is wrong, please set it to something like \'2000-05-13\'' % original_birthdate
+                cls.msg_to_user(msg, user_id)
             user.save()
             if getattr(request, 'region',
                        '') == GlobalizationService.REGION_IN or request.loc == GlobalizationService.LOC_IN:

@@ -10,7 +10,7 @@ import logging
 from qiniu import Auth, QiniuMacAuth, http
 from ..service import GlobalizationService, AliLogService
 from ..const import BLOCK_PIC, REVIEW_PIC, OSS_PIC_URL
-from litatom.model import (
+from ..model import (
     SpamWord,
     Feed,
     BlockedDevices,

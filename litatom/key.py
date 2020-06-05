@@ -59,6 +59,8 @@ REDIS_ACCELERATE_CACHE = 'acclerate_cache:{user_id}'
 REDIS_ONLINE_CNT_CACHE = 'online_cnt_cache:{region}:{gender}'
 REDIS_DEPOSIT_BY_ACTIVITY = 'activity_diamonds:{user_date}'
 
+REDIS_US_FEED_LOCK = 'us_feed_cannot_post'
+
 REDIS_HUANXIN_ONLINE = 'huanxin_online'
 REDIS_ONLINE_GENDER_REGION = 'online:{gender}:{region}'
 REDIS_ONLINE_REGION = 'online:{region}'   # !!!

@@ -1,14 +1,14 @@
 # encoding:utf-8
 import time
 
-from litatom.const import (
+from ..const import (
     FEED_NEED_CHECK,
     SYS_FORBID,
     MANUAL_FORBID,
     OSS_AUDIO_URL,
     OSS_PIC_URL,
 )
-from litatom.model import (
+from ..model import (
     Feed,
     UserSetting,
     TrackSpamRecord,
@@ -16,13 +16,13 @@ from litatom.model import (
     UserRecord,
     User,
 )
-from litatom.service import (
+from ..service import (
     ForbidActionService,
     ForbidRecordService,
     ReportService,
     TrackSpamRecordService, UserService
 )
-from litatom.util import (
+from ..util import (
     get_ts_from_str,
     time_str_by_ts,
     unix_ts_string,

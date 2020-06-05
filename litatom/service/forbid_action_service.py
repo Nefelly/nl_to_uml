@@ -122,7 +122,7 @@ class ForbidActionService(object):
         if res:
             cls.forbid_user(target_user_id, SYS_FORBID_TIME, SYS_FORBID)
             if ForbidRecordService.get_device_forbidden_num_by_uid(user_id) > ForbidRecordService.DEVICE_FORBID_THRESHOLD:
-                from litatom.service import AdminService
+                from ..service import AdminService
                 cls.forbid_device(target_user_id,SYS_FORBID_TIME)
             return {"report_id": str(report_id), SYS_FORBID: True}, True
         if not alert_res:
