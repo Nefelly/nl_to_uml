@@ -612,7 +612,7 @@ def get_forbid_history_by_uid():
 def get_user_info(user_id):
     data, status = UserService.get_user_info(user_id, user_id)
     if status:
-        data.pop('session')   # 危险的操作 不可返回
+        # data.pop('session')   # 危险的操作 不可返回
         data['uuid'] = UserService.uuid_by_user_id(user_id)
         return success(data)
     return fail(data)
