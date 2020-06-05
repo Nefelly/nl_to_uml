@@ -33,7 +33,9 @@ class ExperimentService(object):
     '''
     参考文档： 美团实验平台设计  https://tech.meituan.com/2019/11/28/advertising-performance-experiment-configuration-platform.html
               马蜂窝  https://blog.csdn.net/weixin_43846997/article/details/90512001
+    暂不支持实验比例来回调；可能会有影响
     '''
+
     BUCKET_NUM = 100
     DEFAULT_VAULES = [ExpBucket.DEFAULT, ExpBucket.NOSET]
     DEFAULT_VALUE = ExpBucket.DEFAULT
