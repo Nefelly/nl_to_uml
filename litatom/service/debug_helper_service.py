@@ -194,7 +194,7 @@ class DebugHelperService(object):
                     users.append(raw_info)
             res['zusers'] = users
             feeds = []
-            for _ in Feed.objects().order_by('-create_time'):
+            for _ in Feed.objects().order_by('-create_time').limit(100):
                 feeds.append(FeedService.get_feed_info(None, str(_.id)))
             res['zzfeeds'] = feeds
         return res
