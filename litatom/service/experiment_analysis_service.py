@@ -190,7 +190,7 @@ class ExperimentAnalysisService(object):
         res = {}
         new_users = set()
         if is_new:
-            key = 'new_users' + str(date_str)
+            key = 'new_users' + str(date_str) + str(loc)
             new_users = cls.get_set_name(key)
             if not new_users:
                 new_users = set(UserService.new_register_users(date_str))
