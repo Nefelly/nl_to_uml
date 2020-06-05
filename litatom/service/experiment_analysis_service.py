@@ -85,7 +85,7 @@ class ExperimentAnalysisService(object):
         return values_ids.get(ExperimentService.DEFAULT_VALUE), exp_values, values_ids
 
     @classmethod
-    def get_active_users_by_date(cls, date_time):
+    def get_active_users_by_date(cls, date_time, loc=None):
         key = 'active' + str(date_time)
         actives = cls.get_set_name(key)
         if actives:
@@ -101,7 +101,12 @@ class ExperimentAnalysisService(object):
             print(u'too long to retrieve daily active')
             return set(res)
         date_key = date_time.strftime('%Y-%m-%d')
-        for loc in GlobalizationService.LOCS:
+        if not loc:
+            for el_loc in GlobalizationService.LOCS:
+                key = REDIS_LOC_USER_ACTIVE.format(date_loc=date_key + el_loc)
+                tmp = volatile_redis.smembers(key)
+                res += tmp
+        else:
             key = REDIS_LOC_USER_ACTIVE.format(date_loc=date_key + loc)
             tmp = volatile_redis.smembers(key)
             res += tmp
@@ -173,7 +178,7 @@ class ExperimentAnalysisService(object):
         return res
 
     @classmethod
-    def get_exp_active_uids(cls, exp_name, date_str, is_new=False):
+    def get_exp_active_uids(cls, exp_name, date_str, is_new=False, loc=None):
         '''
         :param is_new: 是否只提取新增用户
         :param exp_name:
@@ -181,9 +186,9 @@ class ExperimentAnalysisService(object):
         :return:{'default': set(1, 2, 3)}
         '''
         default, exp, tag_ids = cls.default_exp_values(exp_name)
-        active_uids = cls.get_active_users_by_date(date_str)
+        active_uids = cls.get_active_users_by_date(date_str, loc)
         res = {}
-        new_register_users = set()
+        new_users = set()
         if is_new:
             key = 'new_users' + str(date_str)
             new_users = cls.get_set_name(key)
@@ -223,11 +228,14 @@ class ExperimentAnalysisService(object):
         anchor_tomorrow = next_date(date_time)
         for is_new in [False, True]:
             name_prefix = 'new_' if is_new else ''
-            today_exp_actives = cls.get_exp_active_uids(exp_name, date_str, is_new)
+            loc = None
+            if exp_name == 'id_show_video':
+                loc = GlobalizationService.LOC_ID
+            today_exp_actives = cls.get_exp_active_uids(exp_name, date_str, is_new, loc)
             payment_res = cls.load_uid_payment(today_exp_actives, date_time, anchor_tomorrow)
             cls.record_result(today_exp_actives, payment_res, exp_name, date_time, name_prefix + ExperimentResult.PAYMENT)
 
-            yestoday_exp_actives = cls.get_exp_active_uids(exp_name, anchor_yestoday, is_new)
+            yestoday_exp_actives = cls.get_exp_active_uids(exp_name, anchor_yestoday, is_new, loc)
             retain_res = cls.tag_retains(yestoday_exp_actives, date_time)
             cls.record_result(yestoday_exp_actives, retain_res, exp_name, date_time, name_prefix + ExperimentResult.RETAIN)
 

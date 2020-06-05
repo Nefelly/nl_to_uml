@@ -841,6 +841,7 @@ def get_feed():
     condition = request.args.get('condition')
     ForbidPlatformService.get_feed(loc, condition)
 
+
 def huanxin_by_uid():
     uid = request.args.get('user_id')
     nickname = request.args.get('nickname')
