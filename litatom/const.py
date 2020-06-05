@@ -128,3 +128,10 @@ CAN_MATCH_ONLINE = False
 VOLATILE_USER_ACTIVE_RETAIN_DAYS = 8
 
 #diamonds
+
+# experiment
+
+EXP_SHARE_5_30 = 'share_5_30'
+EXP_TAG_SHARE_LESS = 'less_to_30'
+EXP_SHARE_VALUE_LESS = 30
+

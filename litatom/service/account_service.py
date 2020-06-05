@@ -17,7 +17,10 @@ from ..const import (
     ONE_MIN,
     ONE_DAY,
     MAX_DIAMONDS,
-    ONE_MONTH
+    ONE_MONTH,
+    EXP_SHARE_5_30,
+    EXP_TAG_SHARE_LESS,
+    EXP_SHARE_VALUE_LESS
 )
 from ..util import (
     now_date_key
@@ -36,7 +39,8 @@ from ..service import (
     AvatarService,
     GlobalizationService,
     TrackActionService,
-    GoogleService
+    GoogleService,
+    ExperimentService
 )
 from ..key import (
     REDIS_ACCOUNT_ACTION,
@@ -78,7 +82,7 @@ class AccountService(object):
     PAY_ACTIVITIES = {
         SHARE: 1,
         WATCH_AD: 1,
-        SHARE_5: 30,
+        SHARE_5: 100,
     }
     UNBAN_DIAMONDS = 100
     DAY_ACTIVITY_LIMIT = 500 if not setting.IS_DEV else 200
@@ -410,12 +414,13 @@ class AccountService(object):
         AccountFlowRecord.create(user_id, AccountFlowRecord.SUCCESS_VIP)
         return None, True
 
-
     @classmethod
     def deposit_by_activity(cls, user_id, activity, other_info={}):
         if activity not in cls.PAY_ACTIVITIES:
             return u'not recognized activity', False
         diamonds = cls.PAY_ACTIVITIES.get(activity)
+        if activity == cls.SHARE_5 and ExperimentService.lit_exp_hit(EXP_SHARE_5_30, EXP_TAG_SHARE_LESS):
+            diamonds = EXP_SHARE_VALUE_LESS
         key = REDIS_DEPOSIT_BY_ACTIVITY.format(user_date=now_date_key() + user_id)
         day_deposit_str = redis_client.get(key)
         day_deposit = int(day_deposit_str) if day_deposit_str else 0
@@ -453,5 +458,7 @@ class AccountService(object):
             last_share_time = redis_client.get(share_key)
             if last_share_time:
                 other_info['last_share_time'] = int(last_share_time)
+            if ExperimentService.lit_exp_hit(EXP_SHARE_5_30, EXP_TAG_SHARE_LESS):
+                res[cls.SHARE_5] = EXP_SHARE_VALUE_LESS
         res.update(other_info=other_info)
         return res, True

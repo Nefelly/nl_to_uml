@@ -121,6 +121,11 @@ class ExperimentService(object):
         return ExpBucket.get_by_exp_name_bucket_id(exp_name, bucket)
 
     @classmethod
+    def lit_exp_hit(cls, exp_name, value, key=None):
+        geted_value = cls.lit_exp_value(exp_name, key)
+        return geted_value == value
+
+    @classmethod
     def delete_exp(cls, exp_name):
         ExpBucket.objects(exp_name=exp_name).delete()
         return None, True
