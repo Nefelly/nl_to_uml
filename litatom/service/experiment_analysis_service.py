@@ -86,7 +86,7 @@ class ExperimentAnalysisService(object):
 
     @classmethod
     def get_active_users_by_date(cls, date_time, loc=None):
-        key = 'active' + str(date_time)
+        key = 'active' + str(date_time) + str(loc)
         actives = cls.get_set_name(key)
         if actives:
             return actives
@@ -190,7 +190,7 @@ class ExperimentAnalysisService(object):
         res = {}
         new_users = set()
         if is_new:
-            key = 'new_users' + str(date_str) + str(loc)
+            key = 'new_users' + str(date_str)   # 此处不用加loc 因为新加载用户不使用loc做区分
             new_users = cls.get_set_name(key)
             if not new_users:
                 new_users = set(UserService.new_register_users(date_str))
