@@ -168,7 +168,7 @@ class DebugHelperService(object):
             if key and key not in k:
                 continue
             not_include = False
-            for el in ['cache', 'share_stat']:
+            for el in ['cache', 'share_stat', 'all_user_ids', 'exp_bucket']:
                 if el in k:
                     not_include =True
                     break
