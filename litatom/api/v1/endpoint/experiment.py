@@ -48,7 +48,8 @@ def set_experiments():
 
 
 def exp_result(exp_name):
-    data, status = ExperimentAnalysisService.exp_json_result(exp_name)
+    show_name = request.values.get('show_name', None)
+    data, status = ExperimentAnalysisService.exp_json_result(exp_name, show_name)
     if status:
         return success(data)
     return fail(data)
