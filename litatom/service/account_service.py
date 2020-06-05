@@ -78,7 +78,7 @@ class AccountService(object):
     PAY_ACTIVITIES = {
         SHARE: 1,
         WATCH_AD: 1,
-        SHARE_5: 100,
+        SHARE_5: 30,
     }
     UNBAN_DIAMONDS = 100
     DAY_ACTIVITY_LIMIT = 500 if not setting.IS_DEV else 200
