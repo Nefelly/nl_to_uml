@@ -26,6 +26,7 @@ class ExperimentResult(Document):
     }
     RETAIN = 'retain'
     PAYMENT = 'payment'
+    COST = 'cost'
 
     exp_name = StringField(required=True)
     tag = StringField()

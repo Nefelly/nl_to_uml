@@ -47,7 +47,7 @@ class ExperimentAnalysisService(object):
 
     USER_EXP_TTL = ONE_DAY
     WHITE_LIST_TTL = 30 * ONE_DAY
-    STAT_NAMES = [ExperimentResult.RETAIN, ExperimentResult.PAYMENT]
+    STAT_NAMES = [ExperimentResult.RETAIN, ExperimentResult.PAYMENT, ExperimentResult.COST]
 
     @classmethod
     def default_exp_values(cls, exp_name):
@@ -178,6 +178,47 @@ class ExperimentAnalysisService(object):
         return res
 
     @classmethod
+    def load_uid_cost(cls, tag_uids, from_time, to_time):
+        key = 'cost%s%s' % (str(from_time), str(to_time))
+        cost_m = cls.get_set_name(key)
+        if not cost_m:
+            resp = AliLogService.get_log_atom(
+                project='litatom-account', logstore='account_flow',
+                from_time=AliLogService.datetime_to_alitime(from_time),
+                to_time=AliLogService.datetime_to_alitime(to_time),
+                query="diamonds < 0 | SELECT user_id,sum(-diamonds) as res GROUP by user_id limit %d" % ALILOG_GET_LIMIT_NUM)
+            cost_m = {}
+            for log in resp.logs:
+                content = log.get_contents()
+                user_id = content['user_id']
+                log_res = content['res']
+                cost_m[user_id] = log_res
+            cls.get_set_name(key, cost_m)
+        help_set = {}
+        res = {}
+        for tag in tag_uids:
+            help_set[tag] = set()
+            res[tag] = {
+                'cost_sum': 0.0
+            }
+
+        for user_id, log_res in cost_m.items():
+            tag = cls.get_tag_by_uid(tag_uids, user_id)
+            if tag:
+                res[tag]['cost_sum'] += int(log_res)
+                help_set[tag].add(user_id)
+
+        for tag in res:
+            cost_num = len(help_set[tag])
+            total_num = len(tag_uids[tag])
+            res[tag].update({
+                'cost_num': cost_num,
+                'cost_ratio': cost_num * 1.0 / total_num,
+                'everage_pay': res[tag]['cost_sum'] * 1.0 / total_num
+            })
+        return res
+    
+    @classmethod
     def get_exp_active_uids(cls, exp_name, date_str, is_new=False, loc=None):
         '''
         :param is_new: 是否只提取新增用户
@@ -232,8 +273,13 @@ class ExperimentAnalysisService(object):
             if exp_name == 'id_show_video':
                 loc = GlobalizationService.LOC_ID
             today_exp_actives = cls.get_exp_active_uids(exp_name, date_str, is_new, loc)
+
             payment_res = cls.load_uid_payment(today_exp_actives, date_time, anchor_tomorrow)
             cls.record_result(today_exp_actives, payment_res, exp_name, date_time, name_prefix + ExperimentResult.PAYMENT)
+
+            cost_res = cls.load_uid_cost(today_exp_actives, date_time, anchor_tomorrow)
+            cls.record_result(today_exp_actives, cost_res, exp_name, date_time,
+                              name_prefix + ExperimentResult.COST)
 
             yestoday_exp_actives = cls.get_exp_active_uids(exp_name, anchor_yestoday, is_new, loc)
             retain_res = cls.tag_retains(yestoday_exp_actives, date_time)
@@ -246,7 +292,7 @@ class ExperimentAnalysisService(object):
             cls.cal_day_result(date_str, exp_name)
 
     @classmethod
-    def exp_json_result(cls, exp_name):
+    def exp_json_result(cls, exp_name, show_name=None):
         dates = ExperimentResult.desc_dates(exp_name)
         res = []
         for date_el in dates:
@@ -255,6 +301,8 @@ class ExperimentAnalysisService(object):
             }
             names = ExperimentResult.distinct_names(exp_name, date_el)
             for name in names:
+                if show_name and name != show_name:
+                    continue
                 objs = ExperimentResult.get_by_exp_name_date_name(exp_name, date_el, name)
                 compare_items = {}
                 for obj in objs:
