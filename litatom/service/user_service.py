@@ -696,6 +696,7 @@ class UserService(object):
             new_birthdate = cls.check_valid_birthdate(original_birthdate)
             if new_birthdate != original_birthdate:
                 data['birthdate'] = new_birthdate
+                print data
                 msg = u'Your setted birthdate: %s is wrong, please set it to something like \'2000-05-13\'' % original_birthdate
                 cls.msg_to_user(msg, user_id)
             user.save()
