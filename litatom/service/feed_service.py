@@ -162,7 +162,7 @@ class FeedService(object):
             return {}
         user_info = UserService.user_info_by_uid(feed.user_id)
         if not user_info:
-            feed.delete()
+            # feed.delete()
             return {}
         res = feed.get_info()
         res['user_info'] = user_info

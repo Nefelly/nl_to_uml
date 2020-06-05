@@ -11,7 +11,6 @@ from flask import (
 from hendrix.conf import setting
 from ..key import (
     REDIS_EXP,
-
 )
 from ..const import (
     ONE_DAY,
