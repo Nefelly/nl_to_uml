@@ -698,7 +698,7 @@ class UserService(object):
                 data['birthdate'] = new_birthdate
                 msg = u'Your setted birthdate: %s is wrong, please set it to something like \'2000-05-13\'' % original_birthdate
                 cls.msg_to_user(msg, user_id)
-            user.save()
+            # user.save()
             if getattr(request, 'region',
                        '') == GlobalizationService.REGION_IN or request.loc == GlobalizationService.LOC_IN:
                 age = User.age_by_user_id(user_id)
