@@ -62,9 +62,13 @@ class GoogleService(object):
     @classmethod
     def _get_info_from_remark(cls, remark):
         from ..service import AccountService
-        diamonds = int(remark['diamonds'])
         token = remark['payload']['token']
-        product_id = AccountService.get_product_name_by_diamonds(diamonds)
+
+        if remark.get('diamonds', ''):
+            diamonds = int(remark['diamonds'])
+            product_id = AccountService.get_product_name_by_diamonds(diamonds)
+        else:
+            product_id = remark.get('product_name')
         return token, product_id
 
     @classmethod
