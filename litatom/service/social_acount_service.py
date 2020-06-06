@@ -68,7 +68,8 @@ class GoogleService(object):
             diamonds = int(remark['diamonds'])
             product_id = AccountService.get_product_name_by_diamonds(diamonds)
         else:
-            product_id = remark.get('product_name')
+            product_name = remark.get('product_name')
+            product_id = AccountService.product_id_by_prodcut_name(product_name)
         return token, product_id
 
     @classmethod

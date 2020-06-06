@@ -169,6 +169,13 @@ class AccountService(object):
         return None
 
     @classmethod
+    def product_id_by_prodcut_name(cls, product_name):
+        m = {
+            "vip": "vip_member"
+        }
+        return m.get(product_name, '')
+
+    @classmethod
     def get_user_account_info(cls, user_id):
         return UserAccount.get_account_info(user_id)
 
