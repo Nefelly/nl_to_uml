@@ -124,5 +124,7 @@ class ReceivedGift(Document):
             attr = getattr(self, key)
             if key == 'id':
                 attr = str(attr)
+            elif key == 'create_time':
+                attr = date_to_int_time(attr)
             result[key] = attr
         return result
