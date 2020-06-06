@@ -326,7 +326,6 @@ class AccountService(object):
 
     @classmethod
     def send_gift(cls, user_id, receiver, gift_id):
-        print user_id, receiver, gift_id
         diamonds = GiftService.gift_price_by_gift_id(gift_id)
         '''先检查钻石够不够'''
         if not diamonds:
