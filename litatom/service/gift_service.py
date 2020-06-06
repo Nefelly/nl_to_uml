@@ -39,7 +39,7 @@ class GiftService(object):
         user_ids = [el.sender for el in objs]
         user_info_m = UserService.batch_get_user_info_m(user_ids)
         for i in range(len(res)):
-            user_id = res[i]['user_id']
+            user_id = res[i]['sender']
             res[i]['user_info'] = user_info_m.get(user_id, {})
         return {'gifts': res}, True
 
