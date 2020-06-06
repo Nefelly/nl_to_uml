@@ -26,8 +26,8 @@ class GiftService(object):
 
     @classmethod
     def gift_price_by_gift_id(cls, gift_id):
-        gifts = Gift.get_gifts()
-        return gifts.get(gift_id, {}).get('price', 0)
+        gifts = Gift.gift_price_m()
+        return gifts.get(gift_id, 0)
 
     @classmethod
     def received_gifts(cls, user_id, page_num, num):

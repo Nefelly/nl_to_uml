@@ -11,8 +11,12 @@ from mongoengine import (
     ListField,
     StringField,
 )
+from ..util import (
+    date_to_int_time
+)
 from .. key import (
-    REDIS_GIFT_CACHE
+    REDIS_GIFT_CACHE,
+    REDIS_GIFT_PRICE_CACHE
 )
 from ..const import (
     ONE_DAY
@@ -44,6 +48,7 @@ class Gift(Document):
     @classmethod
     def _disable_cache(cls):
         redis_client.delete(REDIS_GIFT_CACHE)
+        redis_client.delete(REDIS_GIFT_PRICE_CACHE)
 
     @classmethod
     def get_by_id(cls, gift_id):
@@ -68,6 +73,17 @@ class Gift(Document):
         for obj in cls.objects().order_by('price'):
             gifts.append(obj.to_json())
         redis_client.set(REDIS_GIFT_CACHE, cPickle.dumps(gifts))
+        return gifts
+
+    @classmethod
+    def gift_price_m(cls):
+        cache_obj = redis_client.get(REDIS_GIFT_PRICE_CACHE)
+        if cache_obj:
+            return cPickle.loads(cache_obj)
+        gifts = {}
+        for obj in cls.objects():
+            gifts[str(obj.id)] = obj.price
+        redis_client.set(REDIS_GIFT_PRICE_CACHE, cPickle.dumps(gifts))
         return gifts
 
     def to_json(self):
