@@ -33,9 +33,9 @@ def gifts():
 
 
 @session_required
-def received_gifts():
+def received_gifts(user_id):
     num = request.num if request.num else 10
-    data, status = GiftService.received_gifts(request.user_id, request.page_num, num)
+    data, status = GiftService.received_gifts(user_id, request.page_num, num)
     if not status:
         return fail(data)
     return success(data)
