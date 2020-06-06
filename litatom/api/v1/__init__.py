@@ -46,7 +46,7 @@ b.add_url_rule('/lit/user_visit/all_viewed', 'user-visit-all_viewed', endpoint.u
 b.add_url_rule('/lit/user_visit/visited_list', 'user-visit-visited_list', endpoint.user_visit.visited_list)
 
 # gift
-b.add_url_rule('/lit/gift/gifts', 'gift-gifts', endpoint.gift.get_gifts)
+b.add_url_rule('/lit/gift/gifts', 'gift-gifts', endpoint.gift.gifts)
 b.add_url_rule('/lit/gift/received_gifts', 'gift-received_gifts', endpoint.gift.received_gifts)
 
 #  match history
