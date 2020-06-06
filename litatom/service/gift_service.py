@@ -46,4 +46,4 @@ class GiftService(object):
     @classmethod
     def send_gift(cls, user_id, receiver_id, gift_id):
         ReceivedGift.create(user_id, receiver_id, gift_id)
-        return True
+        return None
