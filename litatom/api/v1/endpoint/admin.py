@@ -323,9 +323,6 @@ def set_diamonds():
         return fail('unauthorized')
     num = request.args.get('num')
     num = int(num)
-    payload = {
-        'diamonds': 50
-    }
     msg, status = AccountService.set_diamonds(user_id, num)
     if status:
         return success(AccountService.get_user_account_info(user_id))

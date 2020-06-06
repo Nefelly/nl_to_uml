@@ -58,6 +58,7 @@ REDIS_USER_NOT_MESSAGE_CACHE = 'user_nomsg_cache:{user_id}'
 REDIS_ACCELERATE_CACHE = 'acclerate_cache:{user_id}'
 REDIS_ONLINE_CNT_CACHE = 'online_cnt_cache:{region}:{gender}'
 REDIS_DEPOSIT_BY_ACTIVITY = 'activity_diamonds:{user_date}'
+REDIS_GIFT_CACHE = 'gift_cache'
 
 REDIS_US_FEED_LOCK = 'us_feed_cannot_post'
 
