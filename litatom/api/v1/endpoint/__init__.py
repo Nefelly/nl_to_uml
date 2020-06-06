@@ -17,3 +17,4 @@ from . import account
 from . import experiment
 from . import user_visit
 from . import match_history
+from . import gift
