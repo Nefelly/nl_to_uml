@@ -36,7 +36,7 @@ class GiftService(object):
         res = []
         for obj in objs:
             res.append(obj.to_json())
-        user_ids = [el.user_id for el in objs]
+        user_ids = [el.sender for el in objs]
         user_info_m = UserService.batch_get_user_info_m(user_ids)
         for i in range(len(res)):
             user_id = res[i]['user_id']
