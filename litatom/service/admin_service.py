@@ -305,7 +305,7 @@ class AdminService(object):
         for line in lines:
             if len(line) != len(fields):
                 return u'len(line) != len(fields), line:%r' % line, False
-            conn = ','.join(['%s=\'%s\'' % (fields[i], line[i]) if line[i].isdigit() else '%s=%s' % (fields[i], line[i]) for i in range(len(line))])
+            conn = ','.join(['%s=\'%s\'' % (fields[i], line[i]) if not line[i].isdigit() else '%s=%s' % (fields[i], line[i]) for i in range(len(line))])
             get = eval('%s.objects(%s).first()' % (table_name, conn))
             if is_delete:
                 if not conn:
