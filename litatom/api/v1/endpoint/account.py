@@ -139,9 +139,9 @@ def buy_avatar(fileid):
 
 
 @session_required
-def buy_gift(other_user_id):
+def send_gift(other_user_id):
     gift_id = request.args.get('gift_id', '')
-    data, status = AccountService.buy_gift(request.user_id, other_user_id, gift_id)
+    data, status = AccountService.send_gift(request.user_id, other_user_id, gift_id)
     if not status:
         return fail(data)
     return success(data)
