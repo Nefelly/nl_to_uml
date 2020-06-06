@@ -68,6 +68,7 @@ from .video_match_service import VideoMatchService
 from .feed_service import FeedService
 from .debug_helper_service import DebugHelperService
 from .feedback_service import FeedbackService
+from .gift_service import GiftService
 from .todev_sync_service import ToDevSyncService
 from .experiment_analysis_service import ExperimentAnalysisService
 from .admin_service import AdminService

@@ -40,7 +40,8 @@ from ..service import (
     GlobalizationService,
     TrackActionService,
     GoogleService,
-    ExperimentService
+    ExperimentService,
+    GiftService
 )
 from ..key import (
     REDIS_ACCOUNT_ACTION,
@@ -318,7 +319,23 @@ class AccountService(object):
         add_err = UserAsset.add_avatar(user_id, fileid)
         if add_err:
             return add_err, False
-        err_msg = cls.change_diamonds(user_id, -diamonds, 'buy avatar')
+        err_msg = cls.change_diamonds(user_id, -diamonds, 'buy_avatar')
+        if err_msg:
+            return err_msg, False
+        return None, True
+
+    @classmethod
+    def buy_gift(cls, user_id, receiver, gift_id):
+        diamonds = GiftService.gift_price_by_gift_id(gift_id)
+        '''先检查钻石够不够'''
+        if not diamonds:
+            return u'wrong gift_id', False
+        if not cls.is_diamond_enough(user_id, diamonds):
+            return cls.ERR_DIAMONDS_NOT_ENOUGH, False
+        add_err = GiftService.send_gift(user_id, receiver, gift_id)
+        if add_err:
+            return add_err, False
+        err_msg = cls.change_diamonds(user_id, -diamonds, 'buy_gift')
         if err_msg:
             return err_msg, False
         return None, True

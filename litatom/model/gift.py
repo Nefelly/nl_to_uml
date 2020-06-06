@@ -60,7 +60,7 @@ class Gift(Document):
         super(Gift, self).delete(*args, **kwargs)
 
     @classmethod
-    def get_avatars(cls):
+    def get_gifts(cls):
         cache_obj = redis_client.get(REDIS_GIFT_CACHE)
         if cache_obj:
             return cPickle.loads(cache_obj)
@@ -91,8 +91,16 @@ class ReceivedGift(Document):
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
 
     @classmethod
-    def get_by_receiver_id(cls, receiver, ):
-        return cls.objects(receiver=receiver).order_by('-create_time')
+    def get_by_receiver_id(cls, receiver, page_num=0, num=20):
+        start_num = page_num * num
+        return cls.objects(receiver=receiver).order_by('-create_time').skip(start_num).limit(num)
+
+
+    @classmethod
+    def create(cls, sender, receiver, gift_id):
+        obj = cls(sender=sender, receiver=receiver, gift_id=gift_id)
+        obj.save()
+        return True
 
     def to_json(self):
         result = {}
