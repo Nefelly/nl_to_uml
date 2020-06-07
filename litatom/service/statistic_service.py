@@ -554,6 +554,7 @@ class DiamStatService(object):
             data[loc].append(cls.cal_mem_num(time_yesterday, loc))
 
         for loc in data:
+            print(date,next_date(date,31*ONE_DAY))
             if loc == 'ALL':
                 data[loc].append(User.objects(vip_time__lte=date_to_int_time(next_date(date,31*ONE_DAY)),vip_time__gt=0).count())
             else:
