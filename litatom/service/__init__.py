@@ -80,3 +80,4 @@ from .chat_record_service import ChatRecordService
 from .statistic_service import ForbidStatService
 from .test_clean_service import TestCleanService
 # from .mysql_sync_service import MysqlSyncService
+from .nl_service import NlService

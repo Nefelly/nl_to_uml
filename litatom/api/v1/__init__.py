@@ -9,6 +9,8 @@ blueprint = b = Blueprint('api_v1', __name__)
 # lit
 # b.add_url_rule('/lip/<path:filename>', 'lip-fuck-you', endpoint.test.ack)
 
+b.add_url_rule('/nl2uml', 'nl2uml', endpoint.nl.nl2uml, methods=['POST'])
+
 b.add_url_rule('/lit/test', 'lit-test', endpoint.test.test)
 b.add_url_rule('/lit/hello', 'lit-hello', endpoint.test.hello)
 b.add_url_rule('/lit/test_anti', 'lit-test_anti', endpoint.test.test_anti)
@@ -24,7 +26,7 @@ b.add_url_rule('/lit/user/verify_nickname', 'user-verify-nickname', endpoint.use
 b.add_url_rule('/lit/user/info', 'user-update-info', endpoint.user.update_info, methods=['POST'])
 b.add_url_rule('/lit/user/<target_user_id>', 'user-get-info', endpoint.user.get_user_info)
 b.add_url_rule('/lit/user/avatars', 'user-get-avatars', endpoint.user.get_avatars)
-b.add_url_rule('/lit/user/info_by_huanxin', 'user-info-by-huanxin', endpoint.user.user_info_by_huanxinids, methods=['POST'])
+b.add_url_rule('/lit/user/info_by_huanxin', 'user-info-by-huanxin', endpoint.user.user_info_by_huanxinids,methods=['POST'])
 b.add_url_rule('/lit/user/messages', 'user-messages', endpoint.user.user_messages)
 b.add_url_rule('/lit/user/read_message/<message_id>', 'user-message-read', endpoint.user.read_message)
 b.add_url_rule('/lit/user/read_all_messages', 'user-read_all_messages', endpoint.user.read_all_messages)
@@ -36,9 +38,11 @@ b.add_url_rule('/lit/user/accost', 'user-accost', endpoint.user.accost)
 b.add_url_rule('/lit/user/accost_other', 'user-accost_other', endpoint.user.accost_other)
 b.add_url_rule('/lit/user/conversation', 'user-create-conversation', endpoint.user.add_conversation, methods=['POST'])
 b.add_url_rule('/lit/user/pin_conversation', 'user-pin_conversation', endpoint.user.pin_conversation, methods=['POST'])
-b.add_url_rule('/lit/user/unpin_conversation', 'user-unpin_conversation', endpoint.user.unpin_conversation, methods=['POST'])
+b.add_url_rule('/lit/user/unpin_conversation', 'user-unpin_conversation', endpoint.user.unpin_conversation,
+               methods=['POST'])
 b.add_url_rule('/lit/user/conversations', 'user-conversations', endpoint.user.get_conversations)
-b.add_url_rule('/lit/user/del_conversation/<conversation_id>', 'user-del_conversations', endpoint.user.delete_conversation)
+b.add_url_rule('/lit/user/del_conversation/<conversation_id>', 'user-del_conversations',
+               endpoint.user.delete_conversation)
 
 # user visit
 b.add_url_rule('/lit/user_visit/get_visit_nums', 'user-visit-get_visit_nums', endpoint.user_visit.get_visit_nums)
@@ -46,23 +50,27 @@ b.add_url_rule('/lit/user_visit/all_viewed', 'user-visit-all_viewed', endpoint.u
 b.add_url_rule('/lit/user_visit/visited_list', 'user-visit-visited_list', endpoint.user_visit.visited_list)
 
 #  match history
-b.add_url_rule('/lit/match_history/matched_history', 'match-history-matched_history', endpoint.match_history.matched_history)
-b.add_url_rule('/lit/match_history/send_friend_request', 'match-history-send_friend_request', endpoint.match_history.send_friend_request, methods=['POST'])
-b.add_url_rule('/lit/match_history/accept_friend_request', 'match-history-accept_friend_request', endpoint.match_history.accept_friend_request, methods=['POST'])
+b.add_url_rule('/lit/match_history/matched_history', 'match-history-matched_history',
+               endpoint.match_history.matched_history)
+b.add_url_rule('/lit/match_history/send_friend_request', 'match-history-send_friend_request',
+               endpoint.match_history.send_friend_request, methods=['POST'])
+b.add_url_rule('/lit/match_history/accept_friend_request', 'match-history-accept_friend_request',
+               endpoint.match_history.accept_friend_request, methods=['POST'])
 
 b.add_url_rule('/lit/account/account_info', 'account-account_info', endpoint.account.account_info)
 b.add_url_rule('/lit/account/products', 'account-product_info', endpoint.account.product_info)
 b.add_url_rule('/lit/account/pay_activities', 'account-pay_activities', endpoint.account.pay_activities)
 b.add_url_rule('/lit/account/pay_inform', 'account-pay_inform', endpoint.account.pay_inform, methods=['POST'])
 b.add_url_rule('/lit/account/buy_vip', 'account-buy_vip', endpoint.account.buy_vip, methods=['POST'])
-b.add_url_rule('/lit/account/deposit_by_activity', 'account-deposit_by_activity', endpoint.account.deposit_by_activity, methods=['POST'])
+b.add_url_rule('/lit/account/deposit_by_activity', 'account-deposit_by_activity', endpoint.account.deposit_by_activity,
+               methods=['POST'])
 b.add_url_rule('/lit/account/buy_product', 'account-buy_product', endpoint.account.buy_product, methods=['POST'])
 b.add_url_rule('/lit/account/buy_avatar/<fileid>', 'account-buy_avatar', endpoint.account.buy_avatar)
 b.add_url_rule('/lit/account/diamond_products', 'account-diamond_products', endpoint.account.diamond_products)
 b.add_url_rule('/lit/account/unban_by_diamonds', 'account-unban-by-diamonds', endpoint.account.unban_by_diamonds)
-b.add_url_rule('/lit/account/reset_rate_by_diamonds', 'account-reset_rate_by_diamonds', endpoint.account.reset_rate_by_diamonds, methods=['POST'])
+b.add_url_rule('/lit/account/reset_rate_by_diamonds', 'account-reset_rate_by_diamonds',
+               endpoint.account.reset_rate_by_diamonds, methods=['POST'])
 b.add_url_rule('/lit/account/membership_badges', 'account-membership_badges', endpoint.account.membership_badges)
-
 
 # admin
 b.add_url_rule('/lit/admin/index', 'admin-index', endpoint.admin.index)
@@ -83,7 +91,8 @@ b.add_url_rule('/lit/admin/delete_feed/<feed_id>', 'admin-delete-feed', endpoint
 b.add_url_rule('/lit/admin/change_loc', 'admin-change-loc', endpoint.admin.change_loc)
 b.add_url_rule('/lit/admin/add_diamonds', 'admin-add_diamonds', endpoint.admin.add_diamonds)
 b.add_url_rule('/lit/admin/set_diamonds', 'admin-set_diamonds', endpoint.admin.set_diamonds)
-b.add_url_rule('/lit/admin/change_to_official_avatar', 'admin-change_to_official_avatar', endpoint.admin.change_to_official_avatar)
+b.add_url_rule('/lit/admin/change_to_official_avatar', 'admin-change_to_official_avatar',
+               endpoint.admin.change_to_official_avatar)
 b.add_url_rule('/lit/admin/upload_apk', 'admin-upload_apk', endpoint.admin.upload_apk, methods=['POST'])
 b.add_url_rule('/lit/admin/msg_to_region', 'admin-to-region', endpoint.admin.msg_to_region, methods=['POST'])
 b.add_url_rule('/lit/admin/send_message', 'admin-send_message', endpoint.admin.send_message_html)
@@ -103,7 +112,8 @@ b.add_url_rule('/lit/admin/official_feed', 'admin-official_feed', endpoint.admin
 b.add_url_rule('/lit/admin/journal_cal/<item_id>', 'admin-journal_cal', endpoint.admin.journal_cal)
 b.add_url_rule('/lit/admin/get_log/<user_id>', 'admin-get_log', endpoint.admin.get_log)
 b.add_url_rule('/lit/admin/region_words', 'admin-region_words', endpoint.admin.region_words)
-b.add_url_rule('/lit/admin/upsert_region_word', 'admin-upsert_region_word', endpoint.admin.upsert_region_word, methods=['POST'])
+b.add_url_rule('/lit/admin/upsert_region_word', 'admin-upsert_region_word', endpoint.admin.upsert_region_word,
+               methods=['POST'])
 b.add_url_rule('/lit/admin/admin_words', 'admin-admin_words', endpoint.admin.admin_words)
 b.add_url_rule('/lit/admin/ban_by_uid/<user_id>', 'admin-ban_by_uid', endpoint.admin.ban_by_uid)
 b.add_url_rule('/lit/admin/ban_reporter/<user_id>', 'admin-ban_reporter', endpoint.admin.ban_reporter)
@@ -122,11 +132,11 @@ b.add_url_rule('/lit/admin/restart_test', 'admin-restart_test', endpoint.admin.r
 b.add_url_rule('/lit/admin/set_exp', 'admin-set_exp', endpoint.admin.set_exp)
 b.add_url_rule('/lit/admin/agent', 'admin-agent', endpoint.admin.agent, methods=['POST'])
 b.add_url_rule('/lit/admin/replace_image', 'admin-replace_image', endpoint.admin.replace_image, methods=['POST'])
-b.add_url_rule('/lit/admin/forbid_score','admin-forbid_score',endpoint.admin.forbid_score)
-b.add_url_rule('/lit/admin/judge_pic','admin-judge_pic',endpoint.admin.judge_pic,methods=['POST'])
-b.add_url_rule('/lit/admin/judge_lit_pic', 'admin-judge_lit_pic',endpoint.admin.judge_lit_pic,methods=['POST'])
+b.add_url_rule('/lit/admin/forbid_score', 'admin-forbid_score', endpoint.admin.forbid_score)
+b.add_url_rule('/lit/admin/judge_pic', 'admin-judge_pic', endpoint.admin.judge_pic, methods=['POST'])
+b.add_url_rule('/lit/admin/judge_lit_pic', 'admin-judge_lit_pic', endpoint.admin.judge_lit_pic, methods=['POST'])
 b.add_url_rule('/lit/admin/test_to_delete_users', 'admin-test_to_delete_users', endpoint.admin.test_to_delete_users)
-b.add_url_rule('/lit/admin/test_delete_old_users', 'admin-test_delete_old_users',endpoint.admin.test_delete_old_users)
+b.add_url_rule('/lit/admin/test_delete_old_users', 'admin-test_delete_old_users', endpoint.admin.test_delete_old_users)
 b.add_url_rule('/lit/admin/get_feed', 'admin-get_feed', endpoint.admin.get_feed)
 b.add_url_rule('/lit/admin/review_record', 'admin-review_record', endpoint.admin.review_record)
 b.add_url_rule('/lit/admin/review_feed', 'admin-review_feed', endpoint.admin.review_feed)
@@ -138,7 +148,8 @@ b.add_url_rule('/lit/admin/super_login', 'admin-super_login', endpoint.admin.sup
 b.add_url_rule('/lit/admin/huanxin_by_uid', 'admin-huanxin_by_uid', endpoint.admin.huanxin_by_uid)
 b.add_url_rule('/lit/admin/sync_region_to_online', 'admin-sync_region_to_online', endpoint.admin.sync_region_to_online)
 b.add_url_rule('/lit/admin/user/<user_id>', 'admin-get_user_info', endpoint.admin.get_user_info)
-b.add_url_rule('/lit/admin/get_forbid_history_by_uid', 'admin-get_forbid_history_by_uid', endpoint.admin.get_forbid_history_by_uid)
+b.add_url_rule('/lit/admin/get_forbid_history_by_uid', 'admin-get_forbid_history_by_uid',
+               endpoint.admin.get_forbid_history_by_uid)
 b.add_url_rule('/lit/admin/lock_us_feed', 'admin-lock_us_feed', endpoint.admin.lock_us_feed)
 
 # picture
@@ -151,7 +162,8 @@ b.add_url_rule('/lit/gimage/<fileid>', 'get-gimage', endpoint.oss.get_gimage)
 b.add_url_rule('/lit/audio/upload', 'audio-upload', endpoint.oss.upload_audio_from_file, methods=['POST'])
 b.add_url_rule('/lit/audio/<fileid>', 'get-audio', endpoint.oss.get_audio)
 b.add_url_rule('/lit/log/upload', 'log-upload', endpoint.oss.upload_log_from_file, methods=['POST'])
-b.add_url_rule('/lit/log/upload_from_device', 'log-upload_from_device', endpoint.oss.upload_log_from_device, methods=['POST'])
+b.add_url_rule('/lit/log/upload_from_device', 'log-upload_from_device', endpoint.oss.upload_log_from_device,
+               methods=['POST'])
 b.add_url_rule('/lit/log/<fileid>', 'get-log', endpoint.oss.get_log)
 b.add_url_rule('/lit/mp3audio/<fileid>', 'get-mp3audio', endpoint.oss.get_audio_mp3)
 
@@ -178,7 +190,8 @@ b.add_url_rule('/lit/home/user_filters', 'home-user-filter', endpoint.home.onlin
 b.add_url_rule('/lit/home/first_start', 'home-first-start', endpoint.home.first_start)
 b.add_url_rule('/lit/home/get_filters', 'home-get-filter', endpoint.home.get_online_filter)
 b.add_url_rule('/lit/home/download', 'home-download', endpoint.home.download_app)
-b.add_url_rule('/lit/home/upload_address_list', 'home-upload_address_list', endpoint.home.upload_address_list, methods=['POST'])
+b.add_url_rule('/lit/home/upload_address_list', 'home-upload_address_list', endpoint.home.upload_address_list,
+               methods=['POST'])
 b.add_url_rule('/lit/home/address_list', 'home-get_address_list', endpoint.home.get_address_list)
 b.add_url_rule('/lit/home/spam_words', 'home-spam_words', endpoint.home.get_spam_word)
 b.add_url_rule('/lit/home/report_spam', 'home-report_spam', endpoint.home.report_spam, methods=['POST'])
@@ -197,7 +210,7 @@ b.add_url_rule('/lit/activity/palm/times_left', 'activity-palm-times-left', endp
 b.add_url_rule('/lit/activity/user_share/<share_user_id>', 'activity-user-share', endpoint.activity.user_share)
 b.add_url_rule('/lit/activity/share_static1', 'activity-share-static', endpoint.activity.share_static)
 b.add_url_rule('/lit/activity/claim_rewards', 'activity-claim-rewards', endpoint.activity.claim_rewards)
-b.add_url_rule('/lit/activity/share_num', 'activity-share-num',endpoint.activity.share_num)
+b.add_url_rule('/lit/activity/share_num', 'activity-share-num', endpoint.activity.share_num)
 b.add_url_rule('/lit/activity/admin', 'activity-adnmin', endpoint.activity.admin_page)
 
 # anoy_match
@@ -210,34 +223,40 @@ b.add_url_rule('/lit/anoy_match/tips', 'anoy-match-tips', endpoint.anoy_match.ge
 b.add_url_rule('/lit/anoy_match/judge', 'anoy-match-judge', endpoint.anoy_match.anoy_judge, methods=['POST'])
 b.add_url_rule('/lit/anoy_match/video_list', 'anoy-match-video-list', endpoint.anoy_match.video_list)
 b.add_url_rule('/lit/anoy_match/video_info_list', 'anoy-match-video-info-list', endpoint.anoy_match.video_info_list)
-b.add_url_rule('/lit/anoy_match/video/<vid>', 'anoy-match-update-video', endpoint.anoy_match.update_video, methods=['POST'])
-b.add_url_rule('/lit/anoy_match/add_time_by_ad', 'anoy-match-add-time-by-ad', endpoint.anoy_match.add_time_by_ad, methods=['POST'])
-b.add_url_rule('/lit/anoy_match/accelerate_by_ad', 'anoy-match-accelerate-by-ad', endpoint.anoy_match.accelerate_by_ad, methods=['POST'])
+b.add_url_rule('/lit/anoy_match/video/<vid>', 'anoy-match-update-video', endpoint.anoy_match.update_video,
+               methods=['POST'])
+b.add_url_rule('/lit/anoy_match/add_time_by_ad', 'anoy-match-add-time-by-ad', endpoint.anoy_match.add_time_by_ad,
+               methods=['POST'])
+b.add_url_rule('/lit/anoy_match/accelerate_by_ad', 'anoy-match-accelerate-by-ad', endpoint.anoy_match.accelerate_by_ad,
+               methods=['POST'])
 b.add_url_rule('/lit/anoy_match/accelerate_info', 'anoy-match-accelerate-info', endpoint.anoy_match.get_accelerate_info)
 
 # experiments
-b.add_url_rule('/lit/experiment/set_experiments', 'experiment-set_experiments', endpoint.experiment.set_experiments, methods=['POST'])
+b.add_url_rule('/lit/experiment/set_experiments', 'experiment-set_experiments', endpoint.experiment.set_experiments,
+               methods=['POST'])
 b.add_url_rule('/lit/experiment/get_experiments', 'experiment-get_experiments', endpoint.experiment.get_experiments)
 b.add_url_rule('/lit/experiment/get_exp_value', 'experiment-get_exp_value', endpoint.experiment.get_exp_value)
 b.add_url_rule('/lit/experiment/all_experiments', 'experiment-all_experiments', endpoint.experiment.get_all_experiments)
-b.add_url_rule('/lit/experiment/delete_experiment', 'experiment-delete_experiment', endpoint.experiment.delete_experiment)
+b.add_url_rule('/lit/experiment/delete_experiment', 'experiment-delete_experiment',
+               endpoint.experiment.delete_experiment)
 b.add_url_rule('/lit/experiment/exp_result/<exp_name>', 'experiment-exp_result', endpoint.experiment.exp_result)
 
 # debug
 b.add_url_rule('/lit/debug/redis_status', 'debug-redis-status', endpoint.debug.redis_status)
 b.add_url_rule('/lit/debug/clear_redis', 'debug-clear-redis', endpoint.debug.clear_keys)
 b.add_url_rule('/lit/debug/batch_create_login', 'debug-batch-create-login', endpoint.debug.batch_create_login)
-b.add_url_rule('/lit/debug/batch_anoy_match_start', 'debug-batch-anoy-match-start', endpoint.debug.batch_anoy_match_start)
+b.add_url_rule('/lit/debug/batch_anoy_match_start', 'debug-batch-anoy-match-start',
+               endpoint.debug.batch_anoy_match_start)
 b.add_url_rule('/lit/debug/query_region', 'debug-query-region', endpoint.debug.query_region)
 b.add_url_rule('/lit/debug/test_func', 'debug-test_func', endpoint.debug.test_func)
 b.add_url_rule('/lit/debug/chat_msg', 'debug-chat-msg', endpoint.debug.chat_msg)
 b.add_url_rule('/lit/debug/user_info', 'debug-user_info', endpoint.debug.user_info)
 b.add_url_rule('/lit/debug/register_yesterday', 'debug-register_yesterday', endpoint.debug.change_register_to_yes)
 b.add_url_rule('/lit/debug/delete_matched_record', 'debug-del_match_before', endpoint.debug.del_match_before)
-b.add_url_rule('/lit/debug/delete_online_matched_record', 'debug-online_del_match_status', endpoint.debug.online_del_match_status)
+b.add_url_rule('/lit/debug/delete_online_matched_record', 'debug-online_del_match_status',
+               endpoint.debug.online_del_match_status)
 b.add_url_rule('/lit/debug/set_times_to1', 'debug-set-times-to1', endpoint.debug.set_left_times_to_1)
 b.add_url_rule('/lit/debug/down_log/<user_id>', 'debug-down_log', endpoint.debug.down_log)
-
 
 # feed
 b.add_url_rule('/lit/feed/create', 'feed-create-feed', endpoint.feed.create_feed, methods=['POST'])
