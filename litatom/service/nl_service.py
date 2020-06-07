@@ -1,5 +1,4 @@
 
-
 class NlService(object):
 
     def __init__(self, context):
@@ -8,4 +7,4 @@ class NlService(object):
 
 
     def mainMethod(self):
-        return "Hello World\n",True
+        return "Hello World\n" ,True

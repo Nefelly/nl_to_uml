@@ -19,3 +19,12 @@ def nl2uml():
     if not status:
         return fail()
     return success(data)
+
+
+def simple_nl2uml():
+    context = request.args.get('context')
+    nlservice = NlService(context)
+    data, status = nlservice.mainMethod()
+    if not status:
+        return fail()
+    return success(data)
