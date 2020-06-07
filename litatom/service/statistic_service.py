@@ -555,9 +555,9 @@ class DiamStatService(object):
 
         for loc in data:
             if loc == 'ALL':
-                data[loc].append(User.objects(vip_time__lte=date_to_int_time(next_date(date,31*ONE_DAY))).count())
+                data[loc].append(User.objects(vip_time__lte=date_to_int_time(next_date(date,31*ONE_DAY)),vip_time__gt=0).count())
             else:
-                data[loc].append(User.objects(vip_time__lte=date_to_int_time(next_date(date,31*ONE_DAY)),country=loc).count())
+                data[loc].append(User.objects(vip_time__lte=date_to_int_time(next_date(date,31*ONE_DAY)),vip_time__gt=0,country=loc).count())
 
         for loc in data:
             excel_dic = cls.cal_stats_from_list(cls.STAT_QUERY_LIST, from_time, to_time, loc=loc)
