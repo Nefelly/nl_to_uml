@@ -22,15 +22,15 @@ class GiftService(object):
     '''
 
     @classmethod
-    def get_real_name(cls, name):
-        region_tag = name.replace(' ', '_')
-        return GlobalizationService.get_cached_region_word(region_tag)
+    def get_tag(cls, name):
+        return 'gift' + '_' + name.replace(' ', '_')
 
     @classmethod
     def get_gifts(cls):
         raw_gifts = Gift.get_gifts()
         for i in range(len(raw_gifts)):
-            raw_gifts[i]['name'] = cls.get_real_name(raw_gifts[i]['name'])
+            tag = cls.get_tag(raw_gifts[i]['name'])
+            raw_gifts[i]['name'] = GlobalizationService.get_cached_region_word(tag)
         return raw_gifts, True
 
     @classmethod
@@ -67,3 +67,11 @@ class GiftService(object):
     def send_gift(cls, user_id, receiver_id, gift_id):
         ReceivedGift.create(user_id, receiver_id, gift_id)
         return None
+
+    @classmethod
+    def add_region_word(cls):
+        from ..model import RegionWord
+        for el in Gift.objects():
+            tag = cls.get_tag(el.name)
+            RegionWord.add_or_mod(RegionWord.REGION_BENCHMARK, tag, el.name)
+
