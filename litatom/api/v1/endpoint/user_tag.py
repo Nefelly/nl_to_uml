@@ -42,7 +42,9 @@ def user_tags(user_id):
 
 @session_required
 def ensure_tags():
-    data, status = UserTagService.ensure_tags(request.user_id)
+    data = request.json
+    tag_ids = data.get("tag_ids")
+    data, status = UserTagService.ensure_tags(request.user_id, tag_ids)
     if not status:
         return fail(data)
     return success(data)
