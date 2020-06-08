@@ -15,7 +15,7 @@ def up_wording():
 
 def up_avatar():
     dirName = '/data/datas/Avatar'
-    Avatar.objects().delete()
+    # Avatar.objects().delete()
     for g in GENDERS:
         tmp = os.path.join(dirName, g)
         for f in os.listdir(tmp):
@@ -23,6 +23,17 @@ def up_avatar():
             fileid = AliOssService.upload_from_binary(open(fileName).read())
             Avatar.create(fileid, g)
 
+def up_paied_avatar():
+    dirName = '/data/datas/2222'
+    for g in GENDERS:
+        tmp = os.path.join(dirName, g)
+        for f in os.listdir(tmp):
+            fileName = os.path.join(tmp, f)
+            fileid = AliOssService.upload_from_binary(open(fileName).read())
+            Avatar.create(fileid, g, True, 5)
+
+
 if __name__ == "__main__":
-    up_wording()
-    up_avatar()
+    # up_wording()
+    # up_avatar()
+    up_paied_avatar()
