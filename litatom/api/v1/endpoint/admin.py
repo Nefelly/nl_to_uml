@@ -42,7 +42,8 @@ from ....model import (
     User,
     UserAddressList,
     AppAdmin,
-    BlockedDevices
+    BlockedDevices,
+    UserRecord
 )
 from ....service import (
     AdminService,
@@ -148,6 +149,7 @@ def upload_file():
 @test_required
 def release_blocked_devices():
     BlockedDevices.objects().delete()
+    UserRecord.objects().delete()
     return success()
 
 
