@@ -24,7 +24,7 @@ def up_avatar():
             Avatar.create(fileid, g)
 
 def up_paied_avatar():
-    dirName = '/data/datas/2222'
+    dirName = '/data/tmp/2222'
     for g in GENDERS:
         tmp = os.path.join(dirName, g)
         for f in os.listdir(tmp):
