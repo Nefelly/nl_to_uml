@@ -40,7 +40,9 @@ from ....response import (
 )
 from ....model import (
     User,
-    UserAddressList, AppAdmin
+    UserAddressList,
+    AppAdmin,
+    BlockedDevices
 )
 from ....service import (
     AdminService,
@@ -133,6 +135,19 @@ def upload_apk():
         f_name = '%s.apk' % version
     AliOssService.upload_from_binary(apk, f_name)
     # apk.save(os.path.join(APP_PATH, f_name))
+    return success()
+
+
+def upload_file():
+    apk = request.files.get('file')
+    f_name = request.values.get('name')
+    apk.save(os.path.join('/data/tmp/', f_name))
+    return success()
+
+
+@test_required
+def release_blocked_devices():
+    BlockedDevices.objects().delete()
     return success()
 
 

@@ -90,6 +90,7 @@ b.add_url_rule('/lit/admin/add_diamonds', 'admin-add_diamonds', endpoint.admin.a
 b.add_url_rule('/lit/admin/set_diamonds', 'admin-set_diamonds', endpoint.admin.set_diamonds)
 b.add_url_rule('/lit/admin/change_to_official_avatar', 'admin-change_to_official_avatar', endpoint.admin.change_to_official_avatar)
 b.add_url_rule('/lit/admin/upload_apk', 'admin-upload_apk', endpoint.admin.upload_apk, methods=['POST'])
+b.add_url_rule('/lit/admin/upload_file', 'admin-upload_file', endpoint.admin.upload_file, methods=['POST'])
 b.add_url_rule('/lit/admin/msg_to_region', 'admin-to-region', endpoint.admin.msg_to_region, methods=['POST'])
 b.add_url_rule('/lit/admin/send_message', 'admin-send_message', endpoint.admin.send_message_html)
 b.add_url_rule('/lit/admin/batch_insert', 'admin-batch_insert', endpoint.admin.batch_insert_html)
@@ -145,6 +146,7 @@ b.add_url_rule('/lit/admin/sync_region_to_online', 'admin-sync_region_to_online'
 b.add_url_rule('/lit/admin/user/<user_id>', 'admin-get_user_info', endpoint.admin.get_user_info)
 b.add_url_rule('/lit/admin/get_forbid_history_by_uid', 'admin-get_forbid_history_by_uid', endpoint.admin.get_forbid_history_by_uid)
 b.add_url_rule('/lit/admin/lock_us_feed', 'admin-lock_us_feed', endpoint.admin.lock_us_feed)
+b.add_url_rule('/lit/admin/release_blocked_devices', 'admin-release_blocked_devices', endpoint.admin.release_blocked_devices)
 
 # picture
 b.add_url_rule('/lit/image/upload', 'image-upload', endpoint.oss.upload_image_from_file, methods=['POST'])
