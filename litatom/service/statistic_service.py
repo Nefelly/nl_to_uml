@@ -265,7 +265,7 @@ class StatisticService(object):
         start_date = datetime.datetime.strptime(date_str, '%Y-%m-%d')
         for _ in range(num):
             stat_date = next_date(start_date, _)
-            print stat_date
+            print(stat_date)
             end = next_date(stat_date, 1)
             # ls = UserSetting.objects(create_time__gte=stat_date,
             #                          create_time__lte=end).distinct('uuid')
@@ -300,8 +300,8 @@ class StatisticService(object):
                 if el in m:
                     registered_uuid += 1
 
-            print "install", "register", "rate"
-            print len(ts), registered_uuid, registered_uuid * 1.0 / len(ts)
+            print("install", "register", "rate")
+            print(len(ts), registered_uuid, registered_uuid * 1.0 / len(ts))
 
         # mm = []  #
         # for l in ms:
@@ -360,12 +360,22 @@ class DiamStatService(object):
         'diam_unban_people_num': 'name:unban_by_diamonds | SELECT COUNT(DISTINCT user_id) as res',
         'diam_unban_man_time': 'name:unban_by_diamonds | SELECT COUNT(1) as res',
         'diam_unban_cons_num': 'name:unban_by_diamonds | SELECT -sum(diamonds) as res',
-        'diam_accost_cons_num': 'name:accost_reset | SELECT -sum(diamonds) as res',
+        'diam_accost_cons_num': 'name : "reset accost" or name:"unlock_accost" or name:"accost_reset" | SELECT -sum(diamonds) as res',
         'palm_unlock_people_num': 'name:palm_result |select count(DISTINCT user_id) as res',
         'palm_unlock_man_time': 'name:palm_result |select count(*) as res',
         'palm_unlock_diam_cons_num': 'name:palm_result |select -sum(diamonds) as res',
         'vip_consume_people_num':'name:success_vip | SELECT COUNT(DISTINCT user_id) as res',
         'vip_consume_man_time':'name:success_vip | SELECT COUNT(*) as res',
+        'reset_comment_people_num':'name:"reset comment" | SELECT COUNT(DISTINCT user_id) as res',
+        'reset_comment_man_time':'name:"reset comment" | SELECT COUNT(1) as res',
+        'reset_comment_diam_cons_num':'name:"reset comment" | SELECT -sum(diamonds) as res',
+        'reset_follow_people_num':'name : "reset follow"|SELECT count(DISTINCT user_id) as res',
+        'reset_follow_man_time':'name : "reset follow"|SELECT count(1) as res',
+        'reset_follow_diam_cons_num':'name : "reset follow"|SELECT -sum(diamonds) as res',
+        'buy_avatar_people_num':'name : "buy avatar" | SELECT COUNT(DISTINCT user_id) as res',
+        'buy_avatar_man_time':'name : "buy avatar" | SELECT COUNT(DISTINCT user_id) as res',
+        'buy_avatar_diam_cons_num':'name : "buy avatar" | SELECT -sum(diamonds) as res',
+
     }
     STAT_ACTION_QUERY_LIST = {
         '10_diam_share_man_time': 'remark:share\ prepare | select count(*) as res',
@@ -613,6 +623,15 @@ class DiamStatService(object):
                           excel_dic['acce_con_man_time_num'], excel_dic['acce_diam_cons_num'],
                           excel_dic['diam_unban_people_num'], excel_dic['diam_unban_man_time'],
                           excel_dic['diam_unban_cons_num'],
+                          excel_dic['reset_comment_people_num'],
+                          excel_dic['reset_comment_man_time'],
+                          excel_dic['reset_comment_diam_cons_num'],
+                          excel_dic['reset_follow_people_num'],
+                          excel_dic['reset_follow_man_time'],
+                          excel_dic['reset_follow_diam_cons_num'],
+                          excel_dic['buy_avatar_people_num'],
+                          excel_dic['buy_avatar_man_time'],
+                          excel_dic['buy_avatar_diam_cons_num'],
                           action_excel_dic['accost_people_num'], action_excel_dic['accost_man_time'],
                           excel_dic['diam_accost_cons_num'],
                           excel_dic['palm_unlock_people_num'], excel_dic['palm_unlock_man_time'],
@@ -638,6 +657,15 @@ class DiamStatService(object):
                    r'分享链接人次(10钻)', r'分享链接人数(10钻)', r'分享链接10钻石获取数量', r'会员购买人数', r'会员购买人次', r'会员-钻石消耗数量',
                    r'加速人数', r'加速购买人次', r'加速-钻石消耗数量',
                    r'钻石解封人数', r'钻石解封人次', r'解封-钻石消耗数量',
+                   r'钻石重置评论人数',
+                   r'钻石重置评论人次',
+                   r'评论-钻石消耗数量',
+                   r'钻石重置关注人数',
+                   r'钻石重置关注人次',
+                   r'关注-钻石消耗数量',
+                   r'头像购买人数',
+                   r'头像购买人次',
+                   r'头像-钻石消耗数量',
                    r'搭讪人数', r'搭讪人次', r'搭讪钻石消耗数量',
                    r'手相解锁人数', r'手相解锁人次', r'手相解锁-钻石消耗数量',
                    r'分享链接浏览人次', r'分享链接浏览人数', r'分享带来新用户数']
