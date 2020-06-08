@@ -38,3 +38,11 @@ def user_tags(user_id):
     if not status:
         return fail(data)
     return success(data)
+
+
+@session_required
+def ensure_tags():
+    data, status = UserTagService.ensure_tags(request.user_id)
+    if not status:
+        return fail(data)
+    return success(data)

@@ -52,6 +52,7 @@ b.add_url_rule('/lit/gift/received_gifts/<user_id>', 'gift-received_gifts', endp
 # user_tag
 b.add_url_rule('/lit/user_tag/tags', 'user_tag-tags', endpoint.user_tag.tags)
 b.add_url_rule('/lit/user_tag/user_tags/<user_id>', 'user_tag-user_tags', endpoint.user_tag.user_tags)
+b.add_url_rule('/lit/user_tag/ensure_tags', 'user_tag-ensure_tags', endpoint.user_tag.ensure_tags, methods=['POST'])
 
 #  match history
 b.add_url_rule('/lit/match_history/matched_history', 'match-history-matched_history', endpoint.match_history.matched_history)

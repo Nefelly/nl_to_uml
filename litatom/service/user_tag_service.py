@@ -45,7 +45,7 @@ class UserTagService(object):
         for tag_id in tag_ids:
             obj = UserTag(user_id=user_id, tag_id=tag_id)
             obj.save()
-        return True
+        return None, True
 
     @classmethod
     def get_tag_id_tagnames_m(cls):
@@ -74,3 +74,10 @@ class UserTagService(object):
         for el in Tag.objects():
             tag = cls.get_cached_tag(el.name)
             RegionWord.add_or_mod(RegionWord.REGION_BENCHMARK, tag, el.name)
+
+    @classmethod
+    def test_data_set(cls):
+        from ..model import User
+        user_id = str(User.get_by_phone('8618938951380').id)
+        # for el in Tag.objects():
+        #     cls.add
