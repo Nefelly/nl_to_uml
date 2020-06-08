@@ -49,6 +49,10 @@ b.add_url_rule('/lit/user_visit/visited_list', 'user-visit-visited_list', endpoi
 b.add_url_rule('/lit/gift/gifts', 'gift-gifts', endpoint.gift.gifts)
 b.add_url_rule('/lit/gift/received_gifts/<user_id>', 'gift-received_gifts', endpoint.gift.received_gifts)
 
+# user_tag
+b.add_url_rule('/lit/user_tag/tags', 'user_tag-tags', endpoint.user_tag.tags)
+b.add_url_rule('/lit/user_tag/user_tags/<user_id>', 'user_tag-user_tags', endpoint.user_tag.user_tags)
+
 #  match history
 b.add_url_rule('/lit/match_history/matched_history', 'match-history-matched_history', endpoint.match_history.matched_history)
 b.add_url_rule('/lit/match_history/send_friend_request', 'match-history-send_friend_request', endpoint.match_history.send_friend_request, methods=['POST'])
