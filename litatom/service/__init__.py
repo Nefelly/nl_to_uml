@@ -43,6 +43,7 @@ from .ad_service import (
     AdService
 )
 from .user_filter_service import UserFilterService
+from .user_tag_service import UserTagService
 from .user_service import UserService
 from .forbid_record_service import (
     ForbidRecordService,

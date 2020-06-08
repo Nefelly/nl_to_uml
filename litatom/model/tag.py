@@ -85,7 +85,13 @@ class UserTag(Document):
         return cls.objects(user_id=user_id)
 
     @classmethod
+    def get_by_ids(cls, user_id, tag_id):
+        return cls.objects(user_id=user_id, tag_id=tag_id)
+
+    @classmethod
     def create(cls, user_id, tag_id):
+        if cls.get_by_ids(user_id, tag_id):
+            return True
         obj = cls(user_id=user_id, tag_id=tag_id)
         obj.save()
         return True

@@ -78,6 +78,28 @@ def get_image(fileid):
     return response
 
 
+@session_required
+def upload_video_from_file():
+    """
+    直接上传图片到云盘
+    目前只用来传实名认证图片
+    """
+    video = request.files.get('video')
+    if not video:
+        return jsonify(Failed)
+
+    fileid = AliOssService.upload_from_binary(video)
+    if not fileid:
+        return jsonify(Failed)
+    return jsonify({
+        'success': True,
+        'data': {
+            'fileid': fileid
+        }
+    })
+
+
+
 def get_simage(fileid):
     if fileid == 'null':
         return jsonify(Failed)
