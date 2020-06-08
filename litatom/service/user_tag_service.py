@@ -67,3 +67,10 @@ class UserTagService(object):
             }
             res.append(tmp)
         return {'tags': res}, True
+
+    @classmethod
+    def add_region_word(cls):
+        from ..model import RegionWord
+        for el in Tag.objects():
+            tag = cls.get_cached_tag(el.name)
+            RegionWord.add_or_mod(RegionWord.REGION_BENCHMARK, tag, el.name)
