@@ -713,7 +713,6 @@ class UserSetting(Document):
         if uuid:
             obj.uuid = uuid
         obj.save()
-        print 'hereeee'
         user = User.get_by_id(user_id)
         if user:
             user.country = lang
