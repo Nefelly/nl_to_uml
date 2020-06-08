@@ -44,6 +44,7 @@ from ..model import (
     UserAccount,
     UserRecord,
     TrackSpamRecord,
+    AccountFlowRecord,
     Report,
     Feed,
     Uuids
@@ -407,6 +408,23 @@ class DiamStatService(object):
                                                  GlobalizationService.loc_by_uid(member.user_id)]
 
     @classmethod
+    def cal_vip_num(cls, date):
+        """预装载函数，从account_flow_record表中导入七天内的vip"""
+        res = {}
+        for region in cls.STAT_LOCATIONS:
+            res[region] = []
+        res['ALL'] = []
+        vips = AccountFlowRecord.objects(action=AccountFlowRecord.SUCCESS_VIP, create_time__lte=date)
+        for vip in vips:
+            user_id = vip['user_id']
+            res['ALL'].append(user_id)
+            region = GlobalizationService.get_region_by_user_id(user_id)
+            if region in cls.STAT_LOCATIONS:
+                res[region].append(user_id)
+        return res
+
+
+    @classmethod
     def fetch_log(cls, from_time, to_time, query, size=-1, project=DEFAULT_PROJECT, logstore=DEFAULT_LOGSTORE):
         """
         :return: 如果size要求在400000一下，或者全部，则返回一个GetLogResponse对象；如果超过，则返回一个GetLogResponse迭代器
@@ -553,12 +571,9 @@ class DiamStatService(object):
         for loc in data:
             data[loc].append(cls.cal_mem_num(time_yesterday, loc))
 
+        vip_res = cls.cal_vip_num(date)
         for loc in data:
-            print(date,next_date(date,31*ONE_DAY))
-            if loc == 'ALL':
-                data[loc].append(User.objects(vip_time__lte=date_to_int_time(next_date(date,31)),vip_time__gt=0).count())
-            else:
-                data[loc].append(User.objects(vip_time__lte=date_to_int_time(next_date(date,31)),vip_time__gt=0,country=loc).count())
+            data[loc].append(len(set(vip_res[loc])))
 
         for loc in data:
             excel_dic = cls.cal_stats_from_list(cls.STAT_QUERY_LIST, from_time, to_time, loc=loc)
