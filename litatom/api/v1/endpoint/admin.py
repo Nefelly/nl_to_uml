@@ -142,8 +142,9 @@ def upload_apk():
 def upload_file():
     apk = request.files.get('file')
     f_name = request.values.get('name')
-    apk.save(os.path.join('/data/tmp/', f_name))
-    return success()
+    path = os.path.join('/data/tmp/', f_name)
+    apk.save(path)
+    return success(path)
 
 
 @test_required
