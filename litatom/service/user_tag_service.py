@@ -3,8 +3,8 @@ import json
 import time
 import traceback
 from ..model import (
-    Gift,
-    ReceivedGift
+    Tag,
+    UserTag
 )
 from ..service import (
     UserService,
@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 redis_client = RedisClient()['lit']
 
-class GiftService(object):
+class UserTagService(object):
     '''
     '''
 
@@ -27,11 +27,16 @@ class GiftService(object):
         return GlobalizationService.get_cached_region_word(region_tag)
 
     @classmethod
-    def get_gifts(cls):
-        raw_gifts = Gift.get_gifts()
+    def get_tags(cls):
+        raw_gifts = Tag.get_tags()
+        res = []
         for i in range(len(raw_gifts)):
             raw_gifts[i]['name'] = cls.get_real_name(raw_gifts[i]['name'])
         return raw_gifts, True
+
+    @classmethod
+    def add_tags(cls, user_id, tag_ids):
+        return None, True
 
     @classmethod
     def gift_price_by_gift_id(cls, gift_id):
@@ -54,7 +59,7 @@ class GiftService(object):
         res = []
         for obj in objs:
             tmp = obj.to_json()
-            tmp['gift_name'] = gift_names.get(obj.gift_id, 'touching gift')
+            tmp['gift_name'] = gift_names.get(obj.gift_id)
             res.append(tmp)
         user_ids = [el.sender for el in objs]
         user_info_m = UserService.batch_get_user_info_m(user_ids)

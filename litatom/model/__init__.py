@@ -94,6 +94,10 @@ from .match_record import (
     MatchRecord,
     MatchHistory
 )
+from .tag import (
+    Tag,
+    UserTag
+)
 from .experiment_result import ExperimentResult
 from .operate_record import OperateRecord
 from .anoy_online import AnoyOnline
