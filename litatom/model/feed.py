@@ -39,7 +39,7 @@ class Feed(Document):
         'alias': 'db_alias',
 
     }
-    SELF_HIGH_NUM = 3
+    SELF_HIGH_NUM = 10
     NOT_PUB_NUM = 2
 
     user_id = StringField(required=True)
