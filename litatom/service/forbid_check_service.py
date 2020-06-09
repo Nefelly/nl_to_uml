@@ -342,7 +342,6 @@ class PicCheckService(object):
             if details and details[0].get('suggestion') == 'review':
                 return r, REVIEW_PIC
         return '', ''
-        pass
 
     @classmethod
     def check_video_by_url(cls, out_url):
@@ -371,18 +370,18 @@ class PicCheckService(object):
         test_res = {}
         loop_tms = 3
         for i in range(loop_tms):
-            try:
+            # try:
                 ret, res = http._post_with_qiniu_mac(url, data, cls.AUTH)
                 # headers = {"code": res.status_code, "reqid": res.req_id, "xlog": res.x_log}
                 print res
-                if not res.text_body:
-                    time.sleep(0.3)
-                    continue
+                # if not res.text_body:
+                #     time.sleep(0.3)
+                #     continue
                 test_res = json.loads(res.text_body)
                 print res.text_body
-            except Exception as e:
-                logger.error(traceback.format_exc())
-                logger.error('Error verify Qiniu, url: %r, err: %r, test_res:%r', out_url, e, test_res)
+            # except Exception as e:
+            #     logger.error(traceback.format_exc())
+            #     logger.error('Error verify Qiniu, url: %r, err: %r, test_res:%r', out_url, e, test_res)
         return '', ''
 
 SpamWordCheckService.load()
