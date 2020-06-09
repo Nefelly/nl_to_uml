@@ -316,7 +316,31 @@ class PicCheckService(object):
     def get_video_result_by_data(cls, data):
         '''
         doc: https://developer.qiniu.com/censor/api/5924/video-review-callback
-        :param data:
+        :param data: form
+        {u'created_at': u'2020-06-09T16:22:54.638+08:00',
+         u'id': u'5edf46de3d07ee0007e7c06a',
+         u'request': {u'data': {u'uri': u'http://test.litatom.com/api/sns/v1/lit/video/3109d8ae-aa20-11ea-97cc-00163e02deb4'},
+         u'params': {u'cut_param': {u'interval_msecs': 1000},
+         u'hook_url': u'http://test.litatom.com/api/sns/v1/lit/outer_hook/outer_hook',
+         u'scenes': [u'pulp'],
+         u'sync': False}},
+         u'rescheduled_at': u'2020-06-09T16:22:54.638+08:00',
+         u'result': {u'code': 200,
+         u'message': u'OK',
+         u'result': {u'scenes': {u'pulp': {u'cuts': [{u'details': [{u'label': u'normal',
+         u'score': 0.93086,
+         u'suggestion': u'pass'}],
+         u'offset': 70,
+         u'suggestion': u'pass'},
+         {u'details': [{u'label': u'normal',
+         u'score': 0.93082,
+         u'suggestion': u'pass'}],
+         u'offset': 1024,
+         u'suggestion': u'pass'},
+         u'suggestion': u'pass'}},
+         u'status': u'FINISHED',
+         u'updated_at': u'2020-06-09T16:22:57.195+08:00',
+         u'vid': u''}
         :return:
         '''
         err = data.get('error', '')
@@ -324,20 +348,18 @@ class PicCheckService(object):
             return '', ''
         if 'result' not in data:
             return '', ''
-        check_url = data['request']
-        scenes = data['result']['scenes']
-        # print scenes
+        check_url = data['request']['data']['uri']
+        scenes = data['result']['result']['scenes']
         for r in scenes:
             details = scenes[r].get('details', [])
             # if details and details[0]['label'] != 'normal' and details[0]['score'] > cls.JUDGE_SCORE:
             #     # logger.error('pic not past, url:%r, reason:%r', out_url, r)
             #     # print r
             #     return r
-            # print scenes
             if details and details[0]['label'] != 'normal':
-                cls.record_fail(out_url, scenes, r, is_video=True)
+                cls.record_fail(check_url, scenes, r, is_video=True)
             if details and details[0].get('suggestion') == 'block':
-                # cls.record_fail(out_url, scenes, r)
+                cls.record_fail(check_url, scenes, r, True)
                 return r, BLOCK_PIC
             if details and details[0].get('suggestion') == 'review':
                 return r, REVIEW_PIC
@@ -368,16 +390,16 @@ class PicCheckService(object):
         }
         url = 'http://ai.qiniuapi.com/v3/video/censor'
         for i in range(cls.MAX_TYR_TIMES):
-            # try:
+            try:
                 ret, res = http._post_with_qiniu_mac(url, data, cls.AUTH)
                 if not res.text_body:
                     time.sleep(0.3)
                     continue
                 test_res = json.loads(res.text_body)
                 return test_res.get('job')
-            # except Exception as e:
-            #     logger.error(traceback.format_exc())
-            #     logger.error('Error verify Qiniu, url: %r, err: %r, test_res:%r', out_url, e, test_res)
+            except Exception as e:
+                logger.error(traceback.format_exc())
+                logger.error('Error verify Qiniu, url: %r, err: %r, test_res:%r', out_url, e, test_res)
         return ''
 
 SpamWordCheckService.load()
