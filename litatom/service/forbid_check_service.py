@@ -229,6 +229,7 @@ class PicCheckService(object):
     SK = "aDQkhwOsRKwXgAFPSRcMtVoNT5F1UolZECaPIBCm"
     AUTH = QiniuMacAuth(AK, SK)
     JUDGE_SCORE = 0.93
+    MAX_TYR_TIMES = 3
     VIDEO_HOOK_URL = HOST + '/api/sns/v1/lit/outer_hook/video_check'
 
     '''
@@ -273,8 +274,7 @@ class PicCheckService(object):
         }
         url = 'http://ai.qiniuapi.com/v3/image/censor'
         test_res = {}
-        loop_tms = 3
-        for i in range(loop_tms):
+        for i in range(cls.MAX_TYR_TIMES):
             try:
                 ret, res = http._post_with_qiniu_mac(url, data, cls.AUTH)
                 # headers = {"code": res.status_code, "reqid": res.req_id, "xlog": res.x_log}
@@ -367,21 +367,17 @@ class PicCheckService(object):
             }
         }
         url = 'http://ai.qiniuapi.com/v3/video/censor'
-        test_res = {}
-        loop_tms = 3
-        for i in range(loop_tms):
+        for i in range(cls.MAX_TYR_TIMES):
             # try:
                 ret, res = http._post_with_qiniu_mac(url, data, cls.AUTH)
-                # headers = {"code": res.status_code, "reqid": res.req_id, "xlog": res.x_log}
-                print res
-                # if not res.text_body:
-                #     time.sleep(0.3)
-                #     continue
+                if not res.text_body:
+                    time.sleep(0.3)
+                    continue
                 test_res = json.loads(res.text_body)
-                print res.text_body
+                return test_res.get('job')
             # except Exception as e:
             #     logger.error(traceback.format_exc())
             #     logger.error('Error verify Qiniu, url: %r, err: %r, test_res:%r', out_url, e, test_res)
-        return '', ''
+        return ''
 
 SpamWordCheckService.load()
