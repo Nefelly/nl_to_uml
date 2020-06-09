@@ -1,5 +1,5 @@
 # coding: utf-8
-
+from hendrix.conf import setting
 WHOSYOURDADDY = 'IAMYOURDADDY'
 
 ERROR_RANGE = 20
@@ -10,7 +10,8 @@ FEED_NEED_CHECK = 2
 
 FORBID_PAGE_SIZE = 100
 
-HOST = 'http://www.litatom.com'
+HOST = 'http://www.litatom.com' if not setting.IS_DEV else 'http://test.litatom.com'
+
 
 OSS_PIC_URL = HOST + '/api/sns/v1/lit/simage/'
 OSS_AUDIO_URL =  HOST + '/api/sns/v1/lit/audio/'
