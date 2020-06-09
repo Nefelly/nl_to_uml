@@ -4,6 +4,9 @@ from ..model import Feedback
 from ..const import (
     MAX_TIME
 )
+from flask import (
+    request
+)
 from ..service import (
     GlobalizationService
 )
@@ -18,6 +21,7 @@ class FeedbackService(object):
         feedback.pics = pics
         feedback.phone = phone
         feedback.region = GlobalizationService.get_region()
+        feedback.request_args = request.url.split('?')[1]
         feedback.create_ts = int(time.time())
         feedback.save()
         return {'feedback_id': str(feedback.id)}, True

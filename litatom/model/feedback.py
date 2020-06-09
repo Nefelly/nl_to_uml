@@ -24,6 +24,7 @@ class Feedback(Document):
     phone = StringField(required=False)
     region = StringField(required=False, default='th')
     deal_res = StringField()
+    request_args = StringField()
     passed = BooleanField(required=True, default=False)
     create_ts = IntField(required=True)
     dealed = BooleanField(required=True, default=False)
@@ -45,5 +46,6 @@ class Feedback(Document):
             'pics': self.pics,
             'phone': self.phone if self.phone else '',
             'deal_result': self.deal_res if self.deal_res else '',
+            'request_args': self.request_args if self.request_args else '',
             'create_time': format_standard_time(date_from_unix_ts(self.create_ts))
         }
