@@ -256,6 +256,7 @@ def report_info(report_id):
 @session_finished_required
 def feedback():
     user_id = request.user_id
+    print request.url
     # form = FeedbackForm(data=request.json)
     data = request.json
     content = data.get('content')
