@@ -16,6 +16,7 @@ from ..const import (
     BLOCK_PIC,
     REVIEW_PIC,
     OSS_PIC_URL,
+    OSS_VIDEO_URL,
     HOST
 )
 from ..model import (
@@ -246,6 +247,10 @@ class PicCheckService(object):
         建议：'b':block, 'r':review
         """
         return cls.check_pic_by_url(OSS_PIC_URL + fileid)
+
+    @classmethod
+    def check_video_by_fileid(cls, fileid):
+        return cls.check_video_by_url(OSS_VIDEO_URL + fileid)
 
     @classmethod
     def record_fail(cls, file_id, scenes, result, is_video=False):

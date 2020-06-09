@@ -46,7 +46,8 @@ from ..service import (
     ForbidActionService,
     AntiSpamRateService,
     ForbidCheckService,
-    ExperimentService
+    ExperimentService,
+    PicCheckService
 )
 from ..model import (
     Feed,
@@ -106,6 +107,16 @@ class FeedService(object):
     @classmethod
     def is_us_locked(cls):
         return redis_client.get(REDIS_US_FEED_LOCK)
+
+    @classmethod
+    def get_set_video(cls, fileid, feed_id, region_key):
+        pass
+
+    @classmethod
+    def deal_video_res(cls, video_check_data):
+        fileid, scene, suggestion = PicCheckService.get_video_result_by_data(video_check_data)
+        if not suggestion:
+            pass
 
     @classmethod
     def _on_add_feed(cls, feed):

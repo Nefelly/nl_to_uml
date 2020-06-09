@@ -14,7 +14,8 @@ HOST = 'http://www.litatom.com' if not setting.IS_DEV else 'http://test.litatom.
 
 
 OSS_PIC_URL = HOST + '/api/sns/v1/lit/simage/'
-OSS_AUDIO_URL =  HOST + '/api/sns/v1/lit/audio/'
+OSS_AUDIO_URL = HOST + '/api/sns/v1/lit/audio/'
+OSS_VIDEO_URL = HOST + '/api/sns/v1/lit/video/'
 
 ADMINISTRATORS = {
     '5e357b07f142533fff0049c2',         # 绿杨
