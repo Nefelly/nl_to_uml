@@ -37,9 +37,11 @@ def create_feed():
     content = data.get('content')
     pics = data.get('pics')
     audios = data.get('audios')
-    if not content and not pics and not audios:
+    video = data.get('video')
+    other_info = data.get('other_info', {})
+    if not content and not pics and not audios and not video:
         return jsonify(FailedLackOfField)
-    feed_id, status = FeedService.create_feed(request.user_id, content, pics, audios)
+    feed_id, status = FeedService.create_feed(request.user_id, content, pics, audios, video, other_info)
     if status:
         feed_info, feed_status = FeedService.get_feed_info(request.user_id, feed_id)
         if not feed_status:
@@ -68,6 +70,7 @@ def unpin_feed(feed_id):
     if not status:
         return fail(data)
     return success()
+
 
 def user_feeds(other_user_id):
     visitor_user_id = request.user_id

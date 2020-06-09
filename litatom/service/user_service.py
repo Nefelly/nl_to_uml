@@ -339,6 +339,7 @@ class UserService(object):
     
     @classmethod
     def check_and_move_to_big(cls, user_id, words):
+        ''' 检验是否是大区用户'''
         if GlobalizationService.get_region() in GlobalizationService.BIG_REGIONS:
             return 
         loc = cls._get_words_loc(words)

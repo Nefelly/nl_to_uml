@@ -116,8 +116,12 @@ class FeedService(object):
             if cls.should_add_to_square(feed):
                 cls._add_to_feed_pool(feed)
         MqService.push(ADD_EXCHANGE,
-                       {"feed_id": str(feed.id), "pics": feed.pics,
-                        "region_key": cls._redis_feed_region_key(REDIS_FEED_SQUARE_REGION)})
+                       {
+                           "feed_id": str(feed.id),
+                           "pics": feed.pics,
+                           "region_key": cls._redis_feed_region_key(REDIS_FEED_SQUARE_REGION)
+                       }
+                       )
         # print 'push', {"feed_id": str(feed.id), "pics": feed.pics,
         #                 "region_key": cls._redis_feed_region_key(REDIS_FEED_SQUARE_REGION)}
         # FollowingFeedService.add_feed(feed)
@@ -258,12 +262,12 @@ class FeedService(object):
         #     redis_client.zadd(REDIS_FEED_SQUARE, {feed_id: new_score})
 
     @classmethod
-    def create_feed(cls, user_id, content, pics=None, audios=None):
+    def create_feed(cls, user_id, content, pics=None, audios=None, video=None, other_info={}):
         if content:
             if SpamWordCheckService.is_spam_word(content):
                 ForbidActionService.resolve_spam_word(user_id, content, SPAM_RECORD_FEED_SOURCE)
                 return GlobalizationService.get_region_word('alert_msg'), False
-        feed = Feed.create_feed(user_id, content, pics, audios)
+        feed = Feed.create_feed(user_id, content, pics, audios, video, other_info)
         UserService.check_and_move_to_big(user_id, [content])
         cls._on_add_feed(feed)
         UserModelService.add_comments_by_uid(user_id)
@@ -296,7 +300,7 @@ class FeedService(object):
 
     @classmethod
     def feeds_by_userid(cls, visitor_user_id, user_id, start_ts=MAX_TIME, num=10):
-        if request.ip_should_filter:
+        if request.ip_should_filter and visitor_user_id != user_id:
             return {
                        'feeds': [],
                        'has_next': False,
