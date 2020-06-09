@@ -61,9 +61,12 @@ class UserTagService(object):
         tag_names = cls.get_tag_id_tagnames_m()
         res = []
         for obj in objs:
+            tag_name = tag_names.get(obj.tag_id)
+            if not tag_name:
+                obj.delete()
             tmp = {
                 'tag_id': obj.tag_id,
-                'tag_name': tag_names.get(obj.tag_id)
+                'tag_name': tag_name
             }
             res.append(tmp)
         return {'tags': res}, True
