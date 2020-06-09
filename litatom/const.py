@@ -10,8 +10,10 @@ FEED_NEED_CHECK = 2
 
 FORBID_PAGE_SIZE = 100
 
-OSS_PIC_URL = 'http://www.litatom.com/api/sns/v1/lit/simage/'
-OSS_AUDIO_URL = 'http://www.litatom.com/api/sns/v1/lit/audio/'
+HOST = 'http://www.litatom.com'
+
+OSS_PIC_URL = HOST + '/api/sns/v1/lit/simage/'
+OSS_AUDIO_URL =  HOST + '/api/sns/v1/lit/audio/'
 
 ADMINISTRATORS = {
     '5e357b07f142533fff0049c2',         # 绿杨
