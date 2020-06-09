@@ -99,6 +99,16 @@ def upload_video_from_file():
     })
 
 
+def get_video(fileid):
+    if fileid == 'null':
+        return jsonify(Failed)
+    content = AliOssService.get_binary_from_bucket(fileid)
+    if not content:
+        return Response('', mimetype='Video/AMR')   # 返回空流, 兼容错误
+    response = Response(content, mimetype='Video/AMR')
+    response.headers['Cache-Control'] = 'max-age=%d' % 86400
+    return response
+
 
 def get_simage(fileid):
     if fileid == 'null':
@@ -153,8 +163,8 @@ def get_audio(fileid):
         return jsonify(Failed)
     content = AliOssService.get_binary_from_bucket(fileid)
     if not content:
-        return Response('', mimetype='audio/AMR')   # 返回空流, 兼容错误
-    response = Response(content, mimetype='audio/AMR')
+        return Response('', mimetype='audio/mp4')   # 返回空流, 兼容错误
+    response = Response(content, mimetype='audio/mp4')
     response.headers['Cache-Control'] = 'max-age=%d' % 86400
     return response
 
