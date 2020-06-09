@@ -229,7 +229,7 @@ class PicCheckService(object):
     SK = "aDQkhwOsRKwXgAFPSRcMtVoNT5F1UolZECaPIBCm"
     AUTH = QiniuMacAuth(AK, SK)
     JUDGE_SCORE = 0.93
-    VIDEO_HOOK_URL = HOST + '/api/sns/v1/lit/outer_hook/outer_hook'
+    VIDEO_HOOK_URL = HOST + '/api/sns/v1/lit/outer_hook/video_check'
 
     '''
     docs:
@@ -312,10 +312,45 @@ class PicCheckService(object):
                 logger.error('Error verify Qiniu, url: %r, err: %r, test_res:%r', out_url, e, test_res)
         return '', ''
 
+    @classmethod
+    def get_video_result_by_data(cls, data):
+        '''
+        doc: https://developer.qiniu.com/censor/api/5924/video-review-callback
+        :param data:
+        :return:
+        '''
+        err = data.get('error', '')
+        if 'Rectangle invalid' in err:
+            return '', ''
+        if 'result' not in data:
+            return '', ''
+        check_url = data['request']
+        scenes = data['result']['scenes']
+        # print scenes
+        for r in scenes:
+            details = scenes[r].get('details', [])
+            # if details and details[0]['label'] != 'normal' and details[0]['score'] > cls.JUDGE_SCORE:
+            #     # logger.error('pic not past, url:%r, reason:%r', out_url, r)
+            #     # print r
+            #     return r
+            # print scenes
+            if details and details[0]['label'] != 'normal':
+                cls.record_fail(out_url, scenes, r, is_video=True)
+            if details and details[0].get('suggestion') == 'block':
+                # cls.record_fail(out_url, scenes, r)
+                return r, BLOCK_PIC
+            if details and details[0].get('suggestion') == 'review':
+                return r, REVIEW_PIC
+        return '', ''
+        pass
 
     @classmethod
     def check_video_by_url(cls, out_url):
-        '''scenes could be ads, pulp...'''
+        '''
+        scenes could be ads, pulp...
+        仅供提交审核请求，
+        请求结果要靠回调
+        '''
         data = {
             "data": {
                 "uri": out_url
@@ -327,7 +362,7 @@ class PicCheckService(object):
                     # "politician"
                 ],
                 "cut_param": {
-                    "interval_msecs" : 1000
+                    "interval_msecs": 1000
                 },
                 "hook_url": cls.VIDEO_HOOK_URL
             }
@@ -339,36 +374,12 @@ class PicCheckService(object):
             try:
                 ret, res = http._post_with_qiniu_mac(url, data, cls.AUTH)
                 # headers = {"code": res.status_code, "reqid": res.req_id, "xlog": res.x_log}
-                print ret, res
+                print res
                 if not res.text_body:
                     time.sleep(0.3)
                     continue
                 test_res = json.loads(res.text_body)
-                err = test_res.get('error', '')
-                if 'Rectangle invalid' in err:
-                    return '', ''
-                if ('invalid URI' in err or 'fetch uri failed' in err) and i <= loop_tms - 1:
-                    time.sleep(0.3)
-                    continue
-                if 'result' not in test_res:
-                    return '', ''
-                scenes = test_res['result']['scenes']
-                # print scenes
-                for r in scenes:
-                    details = scenes[r].get('details', [])
-                    # if details and details[0]['label'] != 'normal' and details[0]['score'] > cls.JUDGE_SCORE:
-                    #     # logger.error('pic not past, url:%r, reason:%r', out_url, r)
-                    #     # print r
-                    #     return r
-                    # print scenes
-                    if details and details[0]['label'] != 'normal':
-                        cls.record_fail(out_url, scenes, r)
-                    if details and details[0].get('suggestion') == 'block':
-                        # cls.record_fail(out_url, scenes, r)
-                        return r, BLOCK_PIC
-                    if details and details[0].get('suggestion') == 'review':
-                        return r, REVIEW_PIC
-                return '', ''
+                print res.text_body
             except Exception as e:
                 logger.error(traceback.format_exc())
                 logger.error('Error verify Qiniu, url: %r, err: %r, test_res:%r', out_url, e, test_res)

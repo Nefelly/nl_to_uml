@@ -16,7 +16,7 @@ b.add_url_rule('/lit/test_anti', 'lit-test_anti', endpoint.test.test_anti)
 # sms-code
 b.add_url_rule('/lit/get_sms_code', 'get-sms-code', endpoint.sms_code.get_sms_code, methods=['POST'])
 
-b.add_url_rule('/lit/outer_hook/outer_hook', 'get-outer_hook-outer_hook', endpoint.outer_hook.video_check, methods=['POST'])
+b.add_url_rule('/lit/outer_hook/video_check', 'get-outer_hook-video_check', endpoint.outer_hook.video_check, methods=['POST'])
 
 # user
 b.add_url_rule('/lit/user/phone_login', 'user-phone-login', endpoint.user.phone_login, methods=['POST'])

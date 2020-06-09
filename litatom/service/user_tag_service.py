@@ -77,7 +77,17 @@ class UserTagService(object):
 
     @classmethod
     def test_data_set(cls):
-        from ..model import User
-        user_id = str(User.get_by_phone('8618938951380').id)
+        names = ["Free Fire", "Mobile Legends", "Pubg",
+                 "Garena RoV", "KartRider Rush+", "Lainnya",
+                 "Voice match", "Night owl",
+                 "Movie lover", "Cat person", "Dog addict",
+                 "Music", "Dancer", "Lonely", "want chatting",
+                 "Lovely", "Reading"]
+        # Tag.objects().delete()
+        for name in names:
+            Tag.create(name)
+            cls.add_region_word()
+        # from ..model import User
+        # user_id = str(User.get_by_phone('8618938951380').id)
         # for el in Tag.objects():
         #     cls.add
