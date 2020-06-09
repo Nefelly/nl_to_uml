@@ -345,25 +345,25 @@ class PicCheckService(object):
         '''
         err = data.get('error', '')
         if 'Rectangle invalid' in err:
-            return '', ''
+            return '', '', ''
         if 'result' not in data:
-            return '', ''
+            return '', '', ''
         check_url = data['request']['data']['uri']
+        fileid = check_url.split('?')[0].split('/')[-1]
         scenes = data['result']['result']['scenes']
         for r in scenes:
-            details = scenes[r].get('details', [])
+            suggestion = scenes[r]['suggestion']
             # if details and details[0]['label'] != 'normal' and details[0]['score'] > cls.JUDGE_SCORE:
             #     # logger.error('pic not past, url:%r, reason:%r', out_url, r)
             #     # print r
             #     return r
-            if details and details[0]['label'] != 'normal':
+            if suggestion and suggestion != 'pass':
                 cls.record_fail(check_url, scenes, r, is_video=True)
-            if details and details[0].get('suggestion') == 'block':
-                cls.record_fail(check_url, scenes, r, True)
-                return r, BLOCK_PIC
-            if details and details[0].get('suggestion') == 'review':
-                return r, REVIEW_PIC
-        return '', ''
+            if suggestion == 'block':
+                return fileid, r, BLOCK_PIC
+            if suggestion == 'review':
+                return fileid, r, REVIEW_PIC
+        return fileid, '', ''
 
     @classmethod
     def check_video_by_url(cls, out_url):
