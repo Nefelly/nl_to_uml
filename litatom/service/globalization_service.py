@@ -1,5 +1,6 @@
 # coding: utf-8
 import time
+from hendrix.conf import setting
 from flask import (
     request
 )
@@ -221,6 +222,21 @@ class GlobalizationService(object):
     def video_match_key_by_region_gender(cls, gender):
         region = cls.get_region()
         return REDIS_VIDEO_GENDER_ONLINE_REGION.format(region=region, gender=gender)
+
+    @classmethod
+    def help_escape_develop(cls):
+        '''
+        :return: 是否是国内的 或者测试环境
+        '''
+        if setting.IS_DEV:
+            return True
+        if request.values.get('loc') == 'CN':
+            return True
+        if request.values.get('phone').startswith('86'):
+            return True
+        if request.json.get('phone').startswith('86'):
+            return True
+        return False
 
     @classmethod
     def set_current_region_for_script(cls, region='th'):
