@@ -659,6 +659,8 @@ class UserSetting(Document):
 
     @classmethod
     def user_num_by_uuid(cls, uuid, dis_time=0):
+        if not uuid:
+            return 0
         return cls.objects(uuid=uuid).count()
 
     @classmethod

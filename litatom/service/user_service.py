@@ -86,6 +86,7 @@ class UserService(object):
     CREATE_LOCK = 'user_create'
     NICKNAME_LEN_LIMIT = 60
     BIO_ELN_LIMIT = 150
+    UUID_MAX_REGISTER_NUM = 3
     ERROR_DEVICE_FORBIDDEN = u'Your device has been blocked'
 
     @classmethod
@@ -272,6 +273,16 @@ class UserService(object):
         return None
 
     @classmethod
+    def _undo_register(cls, user_id):
+        if user_id:
+            obj = User.get_by_id(user_id)
+            cls._delete_user(obj)
+            obj.delete()
+            user_setting = UserSetting.get_by_user_id(user_id)
+            user_setting.delete()
+        return
+
+    @classmethod
     def _on_create_new_user(cls, user):
         loc = request.loc
         if user.id: # 不然 容易None
@@ -286,14 +297,12 @@ class UserService(object):
             UserSetting.create_setting(user_id, loc, request.uuid)
         if not request.uuid:
             return u'your version is too low!', False
+        if UserSetting.user_num_by_uuid(request.uuid) >= cls.UUID_MAX_REGISTER_NUM - 1:
+            cls._undo_register(user_id)
+            return u'You have register too many accounts on your phone', False
         from ..service import ForbidRecordService
         if cls.device_blocked(request.uuid) or ForbidRecordService.get_device_forbidden_num_by_uid(user_id) > 5:
-            if user_id:
-                obj = User.get_by_id(user_id)
-                cls._delete_user(obj)
-                obj.delete()
-                user_setting = UserSetting.get_by_user_id(user_id)
-                user_setting.delete()
+            cls._undo_register(user_id)
             return cls.ERROR_DEVICE_FORBIDDEN, False
         return None, True
 
