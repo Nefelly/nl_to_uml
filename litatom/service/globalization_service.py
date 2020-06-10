@@ -223,7 +223,7 @@ class GlobalizationService(object):
         return REDIS_VIDEO_GENDER_ONLINE_REGION.format(region=region, gender=gender)
 
     @classmethod
-    def set_current_region_for_script(cls, region):
+    def set_current_region_for_script(cls, region='th'):
         from flask import current_app, request, Flask
         app = Flask(__name__)
         from werkzeug.test import EnvironBuilder
