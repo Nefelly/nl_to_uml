@@ -24,6 +24,7 @@ def g(u):
 
 huanxin_ids = [el.huanxin.user_id for el in User.objects().order_by('-create_time').limit(10000)]
 
+
 for _ in huanxin_ids:
     r[_] = g(_)
 # rs = ToDevSyncService.sync(RegionWord, '2020-05-10')
