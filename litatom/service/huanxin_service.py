@@ -362,6 +362,7 @@ class HuanxinService(object):
         }
         try:
             response = requests.get(url, verify=False, headers=headers).json()
+            print response
             return response.get('entities')[0]
         except Exception, e:
             logger.error(traceback.format_exc())
