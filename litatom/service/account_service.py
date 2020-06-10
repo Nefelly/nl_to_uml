@@ -64,7 +64,7 @@ class AccountService(object):
     '''
     '''
     WEEK_MEMBER = 'week_member'
-    VIDEO_WEEK = 'video_week'  # 可以向其他用户发送视频 周会员
+    VIDEO_WEEK = 'video_member'  # 可以向其他用户发送视频 周会员
     VIP_MONTH = 'vip_month'
     ONE_MORE_TIME = 'one_more_time'
     ACCELERATE = 'accelerate'
