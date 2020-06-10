@@ -398,10 +398,10 @@ class AntiSpamRateService(object):
         to_test = str(User.get_by_phone('8618938951380').id)
         to_accost = UserSetting.objects().first().user_id
         print to_test, to_accost, 'session.' + User.get_by_phone('8618938951380').session
-        cls.del_protected_visit_before(to_test, to_accost)
+        cls.del_protected_visit_before(to_test, cls.ACCOST, to_accost)
         for el in UserSetting.objects().limit(10):
             uid = el.user_id
             if uid in [to_test, to_accost]:
                 continue
-            cls.judge_stop(el, to_test, uid)
+            cls.judge_stop(el, cls.ACCOST, uid)
 
