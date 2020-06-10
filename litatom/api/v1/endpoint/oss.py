@@ -104,8 +104,8 @@ def get_video(fileid):
         return jsonify(Failed)
     content = AliOssService.get_binary_from_bucket(fileid)
     if not content:
-        return Response('', mimetype='Video/AMR')   # 返回空流, 兼容错误
-    response = Response(content, mimetype='Video/AMR')
+        return Response('', mimetype='Video/mp4')   # 返回空流, 兼容错误
+    response = Response(content, mimetype='Video/mp4')
     response.headers['Cache-Control'] = 'max-age=%d' % 86400
     return response
 
