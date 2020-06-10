@@ -91,7 +91,7 @@ class UserAccount(Document):
     def get_account_info(cls, user_id):
         obj = UserAccount.get_by_user_id(user_id)
         diamonds = obj.diamonds if obj and obj.diamonds else 0
-        return {"diamonds": diamonds, "video_member_time": obj.video_member_time}
+        return {"diamonds": diamonds, "video_member_time": obj.video_member_time if obj else ''}
 
     @classmethod
     def _disable_cache(cls, user_id):
