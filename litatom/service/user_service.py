@@ -299,7 +299,7 @@ class UserService(object):
             return u'your version is too low!', False
         if UserSetting.user_num_by_uuid(request.uuid) >= cls.UUID_MAX_REGISTER_NUM - 1:
             cls._undo_register(user_id)
-            return u'You have register too many accounts on your phone', False
+            return GlobalizationService.get_cached_region_word('device_register_too_much'), False
         from ..service import ForbidRecordService
         if cls.device_blocked(request.uuid) or ForbidRecordService.get_device_forbidden_num_by_uid(user_id) > 5:
             cls._undo_register(user_id)
