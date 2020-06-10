@@ -224,7 +224,7 @@ class GlobalizationService(object):
 
     @classmethod
     def set_current_region_for_script(cls, region):
-        from flask import current_app,request, Flask
+        from flask import current_app, request, Flask
         app = Flask(__name__)
         from werkzeug.test import EnvironBuilder
         ctx = app.request_context(EnvironBuilder('/', 'http://localhost/').get_environ())

@@ -42,6 +42,7 @@ class Feed(Document):
     }
     SELF_HIGH_NUM = 10
     NOT_PUB_NUM = 2
+    FEED_SELF_HIGH = 3
 
     user_id = StringField(required=True)
     like_num = IntField(required=True, default=0)
@@ -74,7 +75,11 @@ class Feed(Document):
 
     @property
     def self_high(self):
-        return self.dislike_num >= self.NOT_PUB_NUM
+        return self.dislike_num >= self.NOT_PUB_NUM or self.status == self.FEED_SELF_HIGH
+
+    def set_self_high(self):
+        self.status = self.FEED_SELF_HIGH
+        self.save()
 
     @property
     def should_remove_from_follow(self):

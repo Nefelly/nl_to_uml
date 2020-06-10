@@ -1,5 +1,6 @@
 # coding: utf-8
 import time
+import json
 import random
 import datetime
 from hendrix.conf import setting
@@ -14,7 +15,8 @@ from ..key import (
     REDIS_FEED_HQ_REGION,
     REDIS_FEED_ID_AGE,
     REDIS_REGION_FEED_TOP,
-    REDIS_US_FEED_LOCK
+    REDIS_US_FEED_LOCK,
+    REDIS_VIDEO_CHECK_CACHE
 )
 from ..util import (
     get_time_info,
@@ -109,28 +111,56 @@ class FeedService(object):
         return redis_client.get(REDIS_US_FEED_LOCK)
 
     @classmethod
-    def get_set_video(cls, fileid, feed_id, region_key):
-        pass
+    def set_video_info(cls, fileid, feed_id, region_key):
+        data = {
+            'feed_id': feed_id,
+            'region_key': region_key
+        }
+        key = REDIS_VIDEO_CHECK_CACHE.format(fileid=fileid)
+        redis_client.set(key, json.dumps(data), ONE_DAY)
+
+    @classmethod
+    def get_video_info(cls, fileid):
+        key = REDIS_VIDEO_CHECK_CACHE.format(fileid=fileid)
+        raw = redis_client.get(key)
+        if not raw:
+            return '', ''
+        data = json.loads(raw)
+        return data.get('feed_id'), data.get('region_key')
 
     @classmethod
     def deal_video_res(cls, video_check_data):
         fileid, scene, suggestion = PicCheckService.get_video_result_by_data(video_check_data)
+        feed_id, region_key = cls.get_video_info(fileid)
+        if not feed_id:
+            return
+        feed = Feed.get_by_id(feed_id)
+        if not feed:
+            return
         if not suggestion:
-            pass
+            if cls.should_add_to_square(feed):
+                redis_client.zadd(region_key, {str(feed.id): feed.create_time})
+        else:
+
 
     @classmethod
     def _on_add_feed(cls, feed):
         if request.region == GlobalizationService.REGION_US:
             if cls.is_us_locked():
                 return
+        feed_id = str(feed.id)
+        region_key = cls._redis_feed_region_key(REDIS_FEED_SQUARE_REGION)
+        if feed.video:
+            cls.set_video_info(feed.video, str(feed.id), region_key)
+            return
         if not feed.pics:
             if cls.should_add_to_square(feed):
                 cls._add_to_feed_pool(feed)
         MqService.push(ADD_EXCHANGE,
                        {
-                           "feed_id": str(feed.id),
+                           "feed_id": feed_id,
                            "pics": feed.pics,
-                           "region_key": cls._redis_feed_region_key(REDIS_FEED_SQUARE_REGION)
+                           "region_key": region_key
                        }
                        )
         # print 'push', {"feed_id": str(feed.id), "pics": feed.pics,
@@ -282,7 +312,6 @@ class FeedService(object):
         UserService.check_and_move_to_big(user_id, [content])
         cls._on_add_feed(feed)
         UserModelService.add_comments_by_uid(user_id)
-        # cls._add_to_feed_pool(feed)
         return str(feed.id), True
 
     @classmethod

@@ -12,7 +12,8 @@ from flask import (
 
 from ....service import (
     AliLogService,
-    AntiSpamRateService
+    AntiSpamRateService,
+    FeedService
 )
 from ...decorator import (
     set_exp,
@@ -29,7 +30,7 @@ logger = logging.getLogger(__name__)
 
 
 def video_check():
-    # return jsonify('im ok')
     data = request.json
-    AliLogService.put_err_log({"msg": json.dumps(data)})
+    FeedService.deal_video_res(data)
+    # AliLogService.put_err_log({"msg": json.dumps(data)})
     return success()

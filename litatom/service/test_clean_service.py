@@ -43,7 +43,7 @@ redis_client = RedisClient()['lit']
 class TestCleanService(object):
     '''
     '''
-    MAINTAIN_TIME = 5 * ONE_DAY
+    MAINTAIN_TIME = 3 * ONE_DAY
 
     @classmethod
     def get_tables(cls):
