@@ -399,6 +399,7 @@ class AntiSpamRateService(object):
         to_accost = UserSetting.objects().first().user_id
         print to_test, to_accost, 'session.' + User.get_by_phone('8618938951380').session
         cls.del_protected_visit_before(to_test, cls.ACCOST, to_accost)
+        GlobalizationService.set_current_region_for_script('th')
         for el in UserSetting.objects().limit(10):
             uid = el.user_id
             if uid in [to_test, to_accost]:
