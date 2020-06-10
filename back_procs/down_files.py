@@ -1,4 +1,5 @@
-import  os
+import os
+
 
 def down():
     f = open('tt').read().split('\n')
@@ -16,7 +17,6 @@ def down():
         cmd = "wget \'%s\' -O %s" % (_, save_dir + str(cnt) + '.mp3')
         print cmd
         os.system(cmd)
-
 # rs = ToDevSyncService.sync(RegionWord, '2020-05-10')
 
 
