@@ -658,6 +658,10 @@ class UserSetting(Document):
         return user.lang
 
     @classmethod
+    def user_num_by_uuid(cls, uuid, dis_time=0):
+        return cls.objects(uuid=uuid).count()
+
+    @classmethod
     def uuid_by_user_id(cls, user_id):
         obj = cls.get_by_user_id(user_id)
         if obj:
