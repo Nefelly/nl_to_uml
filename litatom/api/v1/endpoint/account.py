@@ -141,7 +141,11 @@ def buy_avatar(fileid):
 @session_required
 def send_gift(other_user_id):
     gift_id = request.args.get('gift_id', '')
-    data, status = AccountService.send_gift(request.user_id, other_user_id, gift_id)
+    use = request.args.get('use', '')
+    gift_to_reset = False
+    if use == u'reset_accost':
+        gift_to_reset = True
+    data, status = AccountService.send_gift(request.user_id, other_user_id, gift_id, gift_to_reset)
     if not status:
         return fail(data)
     return success(data)

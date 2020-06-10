@@ -325,19 +325,21 @@ class AccountService(object):
         return None, True
 
     @classmethod
-    def send_gift(cls, user_id, receiver, gift_id):
+    def send_gift(cls, user_id, receiver, gift_id, gift_to_reset=False):
         diamonds = GiftService.gift_price_by_gift_id(gift_id)
         '''先检查钻石够不够'''
         if not diamonds:
             return u'wrong gift_id', False
         if not cls.is_diamond_enough(user_id, diamonds):
             return cls.ERR_DIAMONDS_NOT_ENOUGH, False
-        add_err = GiftService.send_gift(user_id, receiver, gift_id)
-        if add_err:
-            return add_err, False
+        err_msg = GiftService.send_gift(user_id, receiver, gift_id)
+        if err_msg:
+            return err_msg, False
         err_msg = cls.change_diamonds(user_id, -diamonds, 'buy_gift')
         if err_msg:
             return err_msg, False
+        if gift_to_reset:
+            cls.AntiSpamRateService.reset_spam_type(user_id, AntiSpamRateService.ACCOST, receiver)
         return None, True
 
     @classmethod
