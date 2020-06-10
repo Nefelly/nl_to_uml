@@ -209,7 +209,12 @@ class AccountService(object):
 
     @classmethod
     def record_to_ali(cls, user_id, name, diamonds):
-        content = [('user_id', user_id), ('name', name), ('diamonds', str(diamonds)), ('loc', request.loc)]
+        user = User.get_by_id(user_id)
+        user_gender, user_age = '', ''
+        if user:
+            user_gender, user_age = user.gender, user.age
+        content = [('user_id', user_id), ('name', name), ('diamonds', str(diamonds)), ('loc', request.loc),
+                   ('gender', user_gender), ('age', str(user_age))]
         AliLogService.put_logs(content, '', '', 'litatom-account', 'account_flow')
 
     @classmethod
