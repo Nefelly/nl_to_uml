@@ -141,7 +141,9 @@ class FeedService(object):
             if cls.should_add_to_square(feed):
                 redis_client.zadd(region_key, {str(feed.id): feed.create_time})
         else:
-            pass
+            request.region = GlobalizationService.get_region_by_user_id(feed.user_id)
+            ForbidActionService.resolve_block_pic(feed.user_id, fileid, SPAM_RECORD_FEED_SOURCE)
+            feed.set_self_high()
 
     @classmethod
     def _on_add_feed(cls, feed):
