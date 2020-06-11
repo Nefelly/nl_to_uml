@@ -352,7 +352,7 @@ class HuanxinService(object):
 
     @classmethod
     def get_user(cls, user_name):
-        url = cls.APP_URL + 'users/%s' % user_name
+        url = cls.APP_URL + 'users1/%s' % user_name
         access_token = cls.get_access_token()
         if not access_token:
             return {}
