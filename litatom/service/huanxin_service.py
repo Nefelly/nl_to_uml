@@ -352,7 +352,8 @@ class HuanxinService(object):
 
     @classmethod
     def deal_response(cls, response):
-        if response.get('status') != 200:
+        status = response.get('status')
+        if status and status != 200:
             AliLogService.put_err_log({"msg": json.dumps(response), "code": response.get('status')})
 
     @classmethod
@@ -489,6 +490,7 @@ class HuanxinService(object):
 
     @classmethod
     def deactive_user(cls, user_name):
+        # return cls.log_out(user_name)
         url = cls.APP_URL + 'users/%s/deactivate' % user_name
 
         access_token = cls.get_access_token()
