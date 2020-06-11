@@ -491,7 +491,6 @@ class HuanxinService(object):
     def deactive_user(cls, user_name):
         return cls.log_out(user_name)
         url = cls.APP_URL + 'users/%s/deactivate' % user_name
-
         access_token = cls.get_access_token()
         if not access_token:
             return False
