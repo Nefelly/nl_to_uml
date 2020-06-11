@@ -230,11 +230,11 @@ class GlobalizationService(object):
         '''
         if setting.IS_DEV:
             return True
-        if request.values.get('loc') == 'CN':
+        if request.values.get('loc', '') == 'CN':
             return True
-        if request.values.get('phone').startswith('86'):
+        if request.values.get('phone', '').startswith('86'):
             return True
-        if request.json.get('phone').startswith('86'):
+        if request.json.get('phone', '').startswith('86'):
             return True
         return False
 
