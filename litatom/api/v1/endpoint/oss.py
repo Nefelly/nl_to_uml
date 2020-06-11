@@ -78,6 +78,21 @@ def get_image(fileid):
     return response
 
 
+def get_file_by_id_and_mime_type(fileid, mimetype):
+    if fileid == 'null':
+        return jsonify(Failed)
+    content = AliOssService.get_binary_from_bucket(fileid)
+    if not content:
+        return Response('', mimetype=mimetype)
+    response = Response(content, mimetype=mimetype)
+    response.headers['Cache-Control'] = 'max-age=%d' % 86400
+    return response
+
+
+def get_zip(fileid):
+    return get_file_by_id_and_mime_type(fileid, 'application/zip')
+
+
 @session_required
 def upload_video_from_file():
     """
