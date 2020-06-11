@@ -353,12 +353,11 @@ class HuanxinService(object):
     @classmethod
     def get_user(cls, user_name):
         url = cls.APP_URL + 'users/%s' % user_name
-
         access_token = cls.get_access_token()
         if not access_token:
             return {}
         headers = {
-            'Authorization':'Bearer %s' % access_token
+            'Authorization': 'Bearer %s' % access_token
         }
         try:
             response = requests.get(url, verify=False, headers=headers).json()
