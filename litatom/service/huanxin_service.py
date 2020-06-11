@@ -351,6 +351,11 @@ class HuanxinService(object):
         return False
 
     @classmethod
+    def deal_response(cls, response):
+        if response.get('status') != 200:
+            AliLogService.put_err_log({"msg": json.dumps(response), "code": response.get('status')})
+
+    @classmethod
     def get_user(cls, user_name):
         url = cls.APP_URL + 'users1/%s' % user_name
         access_token = cls.get_access_token()
@@ -361,9 +366,9 @@ class HuanxinService(object):
         }
         try:
             response = requests.get(url, verify=False, headers=headers).json()
+            print response
             return response.get('entities')[0]
         except Exception, e:
-            print response
             logger.error(traceback.format_exc())
             logger.error('Error create huanxin get user, user_id: %r, err: %r', user_name, e)
             return {}
