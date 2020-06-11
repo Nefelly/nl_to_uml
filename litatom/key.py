@@ -109,6 +109,7 @@ REDIS_LOCK = 'redis_lock:{key}'
 
 # feed service
 REDIS_FEED_SQUARE_REGION = 'feed_square:{region}'   # !!!
+REDIS_FEED_SQUARE_REGION_TAG = 'feed_square:{region}_{tag}'   # !!!
 REDIS_FEED_HQ_REGION = 'feed_hq:{region}'   # !!!
 
 # voice match

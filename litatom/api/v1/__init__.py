@@ -271,6 +271,7 @@ b.add_url_rule('/lit/feed/comment/<feed_id>', 'feed-feed-comments', endpoint.fee
 b.add_url_rule('/lit/feed/info/<feed_id>', 'feed-feed-info', endpoint.feed.feed_info)
 b.add_url_rule('/lit/feed/pin_feed/<feed_id>', 'feed-pin_feed', endpoint.feed.pin_feed)
 b.add_url_rule('/lit/feed/unpin_feed/<feed_id>', 'feed-unpin_feed', endpoint.feed.unpin_feed)
+b.add_url_rule('/lit/feed/tags', 'feed-tags', endpoint.feed.tags)
 
 # user_relations
 b.add_url_rule('/lit/block/<other_user_id>', 'block', endpoint.user_relations.block)

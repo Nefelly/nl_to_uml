@@ -103,13 +103,19 @@ def feed_info(feed_id):
     return success(data)
 
 
+def tags():
+    data = FeedService.all_tags()
+    return success(data)
+
+
 def square_feeds():
     user_id = request.user_id
     start_pos = request.args.get('start_pos')
     num = request.args.get('num')
+    tag = request.args.get('tag')
     start_pos = int(start_pos) if start_pos and start_pos.isdigit() else 0
     num = int(num) if num and num.isdigit() else 10
-    data = FeedService.feeds_by_square(user_id, start_pos, num)
+    data = FeedService.feeds_by_square(user_id, start_pos, num, tag=tag)
     if data:
         return success(data)
     return success()
