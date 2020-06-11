@@ -212,7 +212,6 @@ class HuanxinService(object):
                 try:
                     cls.before_request()
                     response = requests.post(url, verify=False, headers=headers, json=data).json()
-                    print response
                     _ = response["data"]
                     for k in _:
                         if _[k] == u'success':
@@ -248,7 +247,6 @@ class HuanxinService(object):
     @classmethod
     def block_user(cls, source_user_name, dest_user_name):
         url = cls.APP_URL + 'users/%s/blocks/users' % source_user_name
-        # print url
         access_token = cls.get_access_token()
         if not access_token:
             return False
@@ -367,10 +365,8 @@ class HuanxinService(object):
         }
         try:
             response = requests.get(url, verify=False, headers=headers).json()
-            print response
             return response.get('entities')[0]
         except Exception, e:
-            print response
             logger.error(traceback.format_exc())
             logger.error('Error create huanxin get user, user_id: %r, err: %r', user_name, e)
             return {}
@@ -392,6 +388,7 @@ class HuanxinService(object):
         try:
             response = requests.post(url, verify=False, headers=headers, json=data).json()
             # print response
+            cls.deal_response(response)
             assert response.get('entities')[0]['username']
             return True
         except Exception, e:
@@ -433,6 +430,7 @@ class HuanxinService(object):
         for i in range(cls.TRY_TIMES):
             try:
                 response = requests.post(url, verify=False, headers=headers, data=json.dumps({})).json()
+                cls.deal_response(response)
                 assert response.get('action')
                 return True
             except Exception, e:
