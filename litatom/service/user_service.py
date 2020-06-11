@@ -298,7 +298,7 @@ class UserService(object):
             UserSetting.create_setting(user_id, loc, request.uuid)
         if not request.uuid:
             return u'your version is too low!', False
-        if UserSetting.user_num_by_uuid(request.uuid) >= cls.UUID_MAX_REGISTER_NUM - 1:
+        if UserSetting.user_num_by_uuid(request.uuid) > cls.UUID_MAX_REGISTER_NUM and not GlobalizationService.help_escape_develop():
             cls._undo_register(user_id)
             AliLogService.put_err_log({"msg": "uuid_register_too_many", "uuid": request.uuid})
             return GlobalizationService.get_cached_region_word('device_register_too_much'), False

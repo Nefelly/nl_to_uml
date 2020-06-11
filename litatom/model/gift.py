@@ -91,6 +91,7 @@ class Gift(Document):
             'id': str(self.id),
             'price': self.price,
             'name': self.name,
+            'fileid': self.fileid,
             'create_time': self.create_time
         }
 

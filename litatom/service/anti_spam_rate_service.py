@@ -390,3 +390,19 @@ class AntiSpamRateService(object):
                     ('remark', 'accost_pass'), ('session_id', str(session_id)),
                     ('user_id', str(user_id)), ('version', version)]
         AliLogService.put_logs(contents)
+
+
+    @classmethod
+    def test_accost_one(cls):
+        from ..model import User, UserSetting
+        to_test = str(User.get_by_phone('8618938951380').id)
+        to_accost = UserSetting.objects().first().user_id
+        print to_test, to_accost, 'session.' + User.get_by_phone('8618938951380').session
+        cls.del_protected_visit_before(to_test, cls.ACCOST, to_accost)
+        GlobalizationService.set_current_region_for_script()
+        for el in UserSetting.objects().limit(10):
+            uid = el.user_id
+            if uid in [to_test, to_accost]:
+                continue
+            cls.judge_stop(el, cls.ACCOST, uid)
+

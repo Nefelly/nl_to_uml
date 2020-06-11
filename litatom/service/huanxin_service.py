@@ -370,6 +370,7 @@ class HuanxinService(object):
             print response
             return response.get('entities')[0]
         except Exception, e:
+            print response
             logger.error(traceback.format_exc())
             logger.error('Error create huanxin get user, user_id: %r, err: %r', user_name, e)
             return {}
