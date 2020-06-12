@@ -14,7 +14,7 @@ from ..key import (
 )
 from ..const import (
     ONE_DAY,
-
+    DEFAULT_EXP_GROUP
 )
 from ..model import (
     ExpBucket
@@ -121,7 +121,7 @@ class ExperimentService(object):
         return ExpBucket.get_by_exp_name_bucket_id(exp_name, bucket)
 
     @classmethod
-    def lit_exp_hit(cls, exp_name, value, key=None):
+    def lit_exp_hit(cls, exp_name, value=DEFAULT_EXP_GROUP, key=None):
         geted_value = cls.lit_exp_value(exp_name, key)
         return geted_value == value
 

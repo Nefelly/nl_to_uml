@@ -17,7 +17,9 @@ from ..const import (
     ONE_HOUR,
     TYPE_VOICE_AGORA,
     TYPE_VOICE_TENCENT,
-    PLATFORM_IOS
+    PLATFORM_IOS,
+    EXP_FEED_SHOW_TAGS,
+    EXP_TAG_SHOW_TAG_EXP
 )
 from ..key import (
     REDIS_SETTINGS_KEYS,
@@ -153,6 +155,8 @@ class UserSettingService(object):
         if region == GlobalizationService.REGION_ID:
             if ExperimentService.lit_exp_value('id_show_video') == 'show':
                 res['modules_open']['video_match'] = 1
+        if ExperimentService.lit_exp_hit(EXP_FEED_SHOW_TAGS):
+            res['feed_show_tags'] = True
         if region == GlobalizationService.REGION_PH:
             res['modules_open']['voice_match'] = 0
         return res
