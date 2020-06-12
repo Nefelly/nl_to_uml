@@ -71,10 +71,11 @@ class AdminService(object):
 
     @classmethod
     def add_operate_record(cls, name, data):
+        if not data:
+            data = {}
         if isinstance(data, dict):
             data = json.dumps(data)
         OperateRecord.add(name, data)
-        print name, data
         return None, True
 
     @classmethod
