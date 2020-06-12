@@ -80,7 +80,10 @@ class UserSettingService(object):
         if request.version and request.version > '1.2.3':
             latest_version = redis_client.get(REDIS_SETTINGS_IOS_LATEST)
             if latest_version < request.version:
-                return REDIS_SETTINGS_IOS_VERSION.format(version=latest_version)
+                now_version = latest_version
+            else:
+                now_version = request.version
+            return REDIS_SETTINGS_IOS_VERSION.format(version=now_version)
         return REDIS_SETTINGS_IOS
 
     @classmethod
