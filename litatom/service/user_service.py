@@ -1023,8 +1023,8 @@ class UserService(object):
             return user.bio
         if not show_default_bio:
             return ''
-        user_tag = UserTagService.user_tags(user_id)
-        if user_tag and user_tag.get('tags'):
+        user_tag, status = UserTagService.user_tags(user_id)
+        if status and user_tag and user_tag.get('tags'):
             return user_tag.get('tags')
         login_long = datetime.datetime.now() - user.create_time > datetime.timedelta(days=3)
         word_m = GlobalizationService.get_region_word('bio')
