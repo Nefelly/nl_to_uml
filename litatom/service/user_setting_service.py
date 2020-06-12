@@ -89,12 +89,13 @@ class UserSettingService(object):
     @classmethod
     def change_setting(cls, data):
         setting_string = json.dumps(data)
-        print 'gan' * 100
         if not cls._valid_cache_str(setting_string):
             return 'Not valid setting', False
         from ..service import AdminService
         setting_key = cls.get_setting_key()
+        print 'gan' * 100
         AdminService.add_operate_record('user_setting_' + setting_key, redis_client.get(setting_key))
+        print 'gan1' * 100
         redis_client.set(cls.get_setting_key(), setting_string)
         if request.platform == PLATFORM_IOS:
             version = request.version
