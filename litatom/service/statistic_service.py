@@ -97,7 +97,7 @@ class StatisticService(object):
             all_online = UserService.uid_online(uids[-1]) == True  # last user online
             all_not_online = UserService.uid_online(uids[0]) == False  # first user not online
             for uid in uids:
-                _ = UserService.get_basic_info(User.get_by_id(uid))
+                _ = UserService.get_basic_info(User.get_by_id(uid), show_default_bio=True)
                 if not _:
                     continue
                 if all_online:

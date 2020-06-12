@@ -62,6 +62,7 @@ REDIS_ONLINE_CNT_CACHE = 'online_cnt_cache:{region}:{gender}'
 REDIS_DEPOSIT_BY_ACTIVITY = 'activity_diamonds:{user_date}'
 REDIS_GIFT_CACHE = 'gift_cache'
 REDIS_GIFT_PRICE_CACHE = 'gift_price_cache'
+REDIS_USER_TAG_CACHE = 'user_tag_cache:{user_id}'
 
 REDIS_US_FEED_LOCK = 'us_feed_cannot_post'
 

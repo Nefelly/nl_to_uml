@@ -6,6 +6,9 @@ from ..model import (
     Tag,
     UserTag
 )
+from ..const import (
+    ONE_DAY
+)
 from ..service import (
     GlobalizationService
 )
@@ -20,6 +23,7 @@ redis_client = RedisClient()['lit']
 class UserTagService(object):
     '''
     '''
+
 
     @classmethod
     def get_cached_tag(cls, name):
@@ -57,6 +61,10 @@ class UserTagService(object):
 
     @classmethod
     def user_tags(cls, user_id):
+        tag_key = UserTag.get_cached_key(user_id)
+        cached_res = redis_client.get(tag_key)
+        if cached_res:
+            return json.loads(cached_res), True
         objs = UserTag.get_by_user_id(user_id)
         tag_names = cls.get_tag_id_tagnames_m()
         res = []
@@ -69,7 +77,10 @@ class UserTagService(object):
                 'tag_name': tag_name
             }
             res.append(tmp)
-        return {'tags': res}, True
+        ret = {'tags': res}
+        cached_res = json.dumps(ret)
+        redis_client.set(UserTag.get_cached_key(user_id), cached_res, ONE_DAY)
+        return ret, True
 
     @classmethod
     def add_region_word(cls):

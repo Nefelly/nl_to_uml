@@ -14,7 +14,8 @@ from ..util import (
     date_to_int_time
 )
 from .. key import (
-    REDIS_TAG_CACHE
+    REDIS_TAG_CACHE,
+    REDIS_USER_TAG_CACHE
 )
 from ..const import (
     ONE_DAY
@@ -87,6 +88,24 @@ class UserTag(Document):
     @classmethod
     def get_by_ids(cls, user_id, tag_id):
         return cls.objects(user_id=user_id, tag_id=tag_id)
+
+    @classmethod
+    def get_cached_key(cls, user_id):
+        return REDIS_USER_TAG_CACHE.format(user_id=user_id)
+
+    @classmethod
+    def _disable_cache(cls, user_id):
+        redis_client.delete(cls.get_cached_key(user_id))
+
+    def save(self, *args, **kwargs):
+        if getattr(self, 'user_id', ''):
+            self._disable_cache(str(self.user_id))
+        super(UserTag, self).save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        if getattr(self, 'user_id', ''):
+            self._disable_cache(str(self.user_id))
+        super(UserTag, self).delete(*args, **kwargs)
 
     @classmethod
     def create(cls, user_id, tag_id):
