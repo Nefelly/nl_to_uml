@@ -22,7 +22,8 @@ from ..const import (
 from ..key import (
     REDIS_SETTINGS_KEYS,
     REDIS_SETTINGS_IOS,
-    REDIS_SETTINGS_IOS_VERSION
+    REDIS_SETTINGS_IOS_VERSION,
+    REDIS_SETTINGS_IOS_LATEST
 )
 
 from ..service import (
@@ -77,7 +78,9 @@ class UserSettingService(object):
         if request.platform != PLATFORM_IOS:
             return REDIS_SETTINGS_KEYS
         if request.version and request.version > '1.2.3':
-            return REDIS_SETTINGS_IOS_VERSION.format(version=request.version)
+            latest_version = redis_client.get(REDIS_SETTINGS_IOS_LATEST)
+            if latest_version < request.version:
+                return REDIS_SETTINGS_IOS_VERSION.format(version=latest_version)
         return REDIS_SETTINGS_IOS
 
     @classmethod
@@ -89,6 +92,11 @@ class UserSettingService(object):
         setting_key = cls.get_setting_key()
         AdminService.add_operate_record('user_setting_' + setting_key, redis_client.get(setting_key))
         redis_client.set(cls.get_setting_key(), setting_string)
+        if request.platform == PLATFORM_IOS:
+            version = request.version
+            lastest_version = redis_client.get(REDIS_SETTINGS_IOS_LATEST)
+            if not lastest_version or lastest_version < version:
+                redis_client.set(REDIS_SETTINGS_IOS_LATEST, version)
         return None, True
 
     @classmethod

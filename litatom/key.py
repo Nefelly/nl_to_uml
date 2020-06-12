@@ -164,6 +164,7 @@ REDIS_LOC_USER_ACTIVE = 'user_active:{date_loc}'
 REDIS_SETTINGS_KEYS = 'dev_settings'
 REDIS_SETTINGS_IOS = 'setting_ios'
 REDIS_SETTINGS_IOS_VERSION = 'setting_ios_v:{version}'
+REDIS_SETTINGS_IOS_LATEST = 'setting_ios_latest'
 REDIS_ACCESS_TOKEN = 'access_token'
 
 
