@@ -89,6 +89,7 @@ class UserSettingService(object):
     @classmethod
     def change_setting(cls, data):
         setting_string = json.dumps(data)
+        print 'gan' * 100
         if not cls._valid_cache_str(setting_string):
             return 'Not valid setting', False
         from ..service import AdminService
