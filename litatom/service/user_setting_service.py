@@ -18,8 +18,7 @@ from ..const import (
     TYPE_VOICE_AGORA,
     TYPE_VOICE_TENCENT,
     PLATFORM_IOS,
-    EXP_FEED_SHOW_TAGS,
-    EXP_TAG_SHOW_TAG_EXP
+    EXP_FEED_SHOW_TAGS
 )
 from ..key import (
     REDIS_SETTINGS_KEYS,
