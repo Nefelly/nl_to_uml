@@ -74,6 +74,7 @@ class AdminService(object):
         if isinstance(data, dict):
             data = json.dumps(data)
         OperateRecord.add(name, data)
+        print name, data
         return None, True
 
     @classmethod

@@ -93,7 +93,6 @@ class UserSettingService(object):
             return 'Not valid setting', False
         from ..service import AdminService
         setting_key = cls.get_setting_key()
-        print 'gan2' * 100
         AdminService.add_operate_record('user_setting_' + setting_key, redis_client.get(setting_key))
         print 'gan1' * 100
         redis_client.set(cls.get_setting_key(), setting_string)
