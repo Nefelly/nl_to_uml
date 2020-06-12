@@ -98,6 +98,7 @@ class UserSettingService(object):
         if request.platform == PLATFORM_IOS:
             version = request.version
             lastest_version = redis_client.get(REDIS_SETTINGS_IOS_LATEST)
+            print 'niiiiiiii'
             if not lastest_version or lastest_version < version:
                 redis_client.set(REDIS_SETTINGS_IOS_LATEST, version)
         return None, True
