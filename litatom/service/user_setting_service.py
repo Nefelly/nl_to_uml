@@ -79,6 +79,8 @@ class UserSettingService(object):
             return REDIS_SETTINGS_KEYS
         if request.version and request.version > '1.2.3':
             latest_version = redis_client.get(REDIS_SETTINGS_IOS_LATEST)
+            if not latest_version:
+                return REDIS_SETTINGS_IOS
             if latest_version and latest_version < request.version:
                 now_version = latest_version
             else:
@@ -138,7 +140,6 @@ class UserSettingService(object):
         region = GlobalizationService.get_region()
         if setting.IS_DEV or 1:
             cached_setting_str = redis_client.get(cls.get_setting_key())
-            print cls.get_setting_key()
             if False and not cls._valid_cache_str(cached_setting_str):
                 redis_client.delete(cls.get_setting_key())
                 redis_client.set(cls.get_setting_key(), json.dumps(res))
