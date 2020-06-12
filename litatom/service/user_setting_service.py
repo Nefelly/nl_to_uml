@@ -94,12 +94,10 @@ class UserSettingService(object):
         from ..service import AdminService
         setting_key = cls.get_setting_key()
         AdminService.add_operate_record('user_setting_' + setting_key, redis_client.get(setting_key))
-        print 'gan1' * 100
         redis_client.set(cls.get_setting_key(), setting_string)
         if request.platform == PLATFORM_IOS:
             version = request.version
             lastest_version = redis_client.get(REDIS_SETTINGS_IOS_LATEST)
-            print 'niiiiiiii'
             if not lastest_version or lastest_version < version:
                 redis_client.set(REDIS_SETTINGS_IOS_LATEST, version)
         return None, True
