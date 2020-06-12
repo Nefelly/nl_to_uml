@@ -817,6 +817,7 @@ def ban_reporter(user_id):
 
 
 def change_setting():
+    print 'nimadeaaaaaa', '*' * 100
     data, status = UserSettingService.change_setting(request.json)
     print data, '!' * 100
     if status:
