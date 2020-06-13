@@ -357,6 +357,7 @@ class AccountService(object):
             return err_msg, False
         if gift_to_reset:
             AntiSpamRateService.reset_spam_type(user_id, AntiSpamRateService.ACCOST, receiver)
+            AntiSpamRateService.reset_spam_type(user_id, AntiSpamRateService.ACCOST)
         return None, True
 
     @classmethod
