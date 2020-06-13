@@ -178,8 +178,8 @@ def get_audio(fileid):
         return jsonify(Failed)
     content = AliOssService.get_binary_from_bucket(fileid)
     if not content:
-        return Response('', mimetype='audio/mp4')   # 返回空流, 兼容错误
-    response = Response(content, mimetype='audio/mp4')
+        return Response('', mimetype='audio/mp3')   # 返回空流, 兼容错误
+    response = Response(content, mimetype='audio/mp3')
     response.headers['Cache-Control'] = 'max-age=%d' % 86400
     return response
 
