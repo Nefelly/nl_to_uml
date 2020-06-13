@@ -138,7 +138,6 @@ class AntiSpamRateService(object):
 
     @classmethod
     def _get_error_message(cls, word, activity, diamonds=None):
-        print 'jerrr', '!' * 100
         msg = GlobalizationService.get_region_word(word)
         if diamonds is None:
             return msg
@@ -151,7 +150,6 @@ class AntiSpamRateService(object):
     @classmethod
     def _get_protected_error_message(cls, word, activity, other_id, diamonds=None):
         res = cls._get_error_message(word, activity, diamonds)
-        print 'ninnnnnn', '!' * 100
         if isinstance(res, dict):
             res['other_info'] = other_id
         return res
