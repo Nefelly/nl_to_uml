@@ -39,22 +39,24 @@ class GiftService(object):
         return gifts.get(gift_id, 0)
 
     @classmethod
-    def get_gift_id_giftnames_m(cls):
+    def get_gift_id_infos_m(cls):
         res = {}
         raw_gifts, status = cls.get_gifts()
         for el in raw_gifts:
-            res[el['id']] = el['name']
+            res[el['id']] = {
+                'name': el['name'],
+                'file_id': el['fileid']
+                }
         return res
 
     @classmethod
     def received_gifts(cls, user_id, page_num, num):
         objs = ReceivedGift.get_by_receiver_id(user_id, page_num, num)
-        # is_member = AccountService.is_member(user_id)
-        gift_names = cls.get_gift_id_giftnames_m()
+        gift_infos = cls.get_gift_id_giftnames_m()
         res = []
         for obj in objs:
             tmp = obj.to_json()
-            tmp['gift_name'] = gift_names.get(obj.gift_id, 'touching gift')
+            tmp.update(gift_infos.get(obj.gift_id, {}))
             res.append(tmp)
         user_ids = [el.sender for el in objs]
         user_info_m = UserService.batch_get_user_info_m(user_ids)
