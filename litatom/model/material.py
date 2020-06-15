@@ -311,12 +311,12 @@ class HitTagWord(Document):
     def save(self, *args, **kwargs):
         super(HitTagWord, self).save(*args, **kwargs)
         if getattr(self, 'id', ''):
-            self._disable_cache(self.region)
+            self._disable_cache(self.region, self.tag)
 
     def delete(self, *args, **kwargs):
         super(HitTagWord, self).delete(*args, **kwargs)
         if getattr(self, 'id', ''):
-            self._disable_cache(self.region)
+            self._disable_cache(self.region, self.tag)
 
     @classmethod
     def get_tag_words(cls, region, tag):
