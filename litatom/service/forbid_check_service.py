@@ -141,7 +141,7 @@ class SpamWordCheckService(object):
     def load(cls):
         for region in GlobalizationService.REGIONS:
             for region_res in SpamWord.get_by_region(region):
-                cls.add(region_res.word, region, cls.KEYWORD_CHAINS, cls.DEFAULT_FAKE_KEYWORD_CHAIN)
+                cls.add(region_res.word, region, cls.KEYWORD_CHAINS, cls.DEFAULT_KEYWORD_CHAIN)
             for region_res in FakeSpamWord.get_by_region(region):
                 cls.add(region_res.word, region, cls.FAKE_KEYWORD_CHAINS, cls.DEFAULT_FAKE_KEYWORD_CHAIN)
 
