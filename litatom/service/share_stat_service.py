@@ -10,7 +10,8 @@ from ..key import (
 )
 from ..service import (
     AccountService,
-    AliLogService
+    AliLogService,
+    GlobalizationService
 )
 from ..const import (
     ONE_WEEK,
@@ -33,6 +34,7 @@ class ShareStatService(object):
     CLICK_EXPIRE_TIME = ONE_WEEK
     MAX_CLICKER_NUM = 1
     ERR_SHARE_NOT_ENOUGH = 'not enough shared members'
+    CLAIM_NUM = 3
 
     @classmethod
     def _get_key(cls, user_id):
@@ -55,6 +57,15 @@ class ShareStatService(object):
         key = cls._get_key(user_id)
         if redis_client.exists(key):
             redis_client.expire(key, cls.CACHED_TIME)
+
+    @classmethod
+    def share_settings(cls):
+        return {
+            'share_num': cls.CLAIM_NUM,
+            'share_link_host': 'www.construct.com',
+            'popup_info': GlobalizationService.get_cached_region_word('share_popup'),
+            'no_share_facebooks': GlobalizationService.get_cached_region_word('share_no_facebooks')
+        }
 
     @classmethod
     def record_clicker_redis(cls, ip):
@@ -118,7 +129,7 @@ class ShareStatService(object):
         集满5人点击分享链接，兑换100钻石奖励
         :return: 返回两项，第一项是错误信息，无则为None, 第二项是是否钻石变动成功
         """
-        if cls.get_shown_num(user_id) < 5:
+        if cls.get_shown_num(user_id) < cls.CLAIM_NUM:
             return cls.ERR_SHARE_NOT_ENOUGH, False
         key = cls._get_known_num_key(user_id)
         redis_client.set(key, cls.get_stat_item_num(user_id), cls.CACHED_TIME)
