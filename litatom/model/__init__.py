@@ -20,7 +20,8 @@ from .material import (
     YoutubeVideo,
     Wording,
     SpamWord,
-    FakeSpamWord
+    FakeSpamWord,
+    FeedTagWord
 )
 from .gift import (
     Gift,
