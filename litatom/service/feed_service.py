@@ -50,14 +50,16 @@ from ..service import (
     AntiSpamRateService,
     ForbidCheckService,
     ExperimentService,
-    PicCheckService
+    PicCheckService,
+    ContentHitService
 )
 from ..model import (
     Feed,
     FeedLike,
     FeedDislike,
     FeedComment,
-    UserSetting
+    UserSetting,
+    HitTagWord
 )
 
 redis_client = RedisClient()['lit']
@@ -73,6 +75,7 @@ class FeedService(object):
     TAG_SELFIE = 'Selfie'
 
     TAGS = [TAG_GAME, TAG_CALL, TAG_VOICE, TAG_CHAT, TAG_SELFIE]
+    TAG_HIT_CHECK = [TAG_CALL, TAG_CHAT, TAG_VOICE]
 
     @classmethod
     def all_tags(cls):
@@ -92,7 +95,16 @@ class FeedService(object):
         return status
 
     @classmethod
+    def is_feed_game(cls, feed):
+        if not feed.pics:
+            return False
+        pic = feed.pics[0]
+
+
+    @classmethod
     def get_feed_tags(cls, feed):
+
+
         return cls.TAGS
 
     @classmethod

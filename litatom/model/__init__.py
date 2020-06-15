@@ -21,7 +21,7 @@ from .material import (
     Wording,
     SpamWord,
     FakeSpamWord,
-    FeedTagWord
+    HitTagWord
 )
 from .gift import (
     Gift,

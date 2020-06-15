@@ -11,6 +11,9 @@ from .forbid_check_service import (
     PicCheckService,
     ForbidCheckService
 )
+from .content_hit_service import (
+    ContentHitService
+)
 from .anti_spam_rate_service import AntiSpamRateService
 from .mq_service import MqService
 from .mongo_sync_service import (

@@ -278,7 +278,7 @@ class FakeSpamWord(Document):
         return words
 
 
-class FeedTagWord(Document):
+class HitTagWord(Document):
     meta = {
         'strict': False,
         'alias': 'db_alias'

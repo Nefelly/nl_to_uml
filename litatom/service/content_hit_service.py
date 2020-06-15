@@ -4,7 +4,7 @@ import time
 import traceback
 import logging
 from ..model import (
-    FeedTagWord
+    HitTagWord
 )
 from ..service import (
     GlobalizationService
@@ -22,6 +22,10 @@ class ContentHitService(object):
     NOT_REGION = False
 
     @classmethod
+    def get_region_tag(cls, region, tag):
+        return '%s_%s' % (region, tag)
+
+    @classmethod
     def add(cls, keyword, tag, region=None, key_word_chains=None, default_key_word_chains=None):
         """以字典嵌套格式，将keyword的每个字母存入KEYWORD_CHAINS"""
         keyword = keyword.lower()
@@ -29,11 +33,12 @@ class ContentHitService(object):
         if not chars:
             return
         if cls.NOT_REGION:
-            level = default_key_word_chains
+            level = default_key_word_chains[tag]
         else:
-            if not key_word_chains.get(region):
-                key_word_chains[region] = {}
-            level = key_word_chains[region]
+            region_tag = cls.get_region_tag(region, tag)
+            if not key_word_chains.get(region_tag):
+                key_word_chains[region_tag] = {}
+            level = key_word_chains[region_tag]
         for i in range(len(chars)):
             if chars[i] in level:
                 level = level[chars[i]]
@@ -51,21 +56,22 @@ class ContentHitService(object):
 
     @classmethod
     def load(cls):
-        for tag in FeedTagWord.get_tags():
+        for tag in HitTagWord.get_tags():
             for region in GlobalizationService.REGIONS:
-                for region_res in FeedTagWord.get_by_region_tag(region, tag):
-                    cls.add(region_res.word, region, cls.KEYWORD_CHAINS, cls.DEFAULT_KEYWORD_CHAIN)
+                for region_res in HitTagWord.get_by_region_tag(region, tag):
+                    cls.add(region_res.word, tag, region, cls.KEYWORD_CHAINS, cls.DEFAULT_KEYWORD_CHAIN)
 
 
     @classmethod
-    def get_spam_word(cls, word, region=None):
+    def get_hit_word(cls, word, tag, region=None):
         if not word:
             return False
         word = word.lower()
         ret = []
         start = 0
         while start < len(word):
-            level = cls.KEYWORD_CHAINS.get(region, {}) if not cls.NOT_REGION else cls.DEFAULT_KEYWORD_CHAIN
+            region_tag = cls.get_region_tag(region, tag)
+            level = cls.KEYWORD_CHAINS.get(region_tag, {}) if not cls.NOT_REGION else cls.DEFAULT_KEYWORD_CHAIN.get(tag, {})
             step_ins = 0
             hit = ''
             for char in word[start:]:
@@ -85,56 +91,13 @@ class ContentHitService(object):
             start += 1
         return False
 
-    @classmethod
-    def is_spam_word(cls, word, region=None, online=True):
-        if not word:
-            return False
-        if not region and online:
-            region = GlobalizationService.get_region()
-        if cls.NOT_REGION:
-            if cls.hit_word_in_chains(word, cls.DEFAULT_KEYWORD_CHAIN):
-                return not cls.hit_word_in_chains(word, cls.DEFAULT_FAKE_KEYWORD_CHAIN)
-            else:
-                return False
-        else:
-            if cls.hit_word_in_chains(word, cls.KEYWORD_CHAINS, region):
-                return not cls.hit_word_in_chains(word, cls.FAKE_KEYWORD_CHAINS,region)
-            else:
-                return False
 
     @classmethod
-    def hit_word_in_chains(cls, word, key_word_chain, tag, region=None):
-        """从word的某个位置开始连续匹配到了一个keyword，则判定为spam_word"""
-        word = word.lower()
-        ret = []
-        start = 0
-        while start < len(word):
-            if not region:
-                level = key_word_chain
-            else:
-                level = key_word_chain.get(region, {})
-            step_ins = 0
-            for char in word[start:]:
-                if char in level:
-                    step_ins += 1
-                    if cls.DELIMIT not in level[char]:
-                        level = level[char]
-                    else:
-                        return True
-                else:
-                    ret.append(word[start])
-                    break
-            else:
-                ret.append(word[start])
-            start += 1
-        return False
-
-    @classmethod
-    def get_spam_words(cls, region):
-        lst = FeedTagWord.get_spam_words(region.lower())
+    def get_tag_words(cls, region, tag):
+        lst = HitTagWord.get_tag_words(region.lower(), tag)
         if not lst:
             return 'not spam words', False
-        return {'spam_words': lst}, True
+        return {'tag_words': lst}, True
 
 
 ContentHitService.load()
