@@ -52,7 +52,7 @@ class GiftService(object):
     @classmethod
     def received_gifts(cls, user_id, page_num, num):
         objs = ReceivedGift.get_by_receiver_id(user_id, page_num, num)
-        gift_infos = cls.get_gift_id_giftnames_m()
+        gift_infos = cls.get_gift_id_infos_m()
         res = []
         for obj in objs:
             tmp = obj.to_json()
