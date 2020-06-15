@@ -42,6 +42,7 @@ from ..service import (
     BlockService,
     Ip2AddressService,
     UserMessageService,
+    AliOssService,
     FollowingFeedService,
     GlobalizationService,
     UserMessageService,
@@ -99,13 +100,23 @@ class FeedService(object):
         if not feed.pics:
             return False
         pic = feed.pics[0]
-
+        width, height = AliOssService.get_pic_size(pic)
+        if width > height and height > 0:
+            return width * 1.0 / height >= 1.2
+        return False
 
     @classmethod
     def get_feed_tags(cls, feed):
-
-
-        return cls.TAGS
+        res = []
+        if cls.is_feed_game(feed):
+            res.append(cls.TAG_GAME)
+        if not feed.content:
+            return res
+        for tag in cls.TAG_HIT_CHECK:
+            hit_word = ContentHitService.get_hit_word(feed.content, tag)
+            if hit_word:
+                res.append(tag)
+        return res
 
     @classmethod
     def pin_feed(cls, user_id, feed_id):

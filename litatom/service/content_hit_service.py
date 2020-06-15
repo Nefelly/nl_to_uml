@@ -64,6 +64,8 @@ class ContentHitService(object):
 
     @classmethod
     def get_hit_word(cls, word, tag, region=None):
+        if not region:
+            region = GlobalizationService.get_region()
         if not word:
             return False
         word = word.lower()

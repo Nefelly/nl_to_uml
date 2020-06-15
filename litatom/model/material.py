@@ -309,12 +309,12 @@ class HitTagWord(Document):
         redis_client.delete(REDIS_FEED_TAG_WORD_CACHE.format(region=region, tag=tag))
 
     def save(self, *args, **kwargs):
-        super(SpamWord, self).save(*args, **kwargs)
+        super(HitTagWord, self).save(*args, **kwargs)
         if getattr(self, 'id', ''):
             self._disable_cache(self.region)
 
     def delete(self, *args, **kwargs):
-        super(SpamWord, self).delete(*args, **kwargs)
+        super(HitTagWord, self).delete(*args, **kwargs)
         if getattr(self, 'id', ''):
             self._disable_cache(self.region)
 
