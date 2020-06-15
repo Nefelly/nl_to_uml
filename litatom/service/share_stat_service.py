@@ -64,7 +64,7 @@ class ShareStatService(object):
             'share_num': cls.CLAIM_NUM,
             'share_link_host': 'www.construct.com',
             'popup_info': GlobalizationService.get_cached_region_word('share_popup'),
-            'no_share_facebooks': GlobalizationService.get_cached_region_word('share_no_facebooks')
+            'no_share_facebooks': GlobalizationService.get_cached_region_word('no_share_facebooks')
         }
 
     @classmethod
