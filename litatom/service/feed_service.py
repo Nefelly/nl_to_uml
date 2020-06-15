@@ -96,6 +96,12 @@ class FeedService(object):
         return status
 
     @classmethod
+    def feed_tags_by_feedid(cls, feed_id):
+        feed = Feed.get_by_id(feed_id)
+        request.region = GlobalizationService.get_region_by_user_id(feed.user_id)
+        return cls.get_feed_tags(feed)
+
+    @classmethod
     def is_feed_game(cls, feed):
         if not feed.pics:
             return False

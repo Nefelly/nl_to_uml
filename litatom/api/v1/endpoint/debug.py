@@ -25,7 +25,8 @@ from ....service import (
     AnoyMatchService,
     AliOssService,
     GlobalizationService,
-    HuanxinService
+    HuanxinService,
+    FeedService
 )
 from  ....key import (
     REDIS_MATCH_BEFORE_PREFIX
@@ -131,6 +132,11 @@ def user_info():
     data, status = UserService.get_user_info(user_id, user_id)
     if not status:
         return fail(data)
+    return success(data)
+
+
+def get_feed_tags(feed_id):
+    data = FeedService.feed_tags_by_feedid(feed_id)
     return success(data)
 
 
