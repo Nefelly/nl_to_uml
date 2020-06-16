@@ -9,8 +9,7 @@ class AgoraService(object):
     APPID = "a0baede033384361a307dbf9e28b571d"
     CUSTOMERID ="3613e4cdf16246a9888e870eb8317fb5"
     APP_SECRET = "74654ca439ac420c9b2b2e57ff474abf"
-    Auth="Basic " + base64.encodestring('%s:%s' % (CUSTOMERID, APP_SECRET))
-    print Auth
+    Auth="Basic " + base64.encodestring('%s:%s' % (CUSTOMERID, APP_SECRET)).replace('\n', '')
     Cname="love127618040528489love126505602587986"
     ACCESS_KEY="LTAIxjghAKbw6DrM"
     SECRET_KEY="QpvYuzO2X5QwxYaZwgpsjjkBDEYFNP"
