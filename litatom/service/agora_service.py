@@ -57,6 +57,7 @@ class AgoraService(object):
 
     @classmethod
     def cloud_post(cls, url, data=None,timeout=TIMEOUT):
+        print cls.Auth
         headers = {'Content-type': "application/json", "Authorization": cls.Auth}
 
         try:
