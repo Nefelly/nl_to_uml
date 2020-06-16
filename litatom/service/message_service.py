@@ -76,6 +76,7 @@ class UserMessageService(object):
     def msg_by_message_obj(cls, obj):
         if not obj:
             return {}
+
         return {
             'user_info': UserService.user_info_by_uid(obj.related_uid),
             'message':  cls.get_message(obj.m_type),
