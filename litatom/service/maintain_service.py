@@ -147,7 +147,6 @@ class MaintainService(object):
         except:
             pass
         # ids = UserService.get_all_ids()
-        print len(ids)
         clear_cnt = 0
         maintain_num = 60
         clear_interval = 30

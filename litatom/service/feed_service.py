@@ -224,12 +224,10 @@ class FeedService(object):
             for pic in pic_res:
                 advice = pic_res[pic][1]
                 if advice == BLOCK_PIC:
-                    print 'sb get here', '!' * 100
                     GlobalizationService.set_current_region_for_script(GlobalizationService.get_region_by_user_id(feed.user_id))
                     ForbidActionService.resolve_block_pic(feed.user_id, pic, SPAM_RECORD_FEED_SOURCE)
                     FeedLike.del_by_feedid(feed_id)
                     FeedComment.objects(feed_id=feed_id).delete()
-                    print 'not get here', '~' * 100
                     feed.delete()
                     return
                 if not reviewed_tag and advice == REVIEW_PIC:
