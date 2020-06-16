@@ -11,6 +11,7 @@ from .forbid_check_service import (
     PicCheckService,
     ForbidCheckService
 )
+from .agora_service import AgoraService
 from .content_hit_service import (
     ContentHitService
 )
