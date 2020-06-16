@@ -84,6 +84,7 @@ class UserMessageService(object):
             user_info = UserService.user_info_by_uid(obj.related_uid)
             if not is_vip:
                 user_info['user_id'] = user_id
+                user_info['nickname'] = GlobalizationService.get_cached_region_word('mystery_person')
             message = GlobalizationService.get_cached_region_word('home_somebody_visit')
         else:
             message = cls.get_message(obj.m_type)
