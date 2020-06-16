@@ -83,6 +83,7 @@ class AgoraService(object):
     @classmethod
     def start_record(cls):
         acquire_url = cls.url + "acquire"
+        print acquire_url,  cls.acquire_body
         r_acquire = cls.cloud_post(acquire_url, cls.acquire_body)
         if r_acquire.status_code == 200:
             resourceId = r_acquire.json()["resourceId"]
