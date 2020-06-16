@@ -8,7 +8,7 @@ class AgoraService(object):
     #TODO: Fill in AppId, Basic Auth string, Cname (channel name), and cloud storage information
     APPID="3613e4cdf16246a9888e870eb8317fb5"
     APP_SECRET = "74654ca439ac420c9b2b2e57ff474abf"
-    Auth="Basic " + base64.encodestring('%s:%s' % (APPID, APP_SECRET))
+    Auth="Basic " + base64.encodestring('%s:%s' % (APPID, APP_SECRET)).replace('\n', '')
     Cname="love127618040528489love126505602587986"
     ACCESS_KEY="LTAIxjghAKbw6DrM"
     SECRET_KEY="QpvYuzO2X5QwxYaZwgpsjjkBDEYFNP"
