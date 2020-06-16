@@ -1,12 +1,14 @@
 import requests
 import time
+import base64
 TIMEOUT=60
 
 
 class AgoraService(object):
     #TODO: Fill in AppId, Basic Auth string, Cname (channel name), and cloud storage information
     APPID="3613e4cdf16246a9888e870eb8317fb5"
-    Auth="74654ca439ac420c9b2b2e57ff474abf"
+    APP_SECRET = "74654ca439ac420c9b2b2e57ff474abf"
+    Auth="Basic " + base64.encodestring('%s:%s' % (APPID, APP_SECRET))
     Cname="love127618040528489love126505602587986"
     ACCESS_KEY="LTAIxjghAKbw6DrM"
     SECRET_KEY="QpvYuzO2X5QwxYaZwgpsjjkBDEYFNP"
@@ -87,7 +89,7 @@ class AgoraService(object):
         else:
             print("Acquire error! Code: %s Info: %s" %(r_acquire.status_code, r_acquire.json()))
             return False
-
+        print resourceId, ''
         start_url = cls.url + "resourceid/%s/mode/mix/start" % resourceId
         r_start = cls.cloud_post(start_url, cls.start_body)
         if r_start.status_code == 200:
