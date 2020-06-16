@@ -292,7 +292,7 @@ class AccountService(object):
         time_now = int(time.time())
         if old_membership_time < time_now:
             old_membership_time = time_now
-        time_int = ONE_WEEK if not setting.IS_DEV else ONE_MIN
+        time_int = ONE_WEEK if not setting.IS_DEV else 5 * ONE_MIN
         new_member_ship_time = old_membership_time + time_int
         user_account.video_member_time = new_member_ship_time
         user_account.save()
