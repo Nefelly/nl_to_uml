@@ -138,8 +138,8 @@ class AgoraService(object):
             cname = "love127618040528489love126505602587986"
         resourceId, sid = cls._start_record(cname)
         print '%s_%s.m3u8' % (sid, cname)
-        time.sleep(10)
-        cls.stop_record(resourceId, sid)
+        # time.sleep(10)
+        # cls.stop_record(resourceId, sid)
         return
         acquire_url = cls.url + "acquire"
         acquire_body = {
