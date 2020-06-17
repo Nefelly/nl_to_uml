@@ -5,6 +5,11 @@ TIMEOUT=60
 
 
 class AgoraService(object):
+    '''
+    docs:
+    https://docs.agora.io/cn/cloud-recording/cloud_recording_api_rest?platform=All%20Platforms#a-namestorageconfiga%E4%BA%91%E5%AD%98%E5%82%A8%E8%AE%BE%E7%BD%AE
+    https://docs.agora.io/cn/cloud-recording/cloud_recording_rest?platform=All%20Platforms
+    '''
     #TODO: Fill in AppId, Basic Auth string, Cname (channel name), and cloud storage information
     APPID = "a0baede033384361a307dbf9e28b571d"
     CUSTOMERID ="3613e4cdf16246a9888e870eb8317fb5"
