@@ -158,7 +158,7 @@ def upload_audio_from_file():
 
 
 def get_audio(fileid):
-    get_file_by_id_and_mime_type(fileid, 'audio/amr')
+    return get_file_by_id_and_mime_type(fileid, 'audio/amr')
     # if fileid == 'null':
     #     return jsonify(Failed)
     # content = AliOssService.get_binary_from_bucket(fileid)
