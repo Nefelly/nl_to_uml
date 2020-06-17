@@ -127,6 +127,7 @@ class AgoraService(object):
         time.sleep(30)
         stop_url = cls.url+"resourceid/%s/sid/%s/mode/mix/stop" % (resourceId, sid)
         r_stop = cls.cloud_post(stop_url, cls.stop_body)
+        print r_stop.json()
         if r_stop.status_code == 200:
             print("Stop cloud recording success. FileList : %s, uploading status: %s"
                   %(r_stop.json()["serverResponse"]["fileList"], r_stop.json()["serverResponse"]["uploadingStatus"]))
