@@ -74,7 +74,8 @@ from ..service import (
     MqService,
     AvatarService,
     MongoSyncService,
-    AliLogService
+    AliLogService,
+    UserTagService
 )
 
 logger = logging.getLogger(__name__)
@@ -328,11 +329,11 @@ class UserService(object):
             # nickname,bio spam word风险拦截
             res = SpamWordCheckService.is_spam_word(nickname)
             if res:
-                ForbidActionService.resolve_spam_word(uid,nickname,SPAM_RECORD_NICKNAME_SOURCE)
+                ForbidActionService.resolve_spam_word(uid, nickname, SPAM_RECORD_NICKNAME_SOURCE)
                 return GlobalizationService.get_region_word('alert_msg'), False
             res = SpamWordCheckService.is_spam_word(bio)
             if res:
-                ForbidActionService.resolve_spam_word(uid,bio,SPAM_RECORD_BIO_SOURCE)
+                ForbidActionService.resolve_spam_word(uid, bio, SPAM_RECORD_BIO_SOURCE)
                 return GlobalizationService.get_region_word('alert_msg'), False
             # if (bio or nickname) and GlobalizationService.get_region() == GlobalizationService.DEFAULT_REGION:
             if (bio or nickname):
@@ -1000,25 +1001,30 @@ class UserService(object):
         return basic_info, True
 
     @classmethod
-    def get_basic_info(cls, user):
+    def get_basic_info(cls, user, show_default_bio=False):
         if not user:
             return {}
         if request.ip_should_filter:
             if user.age < 18:
                 return {}
         basic_info = user.basic_info()
-        basic_info.update({'bio': cls.get_bio(user)})
+        basic_info.update({'bio': cls.get_bio(user, show_default_bio)})
         return basic_info
 
     @classmethod
-    def get_bio(cls, user):
+    def get_bio(cls, user, show_default_bio):
         '''
         !!!! attention, cal bio is too mongo expensive should be in user
         :param user:
         :return:
         '''
+        user_id = str(user.id)
         if user.bio:
             return user.bio
+        if show_default_bio:
+            tag_str = UserTagService.tags_str(user_id)
+            if tag_str:
+                return tag_str
         login_long = datetime.datetime.now() - user.create_time > datetime.timedelta(days=3)
         word_m = GlobalizationService.get_region_word('bio')
         if login_long:

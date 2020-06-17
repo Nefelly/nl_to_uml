@@ -19,6 +19,7 @@ from ..key import (
     REDIS_YOUTUBE_VIDEO_CACHE,
     REDIS_SPAM_WORD_CACHE,
     REDIS_FAKE_SPAM_WORD_CACHE,
+    REDIS_FEED_TAG_WORD_CACHE
 )
 redis_client = RedisClient()['lit']
 
@@ -266,6 +267,60 @@ class FakeSpamWord(Document):
     @classmethod
     def get_spam_words(cls, region):
         cache_key = REDIS_FAKE_SPAM_WORD_CACHE.format(region=region)
+        cache_obj = redis_client.get(cache_key)
+        if cache_obj:
+            return cPickle.loads(cache_obj)
+        words = []
+        objs = cls.objects(region=region)
+        for obj in objs:
+            words.append(obj.word)
+        redis_client.set(cache_key, cPickle.dumps(words))
+        return words
+
+
+class HitTagWord(Document):
+    meta = {
+        'strict': False,
+        'alias': 'db_alias'
+    }
+    region = StringField(required=True)
+    word = StringField(required=False)
+    tag = StringField()
+    create_time = DateTimeField(required=True, default=datetime.datetime.now)
+
+    @classmethod
+    def get_tags(cls):
+        return cls.objects().distinct('tag')
+
+    @classmethod
+    def create(cls, tag, region, word):
+        obj = cls.objects(tag=tag, region=region, word=word).first()
+        if obj:
+            return
+        obj = cls(tag=tag, region=region, word=word)
+        obj.save()
+
+    @classmethod
+    def get_by_region_tag(cls, region, tag):
+        return cls.objects(region=region, tag=tag)
+
+    @classmethod
+    def _disable_cache(cls, region, tag):
+        redis_client.delete(REDIS_FEED_TAG_WORD_CACHE.format(region=region, tag=tag))
+
+    def save(self, *args, **kwargs):
+        super(HitTagWord, self).save(*args, **kwargs)
+        if getattr(self, 'id', ''):
+            self._disable_cache(self.region, self.tag)
+
+    def delete(self, *args, **kwargs):
+        super(HitTagWord, self).delete(*args, **kwargs)
+        if getattr(self, 'id', ''):
+            self._disable_cache(self.region, self.tag)
+
+    @classmethod
+    def get_tag_words(cls, region, tag):
+        cache_key = REDIS_FEED_TAG_WORD_CACHE.format(region=region, tag=tag)
         cache_obj = redis_client.get(cache_key)
         if cache_obj:
             return cPickle.loads(cache_obj)

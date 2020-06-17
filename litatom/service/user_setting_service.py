@@ -17,12 +17,14 @@ from ..const import (
     ONE_HOUR,
     TYPE_VOICE_AGORA,
     TYPE_VOICE_TENCENT,
-    PLATFORM_IOS
+    PLATFORM_IOS,
+    EXP_FEED_SHOW_TAGS
 )
 from ..key import (
     REDIS_SETTINGS_KEYS,
     REDIS_SETTINGS_IOS,
-    REDIS_SETTINGS_IOS_VERSION
+    REDIS_SETTINGS_IOS_VERSION,
+    REDIS_SETTINGS_IOS_LATEST
 )
 
 from ..service import (
@@ -77,7 +79,14 @@ class UserSettingService(object):
         if request.platform != PLATFORM_IOS:
             return REDIS_SETTINGS_KEYS
         if request.version and request.version > '1.2.3':
-            return REDIS_SETTINGS_IOS_VERSION.format(version=request.version)
+            latest_version = redis_client.get(REDIS_SETTINGS_IOS_LATEST)
+            if not latest_version:
+                return REDIS_SETTINGS_IOS
+            if latest_version and latest_version < request.version:
+                now_version = latest_version
+            else:
+                now_version = request.version
+            return REDIS_SETTINGS_IOS_VERSION.format(version=now_version)
         return REDIS_SETTINGS_IOS
 
     @classmethod
@@ -89,6 +98,11 @@ class UserSettingService(object):
         setting_key = cls.get_setting_key()
         AdminService.add_operate_record('user_setting_' + setting_key, redis_client.get(setting_key))
         redis_client.set(cls.get_setting_key(), setting_string)
+        if request.platform == PLATFORM_IOS:
+            version = request.version
+            lastest_version = redis_client.get(REDIS_SETTINGS_IOS_LATEST)
+            if not lastest_version or lastest_version < version:
+                redis_client.set(REDIS_SETTINGS_IOS_LATEST, version)
         return None, True
 
     @classmethod
@@ -140,6 +154,8 @@ class UserSettingService(object):
         if region == GlobalizationService.REGION_ID:
             if ExperimentService.lit_exp_value('id_show_video') == 'show':
                 res['modules_open']['video_match'] = 1
+        if ExperimentService.lit_exp_hit(EXP_FEED_SHOW_TAGS):
+            res['feed_show_tags'] = True
         if region == GlobalizationService.REGION_PH:
             res['modules_open']['voice_match'] = 0
         return res

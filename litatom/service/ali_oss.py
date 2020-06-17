@@ -138,6 +138,19 @@ class AliOssService(object):
         return res
 
     @classmethod
+    def get_pic_size(cls, fileid):
+        obj = cls.get_binary_from_bucket(fileid)
+        default = tuple([-1, -1])
+        if not obj:
+            return default
+        try:
+            img = pImage.open(BytesIO(obj))
+            (x, y) = img.size
+            return x, y
+        except:
+            return default
+
+    @classmethod
     def get_resize_size(cls, x, y, from_gm=False):
         '''
         采用阶梯式压缩方式：

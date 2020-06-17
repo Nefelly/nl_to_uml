@@ -292,7 +292,7 @@ class AccountService(object):
         time_now = int(time.time())
         if old_membership_time < time_now:
             old_membership_time = time_now
-        time_int = ONE_WEEK if not setting.IS_DEV else ONE_MIN
+        time_int = ONE_WEEK if not setting.IS_DEV else 5 * ONE_MIN
         new_member_ship_time = old_membership_time + time_int
         user_account.video_member_time = new_member_ship_time
         user_account.save()
@@ -357,6 +357,7 @@ class AccountService(object):
             return err_msg, False
         if gift_to_reset:
             AntiSpamRateService.reset_spam_type(user_id, AntiSpamRateService.ACCOST, receiver)
+            AntiSpamRateService.reset_spam_type(user_id, AntiSpamRateService.ACCOST)
         return None, True
 
     @classmethod

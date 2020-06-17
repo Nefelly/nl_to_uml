@@ -215,6 +215,7 @@ b.add_url_rule('/lit/activity/user_share/<share_user_id>', 'activity-user-share'
 b.add_url_rule('/lit/activity/share_static1', 'activity-share-static', endpoint.activity.share_static)
 b.add_url_rule('/lit/activity/claim_rewards', 'activity-claim-rewards', endpoint.activity.claim_rewards)
 b.add_url_rule('/lit/activity/share_num', 'activity-share-num',endpoint.activity.share_num)
+b.add_url_rule('/lit/activity/share_settings', 'activity-share_settings',endpoint.activity.share_settings)
 b.add_url_rule('/lit/activity/admin', 'activity-adnmin', endpoint.activity.admin_page)
 
 # anoy_match
@@ -254,6 +255,7 @@ b.add_url_rule('/lit/debug/delete_matched_record', 'debug-del_match_before', end
 b.add_url_rule('/lit/debug/delete_online_matched_record', 'debug-online_del_match_status', endpoint.debug.online_del_match_status)
 b.add_url_rule('/lit/debug/set_times_to1', 'debug-set-times-to1', endpoint.debug.set_left_times_to_1)
 b.add_url_rule('/lit/debug/down_log/<user_id>', 'debug-down_log', endpoint.debug.down_log)
+b.add_url_rule('/lit/debug/feed_tags/<feed_id>', 'debug-get_feed_tags', endpoint.debug.get_feed_tags)
 
 
 # feed
@@ -271,6 +273,7 @@ b.add_url_rule('/lit/feed/comment/<feed_id>', 'feed-feed-comments', endpoint.fee
 b.add_url_rule('/lit/feed/info/<feed_id>', 'feed-feed-info', endpoint.feed.feed_info)
 b.add_url_rule('/lit/feed/pin_feed/<feed_id>', 'feed-pin_feed', endpoint.feed.pin_feed)
 b.add_url_rule('/lit/feed/unpin_feed/<feed_id>', 'feed-unpin_feed', endpoint.feed.unpin_feed)
+b.add_url_rule('/lit/feed/tags', 'feed-tags', endpoint.feed.tags)
 
 # user_relations
 b.add_url_rule('/lit/block/<other_user_id>', 'block', endpoint.user_relations.block)

@@ -66,16 +66,7 @@ def upload_image_from_file():
 
 
 def get_image(fileid):
-    if fileid == 'null':
-        return jsonify(Failed)
-    content = AliOssService.get_binary_from_bucket(fileid)
-    # print '-' * 100, len(content), fileid
-    if not content:
-        return Response('', mimetype='image/jpeg')   # 返回空图片流, 兼容错误
-        #return jsonify(Failed)
-    response = Response(content, mimetype='image/jpeg')
-    response.headers['Cache-Control'] = 'max-age=%d' % 86400
-    return response
+    return get_file_by_id_and_mime_type(fileid, 'image/jpeg')
 
 
 def get_file_by_id_and_mime_type(fileid, mimetype):
@@ -115,14 +106,7 @@ def upload_video_from_file():
 
 
 def get_video(fileid):
-    if fileid == 'null':
-        return jsonify(Failed)
-    content = AliOssService.get_binary_from_bucket(fileid)
-    if not content:
-        return Response('', mimetype='Video/mp4')   # 返回空流, 兼容错误
-    response = Response(content, mimetype='Video/mp4')
-    response.headers['Cache-Control'] = 'max-age=%d' % 86400
-    return response
+    return get_file_by_id_and_mime_type(fileid, 'Video/mp4')
 
 
 def get_simage(fileid):
@@ -174,14 +158,15 @@ def upload_audio_from_file():
 
 
 def get_audio(fileid):
-    if fileid == 'null':
-        return jsonify(Failed)
-    content = AliOssService.get_binary_from_bucket(fileid)
-    if not content:
-        return Response('', mimetype='audio/amr')   # 返回空流, 兼容错误
-    response = Response(content, mimetype='audio/amr')
-    response.headers['Cache-Control'] = 'max-age=%d' % 86400
-    return response
+    get_file_by_id_and_mime_type(fileid, 'audio/amr')
+    # if fileid == 'null':
+    #     return jsonify(Failed)
+    # content = AliOssService.get_binary_from_bucket(fileid)
+    # if not content:
+    #     return Response('', mimetype='audio/amr')   # 返回空流, 兼容错误
+    # response = Response(content, mimetype='audio/amr')
+    # response.headers['Cache-Control'] = 'max-age=%d' % 86400
+    # return response
 
 
 @session_required

@@ -104,6 +104,12 @@ def share_num():
     data = ShareStatService.get_shown_num(request.user_id)
     return success(data)
 
+
+def share_settings():
+    data = ShareStatService.share_settings()
+    return success(data)
+
+
 def admin_page():
     r = make_response(render_template("admin_index.html"))
     r.headers.set('Content-Type', 'text/html; charset=utf-8')
