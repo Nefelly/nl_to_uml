@@ -102,6 +102,7 @@ class AgoraService(object):
         r_start = cls.cloud_post(start_url, cls.start_body)
         if r_start.status_code == 200:
             sid = r_start.json()["sid"]
+            print sid, '!!!!!!' * 10
         else:
             print("Start error! Code:%s Info:%s" %(r_start.status_code, r_start.json()))
             return False
