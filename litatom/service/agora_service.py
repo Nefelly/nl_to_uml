@@ -2,10 +2,25 @@ import requests
 import time
 from copy import deepcopy
 import base64
+from ..util import (
+    low_high_pair
+)
+from ..const import (
+    ONE_MIN
+)
+from ..key import (
+    REDIS_VOICE_RECORD_CACHE
+)
+from ..model import (
+    VoiceMatchRecord
+)
+from flask import request
+
 TIMEOUT=60
 
 
 class AgoraService(object):
+    RECORD_EXPIRE_TIME = 10 * ONE_MIN
     '''
     docs:
     https://docs.agora.io/cn/cloud-recording/cloud_recording_api_rest?platform=All%20Platforms#a-namestorageconfiga%E4%BA%91%E5%AD%98%E5%82%A8%E8%AE%BE%E7%BD%AE
@@ -103,6 +118,18 @@ class AgoraService(object):
         else:
             print("Acquire error! Code: %s Info: %s" % (r_acquire.status_code, r_acquire.json()))
             return False
+
+    @classmethod
+    def outer_record(cls, loveid1, loveid2):
+        cname = low_high_pair(loveid1, loveid2)
+        resourceId, sid = cls._start_record()
+        save_add = '%s_%s.m3u8' % (sid, cname)
+        region = request.region
+        save_record = VoiceMatchRecord.create(loveid1, loveid2, save_add, region)
+
+    @classmethod
+    def outer_stop_record(cls, loveid1, loveid2):
+        pass
 
     @classmethod
     def _start_record(cls, cname):

@@ -1,5 +1,6 @@
 # coding: utf-8
 import datetime
+import time
 import json
 import bson
 from mongoengine import (
@@ -38,6 +39,43 @@ class MatchRecord(Document):
         obj.inter_time = inter_time
         obj.save()
         return obj
+
+
+class VoiceMatchRecord(Document):
+    '''
+    声音匹配记录
+    '''
+    user_id1 = StringField(required=True)
+    user_id2 = StringField(required=True)
+    save_add = StringField()
+    region = StringField()
+    start_time = IntField()
+    end_time = IntField()
+    create_time = DateTimeField(required=True, default=datetime.datetime.now)
+
+    @classmethod
+    def create(cls, user_id1, user_id2, save_add, region):
+        obj = cls()
+        user_id1, user_id2 = cls.get_order(user_id1, user_id2)
+        obj.user_id1 = user_id1
+        obj.user_id2 = user_id2
+        obj.save_add = save_add
+        obj.region = region
+        obj.start_time = int(time.time())
+        obj.save()
+        return obj
+
+    @classmethod
+    def get_order(cls, user_id1, user_id2):
+        return user_id1, user_id2 if user_id1 < user_id2 else user_id2, user_id1
+
+    @classmethod
+    def stop(cls, rid):
+        obj = cls.objects(id=rid).first()
+        if not obj:
+            return
+        obj.end_time = int(time.time())
+        obj.save()
 
 
 class MatchHistory(Document):
