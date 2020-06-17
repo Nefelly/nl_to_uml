@@ -15,7 +15,7 @@ class AgoraService(object):
     SECRET_KEY="QpvYuzO2X5QwxYaZwgpsjjkBDEYFNP"
     VENDOR = 2
     REGION = 7
-    BUCKET = "agorarecord"
+    BUCKET = "testlowvisit"
 
     url="https://api.agora.io/v1/apps/%s/cloud_recording/" % APPID
 
