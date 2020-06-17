@@ -45,7 +45,7 @@ class AgoraService(object):
             "recordingConfig": {
                 "audioProfile": 0,
                 "channelType": 0,
-                "maxIdleTime": 30,
+                "maxIdleTime": 5,
                 "transcodingConfig": {
                         "width": 640,
                         "height": 360,
@@ -89,9 +89,58 @@ class AgoraService(object):
             raise Exception("CONNECTION_ERROR")
 
     @classmethod
+    def get_resource_id(cls, cname):
+        acquire_url = cls.url + "acquire"
+        acquire_body = {
+            "uid": "957947",
+            "cname": cname,
+            "clientRequest": {}
+        }
+        r_acquire = cls.cloud_post(acquire_url, acquire_body)
+        if r_acquire.status_code == 200:
+            resourceId = r_acquire.json()["resourceId"]
+            return resourceId
+        else:
+            print("Acquire error! Code: %s Info: %s" % (r_acquire.status_code, r_acquire.json()))
+            return False
+
+    @classmethod
+    def _start_record(cls, cname):
+        resourceId = cls.get_resource_id(cname)
+        if not resourceId:
+            return '', ''
+        start_url = cls.url + "resourceid/%s/mode/mix/start" % resourceId
+        start_body = deepcopy(cls.start_body)
+        start_body['Cname'] = cname
+        r_start = cls.cloud_post(start_url, start_body)
+        if r_start.status_code == 200:
+            sid = r_start.json()["sid"]
+            return resourceId, sid
+        else:
+            print("Start error! Code:%s Info:%s" % (r_start.status_code, r_start.json()))
+            return '', ''
+
+    @classmethod
+    def stop_record(cls, resourceId, sid):
+        stop_url = cls.url + "resourceid/%s/sid/%s/mode/mix/stop" % (resourceId, sid)
+        r_stop = cls.cloud_post(stop_url, cls.stop_body)
+        if r_stop.status_code == 200:
+            # print("Stop cloud recording success. FileList : %s, uploading status: %s"
+            #       %(r_stop.json()["serverResponse"]["fileList"], r_stop.json()["serverResponse"]["uploadingStatus"]))
+            return
+        else:
+            # print("Stop failed! Code: %s Info: %s" % r_stop.status_code, r_stop.json())
+            return True
+
+    @classmethod
     def start_record(cls, cname=None):
         if not cname:
             cname = "love127618040528489love126505602587986"
+        resourceId, sid = cls._start_record(cname)
+        print '%s_%s.m3u8' % (sid, cname)
+        time.sleep(10)
+        cls.stop_record(resourceId, sid)
+        return
         acquire_url = cls.url + "acquire"
         acquire_body = {
             "uid": "957947",
@@ -104,7 +153,6 @@ class AgoraService(object):
         else:
             print("Acquire error! Code: %s Info: %s" %(r_acquire.status_code, r_acquire.json()))
             return False
-        print resourceId, ''
         start_url = cls.url + "resourceid/%s/mode/mix/start" % resourceId
         start_body = deepcopy(cls.start_body)
         start_body['Cname'] = cname
@@ -116,7 +164,7 @@ class AgoraService(object):
             print("Start error! Code:%s Info:%s" %(r_start.status_code, r_start.json()))
             return False
 
-        time.sleep(10)
+        time.sleep(1)
         query_url = cls.url + "resourceid/%s/sid/%s/mode/mix/query" %(resourceId, sid)
         r_query = cls.cloud_get(query_url)
         if r_query.status_code == 200:
@@ -124,7 +172,7 @@ class AgoraService(object):
         else:
             print("Query failed. Code %s, info: %s" % (r_query.status_code, r_query.json()))
 
-        time.sleep(30)
+        time.sleep(10)
         stop_url = cls.url+"resourceid/%s/sid/%s/mode/mix/stop" % (resourceId, sid)
         r_stop = cls.cloud_post(stop_url, cls.stop_body)
         print r_stop.json()
