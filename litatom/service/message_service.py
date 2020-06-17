@@ -77,11 +77,11 @@ class UserMessageService(object):
     def msg_by_message_obj(cls, obj, user_id=None):
         if not obj:
             return {}
+        user_info = UserService.user_info_by_uid(obj.related_uid)
         if obj.m_type == cls.MSG_VISIT_HOME:
             is_vip = False
             if User.is_vip_by_user_id(user_id):
                 is_vip = True
-            user_info = UserService.user_info_by_uid(obj.related_uid)
             if not is_vip:
                 user_info['user_id'] = user_id
                 user_info['nickname'] = GlobalizationService.get_cached_region_word('mystery_person')
