@@ -89,10 +89,15 @@ class AgoraService(object):
             raise Exception("CONNECTION_ERROR")
 
     @classmethod
-    def start_record(cls, cname):
+    def start_record(cls, cname=None):
+        if not cname:
+            cname = "love127618040528489love126505602587986"
         acquire_url = cls.url + "acquire"
-        acquire_body = deepcopy(cls.acquire_body)
-        acquire_body['Cname'] = cname
+        acquire_body = {
+            "uid": "957947",
+            "cname": cname,
+            "clientRequest": {}
+        }
         r_acquire = cls.cloud_post(acquire_url, acquire_body)
         if r_acquire.status_code == 200:
             resourceId = r_acquire.json()["resourceId"]
@@ -101,11 +106,8 @@ class AgoraService(object):
             return False
         print resourceId, ''
         start_url = cls.url + "resourceid/%s/mode/mix/start" % resourceId
-        start_body = {
-                "uid": "957947",
-                "cname": cname,
-                "clientRequest": {}
-            }
+        start_body = deepcopy(cls.start_body)
+        start_body['Cname'] = cname
         r_start = cls.cloud_post(start_url, start_body)
         if r_start.status_code == 200:
             sid = r_start.json()["sid"]
