@@ -69,7 +69,7 @@ class AgoraService(object):
 
         try:
             response = requests.post(url, json=data, headers=headers, timeout=timeout, verify=False)
-            print("url: %s, request body:%s response: %s" %(url, response.request.body,response.json()))
+            # print("url: %s, request body:%s response: %s" %(url, response.request.body,response.json()))
             return response
         except requests.exceptions.ConnectTimeout:
             raise Exception("CONNECTION_TIMEOUT")
@@ -81,7 +81,7 @@ class AgoraService(object):
         headers = {'Content-type':"application/json", "Authorization": cls.Auth}
         try:
             response = requests.get(url, headers=headers, timeout=timeout, verify=False)
-            print("url: %s,request:%s response: %s" % (url, response.request.body, response.json()))
+            # print("url: %s,request:%s response: %s" % (url, response.request.body, response.json()))
             return response
         except requests.exceptions.ConnectTimeout:
             raise Exception("CONNECTION_TIMEOUT")
