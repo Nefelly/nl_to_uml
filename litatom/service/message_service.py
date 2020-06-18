@@ -15,7 +15,8 @@ from ..const import (
     DEFAULT_QUERY_LIMIT,
     MAX_TIME,
     NOT_AUTHORIZED,
-    ONLINE_LIVE
+    ONLINE_LIVE,
+    PLATFORM_IOS
 )
 from ..key import (
     REDIS_USER_NOT_MESSAGE_CACHE,
@@ -77,7 +78,7 @@ class UserMessageService(object):
     def msg_by_message_obj(cls, obj, user_id=None):
         if not obj:
             return {}
-        if obj.m_type == cls.MSG_VISIT_HOME:
+        if obj.m_type == cls.MSG_VISIT_HOME and request.platform != PLATFORM_IOS:
             is_vip = False
             if User.is_vip_by_user_id(user_id):
                 is_vip = True
