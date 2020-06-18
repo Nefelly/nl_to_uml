@@ -130,8 +130,8 @@ class AgoraService(object):
         return REDIS_VOICE_RECORD_CACHE.format(cname=cname)
 
     @classmethod
-    def outer_record(cls, loveid1, loveid2, cname):
-        cname = low_high_pair(loveid1, loveid2)
+    def outer_record(cls, loveid1, loveid2):
+        # cname = low_high_pair(loveid1, loveid2)
         from ..service import VoiceChatService
         cname = str(VoiceChatService.get_roomid(loveid1, loveid2))
         key = cls.get_cache_key(cname)
