@@ -98,9 +98,11 @@ def test_delete_old_users():
         return fail(data)
     return success(data)
 
+
 def voice_record_by_region():
     data = AdminService.get_voice_records_by_region()
     return success(data)
+
 
 def login():
     data = request.json

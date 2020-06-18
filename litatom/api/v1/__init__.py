@@ -154,6 +154,7 @@ b.add_url_rule('/lit/admin/user/<user_id>', 'admin-get_user_info', endpoint.admi
 b.add_url_rule('/lit/admin/get_forbid_history_by_uid', 'admin-get_forbid_history_by_uid', endpoint.admin.get_forbid_history_by_uid)
 b.add_url_rule('/lit/admin/lock_us_feed', 'admin-lock_us_feed', endpoint.admin.lock_us_feed)
 b.add_url_rule('/lit/admin/release_blocked_devices', 'admin-release_blocked_devices', endpoint.admin.release_blocked_devices)
+b.add_url_rule('/lit/admin/voice_record_by_region', 'admin-voice_record_by_region', endpoint.admin.voice_record_by_region)
 
 # picture
 b.add_url_rule('/lit/image/upload', 'image-upload', endpoint.oss.upload_image_from_file, methods=['POST'])
