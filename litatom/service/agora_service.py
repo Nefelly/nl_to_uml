@@ -143,6 +143,7 @@ class AgoraService(object):
         region = request.region
         save_record = VoiceMatchRecord.create(loveid1, loveid2, save_add, region)
         if not save_record:
+            print 'no save record', '!' * 100
             return
         to_save = {
             'resource_id': resourceId,
@@ -166,6 +167,7 @@ class AgoraService(object):
             VoiceMatchRecord.stop(rid)
             cls.stop_record(resourceId, sid)
             redis_client.delete(key)
+            print '*b' * 50
 
     @classmethod
     def _start_record(cls, cname):
