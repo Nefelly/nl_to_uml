@@ -72,7 +72,7 @@ class AdminService(object):
 
     @classmethod
     def get_voice_records_by_region(cls):
-        objs = VoiceMatchRecord.objects(region=GlobalizationService.get_region()).order_by('-create_time').limit(100)
+        objs = VoiceMatchRecord.objects(region=GlobalizationService.get_region(), end_time__ne=None).order_by('-create_time').limit(100)
         res = []
         for obj in objs:
             tmp = {
