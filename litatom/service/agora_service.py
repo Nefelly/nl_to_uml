@@ -131,7 +131,7 @@ class AgoraService(object):
 
     @classmethod
     def outer_record(cls, loveid1, loveid2):
-        # cname = low_high_pair(loveid1, loveid2)
+        cname = low_high_pair(loveid1, loveid2)
         from ..service import VoiceChatService
         cname, status = VoiceChatService.get_roomid(loveid1, loveid2)
         cname = str(cname)
