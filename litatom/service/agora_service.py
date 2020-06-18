@@ -177,6 +177,7 @@ class AgoraService(object):
         r_start = cls.cloud_post(start_url, start_body)
         print start_body
         if r_start.status_code == 200:
+            print r_start.json(), '*' * 100
             sid = r_start.json()["sid"]
             return resourceId, sid
         else:
