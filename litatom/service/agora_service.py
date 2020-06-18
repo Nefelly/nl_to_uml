@@ -1,6 +1,8 @@
 import requests
 import time
+import json
 from copy import deepcopy
+from flask import request
 import base64
 from ..util import (
     low_high_pair
@@ -14,13 +16,17 @@ from ..key import (
 from ..model import (
     VoiceMatchRecord
 )
-from flask import request
+from ..service import (
+    AliLogService
+)
 
-TIMEOUT=60
+from ..redis import RedisClient
+redis_client = RedisClient()['lit']
 
 
 class AgoraService(object):
     RECORD_EXPIRE_TIME = 10 * ONE_MIN
+    TIMEOUT = 60
     '''
     docs:
     https://docs.agora.io/cn/cloud-recording/cloud_recording_api_rest?platform=All%20Platforms#a-namestorageconfiga%E4%BA%91%E5%AD%98%E5%82%A8%E8%AE%BE%E7%BD%AE
@@ -120,16 +126,45 @@ class AgoraService(object):
             return False
 
     @classmethod
+    def get_cache_key(cls, cname):
+        return REDIS_VOICE_RECORD_CACHE.format(cname=cname)
+
+    @classmethod
     def outer_record(cls, loveid1, loveid2):
         cname = low_high_pair(loveid1, loveid2)
+        key = cls.get_cache_key(cname)
+        if redis_client.get(key):
+            # cls.outer_stop_record(key)
+            AliLogService.put_err_log({"name": "voice_record_dup", "cname": cname})
+            return
+            # redis_client.delete(key)
         resourceId, sid = cls._start_record()
         save_add = '%s_%s.m3u8' % (sid, cname)
         region = request.region
         save_record = VoiceMatchRecord.create(loveid1, loveid2, save_add, region)
+        if not save_record:
+            return
+        to_save = {
+            'resource_id': resourceId,
+            'sid': sid,
+            'rid': str(save_record.id)
+        }
+        redis_client.set(key, json.dumps(to_save), cls.RECORD_EXPIRE_TIME)
+        return
+
 
     @classmethod
     def outer_stop_record(cls, loveid1, loveid2):
-        pass
+        cname = low_high_pair(loveid1, loveid2)
+        key = cls.get_cache_key(cname)
+        cache_res = redis_client.get(key)
+        if cache_res:
+            cache_res = json.loads(cache_res)
+            rid = cache_res['rid']
+            resourceId = cache_res['resource_id']
+            sid = cache_res['sid']
+            VoiceMatchRecord.stop(rid)
+            cls.stop_record(resourceId, sid)
 
     @classmethod
     def _start_record(cls, cname):
