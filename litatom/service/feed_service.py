@@ -73,9 +73,8 @@ class FeedService(object):
     TAG_CALL = 'Call'
     TAG_VOICE = 'Voice'
     TAG_CHAT = 'Chat'
-    TAG_SELFIE = 'Selfie'
 
-    TAGS = [TAG_GAME, TAG_CALL, TAG_VOICE, TAG_CHAT, TAG_SELFIE]
+    TAGS = [TAG_GAME, TAG_CALL, TAG_VOICE, TAG_CHAT]
     TAG_HIT_CHECK = [TAG_CALL, TAG_CHAT, TAG_VOICE]
 
     @classmethod

@@ -45,7 +45,8 @@ class GiftService(object):
         for el in raw_gifts:
             res[el['id']] = {
                 'name': el['name'],
-                'file_id': el['fileid']
+                'file_id': el['fileid'],
+                'thumbnail': el['thumbnail']
                 }
         return res
 
@@ -76,4 +77,3 @@ class GiftService(object):
         for el in Gift.objects():
             tag = cls.get_tag(el.name)
             RegionWord.add_or_mod(RegionWord.REGION_BENCHMARK, tag, el.name)
-

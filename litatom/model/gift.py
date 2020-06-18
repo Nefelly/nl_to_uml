@@ -34,14 +34,15 @@ class Gift(Document):
     }
 
     fileid = StringField(required=True)
+    thumbnail = StringField()
     price = IntField(default=0)
     recycle_price = IntField(default=0)
     name = StringField()
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
 
     @classmethod
-    def create(cls, fileid, price, name, recycle_price=0):
-        obj = cls(fileid=fileid, price=price, name=name, recycle_price=recycle_price)
+    def create(cls, fileid, thumbnail, price, name, recycle_price=0):
+        obj = cls(fileid=fileid, thumbnail=thumbnail, price=price, name=name, recycle_price=recycle_price)
         obj.save()
         cls._disable_cache()
 
@@ -92,6 +93,7 @@ class Gift(Document):
             'price': self.price,
             'name': self.name,
             'fileid': self.fileid,
+            'thumbnail': self.thumbnail,
             'create_time': self.create_time
         }
 
