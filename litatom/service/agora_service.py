@@ -28,6 +28,7 @@ redis_client = RedisClient()['lit']
 class AgoraService(object):
     RECORD_EXPIRE_TIME = 10 * ONE_MIN
     TIMEOUT = 60
+    USING = False
     '''
     docs:
     https://docs.agora.io/cn/cloud-recording/cloud_recording_api_rest?platform=All%20Platforms#a-namestorageconfiga%E4%BA%91%E5%AD%98%E5%82%A8%E8%AE%BE%E7%BD%AE
@@ -131,6 +132,8 @@ class AgoraService(object):
 
     @classmethod
     def outer_record(cls, loveid1, loveid2):
+        if not cls.USING:
+            return
         cname = high_low_pair(loveid1, loveid2)
         # from ..service import VoiceChatService
         # cname, status = VoiceChatService.get_roomid(loveid1, loveid2)
@@ -159,6 +162,8 @@ class AgoraService(object):
 
     @classmethod
     def outer_stop_record(cls, loveid1, loveid2):
+        if not cls.USING:
+            return
         cname = high_low_pair(loveid1, loveid2)
         # from ..service import VoiceChatService
         # cname, status = VoiceChatService.get_roomid(loveid1, loveid2)
