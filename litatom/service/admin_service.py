@@ -80,7 +80,7 @@ class AdminService(object):
                 "user_2": User.get_by_huanxin_id(obj.user_id2).basic_info(),
                 "play_add": 'https://testlowvisit.oss-cn-hangzhou.aliyuncs.com/' + obj.save_add,
                 "create_time": obj.create_time,
-                "match_inter": obj.end_time - obj.start_time
+                "match_inter": obj.end_time - obj.start_time if obj.end_time else -1
             }
             res.append(tmp)
         return res
