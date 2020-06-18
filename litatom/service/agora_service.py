@@ -133,7 +133,7 @@ class AgoraService(object):
     def outer_record(cls, loveid1, loveid2):
         # cname = low_high_pair(loveid1, loveid2)
         from ..service import VoiceChatService
-        cname = str(VoiceChatService.get_roomid(loveid1, loveid2))
+        cname, status = str(VoiceChatService.get_roomid(loveid1, loveid2))
         key = cls.get_cache_key(cname)
         if redis_client.get(key):
             # cls.outer_stop_record(key)
@@ -160,7 +160,7 @@ class AgoraService(object):
     def outer_stop_record(cls, loveid1, loveid2):
         cname = low_high_pair(loveid1, loveid2)
         from ..service import VoiceChatService
-        cname = str(VoiceChatService.get_roomid(loveid1, loveid2))
+        cname, status = str(VoiceChatService.get_roomid(loveid1, loveid2))
         key = cls.get_cache_key(cname)
         cache_res = redis_client.get(key)
         if cache_res:
