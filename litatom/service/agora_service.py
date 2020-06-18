@@ -86,7 +86,6 @@ class AgoraService(object):
 
     @classmethod
     def cloud_post(cls, url, data=None,timeout=TIMEOUT):
-        print cls.Auth
         headers = {'Content-type': "application/json", "Authorization": cls.Auth}
 
         try:
@@ -147,7 +146,7 @@ class AgoraService(object):
         region = request.region
         save_record = VoiceMatchRecord.create(loveid1, loveid2, save_add, region)
         if not save_record:
-            print 'no save record', '!' * 100
+            # print 'no save record', '!' * 100
             return
         to_save = {
             'resource_id': resourceId,
@@ -184,9 +183,7 @@ class AgoraService(object):
         start_body = deepcopy(cls.start_body)
         start_body['cname'] = cname
         r_start = cls.cloud_post(start_url, start_body)
-        print start_body
         if r_start.status_code == 200:
-            print r_start.json(), '*' * 100
             sid = r_start.json()["sid"]
             return resourceId, sid
         else:
@@ -210,7 +207,6 @@ class AgoraService(object):
         if not cname:
             cname = "love127618040528489love126505602587986"
         resourceId, sid = cls._start_record(cname)
-        print '%s_%s.m3u8' % (sid, cname)
         # time.sleep(10)
         # cls.stop_record(resourceId, sid)
         return
@@ -232,7 +228,6 @@ class AgoraService(object):
         r_start = cls.cloud_post(start_url, start_body)
         if r_start.status_code == 200:
             sid = r_start.json()["sid"]
-            print sid, '!!!!!!' * 10
         else:
             print("Start error! Code:%s Info:%s" %(r_start.status_code, r_start.json()))
             return False
