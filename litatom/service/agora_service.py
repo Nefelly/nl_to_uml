@@ -138,7 +138,7 @@ class AgoraService(object):
             AliLogService.put_err_log({"name": "voice_record_dup", "cname": cname})
             return
             # redis_client.delete(key)
-        resourceId, sid = cls._start_record()
+        resourceId, sid = cls._start_record(cname)
         save_add = '%s_%s.m3u8' % (sid, cname)
         region = request.region
         save_record = VoiceMatchRecord.create(loveid1, loveid2, save_add, region)
