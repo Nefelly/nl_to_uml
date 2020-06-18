@@ -93,7 +93,8 @@ from .user_model import (
 )
 from .match_record import (
     MatchRecord,
-    MatchHistory
+    MatchHistory,
+    VoiceMatchRecord
 )
 from .tag import (
     Tag,
