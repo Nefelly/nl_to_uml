@@ -173,8 +173,9 @@ class AgoraService(object):
             return '', ''
         start_url = cls.url + "resourceid/%s/mode/mix/start" % resourceId
         start_body = deepcopy(cls.start_body)
-        start_body['Cname'] = cname
+        start_body['cname'] = cname
         r_start = cls.cloud_post(start_url, start_body)
+        print start_body
         if r_start.status_code == 200:
             sid = r_start.json()["sid"]
             return resourceId, sid
