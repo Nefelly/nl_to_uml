@@ -5,7 +5,8 @@ from copy import deepcopy
 from flask import request
 import base64
 from ..util import (
-    low_high_pair
+    low_high_pair,
+    high_low_pair
 )
 from ..const import (
     ONE_MIN
@@ -131,10 +132,10 @@ class AgoraService(object):
 
     @classmethod
     def outer_record(cls, loveid1, loveid2):
-        cname = low_high_pair(loveid1, loveid2)
-        from ..service import VoiceChatService
-        cname, status = VoiceChatService.get_roomid(loveid1, loveid2)
-        cname = str(cname)
+        cname = high_low_pair(loveid1, loveid2)
+        # from ..service import VoiceChatService
+        # cname, status = VoiceChatService.get_roomid(loveid1, loveid2)
+        # cname = str(cname)
         key = cls.get_cache_key(cname)
         if redis_client.get(key):
             # cls.outer_stop_record(key)
@@ -159,10 +160,10 @@ class AgoraService(object):
 
     @classmethod
     def outer_stop_record(cls, loveid1, loveid2):
-        cname = low_high_pair(loveid1, loveid2)
-        from ..service import VoiceChatService
-        cname, status = VoiceChatService.get_roomid(loveid1, loveid2)
-        cname = str(cname)
+        cname = high_low_pair(loveid1, loveid2)
+        # from ..service import VoiceChatService
+        # cname, status = VoiceChatService.get_roomid(loveid1, loveid2)
+        # cname = str(cname)
         key = cls.get_cache_key(cname)
         cache_res = redis_client.get(key)
         if cache_res:
