@@ -67,7 +67,7 @@ class VoiceMatchRecord(Document):
 
     @classmethod
     def get_order(cls, user_id1, user_id2):
-        return user_id1, user_id2 if user_id1 < user_id2 else user_id2, user_id1
+        return (user_id1, user_id2) if user_id1 < user_id2 else (user_id2, user_id1)
 
     @classmethod
     def stop(cls, rid):
