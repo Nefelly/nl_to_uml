@@ -17,7 +17,8 @@ from ..model import (
     Feed,
     User,
     Avatar,
-    OperateRecord
+    OperateRecord,
+    VoiceMatchRecord
 )
 from ..util import (
     get_args_from_db
@@ -68,6 +69,21 @@ class AdminService(object):
             data.append(el.to_json())
         OperateRecord.add(name, json.dumps(data, encoding='utf8'), True)
         return None, True
+
+    @classmethod
+    def get_voice_records_by_region(cls):
+        objs = VoiceMatchRecord.objects(region=request.region).order_by('-create_time').limit(100)
+        res = []
+        for obj in objs:
+            tmp = {
+                "user_1": User.get_by_huanxin_id(obj.user_id1).basic_info(),
+                "user_2": User.get_by_huanxin_id(obj.user_id2).basic_info(),
+                "play_add": 'https://testlowvisit.oss-cn-hangzhou.aliyuncs.com/' + obj.save_add,
+                "create_time": obj.create_time,
+                "match_inter": obj.end_time - obj.start_time
+            }
+            res.append(tmp)
+        return res
 
     @classmethod
     def add_operate_record(cls, name, data):
