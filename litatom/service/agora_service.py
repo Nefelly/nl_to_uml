@@ -165,6 +165,7 @@ class AgoraService(object):
             sid = cache_res['sid']
             VoiceMatchRecord.stop(rid)
             cls.stop_record(resourceId, sid)
+            redis_client.delete(key)
 
     @classmethod
     def _start_record(cls, cname):
