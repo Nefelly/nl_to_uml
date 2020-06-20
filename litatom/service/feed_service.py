@@ -195,7 +195,9 @@ class FeedService(object):
                 return
         feed_id = str(feed.id)
         region_key = cls._redis_feed_region_key(REDIS_FEED_SQUARE_REGION)
-
+        # if feed.video:
+        #     cls.set_video_info(feed.video, str(feed.id), region_key)
+        #     return
         if not feed.pics:
             if cls.should_add_to_square(feed):
                 if feed.video:
