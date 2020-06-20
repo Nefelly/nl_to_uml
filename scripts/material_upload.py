@@ -2,7 +2,8 @@ import os
 from litatom.service import AliOssService
 from litatom.model import (
     Wording,
-    Avatar
+    Avatar,
+    Gift
 )
 from litatom.const import (
     GENDERS
@@ -36,7 +37,19 @@ def up_paied_avatar():
             Avatar.create(fileid, g, True, 5)
 
 
+def up_gift():
+    Gift.objects().delete()
+    dir_name = '/data/tmp/gifts'
+    for f in os.listdir(dir_name):
+        if '.zip' not in f:
+            continue
+        # zipid = AliOssService.upload_from_binary(f)
+        thumbnail_add = f.replace(u'', '').replace('', '').replace('.zip', '.png')
+        print thumbnail_add
+        os.path.lexists(thumbnail_add)
+
 if __name__ == "__main__":
     # up_wording()
     # up_avatar()
-    up_paied_avatar()
+    # up_paied_avatar()
+    up_gift()
