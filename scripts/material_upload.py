@@ -54,7 +54,7 @@ def up_gift():
         thumbnail_id = AliOssService.upload_from_binary(thumbnail_add)
         p = Pinyin()
         name = p.get_pinyin(thumbnail_add.split('/')[-1].replace('.png', ''))
-        print name, '!' * 10
+        print name, '!' * 10, thumbnail_id
         Gift.create(zipid, thumbnail_id, 5, name)
 
 if __name__ == "__main__":
