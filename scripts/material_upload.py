@@ -43,10 +43,14 @@ def up_gift():
     for f in os.listdir(dir_name):
         if '.zip' not in f:
             continue
-        # zipid = AliOssService.upload_from_binary(f)
+        zip_add = dir_name + f
         thumbnail_add = f.replace('-动画文件', '').replace('动画文件', '').replace('.zip', '.png')
-        print thumbnail_add
-        print os.path.lexists(dir_name + thumbnail_add)
+        thumbnail_add = dir_name + thumbnail_add
+        if not os.path.exists(zip_add) or not os.path.exists(thumbnail_add):
+            assert False, 'not file zip:%s thumb:%s' % (zip_add, thumbnail_add)
+        zipid = AliOssService.upload_from_binary(zip_add)
+        thumbnail_id = AliOssService.upload_from_binary(thumbnail_add)
+        Gift.create(zipid, thumbnail_id, 5, )
 
 if __name__ == "__main__":
     # up_wording()
