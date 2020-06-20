@@ -44,7 +44,7 @@ def up_gift():
         if '.zip' not in f:
             continue
         # zipid = AliOssService.upload_from_binary(f)
-        thumbnail_add = f.replace(u'-动画文件', '').replace(u'动画文件', '').replace('.zip', '.png')
+        thumbnail_add = f.replace('-动画文件', '').replace('动画文件', '').replace('.zip', '.png')
         print thumbnail_add
         print os.path.lexists(thumbnail_add)
 
