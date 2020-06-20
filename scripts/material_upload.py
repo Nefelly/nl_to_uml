@@ -40,6 +40,7 @@ def up_paied_avatar():
 def up_gift():
     Gift.objects().delete()
     dir_name = '/data/tmp/gifts/'
+    from xpinyin import Pinyin
     for f in os.listdir(dir_name):
         if '.zip' not in f:
             continue
@@ -50,7 +51,9 @@ def up_gift():
             assert False, 'not file zip:%s thumb:%s' % (zip_add, thumbnail_add)
         zipid = AliOssService.upload_from_binary(zip_add)
         thumbnail_id = AliOssService.upload_from_binary(thumbnail_add)
-        Gift.create(zipid, thumbnail_id, 5, )
+        p = Pinyin()
+        name = p.get_pinyin(thumbnail_add.replace('.png', ''))
+        Gift.create(zipid, thumbnail_id, 5, name)
 
 if __name__ == "__main__":
     # up_wording()
