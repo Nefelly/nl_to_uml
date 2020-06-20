@@ -98,6 +98,7 @@ class UserTag(Document):
         redis_client.delete(cls.get_cached_key(user_id))
 
     def save(self, *args, **kwargs):
+        print 'get innnn save'
         if getattr(self, 'user_id', ''):
             self._disable_cache(str(self.user_id))
         super(UserTag, self).save(*args, **kwargs)
