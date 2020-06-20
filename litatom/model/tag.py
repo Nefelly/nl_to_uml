@@ -103,7 +103,6 @@ class UserTag(Document):
         super(UserTag, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
-        print 'get in herrrr'
         if getattr(self, 'user_id', ''):
             self._disable_cache(str(self.user_id))
         super(UserTag, self).delete(*args, **kwargs)
