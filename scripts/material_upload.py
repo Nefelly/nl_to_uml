@@ -50,10 +50,10 @@ def up_gift():
         if not os.path.exists(zip_add) or not os.path.exists(thumbnail_add):
             assert False, 'not file zip:%s thumb:%s' % (zip_add, thumbnail_add)
         print thumbnail_add
-        zipid = AliOssService.upload_from_binary(zip_add)
-        thumbnail_id = AliOssService.upload_from_binary(thumbnail_add)
+        zipid = AliOssService.upload_from_binary(open(zip_add).read())
+        thumbnail_id = AliOssService.upload_from_binary(open(thumbnail_add).read())
         p = Pinyin()
-        name = p.get_pinyin(thumbnail_add.split('/')[-1].replace('.png', ''))
+        name = p.get_pinyin(thumbnail_add.split('/')[-1].replace('.png', '').decode('utf8'))
         print name, '!' * 10, thumbnail_id
         Gift.create(zipid, thumbnail_id, 5, name)
 
