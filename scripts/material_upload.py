@@ -39,14 +39,14 @@ def up_paied_avatar():
 
 def up_gift():
     Gift.objects().delete()
-    dir_name = '/data/tmp/gifts'
+    dir_name = '/data/tmp/gifts/'
     for f in os.listdir(dir_name):
         if '.zip' not in f:
             continue
         # zipid = AliOssService.upload_from_binary(f)
         thumbnail_add = f.replace('-动画文件', '').replace('动画文件', '').replace('.zip', '.png')
         print thumbnail_add
-        print os.path.lexists(thumbnail_add)
+        print os.path.lexists(dir_name + thumbnail_add)
 
 if __name__ == "__main__":
     # up_wording()
