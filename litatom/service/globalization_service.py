@@ -348,6 +348,10 @@ class GlobalizationService(object):
         return res
 
     @classmethod
+    def is_big_region(cls):
+        return cls.get_region() in cls.BIG_REGIONS
+
+    @classmethod
     def get_region(cls, region=None):
         if region:
             return region
