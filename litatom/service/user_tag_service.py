@@ -68,7 +68,7 @@ class UserTagService(object):
             raw_tags = user_tag.get('tags')
             for el in raw_tags:
                 if not el.get('tag_name'):
-                    print el, user_id
+                    UserTag._disable_cache(user_id)   # 删除tag出现问题
             return ', '.join([el.get('tag_name') for el in raw_tags])
         return ''
 
