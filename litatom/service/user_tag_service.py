@@ -68,7 +68,7 @@ class UserTagService(object):
             raw_tags = user_tag.get('tags')
             for el in raw_tags:
                 if not el.get('tag_name'):
-                    print el
+                    print el, user_id
             return ', '.join([el.get('tag_name') for el in raw_tags])
         return ''
 
