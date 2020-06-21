@@ -66,6 +66,9 @@ class UserTagService(object):
         user_tag, status = cls.user_tags(user_id)
         if status and user_tag and user_tag.get('tags'):
             raw_tags = user_tag.get('tags')
+            for el in raw_tags:
+                if not el.get('tag_name'):
+                    print el.to_json()
             return ', '.join([el.get('tag_name') for el in raw_tags])
         return ''
 
