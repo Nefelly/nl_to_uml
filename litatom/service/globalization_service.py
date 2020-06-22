@@ -348,6 +348,10 @@ class GlobalizationService(object):
         return res
 
     @classmethod
+    def is_big_region(cls):
+        return cls.get_region() in cls.BIG_REGIONS
+
+    @classmethod
     def get_region(cls, region=None):
         if region:
             return region
@@ -407,6 +411,13 @@ class GlobalizationService(object):
             return fail_reason, False
         RegionWord.add_or_mod(region, tag, word)
         return None, True
+
+    @classmethod
+    def delete_region_word(cls, tag):
+        for el in RegionWord.objects(tag=tag):
+            print el.to_json(), 'bbbbb'
+            el.delete()
+
 
     @classmethod
     def region_words(cls):

@@ -46,6 +46,8 @@ class UserTagService(object):
     @classmethod
     def ensure_tags(cls, user_id, tag_ids):
         UserTag.get_by_user_id(user_id).delete()
+        if not tag_ids:
+            UserTag._disable_cache(user_id)
         for tag_id in tag_ids:
             obj = UserTag(user_id=user_id, tag_id=tag_id)
             obj.save()
@@ -64,6 +66,9 @@ class UserTagService(object):
         user_tag, status = cls.user_tags(user_id)
         if status and user_tag and user_tag.get('tags'):
             raw_tags = user_tag.get('tags')
+            for el in raw_tags:
+                if not el.get('tag_name'):
+                    UserTag._disable_cache(user_id)   # 删除tag出现问题
             return ', '.join([el.get('tag_name') for el in raw_tags])
         return ''
 
