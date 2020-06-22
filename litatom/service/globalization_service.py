@@ -413,6 +413,11 @@ class GlobalizationService(object):
         return None, True
 
     @classmethod
+    def delete_region_word(cls, word):
+        for el in RegionWord.objects(word=word):
+            el.delete()
+
+    @classmethod
     def region_words(cls):
         trans = []
         no_trans = []
