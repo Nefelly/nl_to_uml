@@ -222,6 +222,7 @@ def official_feed():
 def admin_words():
     return current_app.send_static_file('region_info.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
 
+
 @reset_admin_env
 def upsert_region_word():
     data = request.json
