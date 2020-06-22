@@ -234,6 +234,13 @@ def upsert_region_word():
     return fail(data)
 
 
+@reset_admin_env
+def delete_region_word():
+    word = request.values.get('word')
+    GlobalizationService.delete_region_word(word)
+    return success()
+
+
 def get_official_feed():
     start_ts = request.args.get('start_ts')
     num = request.args.get('num')
