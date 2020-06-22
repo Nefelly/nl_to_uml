@@ -297,6 +297,7 @@ class RegionWord(Document):
         return None
 
     def delete(self, *args, **kwargs):
+        print 'get innnnn', self.region, self.tag
         self.disable_cache_word(self.region, self.tag)
         super(RegionWord, self).delete(*args, **kwargs)
 
