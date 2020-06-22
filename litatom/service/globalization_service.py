@@ -416,7 +416,6 @@ class GlobalizationService(object):
     def delete_region_word(cls, word):
         for el in RegionWord.objects(word=word):
             el.delete()
-        RegionWord.disable_cache_word()
 
 
     @classmethod
