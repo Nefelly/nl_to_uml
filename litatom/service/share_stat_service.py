@@ -62,7 +62,7 @@ class ShareStatService(object):
     def share_settings(cls):
         return {
             'share_num': cls.CLAIM_NUM,
-            'share_link_host': 'http://www.constructlit.com',
+            'share_link_host': 'http://www.constructlit.com/',
             'popup_info': GlobalizationService.get_cached_region_word('share_popup'),
             # 'no_share_facebooks': GlobalizationService.get_cached_region_word('no_share_facebooks')
         }
