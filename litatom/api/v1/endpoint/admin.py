@@ -237,8 +237,8 @@ def upsert_region_word():
 
 @reset_admin_env
 def delete_region_word():
-    word = request.values.get('word')
-    GlobalizationService.delete_region_word(word)
+    tag = request.values.get('tag')
+    GlobalizationService.delete_region_word(tag)
     return success()
 
 

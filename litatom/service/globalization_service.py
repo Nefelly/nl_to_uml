@@ -413,9 +413,8 @@ class GlobalizationService(object):
         return None, True
 
     @classmethod
-    def delete_region_word(cls, word):
-        print 'hhhhhhh'
-        for el in RegionWord.objects(word=word):
+    def delete_region_word(cls, tag):
+        for el in RegionWord.objects(tag=tag):
             print el.to_json(), 'bbbbb'
             el.delete()
 
