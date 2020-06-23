@@ -87,7 +87,7 @@ class ToDevSyncService(object):
             res = eval(real_query)
             if res:
                 res.delete()
-            to_save = eval('%s(%s)' % (model.__name__, ','.join (query_str.values())))
+            to_save = eval('%s(%s)' % (model.__name__, ','.join(query_str.values())))
             to_save.save()
         return dev_objs
 
