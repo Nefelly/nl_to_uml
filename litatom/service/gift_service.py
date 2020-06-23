@@ -79,6 +79,6 @@ class GiftService(object):
             RegionWord.add_or_mod(RegionWord.REGION_BENCHMARK, tag, el.name)
 
     @classmethod
-    def add_region_word(cls, obj):
+    def add_obj_region_word(cls, obj):
         from ..model import RegionWord
         RegionWord.add_or_mod(RegionWord.REGION_BENCHMARK,  cls.get_tag(obj.name), obj.name)
