@@ -114,7 +114,6 @@ class ReceivedGift(Document):
         start_num = page_num * num
         return cls.objects(receiver=receiver).order_by('-create_time').skip(start_num).limit(num)
 
-
     @classmethod
     def create(cls, sender, receiver, gift_id):
         obj = cls(sender=sender, receiver=receiver, gift_id=gift_id)
