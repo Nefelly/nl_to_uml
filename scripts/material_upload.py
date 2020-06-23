@@ -39,7 +39,7 @@ def up_paied_avatar():
 
 def up_gift():
     Gift.objects().delete()
-    dir_name = '/data/tmp/gifts/'
+    dir_name = '/data/tmp/add/'
     from xpinyin import Pinyin
     for f in os.listdir(dir_name):
         if '.zip' not in f:
