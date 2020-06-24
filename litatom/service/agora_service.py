@@ -255,5 +255,4 @@ class AgoraService(object):
         else:
             print("Stop failed! Code: %s Info: %s" % r_stop.status_code, r_stop.json())
 
-
 # AgoraService.start_record()
