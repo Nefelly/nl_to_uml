@@ -95,6 +95,8 @@ class AccountService(object):
 
     @classmethod
     def diamond_products(cls):
+        if request.is_ios:
+            return cls.ios_diomond_products()
         return {
             '500diamonds': 500,
             '200diamonds': 200,
@@ -103,6 +105,17 @@ class AccountService(object):
             # 'asfd324': 5,
             # '324asd': 15
         }, True
+
+    @classmethod
+    def ios_diomond_products(cls):
+        return {
+                   '500diamonds': 500,
+                   '200diamonds': 250,
+                   '100_diamonds': 100,
+                   '10diamonds': 50,
+                   # 'asfd324': 5,
+                   # '324asd': 15
+               }, True
 
     @classmethod
     def membership_badges(cls):
