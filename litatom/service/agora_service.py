@@ -28,7 +28,7 @@ redis_client = RedisClient()['lit']
 class AgoraService(object):
     RECORD_EXPIRE_TIME = 10 * ONE_MIN
     TIMEOUT = 60
-    USING = True
+    USING = False
     '''
     docs:
     https://docs.agora.io/cn/cloud-recording/cloud_recording_api_rest?platform=All%20Platforms#a-namestorageconfiga%E4%BA%91%E5%AD%98%E5%82%A8%E8%AE%BE%E7%BD%AE
