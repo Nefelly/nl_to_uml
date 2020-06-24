@@ -85,7 +85,10 @@ class ToDevSyncService(object):
             print query_str
             real_query = '%s.objects(%s).first()' % (model.__name__, ','.join([query_str[el] for el in query_field]))
             res = eval(real_query)
+            # 只有测试环境的修改时间大于正式环境时 才可以同步
             if res:
+                if getattr(res, 'modify_time', 0) > getattr(obj, 'modify_time', 0):
+                    continue
                 res.delete()
             to_save = eval('%s(%s)' % (model.__name__, ','.join(query_str.values())))
             to_save.save()
