@@ -434,7 +434,7 @@ class MatchService(object):
     @classmethod
     def _match_times_less(cls, user_id):
         if ExperimentService.lit_exp_value('match_times_less', user_id) == 'less':
-            return 5
+            return 8
         return cls.MATCH_TMS
 
     @classmethod
