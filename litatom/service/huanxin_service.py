@@ -410,6 +410,7 @@ class HuanxinService(object):
         }
         try:
             response = requests.delete(url, verify=False, headers=headers).json()
+            print response
             assert response.get('entities')[0]['username']
             return True
         except Exception, e:
