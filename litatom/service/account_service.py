@@ -269,12 +269,10 @@ class AccountService(object):
 
     @classmethod
     def add_diamonds_by_admin(cls, user_id, num):
-        user_account = UserAccount.get_by_user_id(user_id)
-        if not user_account:
-            user_account = UserAccount.create_account(user_id)
-        user_account.diamonds += num
-        user_account.save()
-        return None, True
+        err_msg = AccountService.change_diamonds(user_id, num, 'admindeposit')
+        if not err_msg:
+            return None, True
+        return err_msg, False
 
     @classmethod
     def is_member(cls, user_id):

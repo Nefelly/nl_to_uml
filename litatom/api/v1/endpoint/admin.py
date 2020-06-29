@@ -360,6 +360,15 @@ def set_diamonds():
     return fail(msg)
 
 
+def add_diamonds(user_id):
+    num = request.args.get('num')
+    num = int(num)
+    msg, status = AccountService.add_diamonds_by_admin(user_id, num)
+    if status:
+        return success(AccountService.get_user_account_info(user_id))
+    return fail(msg)
+
+
 def unban():
     UserService.unban_user(get_user_id_by_phone())
     return success()
