@@ -10,7 +10,6 @@ import urllib
 from flask import request
 
 from ..util import cached_property
-from ..const import PLATFORM_IOS, DEFAULT_QUERY_LIMIT
 
 logger = logging.getLogger(__name__)
 randomiser = random.SystemRandom()
@@ -35,8 +34,6 @@ class Signature(object):
             base_str += u'%s=%s' % (k, v)
         base_str = base_str.encode('utf-8')
         base_str = urllib.quote_plus(base_str)
-        if platform.lower() == PLATFORM_IOS:
-            base_str = base_str.replace('%7E', '~')
         return base_str
 
     def _generate(self):
