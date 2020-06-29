@@ -44,7 +44,7 @@ from ....service import (
 
 
 def index():
-    send_file = 'index_back.html'if BACKUP_DNS in request.url else 'index.html'
+    send_file = 'index_back.html' if BACKUP_DNS in request.url else 'index.html'
     return current_app.send_static_file(send_file), 200, {'Content-Type': 'text/html; charset=utf-8'}
 
 

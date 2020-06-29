@@ -11,6 +11,10 @@ from .forbid_check_service import (
     PicCheckService,
     ForbidCheckService
 )
+from .agora_service import AgoraService
+from .content_hit_service import (
+    ContentHitService
+)
 from .anti_spam_rate_service import AntiSpamRateService
 from .mq_service import MqService
 from .mongo_sync_service import (
@@ -43,6 +47,7 @@ from .ad_service import (
     AdService
 )
 from .user_filter_service import UserFilterService
+from .user_tag_service import UserTagService
 from .user_service import UserService
 from .forbid_record_service import (
     ForbidRecordService,
@@ -68,6 +73,7 @@ from .video_match_service import VideoMatchService
 from .feed_service import FeedService
 from .debug_helper_service import DebugHelperService
 from .feedback_service import FeedbackService
+from .gift_service import GiftService
 from .todev_sync_service import ToDevSyncService
 from .experiment_analysis_service import ExperimentAnalysisService
 from .admin_service import AdminService

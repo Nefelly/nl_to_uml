@@ -48,8 +48,11 @@ REDIS_USER_SETTING_CACHE = 'user_setting_cache:{user_id}'
 REDIS_USER_MODEL_CACHE = 'user_model_cache:{user_id}'
 REDIS_FEED_CACHE = 'feed_cache:{feed_id}'
 REDIS_AVATAR_CACHE = 'avatar_cache'
+REDIS_TAG_CACHE = 'tag_cache'
+REDIS_VIDEO_CHECK_CACHE = 'video_check_cache:{fileid}'
 REDIS_YOUTUBE_VIDEO_CACHE = 'youtube_video_cache:{region}'
 REDIS_SPAM_WORD_CACHE = 'spam_word:{region}'
+REDIS_FEED_TAG_WORD_CACHE = 'feed_tag_word:{region}_{tag}'
 REDIS_FAKE_SPAM_WORD_CACHE = 'fake_spam_word:{region}'
 REDIS_FEED_LIKE_CACHE = 'feed_like_cache:{feed_id}'
 REDIS_FEED_DISLIKE_CACHE = 'feed_dislike_cache:{feed_id}'
@@ -58,6 +61,10 @@ REDIS_USER_NOT_MESSAGE_CACHE = 'user_nomsg_cache:{user_id}'
 REDIS_ACCELERATE_CACHE = 'acclerate_cache:{user_id}'
 REDIS_ONLINE_CNT_CACHE = 'online_cnt_cache:{region}:{gender}'
 REDIS_DEPOSIT_BY_ACTIVITY = 'activity_diamonds:{user_date}'
+REDIS_GIFT_CACHE = 'gift_cache'
+REDIS_GIFT_PRICE_CACHE = 'gift_price_cache'
+REDIS_USER_TAG_CACHE = 'user_tag_cache:{user_id}'
+REDIS_VOICE_RECORD_CACHE = 'voice_record_cache:{cname}'
 
 REDIS_US_FEED_LOCK = 'us_feed_cannot_post'
 
@@ -105,6 +112,7 @@ REDIS_LOCK = 'redis_lock:{key}'
 
 # feed service
 REDIS_FEED_SQUARE_REGION = 'feed_square:{region}'   # !!!
+REDIS_FEED_SQUARE_REGION_TAG = 'feed_square:{region}_{tag}'   # !!!
 REDIS_FEED_HQ_REGION = 'feed_hq:{region}'   # !!!
 
 # voice match
@@ -159,6 +167,7 @@ REDIS_LOC_USER_ACTIVE = 'user_active:{date_loc}'
 REDIS_SETTINGS_KEYS = 'dev_settings'
 REDIS_SETTINGS_IOS = 'setting_ios'
 REDIS_SETTINGS_IOS_VERSION = 'setting_ios_v:{version}'
+REDIS_SETTINGS_IOS_LATEST = 'setting_ios_latest'
 REDIS_ACCESS_TOKEN = 'access_token'
 
 

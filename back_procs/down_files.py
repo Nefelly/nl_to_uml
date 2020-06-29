@@ -1,4 +1,5 @@
-import  os
+import os
+
 
 def down():
     f = open('tt').read().split('\n')
@@ -16,6 +17,17 @@ def down():
         cmd = "wget \'%s\' -O %s" % (_, save_dir + str(cnt) + '.mp3')
         print cmd
         os.system(cmd)
+
+def g(u):
+     r = HuanxinService.get_user(u)
+     return r.get('notifier_name', '')
+
+huanxin_ids = [el.huanxin.user_id for el in User.objects().order_by('-create_time').limit(10000)]
+
+
+for _ in huanxin_ids:
+    r[_] = g(_)
+
 
 # rs = ToDevSyncService.sync(RegionWord, '2020-05-10')
 

@@ -12,6 +12,7 @@ from PIL import ImageFile
 from pgmagick import Image, FilterTypes, Blob
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 import oss2
+import cv2
 
 
 logger = logging.getLogger(__name__)
@@ -66,6 +67,12 @@ class AliOssService(object):
         except Exception, e:
             logger.error('upload_from_binary failed,  %s',  e)
         return ''
+
+    @classmethod
+    def get_video_first(cls, video_add):
+        vidcap = cv2.VideoCapture(video_add)
+        a, t = vidcap.read()
+        cv2.imwrite('/data/tmp/test.jpg', t)
 
     @classmethod
     def replace_from_binary(cls, binary, fileid):
@@ -129,6 +136,19 @@ class AliOssService(object):
         except:
             return obj
         return res
+
+    @classmethod
+    def get_pic_size(cls, fileid):
+        obj = cls.get_binary_from_bucket(fileid)
+        default = tuple([-1, -1])
+        if not obj:
+            return default
+        try:
+            img = pImage.open(BytesIO(obj))
+            (x, y) = img.size
+            return x, y
+        except:
+            return default
 
     @classmethod
     def get_resize_size(cls, x, y, from_gm=False):

@@ -1,5 +1,6 @@
 # coding: utf-8
 import time
+from hendrix.conf import setting
 from flask import (
     request
 )
@@ -223,8 +224,23 @@ class GlobalizationService(object):
         return REDIS_VIDEO_GENDER_ONLINE_REGION.format(region=region, gender=gender)
 
     @classmethod
-    def set_current_region_for_script(cls, region):
-        from flask import current_app,request, Flask
+    def help_escape_develop(cls):
+        '''
+        :return: 是否是国内的 或者测试环境
+        '''
+        if setting.IS_DEV:
+            return True
+        if request.values.get('loc', '') == 'CN':
+            return True
+        if request.values.get('phone', '').startswith('86'):
+            return True
+        if request.json.get('phone', '').startswith('86'):
+            return True
+        return False
+
+    @classmethod
+    def set_current_region_for_script(cls, region='th'):
+        from flask import current_app, request, Flask
         app = Flask(__name__)
         from werkzeug.test import EnvironBuilder
         ctx = app.request_context(EnvironBuilder('/', 'http://localhost/').get_environ())
@@ -332,6 +348,10 @@ class GlobalizationService(object):
         return res
 
     @classmethod
+    def is_big_region(cls):
+        return cls.get_region() in cls.BIG_REGIONS
+
+    @classmethod
     def get_region(cls, region=None):
         if region:
             return region
@@ -391,6 +411,13 @@ class GlobalizationService(object):
             return fail_reason, False
         RegionWord.add_or_mod(region, tag, word)
         return None, True
+
+    @classmethod
+    def delete_region_word(cls, tag):
+        for el in RegionWord.objects(tag=tag):
+            print el.to_json(), 'bbbbb'
+            el.delete()
+
 
     @classmethod
     def region_words(cls):

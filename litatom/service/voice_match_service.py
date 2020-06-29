@@ -33,7 +33,8 @@ from ..const import (
 from ..service import (
     GlobalizationService,
     MatchService,
-    VoiceChatService
+    VoiceChatService,
+    AgoraService
 )
 redis_client = RedisClient()['lit']
 
@@ -68,6 +69,17 @@ class VoiceMatchService(MatchService):
             'top_wording': GlobalizationService.get_region_word('voice_top_wording')
         }
         return data, True
+
+    @classmethod
+    def _create_match(cls, fake_id1, fake_id2, gender1, user_id, user_id2):
+        status = super(VoiceMatchService, cls)._create_match(fake_id1, fake_id2, gender1, user_id, user_id2)
+        if status:
+            AgoraService.outer_record(fake_id1, fake_id2)
+
+    @classmethod
+    def _clear_match_pair(cls, fake_id, other_fakeid, leave_fake_id=None):
+        super(VoiceMatchService, cls)._clear_match_pair(fake_id, other_fakeid, leave_fake_id)
+        AgoraService.outer_stop_record(fake_id, other_fakeid)
 
     @classmethod
     def create_fakeid(cls, user_id):

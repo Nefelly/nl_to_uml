@@ -18,3 +18,6 @@ from . import experiment
 from . import user_visit
 from . import match_history
 from . import nl
+from . import gift
+from . import user_tag
+from . import outer_hook

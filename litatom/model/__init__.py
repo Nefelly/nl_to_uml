@@ -20,7 +20,12 @@ from .material import (
     YoutubeVideo,
     Wording,
     SpamWord,
-    FakeSpamWord
+    FakeSpamWord,
+    HitTagWord
+)
+from .gift import (
+    Gift,
+    ReceivedGift
 )
 from . visit_record import (
     VisitRecord,
@@ -88,7 +93,12 @@ from .user_model import (
 )
 from .match_record import (
     MatchRecord,
-    MatchHistory
+    MatchHistory,
+    VoiceMatchRecord
+)
+from .tag import (
+    Tag,
+    UserTag
 )
 from .experiment_result import ExperimentResult
 from .operate_record import OperateRecord

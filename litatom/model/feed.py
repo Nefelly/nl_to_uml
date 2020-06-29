@@ -2,6 +2,7 @@
 import datetime
 import time
 import bson
+import json
 import cPickle
 from mongoengine import (
     BooleanField,
@@ -39,8 +40,9 @@ class Feed(Document):
         'alias': 'db_alias',
 
     }
-    SELF_HIGH_NUM = 3
+    SELF_HIGH_NUM = 10
     NOT_PUB_NUM = 2
+    FEED_SELF_HIGH = 3
 
     user_id = StringField(required=True)
     like_num = IntField(required=True, default=0)
@@ -48,6 +50,8 @@ class Feed(Document):
     comment_num = IntField(required=True, default=0)
     status = IntField(default=0)
     content = StringField()
+    video = StringField()
+    other_info = StringField()
     pics = ListField(default=[])
     pics_size = ListField(default=[])
     audios = ListField(default=[])
@@ -71,7 +75,11 @@ class Feed(Document):
 
     @property
     def self_high(self):
-        return self.dislike_num >= self.NOT_PUB_NUM
+        return self.dislike_num >= self.NOT_PUB_NUM or self.status == self.FEED_SELF_HIGH
+
+    def set_self_high(self):
+        self.status = self.FEED_SELF_HIGH
+        self.save()
 
     @property
     def should_remove_from_follow(self):
@@ -101,6 +109,8 @@ class Feed(Document):
             'comment_num': self.comment_num,
             'pics': self.pics if self.pics else [],
             'audios': self.audios if self.audios else [],
+            'video': self.video,
+            'other_info': {} if not self.other_info else json.loads(self.other_info),
             'content': self.content,
             'create_time': get_time_info(self.create_time)
         }
@@ -109,7 +119,7 @@ class Feed(Document):
     def last_feed_by_user_id(cls, user_id):
         return cls.objects(user_id=user_id).order_by("-create_time").first()
 
-    def is_same(self, content, pics, audios):
+    def is_same(self, content, pics, audios, video):
         if not pics:
             pics = []
         if not audios:
@@ -118,21 +128,28 @@ class Feed(Document):
             self.content = None
         if not content:
             content = None
-        return self.pics == pics and self.content == content and self.audios == audios
+        if not self.video:
+            self.video = None
+        if not video:
+            video = None
+        return self.pics == pics and self.content == content and self.audios == audios and self.video == video
 
     @classmethod
-    def create_feed(cls, user_id, content, pics, audios, status=FEED_NORMAL):
+    def create_feed(cls, user_id, content, pics, audios, video, other_info):
         last = cls.last_feed_by_user_id(user_id)
         # if last and last.is_same(content, pics, audios) and (int(time.time()) - last.create_time < 10):
-        if last and last.is_same(content, pics, audios):
+        if last and last.is_same(content, pics, audios, video):
             return last
         obj = cls()
         obj.user_id = user_id
         obj.content = content
         obj.pics = pics
         obj.audios = audios
+        obj.video = video
+        if other_info:
+            obj.other_info = json.dumps(other_info)
         obj.create_time = int(time.time())
-        obj.status = status
+        obj.status = FEED_NORMAL
         obj.save()
         return obj
 

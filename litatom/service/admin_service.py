@@ -17,7 +17,8 @@ from ..model import (
     Feed,
     User,
     Avatar,
-    OperateRecord
+    OperateRecord,
+    VoiceMatchRecord
 )
 from ..util import (
     get_args_from_db
@@ -70,7 +71,24 @@ class AdminService(object):
         return None, True
 
     @classmethod
+    def get_voice_records_by_region(cls):
+        objs = VoiceMatchRecord.objects(region=GlobalizationService.get_region(), end_time__ne=None).order_by('-create_time').limit(100)
+        res = []
+        for obj in objs:
+            tmp = {
+                "user_1": User.get_by_huanxin_id(obj.user_id1).basic_info(),
+                "user_2": User.get_by_huanxin_id(obj.user_id2).basic_info(),
+                "play_add": 'https://testlowvisit.oss-cn-hangzhou.aliyuncs.com/' + obj.save_add,
+                "create_time": obj.create_time,
+                "match_inter": obj.end_time - obj.start_time if obj.end_time else -1
+            }
+            res.append(tmp)
+        return res
+
+    @classmethod
     def add_operate_record(cls, name, data):
+        if not data:
+            data = {}
         if isinstance(data, dict):
             data = json.dumps(data)
         OperateRecord.add(name, data)
@@ -305,7 +323,7 @@ class AdminService(object):
         for line in lines:
             if len(line) != len(fields):
                 return u'len(line) != len(fields), line:%r' % line, False
-            conn = ','.join(['%s=\'%s\'' % (fields[i], line[i]) for i in range(len(line))])
+            conn = ','.join(['%s=\'%s\'' % (fields[i], line[i]) if not line[i].isdigit() else '%s=%s' % (fields[i], line[i]) for i in range(len(line))])
             get = eval('%s.objects(%s).first()' % (table_name, conn))
             if is_delete:
                 if not conn:

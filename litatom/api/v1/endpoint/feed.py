@@ -37,9 +37,11 @@ def create_feed():
     content = data.get('content')
     pics = data.get('pics')
     audios = data.get('audios')
-    if not content and not pics and not audios:
+    video = data.get('video')
+    other_info = data.get('other_info', {})
+    if not content and not pics and not audios and not video:
         return jsonify(FailedLackOfField)
-    feed_id, status = FeedService.create_feed(request.user_id, content, pics, audios)
+    feed_id, status = FeedService.create_feed(request.user_id, content, pics, audios, video, other_info)
     if status:
         feed_info, feed_status = FeedService.get_feed_info(request.user_id, feed_id)
         if not feed_status:
@@ -68,6 +70,7 @@ def unpin_feed(feed_id):
     if not status:
         return fail(data)
     return success()
+
 
 def user_feeds(other_user_id):
     visitor_user_id = request.user_id
@@ -100,13 +103,19 @@ def feed_info(feed_id):
     return success(data)
 
 
+def tags():
+    data = FeedService.all_tags()
+    return success(data)
+
+
 def square_feeds():
     user_id = request.user_id
     start_pos = request.args.get('start_pos')
     num = request.args.get('num')
+    tag = request.args.get('tag')
     start_pos = int(start_pos) if start_pos and start_pos.isdigit() else 0
     num = int(num) if num and num.isdigit() else 10
-    data = FeedService.feeds_by_square(user_id, start_pos, num)
+    data = FeedService.feeds_by_square(user_id, start_pos, num, tag=tag)
     if data:
         return success(data)
     return success()

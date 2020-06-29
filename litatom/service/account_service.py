@@ -40,7 +40,8 @@ from ..service import (
     GlobalizationService,
     TrackActionService,
     GoogleService,
-    ExperimentService
+    ExperimentService,
+    GiftService
 )
 from ..key import (
     REDIS_ACCOUNT_ACTION,
@@ -63,12 +64,14 @@ class AccountService(object):
     '''
     '''
     WEEK_MEMBER = 'week_member'
+    VIDEO_WEEK = 'video_member'  # 可以向其他用户发送视频 周会员
     VIP_MONTH = 'vip_month'
     ONE_MORE_TIME = 'one_more_time'
     ACCELERATE = 'accelerate'
     ACCOST_RESET = 'accost_reset'
     PALM_RESULT = 'palm_result'
     PRODUCT_INFOS = {
+        VIDEO_WEEK: 30,
         WEEK_MEMBER: 30,
         ONE_MORE_TIME: 5,
         ACCELERATE: 2,
@@ -92,6 +95,8 @@ class AccountService(object):
 
     @classmethod
     def diamond_products(cls):
+        if request.is_ios:
+            return cls.ios_diomond_products()
         return {
             '500diamonds': 500,
             '200diamonds': 200,
@@ -100,6 +105,17 @@ class AccountService(object):
             # 'asfd324': 5,
             # '324asd': 15
         }, True
+
+    @classmethod
+    def ios_diomond_products(cls):
+        return {
+                   '500diamonds': 500,
+                   '200diamonds': 250,
+                   '100_diamonds': 100,
+                   '10diamonds': 50,
+                   # 'asfd324': 5,
+                   # '324asd': 15
+               }, True
 
     @classmethod
     def membership_badges(cls):
@@ -209,7 +225,12 @@ class AccountService(object):
 
     @classmethod
     def record_to_ali(cls, user_id, name, diamonds):
-        content = [('user_id', user_id), ('name', name), ('diamonds', str(diamonds)), ('loc', request.loc)]
+        user = User.get_by_id(user_id)
+        user_gender, user_age = '', ''
+        if user:
+            user_gender, user_age = user.gender, user.age
+        content = [('user_id', user_id), ('name', name), ('diamonds', str(diamonds)), ('loc', request.loc),
+                   ('gender', user_gender), ('age', str(user_age))]
         AliLogService.put_logs(content, '', '', 'litatom-account', 'account_flow')
 
     @classmethod
@@ -247,6 +268,13 @@ class AccountService(object):
         return None, True
 
     @classmethod
+    def add_diamonds_by_admin(cls, user_id, num):
+        err_msg = AccountService.change_diamonds(user_id, num, 'admindeposit')
+        if not err_msg:
+            return None, True
+        return err_msg, False
+
+    @classmethod
     def is_member(cls, user_id):
         # user = User.get_by_id(user_id)
         # return user and user.is_member
@@ -273,6 +301,21 @@ class AccountService(object):
             user_account.membership_time = new_member_ship_time
             user_account.save()
         MatchService.set_member_match_left(user_id)
+        return None
+
+    @classmethod
+    def buy_video_member(cls, user_id):
+        user_account = UserAccount.get_by_user_id(user_id)
+        if not user_account:
+            return u'user account not exists'
+        old_membership_time = user_account.video_member_time
+        time_now = int(time.time())
+        if old_membership_time < time_now:
+            old_membership_time = time_now
+        time_int = ONE_WEEK if not setting.IS_DEV else 5 * ONE_MIN
+        new_member_ship_time = old_membership_time + time_int
+        user_account.video_member_time = new_member_ship_time
+        user_account.save()
         return None
 
     @classmethod
@@ -313,9 +356,28 @@ class AccountService(object):
         add_err = UserAsset.add_avatar(user_id, fileid)
         if add_err:
             return add_err, False
-        err_msg = cls.change_diamonds(user_id, -diamonds, 'buy avatar')
+        err_msg = cls.change_diamonds(user_id, -diamonds, 'buy_avatar')
         if err_msg:
             return err_msg, False
+        return None, True
+
+    @classmethod
+    def send_gift(cls, user_id, receiver, gift_id, gift_to_reset=False):
+        diamonds = GiftService.gift_price_by_gift_id(gift_id)
+        '''先检查钻石够不够'''
+        if not diamonds:
+            return u'wrong gift_id', False
+        if not cls.is_diamond_enough(user_id, diamonds):
+            return cls.ERR_DIAMONDS_NOT_ENOUGH, False
+        err_msg = GiftService.send_gift(user_id, receiver, gift_id)
+        if err_msg:
+            return err_msg, False
+        err_msg = cls.change_diamonds(user_id, -diamonds, 'buy_gift')
+        if err_msg:
+            return err_msg, False
+        if gift_to_reset:
+            AntiSpamRateService.reset_spam_type(user_id, AntiSpamRateService.ACCOST, receiver)
+            AntiSpamRateService.reset_spam_type(user_id, AntiSpamRateService.ACCOST)
         return None, True
 
     @classmethod
@@ -330,6 +392,10 @@ class AccountService(object):
 
         if product in cls.MEMBER_SHIPS:
             err_msg = cls.buy_member_ship(user_id, product)
+            if err_msg:
+                return err_msg, False
+        elif product == cls.VIDEO_WEEK:
+            err_msg = cls.buy_video_member(user_id)
             if err_msg:
                 return err_msg, False
         elif product == cls.ACCELERATE:

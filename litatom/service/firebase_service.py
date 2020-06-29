@@ -29,7 +29,7 @@ class FirebaseService(object):
     def add_token(cls, user_id, token):
         obj = FirebaseInfo.get_by_user_id(user_id)
         if not token:
-            return  u'lake of field token', False
+            return u'lake of field token', False
         if not obj:
             obj = FirebaseInfo()
         obj.user_id = user_id

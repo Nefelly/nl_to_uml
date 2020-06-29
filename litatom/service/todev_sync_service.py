@@ -64,7 +64,7 @@ class ToDevSyncService(object):
         for obj in dev_objs:
             query_str = {}
             for f in fields:
-                if f == 'create_time':
+                if f in ['create_time', 'modify_time']:
                     continue
                 # if escape_filed:
                 #     if f in escape_filed:
@@ -75,17 +75,22 @@ class ToDevSyncService(object):
                 if fields[f] == StringField:
                     value = value.replace('\n', '\\n')
                     value = value.replace('\r', '\\r')
+                    value = value.replace('\'', '\\\'')
                     tmp = "%s='%s'" % (f, str(value))
                 else:
                     tmp = "%s=%s" % (f, value)
                 query_str[f] = tmp
             if not query_field:
                 query_field = fields
+            print query_str
             real_query = '%s.objects(%s).first()' % (model.__name__, ','.join([query_str[el] for el in query_field]))
             res = eval(real_query)
+            # 只有测试环境的修改时间大于正式环境时 才可以同步
             if res:
+                if getattr(res, 'modify_time', 0) > getattr(obj, 'modify_time', 0):
+                    continue
                 res.delete()
-            to_save = eval('%s(%s)' % (model.__name__, ','.join (query_str.values())))
+            to_save = eval('%s(%s)' % (model.__name__, ','.join(query_str.values())))
             to_save.save()
         return dev_objs
 

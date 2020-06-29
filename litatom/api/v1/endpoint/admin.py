@@ -40,7 +40,10 @@ from ....response import (
 )
 from ....model import (
     User,
-    UserAddressList, AppAdmin
+    UserAddressList,
+    AppAdmin,
+    BlockedDevices,
+    UserRecord
 )
 from ....service import (
     AdminService,
@@ -96,6 +99,11 @@ def test_delete_old_users():
     return success(data)
 
 
+def voice_record_by_region():
+    data = AdminService.get_voice_records_by_region()
+    return success(data)
+
+
 def login():
     data = request.json
     user_name = data.get('username', '')
@@ -133,6 +141,21 @@ def upload_apk():
         f_name = '%s.apk' % version
     AliOssService.upload_from_binary(apk, f_name)
     # apk.save(os.path.join(APP_PATH, f_name))
+    return success()
+
+
+def upload_file():
+    apk = request.files.get('file')
+    f_name = request.values.get('name')
+    path = os.path.join('/data/tmp/', f_name)
+    apk.save(path)
+    return success(path)
+
+
+@test_required
+def release_blocked_devices():
+    BlockedDevices.objects().delete()
+    UserRecord.objects().delete()
     return success()
 
 
@@ -204,6 +227,7 @@ def official_feed():
 def admin_words():
     return current_app.send_static_file('region_info.html'), 200, {'Content-Type': 'text/html; charset=utf-8'}
 
+
 @reset_admin_env
 def upsert_region_word():
     data = request.json
@@ -214,6 +238,13 @@ def upsert_region_word():
     if status:
         return success(data)
     return fail(data)
+
+
+@reset_admin_env
+def delete_region_word():
+    tag = request.values.get('tag')
+    GlobalizationService.delete_region_word(tag)
+    return success()
 
 
 def get_official_feed():
@@ -323,10 +354,16 @@ def set_diamonds():
         return fail('unauthorized')
     num = request.args.get('num')
     num = int(num)
-    payload = {
-        'diamonds': 50
-    }
     msg, status = AccountService.set_diamonds(user_id, num)
+    if status:
+        return success(AccountService.get_user_account_info(user_id))
+    return fail(msg)
+
+
+def add_diamonds_by_admin(user_id):
+    num = request.args.get('num')
+    num = int(num)
+    msg, status = AccountService.add_diamonds_by_admin(user_id, num)
     if status:
         return success(AccountService.get_user_account_info(user_id))
     return fail(msg)

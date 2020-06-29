@@ -194,12 +194,12 @@ def settings():
 
 
 def check_version():
-    version_now = '3.4.5'
+    version_now = '3.5.6'
     version = request.args.get('version', None)
     if 0 and GlobalizationService.get_region() == GlobalizationService.REGION_TH:
         message = u'กรุณาอัพเดทเวอร์ชั่น เราได้ทำการแก้ไขปัญหาส่งข้อความเรียบร้อยแล้ว ขอบคุณค่ะ'
     else:
-        message = u'big update'
+        message = u'big update, fix some bugs.'
     if version < version_now:
         data = {
             'need_update': True,
@@ -227,7 +227,7 @@ def report():
     #     return fail('lack of reason or picture')
     if not reason:
         return fail('lack of reason')
-    if reason != 'match' and not reason and not pics:
+    if reason != 'match' and not pics and not feed_id:
         return fail('lack of reason or picture')
     if feed_id:
         feed_info, status_feed = FeedService.get_feed_info(None, feed_id)

@@ -1,6 +1,7 @@
 # coding: utf-8
 import datetime
 import cPickle
+import time
 from mongoengine import (
     BooleanField,
     DateTimeField,
@@ -66,6 +67,7 @@ class UserAccount(Document):
     user_id = StringField(required=True)
     diamonds = IntField(required=False)
     membership_time = IntField(required=True, default=0)
+    video_member_time = IntField(required=True, default=0)
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
 
     @classmethod
@@ -80,11 +82,16 @@ class UserAccount(Document):
         redis_client.set(cache_key, cPickle.dumps(obj), USER_ACTIVE)
         return obj
 
+    @property
+    def is_video_member(self):
+        time_now = int(time.time())
+        return self.video_member_time > time_now
+
     @classmethod
     def get_account_info(cls, user_id):
         obj = UserAccount.get_by_user_id(user_id)
         diamonds = obj.diamonds if obj and obj.diamonds else 0
-        return {"diamonds": diamonds}
+        return {"diamonds": diamonds, "video_member_time": obj.video_member_time if obj else ''}
 
     @classmethod
     def _disable_cache(cls, user_id):

@@ -1,5 +1,5 @@
 # coding: utf-8
-
+from hendrix.conf import setting
 WHOSYOURDADDY = 'IAMYOURDADDY'
 
 ERROR_RANGE = 20
@@ -10,8 +10,12 @@ FEED_NEED_CHECK = 2
 
 FORBID_PAGE_SIZE = 100
 
-OSS_PIC_URL = 'http://www.litatom.com/api/sns/v1/lit/simage/'
-OSS_AUDIO_URL = 'http://www.litatom.com/api/sns/v1/lit/audio/'
+HOST = 'http://www.litatom.com' if not setting.IS_DEV else 'http://test.litatom.com'
+
+
+OSS_PIC_URL = HOST + '/api/sns/v1/lit/simage/'
+OSS_AUDIO_URL = HOST + '/api/sns/v1/lit/audio/'
+OSS_VIDEO_URL = HOST + '/api/sns/v1/lit/video/'
 
 ADMINISTRATORS = {
     '5e357b07f142533fff0049c2',         # 绿杨
@@ -134,4 +138,6 @@ VOLATILE_USER_ACTIVE_RETAIN_DAYS = 8
 EXP_SHARE_5_30 = 'share_5_30'
 EXP_TAG_SHARE_LESS = 'less_to_30'
 EXP_SHARE_VALUE_LESS = 30
+EXP_FEED_SHOW_TAGS = 'feed_show_tags'
+DEFAULT_EXP_GROUP = 'exp'
 

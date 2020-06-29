@@ -73,7 +73,9 @@ from ..service import (
     GlobalizationService,
     MqService,
     AvatarService,
-    MongoSyncService
+    MongoSyncService,
+    AliLogService,
+    UserTagService
 )
 
 logger = logging.getLogger(__name__)
@@ -86,6 +88,7 @@ class UserService(object):
     CREATE_LOCK = 'user_create'
     NICKNAME_LEN_LIMIT = 60
     BIO_ELN_LIMIT = 150
+    UUID_MAX_REGISTER_NUM = 3
     ERROR_DEVICE_FORBIDDEN = u'Your device has been blocked'
 
     @classmethod
@@ -272,6 +275,16 @@ class UserService(object):
         return None
 
     @classmethod
+    def _undo_register(cls, user_id):
+        if user_id:
+            obj = User.get_by_id(user_id)
+            cls._delete_user(obj)
+            obj.delete()
+            user_setting = UserSetting.get_by_user_id(user_id)
+            user_setting.delete()
+        return
+
+    @classmethod
     def _on_create_new_user(cls, user):
         loc = request.loc
         if user.id: # 不然 容易None
@@ -286,13 +299,13 @@ class UserService(object):
             UserSetting.create_setting(user_id, loc, request.uuid)
         if not request.uuid:
             return u'your version is too low!', False
+        if UserSetting.user_num_by_uuid(request.uuid) > cls.UUID_MAX_REGISTER_NUM and not GlobalizationService.help_escape_develop():
+            cls._undo_register(user_id)
+            AliLogService.put_err_log({"msg": "uuid_register_too_many", "uuid": request.uuid})
+            return GlobalizationService.get_cached_region_word('device_register_too_much'), False
         from ..service import ForbidRecordService
         if cls.device_blocked(request.uuid) or ForbidRecordService.get_device_forbidden_num_by_uid(user_id) > 5:
-            if user_id:
-                obj = User.get_by_id(user_id)
-                obj.delete()
-                user_setting = UserSetting.get_by_user_id(user_id)
-                user_setting.delete()
+            cls._undo_register(user_id)
             return cls.ERROR_DEVICE_FORBIDDEN, False
         return None, True
 
@@ -316,11 +329,11 @@ class UserService(object):
             # nickname,bio spam word风险拦截
             res = SpamWordCheckService.is_spam_word(nickname)
             if res:
-                ForbidActionService.resolve_spam_word(uid,nickname,SPAM_RECORD_NICKNAME_SOURCE)
+                ForbidActionService.resolve_spam_word(uid, nickname, SPAM_RECORD_NICKNAME_SOURCE)
                 return GlobalizationService.get_region_word('alert_msg'), False
             res = SpamWordCheckService.is_spam_word(bio)
             if res:
-                ForbidActionService.resolve_spam_word(uid,bio,SPAM_RECORD_BIO_SOURCE)
+                ForbidActionService.resolve_spam_word(uid, bio, SPAM_RECORD_BIO_SOURCE)
                 return GlobalizationService.get_region_word('alert_msg'), False
             # if (bio or nickname) and GlobalizationService.get_region() == GlobalizationService.DEFAULT_REGION:
             if (bio or nickname):
@@ -339,6 +352,7 @@ class UserService(object):
     
     @classmethod
     def check_and_move_to_big(cls, user_id, words):
+        ''' 检验是否是大区用户'''
         if GlobalizationService.get_region() in GlobalizationService.BIG_REGIONS:
             return 
         loc = cls._get_words_loc(words)
@@ -987,25 +1001,30 @@ class UserService(object):
         return basic_info, True
 
     @classmethod
-    def get_basic_info(cls, user):
+    def get_basic_info(cls, user, show_default_bio=False):
         if not user:
             return {}
         if request.ip_should_filter:
             if user.age < 18:
                 return {}
         basic_info = user.basic_info()
-        basic_info.update({'bio': cls.get_bio(user)})
+        basic_info.update({'bio': cls.get_bio(user, show_default_bio)})
         return basic_info
 
     @classmethod
-    def get_bio(cls, user):
+    def get_bio(cls, user, show_default_bio):
         '''
         !!!! attention, cal bio is too mongo expensive should be in user
         :param user:
         :return:
         '''
+        user_id = str(user.id)
         if user.bio:
             return user.bio
+        if show_default_bio:
+            tag_str = UserTagService.tags_str(user_id)
+            if tag_str:
+                return tag_str
         login_long = datetime.datetime.now() - user.create_time > datetime.timedelta(days=3)
         word_m = GlobalizationService.get_region_word('bio')
         if login_long:

@@ -658,6 +658,12 @@ class UserSetting(Document):
         return user.lang
 
     @classmethod
+    def user_num_by_uuid(cls, uuid, dis_time=0):
+        if not uuid:
+            return 0
+        return cls.objects(uuid=uuid).count()
+
+    @classmethod
     def uuid_by_user_id(cls, user_id):
         obj = cls.get_by_user_id(user_id)
         if obj:
@@ -705,7 +711,6 @@ class UserSetting(Document):
     @classmethod
     def create_setting(cls, user_id, lang, uuid=None):
         if not user_id or cls.get_by_user_id(user_id):
-            print 'nmd', user_id, cls.get_by_user_id(user_id).to_json()
             return True
         obj = cls()
         obj.user_id = user_id
@@ -713,7 +718,6 @@ class UserSetting(Document):
         if uuid:
             obj.uuid = uuid
         obj.save()
-        print 'hereeee'
         user = User.get_by_id(user_id)
         if user:
             user.country = lang

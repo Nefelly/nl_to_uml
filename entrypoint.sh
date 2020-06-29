@@ -9,6 +9,7 @@ exec 2>&1
 #source /data/lit/bin/activate&&pip install -U aliyun-log-python-sdk
 #source /data/lit/bin/activate&&pip install flask-compress
 #source /data/lit/bin/activate&&pip install mmh3
+#source /data/lit/bin/activate&&pip install xpinyin
 #yum install GraphicsMagick-c++-devel
 #pip install pgmagick
 #cd /data/litatom

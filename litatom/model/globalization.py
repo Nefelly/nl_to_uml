@@ -31,6 +31,7 @@ class RegionWord(Document):
     word = StringField(required=True)
     add_user = StringField(required=False)
     create_time = DateTimeField(required=True,  default=datetime.datetime.now)
+    modify_time = DateTimeField(default=datetime.datetime.now)
 
     TAG_REGION_WORD = {
         'time_left': {
@@ -297,10 +298,12 @@ class RegionWord(Document):
         return None
 
     def delete(self, *args, **kwargs):
+        print 'get innnnn', self.region, self.tag
         self.disable_cache_word(self.region, self.tag)
         super(RegionWord, self).delete(*args, **kwargs)
 
     def save(self, *args, **kwargs):
+        self.modify_time = datetime.datetime.now()
         self.disable_cache_word(self.region, self.tag)
         super(RegionWord, self).save(*args, **kwargs)
 

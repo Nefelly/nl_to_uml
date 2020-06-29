@@ -43,7 +43,7 @@ redis_client = RedisClient()['lit']
 class TestCleanService(object):
     '''
     '''
-    MAINTAIN_TIME = 5 * ONE_DAY
+    MAINTAIN_TIME = 2 * ONE_DAY
 
     @classmethod
     def get_tables(cls):
@@ -113,6 +113,7 @@ class TestCleanService(object):
                     # eval(delete_str)
             # GlobalizationService.set_current_region_for_script(GlobalizationService.get_region_by_user_id(_))
             request.region = GlobalizationService.get_region_by_user_id(_)
+
             UserService._delete_user(User.get_by_id(_))
         num = User.objects().count()
         return u'%d user left' % num, True

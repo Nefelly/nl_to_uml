@@ -8,6 +8,7 @@
  <th>content</th>
  <th>phone</th>
  <th>pictures</th>
+    <th>requestargs</th>
  <th>deal</th>
  </tr>
 <tr v-for="item in items1">
@@ -23,7 +24,7 @@
 <td v-if="item.pics.length === 0">
 no pictures
 </td>
-
+<td><pre>{{item.request_args}}</pre></td>
 <td><button name='deal'  style="background:red" @click='deal(item.id)'>deal</button>
 </tr>
 </table>

@@ -19,6 +19,8 @@ b.add_url_rule('/lit/test_anti', 'lit-test_anti', endpoint.test.test_anti)
 # sms-code
 b.add_url_rule('/lit/get_sms_code', 'get-sms-code', endpoint.sms_code.get_sms_code, methods=['POST'])
 
+b.add_url_rule('/lit/outer_hook/video_check', 'get-outer_hook-video_check', endpoint.outer_hook.video_check, methods=['POST'])
+
 # user
 b.add_url_rule('/lit/user/phone_login', 'user-phone-login', endpoint.user.phone_login, methods=['POST'])
 b.add_url_rule('/lit/user/google_login', 'user-google-login', endpoint.user.google_login, methods=['POST'])
@@ -50,6 +52,15 @@ b.add_url_rule('/lit/user_visit/get_visit_nums', 'user-visit-get_visit_nums', en
 b.add_url_rule('/lit/user_visit/all_viewed', 'user-visit-all_viewed', endpoint.user_visit.all_viewed)
 b.add_url_rule('/lit/user_visit/visited_list', 'user-visit-visited_list', endpoint.user_visit.visited_list)
 
+# gift
+b.add_url_rule('/lit/gift/gifts', 'gift-gifts', endpoint.gift.gifts)
+b.add_url_rule('/lit/gift/received_gifts/<user_id>', 'gift-received_gifts', endpoint.gift.received_gifts)
+
+# user_tag
+b.add_url_rule('/lit/user_tag/tags', 'user_tag-tags', endpoint.user_tag.tags)
+b.add_url_rule('/lit/user_tag/user_tags/<user_id>', 'user_tag-user_tags', endpoint.user_tag.user_tags)
+b.add_url_rule('/lit/user_tag/ensure_tags', 'user_tag-ensure_tags', endpoint.user_tag.ensure_tags, methods=['POST'])
+
 #  match history
 b.add_url_rule('/lit/match_history/matched_history', 'match-history-matched_history',
                endpoint.match_history.matched_history)
@@ -67,6 +78,7 @@ b.add_url_rule('/lit/account/deposit_by_activity', 'account-deposit_by_activity'
                methods=['POST'])
 b.add_url_rule('/lit/account/buy_product', 'account-buy_product', endpoint.account.buy_product, methods=['POST'])
 b.add_url_rule('/lit/account/buy_avatar/<fileid>', 'account-buy_avatar', endpoint.account.buy_avatar)
+b.add_url_rule('/lit/account/send_gift/<other_user_id>', 'account-buy_gift', endpoint.account.send_gift)
 b.add_url_rule('/lit/account/diamond_products', 'account-diamond_products', endpoint.account.diamond_products)
 b.add_url_rule('/lit/account/unban_by_diamonds', 'account-unban-by-diamonds', endpoint.account.unban_by_diamonds)
 b.add_url_rule('/lit/account/reset_rate_by_diamonds', 'account-reset_rate_by_diamonds',
@@ -92,9 +104,10 @@ b.add_url_rule('/lit/admin/delete_feed/<feed_id>', 'admin-delete-feed', endpoint
 b.add_url_rule('/lit/admin/change_loc', 'admin-change-loc', endpoint.admin.change_loc)
 b.add_url_rule('/lit/admin/add_diamonds', 'admin-add_diamonds', endpoint.admin.add_diamonds)
 b.add_url_rule('/lit/admin/set_diamonds', 'admin-set_diamonds', endpoint.admin.set_diamonds)
-b.add_url_rule('/lit/admin/change_to_official_avatar', 'admin-change_to_official_avatar',
-               endpoint.admin.change_to_official_avatar)
+b.add_url_rule('/lit/admin/add_diamonds_by_admin/<user_id>', 'admin-add_diamonds_by_admin', endpoint.admin.add_diamonds_by_admin)
+b.add_url_rule('/lit/admin/change_to_official_avatar', 'admin-change_to_official_avatar', endpoint.admin.change_to_official_avatar)
 b.add_url_rule('/lit/admin/upload_apk', 'admin-upload_apk', endpoint.admin.upload_apk, methods=['POST'])
+b.add_url_rule('/lit/admin/upload_file', 'admin-upload_file', endpoint.admin.upload_file, methods=['POST'])
 b.add_url_rule('/lit/admin/msg_to_region', 'admin-to-region', endpoint.admin.msg_to_region, methods=['POST'])
 b.add_url_rule('/lit/admin/send_message', 'admin-send_message', endpoint.admin.send_message_html)
 b.add_url_rule('/lit/admin/batch_insert', 'admin-batch_insert', endpoint.admin.batch_insert_html)
@@ -113,8 +126,8 @@ b.add_url_rule('/lit/admin/official_feed', 'admin-official_feed', endpoint.admin
 b.add_url_rule('/lit/admin/journal_cal/<item_id>', 'admin-journal_cal', endpoint.admin.journal_cal)
 b.add_url_rule('/lit/admin/get_log/<user_id>', 'admin-get_log', endpoint.admin.get_log)
 b.add_url_rule('/lit/admin/region_words', 'admin-region_words', endpoint.admin.region_words)
-b.add_url_rule('/lit/admin/upsert_region_word', 'admin-upsert_region_word', endpoint.admin.upsert_region_word,
-               methods=['POST'])
+b.add_url_rule('/lit/admin/upsert_region_word', 'admin-upsert_region_word', endpoint.admin.upsert_region_word, methods=['POST'])
+b.add_url_rule('/lit/admin/delete_region_word', 'admin-delete_region_word', endpoint.admin.delete_region_word)
 b.add_url_rule('/lit/admin/admin_words', 'admin-admin_words', endpoint.admin.admin_words)
 b.add_url_rule('/lit/admin/ban_by_uid/<user_id>', 'admin-ban_by_uid', endpoint.admin.ban_by_uid)
 b.add_url_rule('/lit/admin/ban_reporter/<user_id>', 'admin-ban_reporter', endpoint.admin.ban_reporter)
@@ -152,16 +165,21 @@ b.add_url_rule('/lit/admin/user/<user_id>', 'admin-get_user_info', endpoint.admi
 b.add_url_rule('/lit/admin/get_forbid_history_by_uid', 'admin-get_forbid_history_by_uid',
                endpoint.admin.get_forbid_history_by_uid)
 b.add_url_rule('/lit/admin/lock_us_feed', 'admin-lock_us_feed', endpoint.admin.lock_us_feed)
+b.add_url_rule('/lit/admin/release_blocked_devices', 'admin-release_blocked_devices', endpoint.admin.release_blocked_devices)
+b.add_url_rule('/lit/admin/voice_record_by_region', 'admin-voice_record_by_region', endpoint.admin.voice_record_by_region)
 
 # picture
 b.add_url_rule('/lit/image/upload', 'image-upload', endpoint.oss.upload_image_from_file, methods=['POST'])
 b.add_url_rule('/lit/image/chat_upload', 'image-upload', endpoint.oss.upload_image_from_file, methods=['POST'])
 # b.add_url_rule('/lit/image/<fileid>', 'get-image', endpoint.oss.get_image)
 b.add_url_rule('/lit/image/<fileid>', 'get-image', endpoint.oss.get_image)
+b.add_url_rule('/lit/oss/zip/<fileid>', 'get-zip', endpoint.oss.get_zip)
 b.add_url_rule('/lit/simage/<fileid>', 'get-simage', endpoint.oss.get_simage)
 b.add_url_rule('/lit/gimage/<fileid>', 'get-gimage', endpoint.oss.get_gimage)
 b.add_url_rule('/lit/audio/upload', 'audio-upload', endpoint.oss.upload_audio_from_file, methods=['POST'])
 b.add_url_rule('/lit/audio/<fileid>', 'get-audio', endpoint.oss.get_audio)
+b.add_url_rule('/lit/video/upload', 'video-upload', endpoint.oss.upload_video_from_file, methods=['POST'])
+b.add_url_rule('/lit/video/<fileid>', 'get-video', endpoint.oss.get_video)
 b.add_url_rule('/lit/log/upload', 'log-upload', endpoint.oss.upload_log_from_file, methods=['POST'])
 b.add_url_rule('/lit/log/upload_from_device', 'log-upload_from_device', endpoint.oss.upload_log_from_device,
                methods=['POST'])
@@ -211,7 +229,8 @@ b.add_url_rule('/lit/activity/palm/times_left', 'activity-palm-times-left', endp
 b.add_url_rule('/lit/activity/user_share/<share_user_id>', 'activity-user-share', endpoint.activity.user_share)
 b.add_url_rule('/lit/activity/share_static1', 'activity-share-static', endpoint.activity.share_static)
 b.add_url_rule('/lit/activity/claim_rewards', 'activity-claim-rewards', endpoint.activity.claim_rewards)
-b.add_url_rule('/lit/activity/share_num', 'activity-share-num', endpoint.activity.share_num)
+b.add_url_rule('/lit/activity/share_num', 'activity-share-num',endpoint.activity.share_num)
+b.add_url_rule('/lit/activity/share_settings', 'activity-share_settings',endpoint.activity.share_settings)
 b.add_url_rule('/lit/activity/admin', 'activity-adnmin', endpoint.activity.admin_page)
 
 # anoy_match
@@ -258,6 +277,7 @@ b.add_url_rule('/lit/debug/delete_online_matched_record', 'debug-online_del_matc
                endpoint.debug.online_del_match_status)
 b.add_url_rule('/lit/debug/set_times_to1', 'debug-set-times-to1', endpoint.debug.set_left_times_to_1)
 b.add_url_rule('/lit/debug/down_log/<user_id>', 'debug-down_log', endpoint.debug.down_log)
+b.add_url_rule('/lit/debug/feed_tags/<feed_id>', 'debug-get_feed_tags', endpoint.debug.get_feed_tags)
 
 # feed
 b.add_url_rule('/lit/feed/create', 'feed-create-feed', endpoint.feed.create_feed, methods=['POST'])
@@ -274,6 +294,7 @@ b.add_url_rule('/lit/feed/comment/<feed_id>', 'feed-feed-comments', endpoint.fee
 b.add_url_rule('/lit/feed/info/<feed_id>', 'feed-feed-info', endpoint.feed.feed_info)
 b.add_url_rule('/lit/feed/pin_feed/<feed_id>', 'feed-pin_feed', endpoint.feed.pin_feed)
 b.add_url_rule('/lit/feed/unpin_feed/<feed_id>', 'feed-unpin_feed', endpoint.feed.unpin_feed)
+b.add_url_rule('/lit/feed/tags', 'feed-tags', endpoint.feed.tags)
 
 # user_relations
 b.add_url_rule('/lit/block/<other_user_id>', 'block', endpoint.user_relations.block)

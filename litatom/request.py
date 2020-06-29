@@ -169,14 +169,21 @@ class LitatomRequest(flask.Request):
     def num(self):
         num = self.values.get('num', '')
         if not num:
-            return None
+            return 0
         try:
             num = int(num)
             if num and num > 0:
                 return num
-            return None
+            return 0
         except Exception as e:
-            return None
+            return 0
+
+    @cached_property
+    def page_num(self):
+        page_num = self.values.get('page_num', '0')
+        if page_num.isdigit():
+            return int(page_num)
+        return 0
 
     @cached_property
     def version(self):
@@ -330,7 +337,8 @@ class LitatomRequest(flask.Request):
         country, city = Ip2AddressService.ip_country_city(self.ip)
         if country in [u'United States'] or \
                 (False and country == u'China' and city and city not in [u'Beijing', u'Shanghai', u'Nanjing']):
-            return True
+            if GlobalizationService.get_region() in GlobalizationService.BIG_REGIONS:
+                return True
         return False
 
     @cached_property

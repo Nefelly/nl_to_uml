@@ -168,7 +168,6 @@ class MatchService(object):
     def _destroy_fake_id(cls, fake_id, need_remove_from_pool=True):
         if not fake_id:
             return
-        #HuanxinService.delete_user(fake_id)
         user_id = redis_client.get(cls.TYPE_FAKE_ID_UID.format(fake_id=fake_id))
 
         if user_id:
@@ -434,7 +433,7 @@ class MatchService(object):
     @classmethod
     def _match_times_less(cls, user_id):
         if ExperimentService.lit_exp_value('match_times_less', user_id) == 'less':
-            return 5
+            return 8
         return cls.MATCH_TMS
 
     @classmethod

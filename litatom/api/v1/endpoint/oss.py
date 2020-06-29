@@ -66,16 +66,47 @@ def upload_image_from_file():
 
 
 def get_image(fileid):
+    return get_file_by_id_and_mime_type(fileid, 'image/jpeg')
+
+
+def get_file_by_id_and_mime_type(fileid, mimetype):
     if fileid == 'null':
         return jsonify(Failed)
     content = AliOssService.get_binary_from_bucket(fileid)
-    # print '-' * 100, len(content), fileid
     if not content:
-        return Response('', mimetype='image/jpeg')   # 返回空图片流, 兼容错误
-        #return jsonify(Failed)
-    response = Response(content, mimetype='image/jpeg')
+        return Response('', mimetype=mimetype)
+    response = Response(content, mimetype=mimetype)
     response.headers['Cache-Control'] = 'max-age=%d' % 86400
     return response
+
+
+def get_zip(fileid):
+    return get_file_by_id_and_mime_type(fileid, 'application/zip')
+
+
+@session_required
+def upload_video_from_file():
+    """
+    直接上传图片到云盘
+    目前只用来传实名认证图片
+    """
+    video = request.files.get('video')
+    if not video:
+        return jsonify(Failed)
+
+    fileid = AliOssService.upload_from_binary(video)
+    if not fileid:
+        return jsonify(Failed)
+    return jsonify({
+        'success': True,
+        'data': {
+            'fileid': fileid
+        }
+    })
+
+
+def get_video(fileid):
+    return get_file_by_id_and_mime_type(fileid, 'Video/mp4')
 
 
 def get_simage(fileid):
@@ -127,14 +158,15 @@ def upload_audio_from_file():
 
 
 def get_audio(fileid):
-    if fileid == 'null':
-        return jsonify(Failed)
-    content = AliOssService.get_binary_from_bucket(fileid)
-    if not content:
-        return Response('', mimetype='audio/AMR')   # 返回空流, 兼容错误
-    response = Response(content, mimetype='audio/AMR')
-    response.headers['Cache-Control'] = 'max-age=%d' % 86400
-    return response
+    return get_file_by_id_and_mime_type(fileid, 'audio/amr')
+    # if fileid == 'null':
+    #     return jsonify(Failed)
+    # content = AliOssService.get_binary_from_bucket(fileid)
+    # if not content:
+    #     return Response('', mimetype='audio/amr')   # 返回空流, 兼容错误
+    # response = Response(content, mimetype='audio/amr')
+    # response.headers['Cache-Control'] = 'max-age=%d' % 86400
+    # return response
 
 
 @session_required

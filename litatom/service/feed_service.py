@@ -1,5 +1,6 @@
 # coding: utf-8
 import time
+import json
 import random
 import datetime
 from hendrix.conf import setting
@@ -14,7 +15,9 @@ from ..key import (
     REDIS_FEED_HQ_REGION,
     REDIS_FEED_ID_AGE,
     REDIS_REGION_FEED_TOP,
-    REDIS_US_FEED_LOCK
+    REDIS_US_FEED_LOCK,
+    REDIS_VIDEO_CHECK_CACHE,
+    REDIS_FEED_SQUARE_REGION_TAG
 )
 from ..util import (
     get_time_info,
@@ -39,6 +42,7 @@ from ..service import (
     BlockService,
     Ip2AddressService,
     UserMessageService,
+    AliOssService,
     FollowingFeedService,
     GlobalizationService,
     UserMessageService,
@@ -46,14 +50,17 @@ from ..service import (
     ForbidActionService,
     AntiSpamRateService,
     ForbidCheckService,
-    ExperimentService
+    ExperimentService,
+    PicCheckService,
+    ContentHitService
 )
 from ..model import (
     Feed,
     FeedLike,
     FeedDislike,
     FeedComment,
-    UserSetting
+    UserSetting,
+    HitTagWord
 )
 
 redis_client = RedisClient()['lit']
@@ -62,6 +69,17 @@ redis_client = RedisClient()['lit']
 class FeedService(object):
     LATEST_TYPE = 'latest'
     COMMENT_MAX_LEN = 500
+    TAG_GAME = 'Game'
+    TAG_CALL = 'Call'
+    TAG_VOICE = 'Voice'
+    TAG_CHAT = 'Chat'
+
+    TAGS = [TAG_GAME, TAG_CALL, TAG_VOICE, TAG_CHAT]
+    TAG_HIT_CHECK = [TAG_CALL, TAG_CHAT, TAG_VOICE]
+
+    @classmethod
+    def all_tags(cls):
+        return cls.TAGS
 
     @classmethod
     def should_add_to_square(cls, feed):
@@ -71,11 +89,39 @@ class FeedService(object):
         if feed.self_high:
             return False
         status = Feed.objects(user_id=user_id, create_time__gte=judge_time).count() <= 3
-        # if not status and setting.IS_DEV:
         if status:
             return True
         AntiSpamRateService.inform_spam(user_id, 'feed_over')
         return status
+
+    @classmethod
+    def feed_tags_by_feedid(cls, feed_id):
+        feed = Feed.get_by_id(feed_id)
+        request.region = GlobalizationService.get_region_by_user_id(feed.user_id)
+        return cls.get_feed_tags(feed)
+
+    @classmethod
+    def is_feed_game(cls, feed):
+        if not feed.pics:
+            return False
+        pic = feed.pics[0]
+        width, height = AliOssService.get_pic_size(pic)
+        if width > height and height > 0:
+            return width * 1.0 / height >= 1.2
+        return False
+
+    @classmethod
+    def get_feed_tags(cls, feed):
+        res = []
+        if cls.is_feed_game(feed):
+            res.append(cls.TAG_GAME)
+        if not feed.content:
+            return res
+        for tag in cls.TAG_HIT_CHECK:
+            hit_word = ContentHitService.get_hit_word(feed.content, tag)
+            if hit_word:
+                res.append(tag)
+        return res
 
     @classmethod
     def pin_feed(cls, user_id, feed_id):
@@ -108,16 +154,62 @@ class FeedService(object):
         return redis_client.get(REDIS_US_FEED_LOCK)
 
     @classmethod
+    def set_video_info(cls, fileid, feed_id, region_key):
+        data = {
+            'feed_id': feed_id,
+            'region_key': region_key
+        }
+        key = REDIS_VIDEO_CHECK_CACHE.format(fileid=fileid)
+        redis_client.set(key, json.dumps(data), ONE_DAY)
+
+    @classmethod
+    def get_video_info(cls, fileid):
+        key = REDIS_VIDEO_CHECK_CACHE.format(fileid=fileid)
+        raw = redis_client.get(key)
+        if not raw:
+            return '', ''
+        data = json.loads(raw)
+        return data.get('feed_id'), data.get('region_key')
+
+    @classmethod
+    def deal_video_res(cls, video_check_data):
+        fileid, scene, suggestion = PicCheckService.get_video_result_by_data(video_check_data)
+        feed_id, region_key = cls.get_video_info(fileid)
+        if not feed_id:
+            return
+        feed = Feed.get_by_id(feed_id)
+        if not feed:
+            return
+        if not suggestion:
+            if cls.should_add_to_square(feed):
+                redis_client.zadd(region_key, {str(feed.id): feed.create_time})
+        else:
+            request.region = GlobalizationService.get_region_by_user_id(feed.user_id)
+            ForbidActionService.resolve_block_pic(feed.user_id, fileid, SPAM_RECORD_FEED_SOURCE)
+            feed.set_self_high()
+
+    @classmethod
     def _on_add_feed(cls, feed):
         if request.region == GlobalizationService.REGION_US:
             if cls.is_us_locked():
                 return
+        feed_id = str(feed.id)
+        region_key = cls._redis_feed_region_key(REDIS_FEED_SQUARE_REGION)
+        # if feed.video:
+        #     cls.set_video_info(feed.video, str(feed.id), region_key)
+        #     return
         if not feed.pics:
             if cls.should_add_to_square(feed):
+                if feed.video:
+                    cls.set_video_info(feed.video, str(feed.id), region_key)
                 cls._add_to_feed_pool(feed)
         MqService.push(ADD_EXCHANGE,
-                       {"feed_id": str(feed.id), "pics": feed.pics,
-                        "region_key": cls._redis_feed_region_key(REDIS_FEED_SQUARE_REGION)})
+                       {
+                           "feed_id": feed_id,
+                           "pics": feed.pics,
+                           "region_key": region_key
+                       }
+                       )
         # print 'push', {"feed_id": str(feed.id), "pics": feed.pics,
         #                 "region_key": cls._redis_feed_region_key(REDIS_FEED_SQUARE_REGION)}
         # FollowingFeedService.add_feed(feed)
@@ -166,6 +258,11 @@ class FeedService(object):
         return key.format(region=region)
 
     @classmethod
+    def _redis_feed_region_tag_key(cls, key, tag):
+        region = GlobalizationService.get_region()
+        return key.format(region=region, tag=tag)
+
+    @classmethod
     def _feed_info(cls, feed, visitor_user_id=None):
         if not feed:
             return {}
@@ -203,10 +300,16 @@ class FeedService(object):
     @classmethod
     def _add_to_feed_pool(cls, feed):
         redis_client.zadd(cls._redis_feed_region_key(REDIS_FEED_SQUARE_REGION), {str(feed.id): feed.create_time})
+        tags = cls.get_feed_tags(feed)
+        for tag in tags:
+            redis_client.zadd(cls._redis_feed_region_tag_key(REDIS_FEED_SQUARE_REGION_TAG, tag), {str(feed.id): feed.create_time})
 
     @classmethod
     def _del_from_feed_pool(cls, feed):
         redis_client.zrem(cls._redis_feed_region_key(REDIS_FEED_SQUARE_REGION), str(feed.id))
+        for tag in cls.get_feed_tags(feed):
+            redis_client.zrem(cls._redis_feed_region_tag_key(REDIS_FEED_SQUARE_REGION_TAG, tag),
+                             str(feed.id))
 
     @classmethod
     def _add_to_feed_hq(cls, feed_id):
@@ -258,16 +361,15 @@ class FeedService(object):
         #     redis_client.zadd(REDIS_FEED_SQUARE, {feed_id: new_score})
 
     @classmethod
-    def create_feed(cls, user_id, content, pics=None, audios=None):
+    def create_feed(cls, user_id, content, pics=None, audios=None, video=None, other_info={}):
         if content:
             if SpamWordCheckService.is_spam_word(content):
                 ForbidActionService.resolve_spam_word(user_id, content, SPAM_RECORD_FEED_SOURCE)
                 return GlobalizationService.get_region_word('alert_msg'), False
-        feed = Feed.create_feed(user_id, content, pics, audios)
+        feed = Feed.create_feed(user_id, content, pics, audios, video, other_info)
         UserService.check_and_move_to_big(user_id, [content])
         cls._on_add_feed(feed)
         UserModelService.add_comments_by_uid(user_id)
-        # cls._add_to_feed_pool(feed)
         return str(feed.id), True
 
     @classmethod
@@ -296,7 +398,7 @@ class FeedService(object):
 
     @classmethod
     def feeds_by_userid(cls, visitor_user_id, user_id, start_ts=MAX_TIME, num=10):
-        if request.ip_should_filter:
+        if request.ip_should_filter and visitor_user_id != user_id:
             return {
                        'feeds': [],
                        'has_next': False,
@@ -343,7 +445,7 @@ class FeedService(object):
             return feed_age >= 20
 
     @classmethod
-    def _feeds_by_pool(cls, redis_key, user_id, start_p, num, pool_type=None, show_all=False):
+    def _feeds_by_pool(cls, redis_key, user_id, start_p, num, pool_type=None, show_all=False, tag=None):
         if request.ip_should_filter:
             return {
                 'feeds': [],
@@ -356,7 +458,7 @@ class FeedService(object):
         has_next = False
         next_start = -1
         top_id = None
-        if start_p == 0 and pool_type == cls.LATEST_TYPE:
+        if start_p == 0 and pool_type == cls.LATEST_TYPE and not tag:
             top_id = redis_client.get(REDIS_REGION_FEED_TOP.format(region=GlobalizationService.get_region()))
         for i in range(max_loop_tms):
             tmp_feeds = redis_client.zrevrange(redis_key, start_p, start_p + num)
@@ -388,9 +490,13 @@ class FeedService(object):
         }
 
     @classmethod
-    def feeds_by_square(cls, user_id, start_p=0, num=10, show_all=False):
-        return cls._feeds_by_pool(cls._redis_feed_region_key(REDIS_FEED_SQUARE_REGION), user_id, start_p, num,
-                                  cls.LATEST_TYPE, show_all)
+    def feeds_by_square(cls, user_id, start_p=0, num=10, show_all=False, tag=None):
+        if not tag:
+            return cls._feeds_by_pool(cls._redis_feed_region_key(REDIS_FEED_SQUARE_REGION), user_id, start_p, num,
+                                      cls.LATEST_TYPE, show_all)
+        else:
+            return cls._feeds_by_pool(cls._redis_feed_region_tag_key(REDIS_FEED_SQUARE_REGION_TAG, tag), user_id, start_p, num,
+                                      cls.LATEST_TYPE, show_all, tag)
 
     @classmethod
     def age_by_feed_id(cls, feed_id):

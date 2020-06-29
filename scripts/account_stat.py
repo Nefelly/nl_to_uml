@@ -7,13 +7,13 @@ from litatom.util import ensure_path, get_zero_today
 def run(stat_date=get_zero_today()):
     if stat_date:
         dst_addr = '/data/diamond_stat/%s.xlsx' % (stat_date - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
-        match_addr = '/data/match_diamond_stat/%s.xlsx' % (stat_date - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
+        # match_addr = '/data/match_diamond_stat/%s.xlsx' % (stat_date - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
     else:
         dst_addr = '/data/diamond_stat/%s.xlsx' % (datetime.datetime.now() - datetime.timedelta(days=1)).strftime(
             '%Y-%m-%d')
-        match_addr = '/data/match_diamond_stat/%s.xlsx' % (stat_date - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
+        # match_addr = '/data/match_diamond_stat/%s.xlsx' % (stat_date - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
     ensure_path(dst_addr)
-    ensure_path(match_addr)
+    # ensure_path(match_addr)
     DiamStatService.diam_stat_report_7_days(dst_addr, stat_date)
     # recievers = ["litatomwang@gmail.com", "op.shiyang.yu@gmail.com", "396408395@qq.com", "w326571@126.com", '382365209@qq.com',
     #      '644513759@qq.com']

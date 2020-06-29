@@ -212,7 +212,6 @@ class HuanxinService(object):
                 try:
                     cls.before_request()
                     response = requests.post(url, verify=False, headers=headers, json=data).json()
-                    print response
                     _ = response["data"]
                     for k in _:
                         if _[k] == u'success':
@@ -248,7 +247,6 @@ class HuanxinService(object):
     @classmethod
     def block_user(cls, source_user_name, dest_user_name):
         url = cls.APP_URL + 'users/%s/blocks/users' % source_user_name
-        # print url
         access_token = cls.get_access_token()
         if not access_token:
             return False
@@ -351,14 +349,19 @@ class HuanxinService(object):
         return False
 
     @classmethod
+    def deal_response(cls, response):
+        status = response.get('status')
+        if status and status != 200:
+            AliLogService.put_err_log({"msg": json.dumps(response), "code": response.get('status')})
+
+    @classmethod
     def get_user(cls, user_name):
         url = cls.APP_URL + 'users/%s' % user_name
-
         access_token = cls.get_access_token()
         if not access_token:
             return {}
         headers = {
-            'Authorization':'Bearer %s' % access_token
+            'Authorization': 'Bearer %s' % access_token
         }
         try:
             response = requests.get(url, verify=False, headers=headers).json()
@@ -385,6 +388,7 @@ class HuanxinService(object):
         try:
             response = requests.post(url, verify=False, headers=headers, json=data).json()
             # print response
+            cls.deal_response(response)
             assert response.get('entities')[0]['username']
             return True
         except Exception, e:
@@ -406,6 +410,7 @@ class HuanxinService(object):
         }
         try:
             response = requests.delete(url, verify=False, headers=headers).json()
+            # print response
             assert response.get('entities')[0]['username']
             return True
         except Exception, e:
@@ -426,6 +431,7 @@ class HuanxinService(object):
         for i in range(cls.TRY_TIMES):
             try:
                 response = requests.post(url, verify=False, headers=headers, data=json.dumps({})).json()
+                cls.deal_response(response)
                 assert response.get('action')
                 return True
             except Exception, e:
@@ -484,8 +490,8 @@ class HuanxinService(object):
 
     @classmethod
     def deactive_user(cls, user_name):
+        return cls.log_out(user_name)
         url = cls.APP_URL + 'users/%s/deactivate' % user_name
-
         access_token = cls.get_access_token()
         if not access_token:
             return False
@@ -517,8 +523,8 @@ class HuanxinService(object):
         if not access_token:
             return {}
         headers = {
-            'Content-Type':'application/json',
-            'Authorization':'Bearer %s' % access_token
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer %s' % access_token
         }
         try:
             response = requests.get(url, verify=False, headers=headers).json()
