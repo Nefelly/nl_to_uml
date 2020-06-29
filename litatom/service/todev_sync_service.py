@@ -64,7 +64,7 @@ class ToDevSyncService(object):
         for obj in dev_objs:
             query_str = {}
             for f in fields:
-                if f == 'create_time':
+                if f in ['create_time', 'modify_time']:
                     continue
                 # if escape_filed:
                 #     if f in escape_filed:
