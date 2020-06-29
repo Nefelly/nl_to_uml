@@ -20,8 +20,6 @@ from hendrix.util import get_hostname
 from pyparsing import anyOpenTag, anyCloseTag
 
 import json
-from . import const
-from .const import OSS_PIC_URL
 
 logger = logging.getLogger(__name__)
 
