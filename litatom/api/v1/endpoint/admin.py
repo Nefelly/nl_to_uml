@@ -360,7 +360,7 @@ def set_diamonds():
     return fail(msg)
 
 
-def add_diamonds(user_id):
+def add_diamonds_by_admin(user_id):
     num = request.args.get('num')
     num = int(num)
     msg, status = AccountService.add_diamonds_by_admin(user_id, num)
