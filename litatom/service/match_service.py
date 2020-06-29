@@ -168,7 +168,6 @@ class MatchService(object):
     def _destroy_fake_id(cls, fake_id, need_remove_from_pool=True):
         if not fake_id:
             return
-        #HuanxinService.delete_user(fake_id)
         user_id = redis_client.get(cls.TYPE_FAKE_ID_UID.format(fake_id=fake_id))
 
         if user_id:
