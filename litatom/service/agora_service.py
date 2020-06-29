@@ -145,6 +145,8 @@ class AgoraService(object):
             return
             # redis_client.delete(key)
         resourceId, sid = cls._start_record(cname)
+        if not resourceId:
+            return
         save_add = '%s_%s.m3u8' % (sid, cname)
         region = request.region
         save_record = VoiceMatchRecord.create(loveid1, loveid2, save_add, region)
@@ -192,7 +194,7 @@ class AgoraService(object):
             sid = r_start.json()["sid"]
             return resourceId, sid
         else:
-            print("Start error! Code:%s Info:%s" % (r_start.status_code, r_start.json()))
+            # print("Start error! Code:%s Info:%s" % (r_start.status_code, r_start.json()))
             return '', ''
 
     @classmethod
