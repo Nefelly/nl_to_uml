@@ -268,6 +268,15 @@ class AccountService(object):
         return None, True
 
     @classmethod
+    def add_diamonds_by_admin(cls, user_id, num):
+        user_account = UserAccount.get_by_user_id(user_id)
+        if not user_account:
+            user_account = UserAccount.create_account(user_id)
+        user_account.diamonds += num
+        user_account.save()
+        return None, True
+
+    @classmethod
     def is_member(cls, user_id):
         # user = User.get_by_id(user_id)
         # return user and user.is_member
