@@ -85,7 +85,7 @@ class UserSettingService(object):
             if latest_version and latest_version < request.version:
                 now_version = latest_version
             else:
-                now_version = request.version
+                now_version = request.version   # 设置了更大的版本号后 这个会为空
             return REDIS_SETTINGS_IOS_VERSION.format(version=now_version)
         return REDIS_SETTINGS_IOS
 
@@ -141,6 +141,8 @@ class UserSettingService(object):
         region = GlobalizationService.get_region()
         if setting.IS_DEV or 1:
             cached_setting_str = redis_client.get(cls.get_setting_key())
+            if not cached_setting_str and request.IS_IOS:
+                cached_setting_str = redis_client.get(REDIS_SETTINGS_IOS)
             if False and not cls._valid_cache_str(cached_setting_str):
                 redis_client.delete(cls.get_setting_key())
                 redis_client.set(cls.get_setting_key(), json.dumps(res))
