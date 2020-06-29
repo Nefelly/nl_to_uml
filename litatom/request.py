@@ -26,6 +26,14 @@ class LitatomRequest(flask.Request):
     #: form validation errors
     form_errors = None
 
+    @cached_property
+    def ip_full_list(self):
+        """combine x-forwarded-for and client's ip to get a full ip list"""
+        ip = list(self.access_route)
+        if self.remote_addr and ip and ip[-1] != self.remote_addr:
+            ip.append(self.remote_addr)
+        return ip
+
     def _get_time_ms(self):
         return int(time.time() * 1000)
 
