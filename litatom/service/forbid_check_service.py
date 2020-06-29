@@ -290,7 +290,7 @@ class PicCheckService(object):
                 err = test_res.get('error', '')
                 if 'Rectangle invalid' in err:
                     return '', ''
-                if ('invalid URI' in err or 'fetch uri failed' in err) and i <= loop_tms - 1:
+                if ('invalid URI' in err or 'fetch uri failed' in err) and i <= cls.MAX_TYR_TIMES - 1:
                     time.sleep(0.3)
                     continue
                 if 'result' not in test_res:
