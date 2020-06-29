@@ -7,16 +7,7 @@ from base64 import b64decode
 
 import flask
 from hendrix.conf import setting
-from . import const
 from .util import cached_property
-from .model import User
-from .service import (
-    AdminService,
-    Ip2AddressService,
-    GlobalizationService,
-    UserFilterService,
-    UserService
-)
 
 
 class LitatomRequest(flask.Request):
@@ -35,13 +26,6 @@ class LitatomRequest(flask.Request):
     #: form validation errors
     form_errors = None
 
-    #: 用于打log时获取用户ID
-    # 该变量=True时，request.user/user_id等属性已经被赋值并缓存，可以安全地在logger中调用
-    # 该变量=False时，尝试获取request.user/user_id等属性有可能出现异常，此时不要在logger中调用，否则有死循环的风险
-    has_user_session = False
-
-    is_guest = False
-
     def _get_time_ms(self):
         return int(time.time() * 1000)
 
@@ -51,37 +35,6 @@ class LitatomRequest(flask.Request):
     def timing_end(self):
         if not self.cost:
             self.cost = self._get_time_ms() - self.start_at
-
-    def _get_user_id_from_redis(self, sid):
-        pass
-        # from .rpc import java_rus_client
-        # from .rpc.serializers.base import context
-        try:
-            return res.userId
-        except:
-            return None
-
-    @cached_property
-    def platform(self):
-        p = self.values.get('platform', '').lower()
-        if p in [const.PLATFORM_ANDROID, const.PLATFORM_IOS]:
-            return p
-
-    @cached_property
-    def is_android(self):
-        return self.platform == const.PLATFORM_ANDROID
-
-    @cached_property
-    def is_ios(self):
-        return self.platform == const.PLATFORM_IOS
-
-    @cached_property
-    def platform_from_ua(self):
-        ua = self.headers.get('User-Agent', '')
-        if 'iPhone' in ua:
-            return const.PLATFORM_IOS
-        elif 'Android' in ua:
-            return const.PLATFORM_ANDROID
 
     @cached_property
     def build(self):
@@ -149,11 +102,6 @@ class LitatomRequest(flask.Request):
         return 0, 0
 
     @cached_property
-    def on_staging(self):
-        from .api import util
-        return util.on_staging()
-
-    @cached_property
     def id(self):
         return uuid.uuid4().hex
 
@@ -166,130 +114,11 @@ class LitatomRequest(flask.Request):
         return sid
 
     @cached_property
-    def num(self):
-        num = self.values.get('num', '')
-        if not num:
-            return 0
-        try:
-            num = int(num)
-            if num and num > 0:
-                return num
-            return 0
-        except Exception as e:
-            return 0
-
-    @cached_property
-    def page_num(self):
-        page_num = self.values.get('page_num', '0')
-        if page_num.isdigit():
-            return int(page_num)
-        return 0
-
-    @cached_property
     def version(self):
         version = self.values.get('version', '')
         if not version.replace('.', '').isdigit():
             return None
         return version
-
-    @cached_property
-    def experiment_name(self):
-        experiment_name = self.values.get('experiment_name', '')
-        if not experiment_name:
-            return None
-        return experiment_name
-
-    @cached_property
-    def experiment_value(self):
-        experiment_value = self.values.get('experiment_value', '')
-        if not experiment_value:
-            return None
-        return experiment_value
-
-    @cached_property
-    def loc(self):
-        loc = self.values.get('loc', '')
-        return GlobalizationService.get_real_loc(loc)
-        # return loc
-
-    # @cached_property
-    # def region(self):
-    #     return GlobalizationService.get_region()
-
-    @cached_property
-    def user(self):
-        pass
-        # from .model import User
-        #
-        # user_id = self.user_id
-        # if not user_id:
-        #     return
-        # try:
-        #     user = User.get_by_id(user_id)
-        # except Exception:
-        #     # do not log, preventing endless loop
-        #     return
-        # if user:
-        #     self.has_user_session = True
-        # return user
-
-    @cached_property
-    def user_id(self):
-        """
-        这个方法有3种可能的返回值，
-        1. 如果返回None，说明Session校验的时候抛exception了，这个时候不要踢出用户，简单报个错就可以
-        2. 如果返回一个空字符串，说明的确是Session失效了，需要踢出用户
-        3. 返回正常的UserID，校验成功
-        """
-        sid = self.session_id
-        if not sid:
-            return None
-
-        # get_user_id_by_session这个方法不会抛exception，如果该方法返回None，说明在取Cache或数据库的时候出现了exception，
-        # 如果返回空字符串，则说明真的session失效了
-        user_id = User.get_user_id_by_session(sid)
-        if user_id:
-            self.has_user_session = True
-        return user_id
-
-    @cached_property
-    def forbidden_user_id(self):
-        """
-        这个方法有3种可能的返回值，
-        1. 如果返回None，说明Session校验的时候抛exception了，这个时候不要踢出用户，简单报个错就可以
-        2. 如果返回一个空字符串，说明的确是Session失效了，需要踢出用户
-        3. 返回正常的UserID，校验成功
-        """
-        sid = self.session_id
-        if not sid:
-            return
-
-        # get_user_id_by_session这个方法不会抛exception，如果该方法返回None，说明在取Cache或数据库的时候出现了exception，
-        # 如果返回空字符串，则说明真的session失效了
-        user_id = User.get_forbidden_user_id_by_session(sid)
-        self.user_id = user_id  # 这个得放在session_required的判断后
-        return user_id
-
-    @cached_property
-    def is_homo(self):
-        return UserFilterService.is_homo(self.user_id, self.gender)
-
-    @cached_property
-    def gender(self):
-        return UserService.get_gender(self.user_id)
-
-    @cached_property
-    def admin_user_name(self):
-        sid = self.session_id
-        if not sid:
-            return
-
-        # get_user_id_by_session这个方法不会抛exception，如果该方法返回None，说明在取Cache或数据库的时候出现了exception，
-        # 如果返回空字符串，则说明真的session失效了
-        user_id = AdminService.get_user_name_by_session(sid)
-        if user_id:
-            self.has_user_session = True
-        return user_id
 
     @cached_property
     def device_id(self):
@@ -310,46 +139,6 @@ class LitatomRequest(flask.Request):
         return None
 
     @cached_property
-    def ip(self):
-        ip_address = self.environ.get('HTTP_X_FORWARDED_FOR', '')
-        if not ip_address:
-            ip_list = list(self.access_route)
-            if ip_list:
-                ip_address = ip_list[0]
-        return ip_address.split(',')[0].strip()
-
-    @cached_property
-    def ip_country(self):
-        return Ip2AddressService.ip_country(self.ip)
-
-    @cached_property
-    def ip_thailand(self):
-        return self.ip_country in [u'Thailand']
-
-    @cached_property
-    def ip_thailand_china(self):
-        return self.ip_country in [u'Thailand', u'China']
-
-    @cached_property
-    def ip_should_filter(self):
-        # if setting.IS_DEV:
-        #     return False
-        country, city = Ip2AddressService.ip_country_city(self.ip)
-        if country in [u'United States'] or \
-                (False and country == u'China' and city and city not in [u'Beijing', u'Shanghai', u'Nanjing']):
-            if GlobalizationService.get_region() in GlobalizationService.BIG_REGIONS:
-                return True
-        return False
-
-    @cached_property
-    def ip_full_list(self):
-        """combine x-forwarded-for and client's ip to get a full ip list"""
-        ip = list(self.access_route)
-        if self.remote_addr and ip and ip[-1] != self.remote_addr:
-            ip.append(self.remote_addr)
-        return ip
-
-    @cached_property
     def web_client_version(self):
         """
         web_api传递的客户端版本
@@ -368,12 +157,3 @@ class LitatomRequest(flask.Request):
         except Exception:
             # do not log, preventing endless loop
             return -1
-
-    @cached_property
-    def web_client_platform(self):
-        """
-        web_api传递的客户端平台
-        """
-        platform = self.headers.get('X-Client-Platform', '').lower()
-        if platform in [const.PLATFORM_ANDROID, const.PLATFORM_IOS]:
-            return platform
