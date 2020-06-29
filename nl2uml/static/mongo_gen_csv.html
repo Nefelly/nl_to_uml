@@ -1,0 +1,38 @@
+<html>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://cdn.bootcss.com/vue-resource/1.5.1/vue-resource.js"></script>
+
+    <div id="app-7">
+        <div>example: table_name: user_action fields: user_id,action query:{"create_time": {$lt:1573920000}} </div>
+    <div>table_name:<input id="table_name" name="table_name"> 想要获取的字段名(fields) split by ,<input id="fields" name="fields" style="width: 200px"></div>
+    <div><button name='gen_csv' @click='gen_csv()'>gen_csv</button></div>
+    <div>query:<textarea id="query_data" name="query_data" style="width:1700px; height:300px;"></textarea></div>
+
+    </div>
+<script>
+  const BASE_URL = 'http://' + document.domain + '/api/sns/v1/lit/';
+var app7 = new Vue({
+  el: '#app-7',
+  data: {
+    items1: [],
+    base_url: BASE_URL
+  },
+created() {},
+
+methods: {
+    gen_csv: function() {
+        table_name = document.getElementById('table_name').value;
+        fields = document.getElementById('fields').value;
+        data = document.getElementById('query_data').value;
+        // this.$http.post(BASE_URL + 'admin/mongo_gen_csv', {"table_name":table_name, "fields":fields, "query":data});
+        window.open(encodeURI(BASE_URL + 'admin/mongo_gen_csv?table_name=' + table_name + '&fields=' + fields + '&query=' + data))
+    },
+    }
+})
+</script>
+<style lang="stylus">
+    .column-direction
+        display flex
+        flex-direction column
+</style>
+</html>
