@@ -27,6 +27,15 @@ class LitatomRequest(flask.Request):
     form_errors = None
 
     @cached_property
+    def ip(self):
+        ip_address = self.environ.get('HTTP_X_FORWARDED_FOR', '')
+        if not ip_address:
+            ip_list = list(self.access_route)
+            if ip_list:
+                ip_address = ip_list[0]
+        return ip_address.split(',')[0].strip()
+
+    @cached_property
     def ip_full_list(self):
         """combine x-forwarded-for and client's ip to get a full ip list"""
         ip = list(self.access_route)
