@@ -200,7 +200,31 @@ class Enum(object):
         raise ValueError('invalid value: {!r}'.format(val))
 
 
+def memoize(f):
+    _res_mapping = {}
 
+    @functools.wraps(f)
+    def wrapper(*args, **kwargs):
+        key = args + tuple(sorted(kwargs.items()))
+        try:
+            return _res_mapping[key]
+        except KeyError:
+            _res_mapping[key] = value = f(*args, **kwargs)
+            return value
+
+    return wrapper
+
+
+@memoize
+def on_staging():
+    """查看当前是否在Staging环境"""
+    return True
+
+@memoize
+def in_container():
+    return False
+    # from hendrix.conf import setting
+    # return setting.IN_CONTAINER
 
 
 class ExpoBackoffDecorr(object):
@@ -212,6 +236,3 @@ class ExpoBackoffDecorr(object):
     def backoff(self, n):
         self.sleep = min(self.cap, random.uniform(self.base, self.sleep * 3))
         return self.sleep
-
-
-
